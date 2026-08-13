@@ -3348,10 +3348,13 @@ function moneyNum(s){var n=parseFloat(String(s).replace(/[^0-9.]/g,&quot;&quot;)
 function fmtMoney(n){return n==null?null:&quot;$&quot;+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 function weeklyise(v,f){f=(f||&quot;&quot;).toUpperCase();if(v==null)return null;if(f.indexOf(&quot;WEEK&quot;)===0)return v;if(f.indexOf(&quot;FORT&quot;)===0)return v/2;if(f.indexOf(&quot;MONTH&quot;)===0)return v*12/52;return null}
 function normName(s){return(s||&quot;&quot;).toUpperCase().replace(/[^A-Z ]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim()}
-function normEmp(s){return(s||&quot;&quot;).toUpperCase().replace(/\b(PTY|LTD|LIMITED|PROPRIETARY|CO|GROUP|THE|AUSTRALIA|AUST|AU|TRADING|T\/A)\b\.?/g,&quot; &quot;).replace(/[^A-Z0-9 ]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim()}
+function normEmp(s){return(s||&quot;&quot;).toUpperCase().replace(/\b(PTY|LTD|LIMITED|PROPRIETARY|CO|GROUP|THE|AUSTRALIA|AUST|AU|TRADING|T\/A|DEPARTMENT|GOVERNMENT|OFFICE|MINISTRY|STATE|NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b\.?/g,&quot; &quot;).replace(/[^A-Z0-9 ]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim()}
 
 function classify(text){
-  var up=text.toUpperCase();var pay=0,lic=0;
+  var up=text.toUpperCase();
+  if(/EQUIFAX|VEDA ?SCORE|ILLION|EXPERIAN|CREDIT REPORT|COMPREHENSIVE SCORE|CREDIT ENQUIRIES|AGE OF FILE/.test(up))return&quot;credit&quot;;
+  if(/PRIVACY CONSENT|CONSENT FORM|DECLARATION AND CONSENT|CREDIT GUIDE|QUOTE ACCEPTANCE/.test(up))return&quot;other&quot;;
+  var pay=0,lic=0;
   if(/GROSS|NET PAY|PAYG|SUPERANNUATION|\bYTD\b|EARNINGS|PAY ?SLIP|PAY ADVICE|PAY PERIOD/.test(up))pay+=2;
   if(/\bABN\b/.test(up))pay+=1;
   if(/LICEN[CS]E|DRIVER/.test(up))lic+=2;
@@ -3364,17 +3367,32 @@ function parseLicence(text){
   var up=text.toUpperCase();
   var o={type:&quot;licence&quot;};
   var g=function(re){var m=up.match(re);return m?m[1].trim():null};
-  o.licenceNo=g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!0[45]\d{8}\b)([0-9]{6,10})\b/);
-  o.cardNo=g(/CARD\s*(?:NO|NUMBER|N0)?\.?\s*[:\-]?\s*([A-Z0-9]{8,11})\b/);
+  var cleanNum=function(s,min,max){if(!s)return null;var v=s.replace(/[^A-Z0-9]/gi,&quot;&quot;);return(v.length&gt;=min&amp;&amp;v.length&lt;=max)?v:null};
+  o.licenceNo=cleanNum(g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!0[45]\d{8}\b)([0-9][0-9 ]{4,12}[0-9])\b/),6,10);
+  o.cardNo=cleanNum(g(/CARD\s*(?:NO|NUMBER|N0)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/),8,11);
   o.dob=g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
         ||g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}\s*(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*(?:19|20)\d{2})/);
   o.expiry=g(/EXP(?:IRY|IRES)?\.?[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
         ||g(/EXP(?:IRY|IRES)?\.?[^0-9]{0,15}(\d{1,2}\s*(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*(?:19|20)\d{2})/);
-  var dates=[];var dm;var dre=/\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.]((?:19|20)\d{2})\b/g;
+  var dates=[];var dm;
+  var dre=/\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.]((?:19|20)\d{2})\b/g;
   while((dm=dre.exec(up)))dates.push({d:+dm[1],mo:+dm[2],y:+dm[3],s:dm[0]});
+  var mre=/\b(\d{1,2})\s*(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*((?:19|20)\d{2})\b/g;
+  while((dm=mre.exec(up)))dates.push({d:+dm[1],mo:MONTHS.indexOf(dm[2])+1,y:+dm[3],s:dm[0]});
   var now=new Date();
   if(!o.dob){for(var i=0;i&lt;dates.length;i++){var x=dates[i];var age=now.getFullYear()-x.y;if(age&gt;=16&amp;&amp;age&lt;=90&amp;&amp;new Date(x.y,x.mo-1,x.d)&lt;now){o.dob=x.s;break}}}
-  if(!o.expiry){for(var k=0;k&lt;dates.length;k++){var e2=dates[k];if(new Date(e2.y,e2.mo-1,e2.d)&gt;now){o.expiry=e2.s;break}}}
+  if(!o.expiry){
+    // expiry = the LATEST date on the licence that is not the DOB · a past date is still the expiry (that is exactly the expired case)
+    var dobT=o.dob&amp;&amp;normDate(o.dob)?normDate(o.dob).t:null;
+    var best=null;
+    for(var k=0;k&lt;dates.length;k++){
+      var e2=dates[k];var t2=new Date(e2.y,e2.mo-1,e2.d).getTime();
+      if(dobT!=null&amp;&amp;t2===dobT)continue;
+      if(t2&lt;now.getTime()-15*365*86400000)continue; // ignore ancient dates (issue dates from long ago)
+      if(best==null||t2&gt;best.t){best={t:t2,s:e2.s}}
+    }
+    if(best){o.expiry=best.s;o.expiryLoose=true}
+  }
   if(!o.licenceNo){var m2=up.match(/\b(?!0[45]\d{7,8}\b)(\d{8,9})\b/);if(m2)o.licenceNo=m2[1]}
   var ad=g(/(\d+[A-Z0-9 ,\/\-]*?\b(?:ST|STREET|RD|ROAD|AVE|AVENUE|DR|DRIVE|CT|COURT|CRES|CRESCENT|WAY|PL|PLACE|PDE|PARADE|CL|CLOSE|TCE|TERRACE|BLVD|HWY|CCT|LOOP|ESP)\b[\s\S]{0,50}?(?:QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s*\d{4})/);
   if(ad)o.address=ad.replace(/\s+/g,&quot; &quot;).trim();
@@ -3386,9 +3404,22 @@ function parsePayslip(text){
   var o={type:&quot;payslip&quot;};
   var g=function(re){var m=up.match(re);return m?m[1].trim():null};
   o.abn=g(/\bA\.?B\.?N\.?\s*[:\-]?\s*(\d{2}\s?\d{3}\s?\d{3}\s?\d{3})\b/);
-  var badEmp=function(s){return !s||/[@]|WWW\.|HTTPS?:|\.COM|\.NET|\.ORG/.test(s)||/^(PAY ?SLIP|PAY ADVICE|TAX INVOICE|REMITTANCE|STATEMENT|EMPLOYEE|PAYSLIP)\b/.test(s.trim())||!/[A-Z]{3}/.test(s)};
+  var badEmp=function(s){
+    if(!s)return true;
+    if(/[@]|WWW\.|HTTPS?:|\.COM|\.NET|\.ORG/.test(s))return true;
+    if(/^(PAY ?SLIP|PAY ADVICE|TAX INVOICE|REMITTANCE|STATEMENT|EMPLOYEE|PAYSLIP|SUPERANNUATION|MEMBERSHIP|BANK TRANSFERS?)\b/.test(s.trim()))return true;
+    if(/BUILDING SOCIETY|CREDIT UNION|\bBANK\b|\bBSB\b|\bCBUS\b|AUSTRALIAN ?SUPER|HESTA|HOSTPLUS|\bREST SUPER\b/.test(s))return true;
+    if(!/[A-Z]{3}/.test(s))return true;
+    // a bare legal suffix (&quot;LTD&quot; on its own wrapped line) is not a name
+    var core=s.replace(/\b(PTY|LTD|LIMITED|PROPRIETARY|CORPORATION|INCORPORATED|CO-?OPERATIVE|ASSOCIATION|FOUNDATION|CO)\b\.?/g,&quot; &quot;).replace(/[^A-Z]/gi,&quot; &quot;).replace(/\s+/g,&quot;&quot;);
+    if(core.length&lt;3)return true;
+    return false;
+  };
   var emp=g(/EMPLOYER\s*(?:NAME)?\s*[:\-]\s*([^\n]{3,60})/);
   if(badEmp(emp))emp=null;
+  // government employers · departments and state agencies have no Pty Ltd
+  if(!emp){var dep=up.match(/\b(DEPARTMENT OF [A-Z][A-Z &amp;]{2,40})/);if(dep)emp=dep[1].trim()}
+  if(!emp){var gv=up.match(/\b(NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b[\s|]*GOVERNMENT[\s|]*\n?\s*(EDUCATION|HEALTH|TRANSPORT|POLICE|JUSTICE|COMMUNITIES|TREASURY|PLANNING|CUSTOMER SERVICE)\b/);if(gv)emp=gv[1]+&quot; &quot;+gv[2]}
   if(!emp){var lm=up.match(/^\s*([^\n]{0,70}\b(?:PTY\.?\s*LTD|PTY\s*LIMITED|LIMITED|LTD|PTY|CORPORATION|INCORPORATED|CO-?OPERATIVE|ASSOCIATION|FOUNDATION)\b\.?[^\n]{0,20})$/m);if(lm&amp;&amp;!badEmp(lm[1]))emp=lm[1].trim()}
   if(!emp&amp;&amp;o.abn){var idx=up.indexOf(&quot;ABN&quot;);var before=up.slice(Math.max(0,idx-120),idx).split(&quot;\n&quot;).map(function(s){return s.trim()}).filter(function(s){return !badEmp(s)});if(before.length)emp=before[before.length-1]}
   if(emp)o.employer=emp.replace(/\s+/g,&quot; &quot;).replace(/\s*(ACN|ABN).*$/,&quot;&quot;).trim();
@@ -3452,6 +3483,7 @@ function compare(cd,docs,raw){
   cd=cd||{};
   var zx=zinkExtras(raw);
   var rows=[],adds=[],warns=[];
+  docs=docs.filter(function(d){return d.kind===&quot;licence&quot;||d.kind===&quot;payslip&quot;});
   var allText=docs.map(function(d){return(d.text||&quot;&quot;).toUpperCase()}).join(&quot;\n&quot;);
   var lic=null,pays=[];
   docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;!lic)lic=d.data;if(d.kind===&quot;payslip&quot;)pays.push(d.data)});
@@ -3496,7 +3528,10 @@ function compare(cd,docs,raw){
       note:fd?null:&quot;Open the licence and eyeball the DOB against Zink.&quot;});
   }
 
-  // Licence number · Zink vs doc, both directions
+  // Licence number · Zink vs doc, both directions · never silent
+  if(lic&amp;&amp;!lic.licenceNo&amp;&amp;!zx.licenceNo){
+    rows.push({field:&quot;Licence number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Type it into Zink off the card by eye.&quot;});
+  }
   if(lic&amp;&amp;(lic.licenceNo||zx.licenceNo)){
     if(lic.licenceNo&amp;&amp;zx.licenceNo){
       var sameL=lic.licenceNo===zx.licenceNo;
@@ -3526,25 +3561,29 @@ function compare(cd,docs,raw){
       rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:fc?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fc?&quot;match&quot;:&quot;check&quot;,note:fc?null:&quot;Eyeball the card number · it is on the front of newer licences.&quot;});
     }
   }
-  // Expiry · use whichever side is known for the expired/soon warnings
-  if(lic&amp;&amp;(lic.expiry||zx.licExpiry)){
+  // Expiry · never silent: known dates get the expired check, unknown gets an eyeball flag
+  if(lic){
     var de=lic.expiry?normDate(lic.expiry):null;
     var ze=zx.licExpiry?normDate(zx.licExpiry):null;
+    var loose=lic.expiryLoose?&quot; Date was read loosely off the doc · confirm it against the card.&quot;:&quot;&quot;;
     var use=de||ze;
     if(de&amp;&amp;ze){
       var sameE=de.d===ze.d&amp;&amp;de.mo===ze.mo&amp;&amp;de.y===ze.y;
-      rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:de.s,status:sameE?&quot;match&quot;:&quot;mismatch&quot;,note:sameE?null:&quot;Expiry dates differ · fix Zink to the licence.&quot;});
+      rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:de.s,status:sameE?&quot;match&quot;:&quot;mismatch&quot;,note:sameE?(lic.expiryLoose?loose.trim():null):(&quot;Expiry dates differ · fix Zink to the licence.&quot;+loose)});
     }else if(de){
-      rows.push({field:&quot;Licence expiry&quot;,zink:&quot;— not in Zink&quot;,doc:de.s,status:&quot;add&quot;});
+      rows.push({field:&quot;Licence expiry&quot;,zink:&quot;— not in Zink&quot;,doc:de.s,status:&quot;add&quot;,note:lic.expiryLoose?loose.trim():null});
       adds.push(&quot;Licence expiry: &quot;+de.s);
-    }else{
+    }else if(ze){
       var fe=foundIn(allText,dateVariants(zx.licExpiry));
       rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:fe?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fe?&quot;match&quot;:&quot;check&quot;,note:fe?null:&quot;Eyeball the expiry date.&quot;});
+    }else{
+      rows.push({field:&quot;Licence expiry&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Check the expiry by eye before you submit · an expired licence kills the application.&quot;});
+      warns.push(&quot;Licence expiry could not be read · check it by eye&quot;);
     }
     if(use){
       var daysE=Math.round((use.t-now.getTime())/86400000);
-      if(daysE&lt;0){warns.push(&quot;Licence EXPIRED &quot;+use.s);rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;mismatch&quot;,note:&quot;EXPIRED · lender will reject this ID, get the renewed licence.&quot;})}
-      else if(daysE&lt;90){rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;check&quot;,note:&quot;Expires within 90 days · fine for now, flag it.&quot;})}
+      if(daysE&lt;0){warns.push(&quot;Licence EXPIRED &quot;+use.s);rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;mismatch&quot;,note:&quot;EXPIRED · lender will reject this ID, get the renewed licence.&quot;+loose})}
+      else if(daysE&lt;90){rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;check&quot;,note:&quot;Expires within 90 days · fine for now, flag it.&quot;+loose})}
     }
   }
 
@@ -3567,8 +3606,9 @@ function compare(cd,docs,raw){
     var payText=docs.filter(function(d){return d.kind===&quot;payslip&quot;}).map(function(d){return(d.text||&quot;&quot;).toUpperCase()}).join(&quot;\n&quot;);
     if(cd.employer){
       var toksE=empTokens(cd.employer);
+      if(!toksE.length)toksE=normName(cd.employer).split(&quot; &quot;).filter(function(t){return t.length&gt;=4&amp;&amp;!GENERIC_TOKENS[t]});
       var hitsE=toksE.filter(function(t){return payText.indexOf(t)&gt;=0});
-      var tokenMatch=toksE.length&gt;0&amp;&amp;(hitsE.length&gt;=2||hitsE.length===toksE.length);
+      var tokenMatch=toksE.length&gt;0&amp;&amp;(hitsE.length&gt;=2||hitsE.length===toksE.length||(hitsE.length&gt;=1&amp;&amp;hitsE.length*2&gt;=toksE.length&amp;&amp;hitsE.some(function(t){return t.length&gt;=8})));
       var strict=false;
       if(pay.employer){
         var a2=normEmp(cd.employer),b2=normEmp(pay.employer);
@@ -4366,10 +4406,14 @@ const addFiles=async(fl)=&gt;{
         setItems(cur=&gt;cur.map(x=&gt;x.id===entry.id?{...x,msg:m}:x));
       });
       const kind=window.DocsEngine.classify(text);
-      const data=kind===&quot;licence&quot;?window.DocsEngine.parseLicence(text):window.DocsEngine.parsePayslip(text);
-      if(kind===&quot;unknown&quot;){
+      if(kind===&quot;credit&quot;){
+        list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;skipped&quot;,kind,msg:&quot;Credit report · skipped, not part of the docs check&quot;,file:null}:x);
+      }else if(kind===&quot;other&quot;){
+        list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;skipped&quot;,kind,msg:&quot;Not an ID or payslip · skipped&quot;,file:null}:x);
+      }else if(kind===&quot;unknown&quot;){
         list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;error&quot;,msg:&quot;Could not tell what this is · check it by eye&quot;,file:null}:x);
       }else{
+        const data=kind===&quot;licence&quot;?window.DocsEngine.parseLicence(text):window.DocsEngine.parsePayslip(text);
         list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;done&quot;,kind,data,text,ocr,msg:(kind===&quot;licence&quot;?&quot;Licence&quot;:&quot;Payslip&quot;)+(ocr?&quot; · OCR read, verify every field&quot;:&quot;&quot;),file:null}:x);
       }
     }catch(err){
@@ -4405,7 +4449,7 @@ return(
 &lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:5,marginBottom:10}}&gt;
 {items.map(x=&gt;(
 &lt;div key={x.id} style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:8,padding:&quot;6px 10px&quot;,background:&quot;#0d1117&quot;,border:&quot;1px solid #21262d&quot;,borderRadius:7,fontSize:11.5}}&gt;
-&lt;span style={{fontSize:13}}&gt;{x.status===&quot;reading&quot;?&quot;⏳&quot;:x.status===&quot;error&quot;?&quot;❌&quot;:x.kind===&quot;licence&quot;?&quot;🪪&quot;:&quot;💰&quot;}&lt;/span&gt;
+&lt;span style={{fontSize:13}}&gt;{x.status===&quot;reading&quot;?&quot;⏳&quot;:x.status===&quot;error&quot;?&quot;❌&quot;:x.status===&quot;skipped&quot;?&quot;⏭️&quot;:x.kind===&quot;licence&quot;?&quot;🪪&quot;:&quot;💰&quot;}&lt;/span&gt;
 &lt;span style={{color:&quot;#e6edf3&quot;,fontWeight:600,maxWidth:150,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;,whiteSpace:&quot;nowrap&quot;}}&gt;{x.name}&lt;/span&gt;
 &lt;span style={{color:x.status===&quot;error&quot;?&quot;#ff6b81&quot;:&quot;#8b949e&quot;,flex:1}}&gt;{x.msg}&lt;/span&gt;
 &lt;span style={{color:&quot;#484f58&quot;,cursor:&quot;pointer&quot;,fontSize:11}} onClick={()=&gt;removeItem(x.id)}&gt;✕&lt;/span&gt;

@@ -3370,6 +3370,7 @@ function parseLicence(text){
   var cleanNum=function(s,min,max){if(!s)return null;var v=s.replace(/[^A-Z0-9]/gi,&quot;&quot;);return(v.length&gt;=min&amp;&amp;v.length&lt;=max)?v:null};
   o.licenceNo=cleanNum(g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!0[45]\d{8}\b)([0-9][0-9 ]{4,12}[0-9])\b/),6,10);
   o.cardNo=cleanNum(g(/CARD\s*(?:NO|NUMBER|N0)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/),8,11);
+  if(!o.cardNo){var fz=up.match(/\bC[A-Z]{2}D\s*(?:N[O0]|NUMBER)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/);if(fz)o.cardNo=cleanNum(fz[1],8,11)}
   o.dob=g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
         ||g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}\s*(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*(?:19|20)\d{2})/);
   o.expiry=g(/EXP(?:IRY|IRES)?\.?[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
@@ -3394,6 +3395,19 @@ function parseLicence(text){
     if(best){o.expiry=best.s;o.expiryLoose=true}
   }
   if(!o.licenceNo){var m2=up.match(/\b(?!0[45]\d{7,8}\b)(\d{8,9})\b/);if(m2)o.licenceNo=m2[1]}
+  if(!o.cardNo){
+    // unlabelled: a 9-11 char near-numeric run that is not the licence number, a phone or a date · card prints near the bottom so take the last hit
+    var cands=[];var cm;var cre=/\b([A-Z0-9][A-Z0-9 ]{7,12}[A-Z0-9])\b/g;
+    while((cm=cre.exec(up))){
+      var v=cm[1].replace(/ /g,&quot;&quot;);
+      if(v.length&lt;9||v.length&gt;11)continue;
+      if(((v.match(/[A-Z]/g)||[]).length)&gt;2)continue;
+      if(/^(04|05|61|00)/.test(v))continue;
+      if(o.licenceNo&amp;&amp;v===o.licenceNo)continue;
+      cands.push(v);
+    }
+    if(cands.length){o.cardNo=cands[cands.length-1];o.cardLoose=true}
+  }
   var ad=g(/(\d+[A-Z0-9 ,\/\-]*?\b(?:ST|STREET|RD|ROAD|AVE|AVENUE|DR|DRIVE|CT|COURT|CRES|CRESCENT|WAY|PL|PLACE|PDE|PARADE|CL|CLOSE|TCE|TERRACE|BLVD|HWY|CCT|LOOP|ESP)\b[\s\S]{0,50}?(?:QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s*\d{4})/);
   if(ad)o.address=ad.replace(/\s+/g,&quot; &quot;).trim();
   return o;
@@ -3407,7 +3421,7 @@ function parsePayslip(text){
   var badEmp=function(s){
     if(!s)return true;
     if(/[@]|WWW\.|HTTPS?:|\.COM|\.NET|\.ORG/.test(s))return true;
-    if(/^(PAY ?SLIP|PAY ADVICE|TAX INVOICE|REMITTANCE|STATEMENT|EMPLOYEE|PAYSLIP|SUPERANNUATION|MEMBERSHIP|BANK TRANSFERS?)\b/.test(s.trim()))return true;
+    if(/^(PAY|PERIOD|PERSON|EMPLOYEE|PAYSLIP|TOTAL|GROSS|NET|TAX|TAXABLE|SUPER|SUPERANNUATION|ASSIGNMENT|CLASSIFICATION|EARNINGS?|DEDUCTIONS?|BANK|BSB|ACCOUNT|AMOUNT|DATE|HOURS|RATE|UNITS|STATUS|LOCATION|POSITION|MEMBERSHIP|MESSAGES|PAGE|YTD|PRIOR|VACATION|FORTNIGHTLY|WEEKLY|MONTHLY|ADJUSTMENT|UNAUTHORISED|SHORT|SCHOOL|TEMPORARY|REMITTANCE|STATEMENT|TAX INVOICE)\b/.test(s.trim()))return true;
     if(/BUILDING SOCIETY|CREDIT UNION|\bBANK\b|\bBSB\b|\bCBUS\b|AUSTRALIAN ?SUPER|HESTA|HOSTPLUS|\bREST SUPER\b/.test(s))return true;
     if(!/[A-Z]{3}/.test(s))return true;
     // a bare legal suffix (&quot;LTD&quot; on its own wrapped line) is not a name
@@ -3419,7 +3433,7 @@ function parsePayslip(text){
   if(badEmp(emp))emp=null;
   // government employers · departments and state agencies have no Pty Ltd
   if(!emp){var dep=up.match(/\b(DEPARTMENT OF [A-Z][A-Z &amp;]{2,40})/);if(dep)emp=dep[1].trim()}
-  if(!emp){var gv=up.match(/\b(NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b[\s|]*GOVERNMENT[\s|]*\n?\s*(EDUCATION|HEALTH|TRANSPORT|POLICE|JUSTICE|COMMUNITIES|TREASURY|PLANNING|CUSTOMER SERVICE)\b/);if(gv)emp=gv[1]+&quot; &quot;+gv[2]}
+  if(!emp){var gv=up.match(/\b(NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b(?:[\s|]*GOVERNMENT)?[\s|\n]{0,6}(EDUCATION|HEALTH|TRANSPORT|POLICE|JUSTICE|COMMUNITIES|TREASURY|PLANNING|CUSTOMER SERVICE)\b/);if(gv)emp=gv[1]+&quot; &quot;+gv[2]}
   if(!emp){var lm=up.match(/^\s*([^\n]{0,70}\b(?:PTY\.?\s*LTD|PTY\s*LIMITED|LIMITED|LTD|PTY|CORPORATION|INCORPORATED|CO-?OPERATIVE|ASSOCIATION|FOUNDATION)\b\.?[^\n]{0,20})$/m);if(lm&amp;&amp;!badEmp(lm[1]))emp=lm[1].trim()}
   if(!emp&amp;&amp;o.abn){var idx=up.indexOf(&quot;ABN&quot;);var before=up.slice(Math.max(0,idx-120),idx).split(&quot;\n&quot;).map(function(s){return s.trim()}).filter(function(s){return !badEmp(s)});if(before.length)emp=before[before.length-1]}
   if(emp)o.employer=emp.replace(/\s+/g,&quot; &quot;).replace(/\s*(ACN|ABN).*$/,&quot;&quot;).trim();
@@ -3546,15 +3560,20 @@ function compare(cd,docs,raw){
       rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:fl?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fl?&quot;match&quot;:&quot;check&quot;,note:fl?null:&quot;Eyeball the licence number.&quot;});
     }
   }
-  // Card number
+  // Card number · never silent
+  var looseC=lic&amp;&amp;lic.cardLoose?&quot; Read loosely off the doc · confirm against the card.&quot;:&quot;&quot;;
+  if(lic&amp;&amp;!lic.cardNo&amp;&amp;!zx.cardNo){
+    rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Type it off the card into Zink · lenders use it for ID verification.&quot;});
+    warns.push(&quot;Card number could not be read · type it off the card&quot;);
+  }
   if(lic&amp;&amp;(lic.cardNo||zx.cardNo)){
     if(lic.cardNo&amp;&amp;zx.cardNo){
       var sameC=lic.cardNo.toUpperCase()===zx.cardNo.toUpperCase();
       rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:lic.cardNo,status:sameC?&quot;match&quot;:&quot;mismatch&quot;,
-        note:sameC?null:&quot;Card numbers differ · fix Zink to what is printed on the card.&quot;});
+        note:sameC?(looseC.trim()||null):(&quot;Card numbers differ · fix Zink to what is printed on the card.&quot;+looseC)});
       if(!sameC)warns.push(&quot;Card number mismatch · doc &quot;+lic.cardNo+&quot;, Zink &quot;+zx.cardNo);
     }else if(lic.cardNo){
-      rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:lic.cardNo,status:&quot;add&quot;});
+      rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:lic.cardNo,status:&quot;add&quot;,note:looseC.trim()||null});
       adds.push(&quot;Card no: &quot;+lic.cardNo);
     }else{
       var fc=allText.indexOf(zx.cardNo.toUpperCase())&gt;=0;
@@ -3604,27 +3623,34 @@ function compare(cd,docs,raw){
   // Employer · extracted line, then token search across the payslip text
   if(pay){
     var payText=docs.filter(function(d){return d.kind===&quot;payslip&quot;}).map(function(d){return(d.text||&quot;&quot;).toUpperCase()}).join(&quot;\n&quot;);
+    // a payslip &quot;employer&quot; that is actually the client's own name is an unreadable letterhead, not a finding
+    var empDoc=pay.employer;
+    if(empDoc&amp;&amp;cd.clientName&amp;&amp;normName(empDoc)&amp;&amp;normName(empDoc)===normName(cd.clientName))empDoc=null;
     if(cd.employer){
       var toksE=empTokens(cd.employer);
       if(!toksE.length)toksE=normName(cd.employer).split(&quot; &quot;).filter(function(t){return t.length&gt;=4&amp;&amp;!GENERIC_TOKENS[t]});
       var hitsE=toksE.filter(function(t){return payText.indexOf(t)&gt;=0});
       var tokenMatch=toksE.length&gt;0&amp;&amp;(hitsE.length&gt;=2||hitsE.length===toksE.length||(hitsE.length&gt;=1&amp;&amp;hitsE.length*2&gt;=toksE.length&amp;&amp;hitsE.some(function(t){return t.length&gt;=8})));
       var strict=false;
-      if(pay.employer){
-        var a2=normEmp(cd.employer),b2=normEmp(pay.employer);
+      if(empDoc){
+        var a2=normEmp(cd.employer),b2=normEmp(empDoc);
         strict=!!(a2&amp;&amp;b2&amp;&amp;(a2.indexOf(b2)&gt;=0||b2.indexOf(a2)&gt;=0));
       }
       if(strict||tokenMatch){
-        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:pay.employer||(&quot;Zink employer name found in the payslip text&quot;),status:&quot;match&quot;,
+        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc||(&quot;Zink employer name found in the payslip text&quot;),status:&quot;match&quot;,
           note:strict?null:&quot;Wording differs but the Zink employer name appears in the payslip.&quot;});
+      }else if(empDoc){
+        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc,status:&quot;mismatch&quot;,
+          note:&quot;Payslip employer differs from Zink · fix Zink to the legal name on the payslip, that's what the lender verifies.&quot;});
+        warns.push(&quot;Employer mismatch · payslip says &quot;+empDoc+&quot;, Zink says &quot;+cd.employer);
       }else{
-        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:pay.employer||&quot;Could not read the employer line&quot;,status:pay.employer?&quot;mismatch&quot;:&quot;check&quot;,
-          note:pay.employer?&quot;Payslip employer differs from Zink · fix Zink to the legal name on the payslip, that's what the lender verifies.&quot;:&quot;Could not find the Zink employer name in the payslip · open it and check the letterhead.&quot;});
-        if(pay.employer)warns.push(&quot;Employer mismatch · payslip says &quot;+pay.employer+&quot;, Zink says &quot;+cd.employer);
+        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:&quot;Could not read the employer name off the payslip&quot;,status:&quot;check&quot;,
+          note:pay.abn?(&quot;The ABN &quot;+pay.abn+&quot; read cleanly · punch it into abr.business.gov.au and check the legal name against Zink.&quot;):&quot;Open the payslip and check the letterhead against Zink by eye.&quot;});
+        warns.push(&quot;Employer name unreadable on the payslip · verify&quot;+(pay.abn?&quot; via ABN &quot;+pay.abn:&quot; by eye&quot;));
       }
-    }else if(pay.employer){
-      rows.push({field:&quot;Employer&quot;,zink:&quot;— not in Zink&quot;,doc:pay.employer,status:&quot;add&quot;});
-      adds.push(&quot;Employer: &quot;+pay.employer);
+    }else if(empDoc){
+      rows.push({field:&quot;Employer&quot;,zink:&quot;— not in Zink&quot;,doc:empDoc,status:&quot;add&quot;});
+      adds.push(&quot;Employer: &quot;+empDoc);
     }
   }
   if(pay&amp;&amp;pay.abn){rows.push({field:&quot;Employer ABN&quot;,zink:&quot;—&quot;,doc:pay.abn,status:&quot;add&quot;});adds.push(&quot;Employer ABN: &quot;+pay.abn)}

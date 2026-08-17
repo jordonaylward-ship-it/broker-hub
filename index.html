@@ -14991,6 +14991,25 @@ bhfApplyHandoff();
   .chip.ok{background:var(--green-soft); color:var(--green);}
   .chip.blue{background:var(--blue-soft); color:var(--blue);}
   .chip.red{background:var(--red-soft); color:var(--red);}
+  .nextline{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;}
+  .nextline .nk{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .nextline .nv{font-size:15px;font-weight:700;}
+  .nextline .ns{font-size:12px;color:var(--muted);}
+  .rwc{margin:12px 0 4px;padding:14px 14px 8px;background:var(--card);border:1px solid var(--line);border-radius:12px;}
+  .rwc .rwk{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .rwc .whatif{display:flex;gap:6px;align-items:center;font-size:11.5px;color:var(--muted);}
+  .rwc .whatif input{width:86px;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:12px;}
+  .dodo{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;margin-top:12px;}
+  @media(max-width:640px){.dodo{grid-template-columns:1fr;}}
+  .dob{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+  .dob .dk{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .task{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px;line-height:1.45;}
+  .task:last-child{border-bottom:none;}
+  .task input{margin-top:3px;accent-color:var(--green);}
+  .task.done label{text-decoration:line-through;color:var(--muted);}
+  .task .due{font-size:11px;color:var(--muted);display:block;}
+  .tick{font-size:12.5px;color:var(--green);padding:4px 0;}
+  .tick.dim{color:var(--muted);}
   .chip .dot{width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.7;}
 
   /* ── RESERVE / TOTAL TO HOLD ── */
@@ -15253,16 +15272,20 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
       &lt;div class=&quot;vsub&quot; id=&quot;verdictSub&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;payflag&quot; id=&quot;payFlag&quot; style=&quot;display:none&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;chips&quot;&gt;
-      &lt;span class=&quot;chip ok&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;RCTI $605.87 RECEIVED ✓ · Ausloans advance cleared · $0 owing&lt;/span&gt;
-      &lt;span class=&quot;chip ok&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;15 Aug: $1,000 paid off the Q4 BAS by BPAY ✓ · PRN 002916795205429560&lt;/span&gt;
-      &lt;span class=&quot;chip red&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;⚠ $2,188 BAS left · call ATO 13 11 42 on the 21st–22nd to fold it in · before the 25th&lt;/span&gt;
-      &lt;span class=&quot;chip red&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;⚠ Thin after the 20th: ~$249 left · Claude $309 would overdraw it&lt;/span&gt;
-      &lt;span class=&quot;chip amber&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;QuickFee $229.56 auto-debits the 20th&lt;/span&gt;
-      &lt;span class=&quot;chip amber&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;Fixed floor ~$1,480/mo from Sep · BAS plan rises $418 → ~$620&lt;/span&gt;
-      &lt;span class=&quot;chip ok&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;ASIC annual statement signed ✓ · $342 fee due 30 Sep&lt;/span&gt;
-      &lt;span class=&quot;chip amber&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;GMD proposals to sign · $429/mo + $429 invoices queued for next cash in&lt;/span&gt;
-      &lt;span class=&quot;chip ok&quot;&gt;&lt;span class=&quot;dot&quot;&gt;&lt;/span&gt;FY26 not lodged yet · ~$247 refund once the engagement is signed&lt;/span&gt;
+    &lt;div class=&quot;nextline&quot;&gt;&lt;span class=&quot;nk&quot;&gt;Next&lt;/span&gt; &lt;span class=&quot;nv&quot; id=&quot;nxV&quot;&gt;·&lt;/span&gt; &lt;span class=&quot;ns&quot; id=&quot;nxS&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;rwc&quot;&gt;
+      &lt;div class=&quot;rwk&quot;&gt;&lt;span&gt;Cash runway · to end of month&lt;/span&gt;
+        &lt;span class=&quot;whatif&quot;&gt;expecting &lt;input id=&quot;expAmt&quot; type=&quot;number&quot; inputmode=&quot;decimal&quot; placeholder=&quot;$ in&quot;&gt; on &lt;input id=&quot;expDay&quot; type=&quot;number&quot; min=&quot;18&quot; max=&quot;31&quot; placeholder=&quot;day&quot;&gt;&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div id=&quot;runway&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;dodo&quot;&gt;
+      &lt;div class=&quot;dob&quot;&gt;&lt;div class=&quot;dk&quot;&gt;Do · this week&lt;/div&gt;&lt;div id=&quot;doList&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;dob&quot;&gt;&lt;div class=&quot;dk&quot;&gt;Done&lt;/div&gt;&lt;div id=&quot;doneList&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;tick dim&quot; style=&quot;margin-top:4px;&quot;&gt;Full detail lives in the sections below · tap to open.&lt;/div&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 
@@ -15598,6 +15621,143 @@ function render(){
 inp.addEventListener('input', ()=&gt;{ try{ localStorage.setItem(KEY, inp.value); }catch(e){} render(); });
 gstInp.addEventListener('input', ()=&gt;{ try{ localStorage.setItem(GST_KEY, gstInp.value); }catch(e){} render(); });
 render();
+
+// ══ ONE SOURCE OF TRUTH · every money event lives here and nowhere else ══
+// kind: in | out | call | deadline   ·   done events feed the Done list, dated ones feed the chart
+const EVENTS = [
+ {id:'rcti',    d:'2026-08-15', amt:+605.87, label:'RCTI landed',                    kind:'in',       done:true},
+ {id:'bas1000', d:'2026-08-15', amt:-1000,   label:'$1,000 off the Q4 BAS · BPAY',   kind:'out',      done:true, note:'PRN 002916795205429560'},
+ {id:'quickfee',d:'2026-08-20', amt:-229.56, label:'QuickFee auto-debit',            kind:'out'},
+ {id:'atocall', d:'2026-08-21', amt:0,       label:'ATO 13 11 42 · fold $2,188 in',  kind:'call'},
+ {id:'basdue',  d:'2026-08-25', amt:0,       label:'Q4 BAS hard deadline',           kind:'deadline'},
+];
+const RISK = {amt:309, label:'Claude $309 if it debits before money lands', fromDay:20};
+const TASKS = [
+ {id:'t_cash', label:'Money in before the 20th — or pause the Claude sub', due:'hard · account hits ~$249'},
+ {id:'t_ato',  label:'Call ATO 13 11 42 · fold the $2,188 into the plan',  due:'21st–22nd · before the 25th'},
+ {id:'t_gmd',  label:'Sign the GMD proposals',                              due:'triggers FY26 lodgement + ~$247 refund'},
+];
+const DONE_NOTES = ['RCTI $605.87 in · 15th','$1,000 off the BAS · 15th ✓ PRN …9560','10 Aug plan debits · both cleared','ASIC statement signed · fee 30 Sep'];
+
+const TKEY='ja_tasks_v1', EKEY='ja_expect_v1';
+let taskState={}; try{ taskState=JSON.parse(localStorage.getItem(TKEY))||{}; }catch(e){}
+function saveTasks(){ try{ localStorage.setItem(TKEY, JSON.stringify(taskState)); }catch(e){} }
+
+function renderTasks(){
+  const host=document.getElementById('doList'); if(!host) return;
+  host.innerHTML=TASKS.map(t=&gt;{
+    const on=!!taskState[t.id];
+    return '&lt;div class=&quot;task'+(on?' done':'')+'&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ck_'+t.id+'&quot; '+(on?'checked':'')+'&gt;'+
+      '&lt;label for=&quot;ck_'+t.id+'&quot;&gt;'+t.label+'&lt;span class=&quot;due&quot;&gt;'+t.due+'&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;';
+  }).join('');
+  TASKS.forEach(t=&gt;{
+    const el=document.getElementById('ck_'+t.id);
+    if(el) el.addEventListener('change',()=&gt;{ taskState[t.id]=el.checked; saveTasks(); renderTasks(); });
+  });
+  const dn=document.getElementById('doneList');
+  if(dn) dn.innerHTML=DONE_NOTES.map(x=&gt;'&lt;div class=&quot;tick&quot;&gt;✓ '+x+'&lt;/div&gt;').join('');
+}
+
+function parseLocal(iso){ const q=iso.split('-'); return new Date(+q[0],+q[1]-1,+q[2]); }
+function dayKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function nextEvent(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const up=EVENTS.filter(e=&gt;!e.done&amp;&amp;parseLocal(e.d)&gt;=now).sort((a,b)=&gt;parseLocal(a.d)-parseLocal(b.d));
+  return up[0]||null;
+}
+function renderNext(){
+  const e=nextEvent(); const v=document.getElementById('nxV'), sub=document.getElementById('nxS');
+  if(!v) return;
+  if(!e){ v.textContent='Quiet'; sub.textContent='nothing scheduled this month'; return; }
+  const d=parseLocal(e.d), ds=d.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+  v.textContent=(e.amt&lt;0?'−'+fmt(-e.amt).replace('$','$'):e.amt&gt;0?'+'+fmt(e.amt):'☎')+' · '+e.label;
+  v.style.color=e.kind==='deadline'||e.amt&lt;0?'var(--red)':e.kind==='call'?'var(--gold)':'var(--green)';
+  sub.textContent=ds;
+}
+
+function getExpect(){
+  try{ const r=JSON.parse(localStorage.getItem(EKEY)); if(r) return r; }catch(e){}
+  return {amt:'',day:''};
+}
+function renderRunway(){
+  const host=document.getElementById('runway'); if(!host) return;
+  const now=new Date(); now.setHours(0,0,0,0);
+  const start=now, end=new Date(2026,7,31);
+  const days=Math.max(6,Math.round((end-start)/86400000));
+  const b0=inp.value===''?null:parseFloat(inp.value);
+  const bal=isFinite(b0)&amp;&amp;b0!==null?b0:DEFAULT_BALANCE;
+  const ea=parseFloat(document.getElementById('expAmt').value), ed=parseInt(document.getElementById('expDay').value);
+  const hasExp=isFinite(ea)&amp;&amp;ea&gt;0&amp;&amp;isFinite(ed)&amp;&amp;ed&gt;=now.getDate()&amp;&amp;ed&lt;=31;
+  // walk day by day
+  const pts=[]; let run=bal;
+  for(let k=0;k&lt;=days;k++){
+    const d=new Date(start.getTime()+k*86400000);
+    EVENTS.forEach(e=&gt;{ if(!e.done&amp;&amp;e.amt&amp;&amp;e.d===dayKey(d)) run+=e.amt; });
+    if(hasExp&amp;&amp;d.getDate()===ed&amp;&amp;d.getMonth()===7) run+=ea;
+    pts.push({d,v:run});
+  }
+  const W=640,H=170,L=44,R=10,T=26,B=34;
+  const maxV=Math.max(600,...pts.map(p=&gt;p.v))*1.12;
+  const minV=Math.min(-360,...pts.map(p=&gt;p.v-RISK.amt));
+  const x=k=&gt;L+(W-L-R)*k/days;
+  const y=v=&gt;T+(H-T-B)*(maxV-v)/(maxV-minV);
+  const xd=d=&gt;x(Math.round((d-start)/86400000));
+  let sv='&lt;svg viewBox=&quot;0 0 '+W+' '+H+'&quot; width=&quot;100%&quot; role=&quot;img&quot; aria-label=&quot;Projected balance to end of month&quot;&gt;';
+  sv+='&lt;line x1=&quot;'+L+'&quot; y1=&quot;'+y(0)+'&quot; x2=&quot;'+(W-R)+'&quot; y2=&quot;'+y(0)+'&quot; stroke=&quot;var(--line)&quot; stroke-width=&quot;1&quot; stroke-dasharray=&quot;3 4&quot;/&gt;';
+  sv+='&lt;text x=&quot;'+(L-6)+'&quot; y=&quot;'+(y(0)+4)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--muted)&quot; text-anchor=&quot;end&quot;&gt;$0&lt;/text&gt;';
+  // risk band: from RISK.fromDay to end, below the line at that point
+  const riskStart=new Date(2026,7,Math.max(RISK.fromDay,now.getDate()));
+  if(riskStart&lt;=end){
+    sv+='&lt;rect x=&quot;'+xd(riskStart)+'&quot; y=&quot;'+y(0)+'&quot; width=&quot;'+((W-R)-xd(riskStart))+'&quot; height=&quot;'+(H-B-y(0))+'&quot; fill=&quot;var(--red)&quot; opacity=&quot;0.10&quot;/&gt;';
+    const after=pts.find(p=&gt;p.d.getTime()&gt;=riskStart.getTime());
+    if(after&amp;&amp;after.v-RISK.amt&lt;0){
+      sv+='&lt;text x=&quot;'+(xd(riskStart)+6)+'&quot; y=&quot;'+(y(0)+14)+'&quot; font-size=&quot;10.5&quot; fill=&quot;var(--red)&quot;&gt;'+RISK.label+'&lt;/text&gt;';
+    }
+  }
+  // the line
+  let dstr='';
+  pts.forEach((p,i)=&gt;{ const px=x(i),py=y(p.v); dstr+=(i? ' L':'M')+px+' '+py; if(i&amp;&amp;pts[i-1].v!==p.v){} });
+  sv+='&lt;path d=&quot;'+dstr+'&quot; fill=&quot;none&quot; stroke=&quot;var(--green)&quot; stroke-width=&quot;2.5&quot; stroke-linejoin=&quot;round&quot;/&gt;';
+  // event dots + labels
+  EVENTS.filter(e=&gt;!e.done&amp;&amp;parseLocal(e.d)&gt;=start&amp;&amp;parseLocal(e.d)&lt;=end).forEach(e=&gt;{
+    const d=parseLocal(e.d), px=xd(d);
+    const pt=pts[Math.round((d-start)/86400000)];
+    const py=e.kind==='deadline'?T:y(pt?pt.v:0);
+    if(e.kind==='deadline'){
+      sv+='&lt;line x1=&quot;'+px+'&quot; y1=&quot;'+T+'&quot; x2=&quot;'+px+'&quot; y2=&quot;'+(H-B)+'&quot; stroke=&quot;var(--red)&quot; stroke-width=&quot;1.5&quot;/&gt;';
+      sv+='&lt;text x=&quot;'+(px-4)+'&quot; y=&quot;'+(T-6)+'&quot; font-size=&quot;10.5&quot; fill=&quot;var(--red)&quot; text-anchor=&quot;end&quot;&gt;BAS 25th&lt;/text&gt;';
+    } else if(e.kind==='call'){
+      sv+='&lt;circle cx=&quot;'+px+'&quot; cy=&quot;'+py+'&quot; r=&quot;4.5&quot; fill=&quot;var(--gold)&quot;&gt;&lt;title&gt;'+e.label+'&lt;/title&gt;&lt;/circle&gt;';
+      sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(py-10)+'&quot; font-size=&quot;10.5&quot; fill=&quot;var(--gold)&quot; text-anchor=&quot;middle&quot;&gt;☎ ATO&lt;/text&gt;';
+    } else {
+      sv+='&lt;circle cx=&quot;'+px+'&quot; cy=&quot;'+py+'&quot; r=&quot;4.5&quot; fill=&quot;'+(e.amt&lt;0?'var(--gold)':'var(--green)')+'&quot;&gt;&lt;title&gt;'+e.label+'&lt;/title&gt;&lt;/circle&gt;';
+      sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(py-10)+'&quot; font-size=&quot;10.5&quot; fill=&quot;'+(e.amt&lt;0?'var(--gold)':'var(--green)')+'&quot; text-anchor=&quot;middle&quot;&gt;'+(e.amt&lt;0?'−':'+')+fmt(Math.abs(e.amt))+'&lt;/text&gt;';
+    }
+    sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(H-B+14)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--muted)&quot; text-anchor=&quot;middle&quot;&gt;'+d.getDate()+'&lt;/text&gt;';
+  });
+  if(hasExp){
+    const px=x(pts.findIndex(p=&gt;p.d.getDate()===ed&amp;&amp;p.d.getMonth()===7));
+    if(px&gt;=L){ sv+='&lt;circle cx=&quot;'+px+'&quot; cy=&quot;'+y(pts[pts.findIndex(p=&gt;p.d.getDate()===ed)].v)+'&quot; r=&quot;4.5&quot; fill=&quot;var(--green)&quot;/&gt;&lt;text x=&quot;'+px+'&quot; y=&quot;'+(H-B+26)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--green)&quot; text-anchor=&quot;middle&quot;&gt;+'+fmt(ea)+'&lt;/text&gt;'; }
+  }
+  // start + end balances
+  sv+='&lt;circle cx=&quot;'+x(0)+'&quot; cy=&quot;'+y(pts[0].v)+'&quot; r=&quot;4.5&quot; fill=&quot;var(--ink)&quot;/&gt;';
+  sv+='&lt;text x=&quot;'+x(0)+'&quot; y=&quot;'+(y(pts[0].v)-10)+'&quot; font-size=&quot;11&quot; font-weight=&quot;700&quot; fill=&quot;var(--ink)&quot; text-anchor=&quot;middle&quot;&gt;'+fmt(pts[0].v)+'&lt;/text&gt;';
+  const lastP=pts[pts.length-1];
+  sv+='&lt;text x=&quot;'+(W-R)+'&quot; y=&quot;'+(y(lastP.v)-8)+'&quot; font-size=&quot;11&quot; font-weight=&quot;700&quot; fill=&quot;'+(lastP.v&lt;0?'var(--red)':lastP.v&lt;300?'var(--gold)':'var(--green)')+'&quot; text-anchor=&quot;end&quot;&gt;'+fmt(lastP.v)+' at the 31st&lt;/text&gt;';
+  sv+='&lt;/svg&gt;';
+  host.innerHTML=sv;
+}
+
+const expAmtEl=document.getElementById('expAmt'), expDayEl=document.getElementById('expDay');
+(function(){ const ex=getExpect(); if(expAmtEl&amp;&amp;ex.amt!==''){expAmtEl.value=ex.amt;} if(expDayEl&amp;&amp;ex.day!==''){expDayEl.value=ex.day;} })();
+function saveExpect(){ try{ localStorage.setItem(EKEY, JSON.stringify({amt:expAmtEl.value,day:expDayEl.value})); }catch(e){} }
+if(expAmtEl) expAmtEl.addEventListener('input',()=&gt;{ saveExpect(); renderRunway(); });
+if(expDayEl) expDayEl.addEventListener('input',()=&gt;{ saveExpect(); renderRunway(); });
+
+const _origRender=render;
+render=function(){ _origRender(); renderRunway(); renderNext(); };
+renderTasks(); renderRunway(); renderNext();
+
 
 // ── Countdown to the 25 Aug Q4 BAS hard deadline ──
 (function(){

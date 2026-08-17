@@ -3361,7 +3361,23 @@ async function fileToText(file,onStatus){
   if(onStatus)onStatus(&quot;Reading the photo · about 20 seconds&quot;);
   await ensureOcr();
   var rr=await Tesseract.recognize(file,&quot;eng&quot;);
-  return{text:rr.data.text,ocr:true};
+  var t1=rr.data.text||&quot;&quot;;
+  // Laminated cards: the coloured DOB/expiry band often defeats the first read.
+  // Sparse photo with no 4-digit year -&gt; one high-contrast re-read, merge the text. Never replaces the first read.
+  if(t1.replace(/\s/g,&quot;&quot;).length&lt;800&amp;&amp;!/(19|20)\d{2}/.test(t1)){
+    try{
+      if(onStatus)onStatus(&quot;Second read for the dates · high contrast pass&quot;);
+      var img=await createImageBitmap(file);
+      var cv2=document.createElement(&quot;canvas&quot;);cv2.width=img.width;cv2.height=img.height;
+      var cx2=cv2.getContext(&quot;2d&quot;);cx2.drawImage(img,0,0);
+      var idata=cx2.getImageData(0,0,cv2.width,cv2.height),px=idata.data;
+      for(var pi=0;pi&lt;px.length;pi+=4){var lum=0.299*px[pi]+0.587*px[pi+1]+0.114*px[pi+2];var bw=lum&lt;110?0:255;px[pi]=bw;px[pi+1]=bw;px[pi+2]=bw}
+      cx2.putImageData(idata,0,0);
+      var r3=await Tesseract.recognize(cv2,&quot;eng&quot;);
+      if(r3.data.text)t1=t1+String.fromCharCode(10)+r3.data.text;
+    }catch(e2){}
+  }
+  return{text:t1,ocr:true};
 }
 
 /* ── helpers ── */
@@ -3406,7 +3422,7 @@ function parseLicence(text){
   var o={type:&quot;licence&quot;};
   var g=function(re){var m=up.match(re);return m?m[1].trim():null};
   var cleanNum=function(s,min,max){if(!s)return null;var v=s.replace(/[^A-Z0-9]/gi,&quot;&quot;);return(v.length&gt;=min&amp;&amp;v.length&lt;=max)?v:null};
-  o.licenceNo=cleanNum(g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!0[45]\d{8}\b)([0-9][0-9 ]{4,12}[0-9])\b/),6,10);
+  o.licenceNo=cleanNum(g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!04\d{8}\b)([0-9][0-9 ]{4,12}[0-9])\b/),6,10);
   o.cardNo=cleanNum(g(/CARD\s*(?:NO|NUMBER|N0)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/),8,11);
   if(!o.cardNo){var fz=up.match(/\bC[A-Z]{2}D\s*(?:N[O0]|NUMBER)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/);if(fz)o.cardNo=cleanNum(fz[1],8,11)}
   o.dob=g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
@@ -3432,7 +3448,7 @@ function parseLicence(text){
     }
     if(best){o.expiry=best.s;o.expiryLoose=true}
   }
-  if(!o.licenceNo){var m2=up.match(/\b(?!0[45]\d{7,8}\b)(\d{8,9})\b/);if(m2)o.licenceNo=m2[1]}
+  if(!o.licenceNo){var m2=up.match(/\b(?!04\d{7,8}\b)(\d{8,9})\b/);if(m2)o.licenceNo=m2[1]}
   if(!o.cardNo){
     // unlabelled: a 9-11 char near-numeric run that is not the licence number, a phone or a date · card prints near the bottom so take the last hit
     var cands=[];var cm;var cre=/\b([A-Z0-9][A-Z0-9 ]{7,12}[A-Z0-9])\b/g;
@@ -3481,15 +3497,29 @@ function parsePayslip(text){
     var pm=up.match(/PERIOD[^0-9]{0,25}(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.](?:19|20)?\d{2})[^0-9]{0,15}(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.](?:19|20)?\d{2})/);
     if(pm){var a=normDate(pm[1]),b=normDate(pm[2]);if(a&amp;&amp;b){var days=Math.round((b.t-a.t)/86400000)+1;o.frequency=days&lt;=9?&quot;WEEKLY&quot;:days&lt;=16?&quot;FORTNIGHTLY&quot;:days&lt;=32?&quot;MONTHLY&quot;:null}}
   }
+  if(!o.frequency){
+    // Column layouts detach the &quot;Pay Period&quot; label from its dates · a bare &quot;X to Y&quot; date range anywhere still gives the cycle.
+    var rg=up.match(/(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.](?:19|20)?\d{2})\s*(?:TO|\u2013|\u2014|-)\s*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.](?:19|20)?\d{2})/);
+    if(rg){var ra=normDate(rg[1]),rb=normDate(rg[2]);if(ra&amp;&amp;rb){var rdy=Math.round((rb.t-ra.t)/86400000)+1;o.frequency=rdy&lt;=9?&quot;WEEKLY&quot;:rdy&lt;=16?&quot;FORTNIGHTLY&quot;:rdy&lt;=32?&quot;MONTHLY&quot;:null}}
+  }
   var YTD_RE=/YTD|YEAR TO DATE|Y\.T\.D/;
   function bestNonYtd(label){
-    var re=new RegExp(label+&quot;[^0-9\\-]{0,25}\\$?\\s*([\\d,]+\\.\\d{2})&quot;,&quot;g&quot;);
+    var re=new RegExp(label+&quot;([^0-9\\-]{0,25})\\$?\\s*([\\d,]+\\.\\d{2})&quot;,&quot;g&quot;);
     var first=null,m;
     while((m=re.exec(up))){
-      var pre=up.slice(Math.max(0,m.index-30),m.index);
+      var pre=up.slice(Math.max(0,m.index-30),m.index).split(String.fromCharCode(10)).pop();
       var post=up.slice(m.index+m[0].length,m.index+m[0].length+18).split(String.fromCharCode(10))[0];
       if(YTD_RE.test(pre)||YTD_RE.test(post))continue;
-      var v=moneyNum(m[1]);
+      var v=moneyNum(m[2]);
+      // Column layouts (pdf.js order) render &quot;3,762.00 Net Income&quot; with the YTD column on the NEXT line.
+      // If the captured amount sits on a later line but an amount ends right before the label on the SAME line,
+      // that same-line amount is the this-pay column · take it. Classic &quot;NET 3,900.00&quot; same-line stays untouched.
+      if(m[1].indexOf(String.fromCharCode(10))&gt;=0){
+        var lineStart=up.lastIndexOf(String.fromCharCode(10),m.index)+1;
+        var sameLinePre=up.slice(lineStart,m.index);
+        var pm2=sameLinePre.match(/([\d,]+\.\d{2})\s*$/);
+        if(pm2&amp;&amp;!YTD_RE.test(sameLinePre))v=moneyNum(pm2[1]);
+      }
       if(first==null)first=v;
     }
     return first;
@@ -3501,6 +3531,12 @@ function parsePayslip(text){
   if(ytd.length)o.ytdGross=Math.max.apply(null,ytd);
   o.superAmt=bestNonYtd(&quot;SUPER(?:ANNUATION)?\\b&quot;);
   o.payDate=g(/(?:PAY(?:MENT)?\s*DATE|DATE\s*PAID)[^0-9A-Z]{0,12}(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/);
+  if(!o.payDate){
+    // Label-after-value layouts · latest past date on the slip is the pay date. Read loosely, only feeds recency + latest-slip-wins.
+    var pdBest=null,pdm,pdre=/\b(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.](?:19|20)?\d{2})\b/g;
+    while((pdm=pdre.exec(up))){var nd2=normDate(pdm[1]);if(nd2&amp;&amp;nd2.t&lt;=Date.now()+3*86400000&amp;&amp;(pdBest==null||nd2.t&gt;pdBest.t)){pdBest=nd2;pdBest.raw=pdm[1]}}
+    if(pdBest){o.payDate=pdBest.raw;o.payDateLoose=true}
+  }
   o.phone=g(/(?:PH|PHONE|TEL|CONTACT|MOB(?:ILE)?)[:.\s]{0,4}(\(?0\d[\d\s()\-]{7,12}\d)/);
   return o;
 }
@@ -3524,7 +3560,7 @@ function dateVariants(s){
   var d=normDate(s);if(!d)return[];
   var M=MONTHS[d.mo-1];
   var dd=(&quot;0&quot;+d.d).slice(-2),mm=(&quot;0&quot;+d.mo).slice(-2),y=String(d.y),y2=y.slice(-2);
-  return[dd+&quot;/&quot;+mm+&quot;/&quot;+y,d.d+&quot;/&quot;+d.mo+&quot;/&quot;+y,dd+&quot;-&quot;+mm+&quot;-&quot;+y,dd+&quot;.&quot;+mm+&quot;.&quot;+y,dd+&quot;/&quot;+mm+&quot;/&quot;+y2,dd+&quot; &quot;+M+&quot; &quot;+y,d.d+&quot; &quot;+M+&quot; &quot;+y,dd+M+y];
+  return[dd+&quot;/&quot;+mm+&quot;/&quot;+y,d.d+&quot;/&quot;+d.mo+&quot;/&quot;+y,dd+&quot;-&quot;+mm+&quot;-&quot;+y,dd+&quot;.&quot;+mm+&quot;.&quot;+y,dd+&quot;/&quot;+mm+&quot;/&quot;+y2,dd+&quot; &quot;+M+&quot; &quot;+y,d.d+&quot; &quot;+M+&quot; &quot;+y,dd+M+y,dd+mm+y];
 }
 function foundIn(allText,variants){for(var i=0;i&lt;variants.length;i++){if(allText.indexOf(variants[i].toUpperCase())&gt;=0)return true}return false}
 function normPhone(s){return(s||&quot;&quot;).replace(/[^\d]/g,&quot;&quot;).replace(/^61/,&quot;0&quot;)}
@@ -3540,7 +3576,10 @@ function compare(cd,docs,raw){
   var lic=null,pays=[];
   docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;!lic)lic=d.data;if(d.kind===&quot;payslip&quot;)pays.push(d.data)});
   // merge licence fronts/backs: later licence docs fill gaps
-  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;d.data!==lic&amp;&amp;lic){[&quot;licenceNo&quot;,&quot;cardNo&quot;,&quot;dob&quot;,&quot;expiry&quot;,&quot;address&quot;].forEach(function(k){if(!lic[k]&amp;&amp;d.data[k])lic[k]=d.data[k]})}});
+  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;d.data!==lic&amp;&amp;lic){[&quot;licenceNo&quot;,&quot;cardNo&quot;,&quot;dob&quot;,&quot;expiry&quot;,&quot;address&quot;].forEach(function(k){if(!lic[k]&amp;&amp;d.data[k])lic[k]=d.data[k]});
+    // Front prints the full licence number, the back sticker drops the leading zero · prefer the fuller read when they agree otherwise.
+    if(lic.licenceNo&amp;&amp;d.data.licenceNo&amp;&amp;lic.licenceNo!==d.data.licenceNo&amp;&amp;lic.licenceNo.replace(/^0+/,&quot;&quot;)===d.data.licenceNo.replace(/^0+/,&quot;&quot;)&amp;&amp;d.data.licenceNo.length&gt;lic.licenceNo.length)lic.licenceNo=d.data.licenceNo;
+  }});
   // pick the payslip with the latest pay date, else the first
   var pay=pays[0]||null;
   if(pays.length&gt;1){
@@ -3587,14 +3626,15 @@ function compare(cd,docs,raw){
   if(lic&amp;&amp;(lic.licenceNo||zx.licenceNo)){
     if(lic.licenceNo&amp;&amp;zx.licenceNo){
       var sameL=lic.licenceNo===zx.licenceNo;
-      rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:lic.licenceNo,status:sameL?&quot;match&quot;:&quot;mismatch&quot;,
-        note:sameL?null:&quot;Numbers differ · fix Zink to what is printed on the licence.&quot;});
-      if(!sameL)warns.push(&quot;Licence number mismatch · doc &quot;+lic.licenceNo+&quot;, Zink &quot;+zx.licenceNo);
+      var zeroL=!sameL&amp;&amp;lic.licenceNo.replace(/^0+/,&quot;&quot;)===zx.licenceNo.replace(/^0+/,&quot;&quot;);
+      rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:lic.licenceNo,status:(sameL||zeroL)?&quot;match&quot;:&quot;mismatch&quot;,
+        note:sameL?null:zeroL?&quot;Same number · the card back prints it without the leading zero, Zink matches the front · no action.&quot;:&quot;Numbers differ · fix Zink to what is printed on the licence.&quot;});
+      if(!sameL&amp;&amp;!zeroL)warns.push(&quot;Licence number mismatch · doc &quot;+lic.licenceNo+&quot;, Zink &quot;+zx.licenceNo);
     }else if(lic.licenceNo){
       rows.push({field:&quot;Licence number&quot;,zink:&quot;— not in Zink&quot;,doc:lic.licenceNo,status:&quot;add&quot;});
       adds.push(&quot;Licence no: &quot;+lic.licenceNo);
     }else{
-      var fl=allText.indexOf(zx.licenceNo)&gt;=0;
+      var fl=allText.indexOf(zx.licenceNo)&gt;=0||(zx.licenceNo.replace(/^0+/,&quot;&quot;).length&gt;=6&amp;&amp;allText.indexOf(zx.licenceNo.replace(/^0+/,&quot;&quot;))&gt;=0);
       rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:fl?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fl?&quot;match&quot;:&quot;check&quot;,note:fl?null:&quot;Eyeball the licence number.&quot;});
     }
   }
@@ -9658,7 +9698,7 @@ function calcAll() {
   (function(){
     const el=document.getElementById('assessBasis');
     if(!el)return;
-    const amt=val('loanAmt'), tm=val('loanTerm')||0, bal=val('balloonPct')||0;
+    const amt=val('loanAmount'), tm=val('loanTerm')||0, bal=val('balloonPct')||0;
     const basisSel=document.getElementById('loanBasis');
     const basisTxt=basisSel&amp;&amp;basisSel.selectedIndex&gt;=0?basisSel.options[basisSel.selectedIndex].text:'';
     el.innerHTML='Assessed on &lt;b style=&quot;color:var(--ink);&quot;&gt;$'+(amt?amt.toLocaleString():'0')+'&lt;/b&gt; over &lt;b style=&quot;color:var(--ink);&quot;&gt;'+tm+' months&lt;/b&gt;'+(bal&gt;0?' · balloon &lt;b style=&quot;color:var(--ink);&quot;&gt;'+bal+'%&lt;/b&gt;':'')+(basisTxt?' · '+basisTxt:'')+' · repayments and max-lend columns all use this term · change it in Client Profile → Proposed Loan.';
@@ -13249,9 +13289,9 @@ function bhfApplyHandoff(){
   const set=(id,v)=&gt;{const el=$(id);if(el&amp;&amp;v!=null&amp;&amp;v!==''){if(el.type==='checkbox')el.checked=!!v;else el.value=v;}};
   set('applicantName',d.clientName);
   if(d.dob)set('applicantDob',d.dob);
-  if(d.loanAmount)set('loanAmt',d.loanAmount);
+  if(d.loanAmount)set('loanAmount',d.loanAmount);
   if(d.termMonths)set('loanTerm',d.termMonths);
-  if(d.purchaseCost||d.loanAmount)set('totalPurchasePrice',d.purchaseCost||d.loanAmount);
+  if(d.purchaseCost||d.loanAmount)set('vehiclePrice',d.purchaseCost||d.loanAmount);
   if(d.vehicleYear)set('vehicleYear',d.vehicleYear);
   if(d.creditScore)set('creditScore',d.creditScore);
   if(d.dependants!=null)set('dependents',d.dependants);

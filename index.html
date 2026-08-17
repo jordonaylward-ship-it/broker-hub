@@ -3418,6 +3418,13 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
   .rowhead{display:grid;grid-template-columns:minmax(140px,2fr) minmax(100px,1fr) auto auto;
            gap:10px;align-items:center;padding:10px 12px}
   .rowhead input{padding:7px 10px;border-radius:9px}
+  .pairrow{margin-top:9px;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:26px}
+  .pairrow .chip{cursor:pointer}
+  .chbadge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;
+    border:1px solid var(--line);background:#FEFDFB;color:var(--muted);white-space:nowrap}
+  .chbadge.email{background:var(--info-soft);border-color:var(--info-line);color:var(--info)}
+  .chbadge.sms{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary)}
+  .chbadge.crm{background:var(--butter-soft);border-color:var(--butter-line);color:var(--butter-ink)}
   .rowkeys{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
   .rowbody{border-top:1px dashed var(--line);padding:13px 12px;display:flex;flex-direction:column;gap:11px}
   .rowmeta{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
@@ -3512,8 +3519,11 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
     &lt;div class=&quot;card&quot;&gt;
       &lt;h2&gt;Fill and send&lt;/h2&gt;
       &lt;p class=&quot;sub&quot;&gt;Pick a template, fill the blanks, copy. Works on any computer, no hotkeys needed here.&lt;/p&gt;
+      &lt;label&gt;Channel&lt;/label&gt;
+      &lt;div class=&quot;chips&quot; id=&quot;qkChan&quot; role=&quot;group&quot; aria-label=&quot;Filter by channel&quot; style=&quot;margin-bottom:14px&quot;&gt;&lt;/div&gt;
       &lt;label for=&quot;qkSelect&quot;&gt;Template&lt;/label&gt;
       &lt;select id=&quot;qkSelect&quot; aria-label=&quot;Choose a template&quot;&gt;&lt;/select&gt;
+      &lt;div id=&quot;qkPairs&quot; class=&quot;pairrow&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;qgrid&quot; style=&quot;margin-top:14px&quot;&gt;
         &lt;div&gt;
           &lt;label&gt;The blanks&lt;/label&gt;
@@ -3549,6 +3559,7 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
       &lt;p class=&quot;sub&quot;&gt;Rename anything inline. Open a row to edit the message and its hotkeys. Everything updates live.&lt;/p&gt;
       &lt;div class=&quot;libbar&quot;&gt;
         &lt;input type=&quot;search&quot; id=&quot;libSearch&quot; placeholder=&quot;Search templates…&quot; aria-label=&quot;Search templates&quot;&gt;
+        &lt;div class=&quot;chips&quot; id=&quot;libChan&quot; role=&quot;group&quot; aria-label=&quot;Filter by channel&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;chips&quot; id=&quot;libChips&quot; role=&quot;group&quot; aria-label=&quot;Filter by category&quot;&gt;&lt;/div&gt;
         &lt;button class=&quot;btn small&quot; id=&quot;btnLibNew&quot;&gt;+ New template&lt;/button&gt;
       &lt;/div&gt;
@@ -3667,36 +3678,67 @@ const BRAND = {
 /* ================= STARTER TEMPLATES (shipped set) ================= */
 /* All example content. Rewrite everything in your own voice. */
 const STARTER = [
-{name:&quot;Intro, first contact&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^`&quot;], body:&quot;Hi {First name},\n\nIt's Jordy from Ausloans. I'm one of the senior brokers here at Ausloans and been doing this a long time, so you're in good hands.\n\nI'll be looking after you moving forward to get you the finance you need.\n\nThe process can be fiddly, my job is to make it easier for you. Thank you for completing the links earlier with our admin team.\n\nI will give you a call shortly to see if you're able to get a loan.\n\nOutstanding documents:\n\nSpeak soon\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Follow up 1, checklist&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^1&quot;], body:&quot;Hi, just a quick follow-up on the checklist I sent.\n\nOnce received, I'll start your assessment right away.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Follow up 2, checking in&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^2&quot;], body:&quot;Just checking in. Have you had a chance to see the outstanding in the last message?\n\nA quick update or ETA is fine. If you need a hand, I can help.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Follow up 3, no response&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^3&quot;], body:&quot;I haven't had much response, and that's okay. I'm here when you need me.\n\nI understand life can get in the way. Let me know if you need more time and I'll check back when it suits you.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Follow up 4, closing off&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^4&quot;], body:&quot;Friendly heads up: we'll be closing off the enquiry shortly if I don't hear back, so we don't bother you while you're busy or if you're not looking for finance.\n\nIf you'd like to continue, let me know a good time today between 8:30am and 4:15pm for a quick call.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Approved, final form step&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^5&quot;], body:&quot;All looks good! Let's get you approved!\n\nPlease complete the final step by following link to finalise the lender questions so we can submit your application. From this point if all lenders look correct we can submit and it can take a day for the lender to come back to us:\nhttps://forms.gle/K9CWQ1jWBFGRphJ16\n\nTo avoid having to do it again, please complete correctly and answer all questions.\n\nIf you prefer to do this over the phone instead of the app form text me the word CALL and I will give you a call\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Form link only&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^6&quot;], body:&quot;https://forms.gle/bNkYnfxinjU3vcwM7&quot;},
-{name:&quot;Submitted confirmation&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^7&quot;], body:&quot;All submitted!\n\nWe should hear back from them within the next 24 hours, and I'll keep you updated every step of the way.\n\nAs we start this application process, don't go anywhere else and cancel anything else you have going so it doesn't affect the application form with the lender, everyone uses the same lenders it's the relationship with them that gets the deal across the line.&quot;},
-{name:&quot;Pre approval, Drive Approved&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^8&quot;], body:&quot;GREAT NEWS. After completing your assessment with me as your broker and submitting to the right lender we have found a lender that will lend to you! We just need a car invoice to make it a complete full approval.\n\nYou're pre approved with Ausloans / Drive Approved for {Approved amount}.\n\nAll we need now is for \&quot;Drive Approved\&quot; to send me your car choice and generate an invoice so the lender can see if it books well and we can get the full approval. Please sit tight, someone will be in touch with you!\n\nCongrats again.\n\nThree steps below so we can get the lender to draft contracts for you and get you on the road:\n\n1. \&quot;Drive Approved\&quot; will contact you to go through some car choices which they will provide an invoice and send to me.\n\n2. Insurance. As per your contracts, it is a requirement for your vehicle to be covered with comprehensive insurance at all times whilst under finance.\n\nPlease look out for that to be completed when it's sent to you. This will assist me to pull some quotes with Suncorp Insurance. Nothing will be set up until package options are discussed and I receive your approval. You can organise your own insurance if preferred, just let me know.\n\n3. References: We also require 2 personal references. They will need to confirm they know you.\nPlease be advised they cannot be living with you or each other. Please let them know they will be contacted.\n\nPlease supply their full name:\nWho are they to you:\nTheir phone number:\nTheir full email:\n\nKind regards,\nAusloans\nJordy\nAustralian Credit License 383999&quot;},
-{name:&quot;Insurance, 2 options&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^9&quot;], body:&quot;Subject: Insurance for your new car, 2 ways to do it\n\nHey,\n\nLast piece of the puzzle is comprehensive insurance. The lender won't release funds without it. You've got 2 options:\n\nOption 1: I sort it for you. As a broker I have access to discounted rates through our insurance partners that aren't available going direct, and I handle all the legwork: the quotes, the setup, making sure every detail the lender needs is on the policy, and getting the certificate where it needs to go. One less job for you, and the policy's guaranteed right first time. Just reply \&quot;sort it\&quot; and I'll have quotes to you today.\n\nOption 2: You arrange your own. Completely fine too. If you go this way, follow this checklist exactly. If any detail is wrong, the lender will bounce the certificate and you'll be on the phone to the insurer fixing it, which burns days right when we're trying to settle:\n\n1. Full comprehensive cover\n2. Cover to start from today\n3. Policy in your name: {Full name}\n4. Vehicle listed under the VIN {VIN}, not the registration number\n5. Interested party listed as \&quot;{Lender name}\&quot;\n6. Agreed value or market value is fine. Either works.\n\nOnce it's active, ask them to email you a Certificate of Currency and send it straight to me. That's the trigger for booking your settlement.\n\nWhichever way you go, I just need that certificate. Any questions, call me.\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Settled, congratulations&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^0&quot;], body:&quot;Subject: Congratulations {First name}, it's all done\n\nHi {First name},\n\nCongratulations, your loan has settled and the car is officially yours. The dealership will be in touch with you shortly from here.\n\nOne small favour before you go. So many clients just like you have left a review after getting their car sorted. I've attached a few so you can see what they've said. If you've got 2 minutes, I'd love you to join them.\n\nJust head to the link below, scroll down and click the blue \&quot;Leave a Review\&quot; button. If you can mention Jordon Aylward by name, even better.\n\nhttps://www.ausloans.com.au/car-loan-reviews\n\nAny questions down the track, I'm your broker for the life of the loan, so come straight to me.\n\nEnjoy the car!\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Decline, banking conduct&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^=&quot;], body:&quot;Hey, thanks for sending your documents. After assessing them with the lender, we're running into issues with recent banking conduct. With around 150 lenders on our panel, this has triggered a decline right now.\n\nThe good news: this can improve. If we wait 3 months and submit fresh bank statements, the current conduct will fall off and be replaced with new data, and we can reassess under better circumstances.\n\nIn the meantime, some alternatives to consider:\n\nIs there a friend or family member working who may be able to take out the loan in their name?\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
-{name:&quot;Status list, internal notes&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad8&quot;, &quot;^NumpadUp&quot;], body:&quot;Initial call completed: email &amp; SMS sent\nInitial call completed: email, SMS and voicemail sent, no answer\nBanking, ID and Privacy requested\n\nDay 1 follow up: call + SMS sent\nDay 2 follow up: SMS sent\nDay 3 follow up: SMS sent\n\nDocuments outstanding\nDocuments outstanding: day 1\nDocuments outstanding: day 2\nDocuments outstanding: day 3\n\nReady for assessment\nSubmitted to lender\nSubmitted: awaiting decision\n\nDeclined: credit score\nDeclined: affordability\nDeclined: conduct issues\nDeclined: excessive gambling\nNo contact: multiple attempts via phone and email, automation set for follow up in 90 days&quot;},
-{name:&quot;Suncorp insurance quotes&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad4&quot;, &quot;^NumpadLeft&quot;], body:&quot;Please see below Suncorp Insurance Quotes. Vehicle insured for market value. If you would like gap insurance you will need to organise this on your own. These are all on a monthly basis and may be subject to change.\n\nYour excess is $1,650. If you wish for this to be changed, please advise by sending me an SMS.\n\n*Please see attached picture of the most basic option available, Option A. Please be aware this is the most basic option and may not be the most suitable for your requirements.\n\n\nI can call you to further explain the additional inclusions for Options B, C and D so you can make a final decision on which product is the most suitable for you.\n\nOption A: Suncorp Basic Comprehensive Insurance, $141.43 per month\n\nOption B: Suncorp Basic Comprehensive Insurance with Roadside Assistance, $148.85 per month\n\nOption C: Suncorp Comprehensive Advantages with window and windscreen cover and hire car, $186.09 per month\n\nOption D: Suncorp Comprehensive Advantages with Roadside Assistance, not available at market value\n\n\n*Please see attached a copy of Suncorp's PDS document.&quot;},
-{name:&quot;COC forward, attachments explainer&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad5&quot;, &quot;^NumpadClear&quot;], body:&quot;Hi\n\nPlease take the time to review the attached documents and read through these carefully and if something looks incorrect please don’t hesitate to contact myself to have it rectified.\n\nThe explanation for each attachments is listed below. The Distributor Disclosure Document also details how we may be remunerated, information about Suncorp’s dispute resolution service and how you can contact them if you want to make a complaint.\n\nReminder your first payment will be direct debited out of your account which your income goes into in the next 24/48 hours, this will reoccur each month on or around that date.&quot;},
-{name:&quot;Lender submission email&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad9&quot;, &quot;^NumpadPgUp&quot;], body:&quot;Good Morning,\nPlease see attached credit app and other docs.\n\n1. The applicant is happy with funding even below the requested amount.\n\n2. The applicant can contribute a deposit.\n\n3. Can any loans be paid out for it to service better, if applicable?\n\n4. Applicant has shared expenses.&quot;},
-{name:&quot;Lock in, 2 weeks out&quot;, cat:&quot;Artesian&quot;, hotkeys:[&quot;^+2&quot;, &quot;^+Numpad2&quot;, &quot;^+NumpadDown&quot;], body:&quot;Could you please also confirm:\n1. Sign wording, max 3 words\n\nExamples: \&quot;Birthday Vibes\&quot;, \&quot;Groom Squad\&quot;, \&quot;Cheers Legends\&quot;\n\n2. Package choice\nTo lock in your bottle service / That package comes off your minimum spend, and any remaining credit can be used on the event\n\n\n3. Mixers, pick any 3\nCoke, Coke No Sugar, Sprite, Lemonade, Soda Water, Tonic Water, Ginger Ale, Orange Juice, Pineapple Juice, Cranberry Juice.\n\nYou can check options and inclusions here:\nhttps://artesiancorp.com/cali-beach-bottle-service/\n\nKeen to finalise everything for an amazing day!&quot;},
-{name:&quot;Lock in, 1 week out&quot;, cat:&quot;Artesian&quot;, hotkeys:[&quot;^+1&quot;, &quot;^+Numpad1&quot;, &quot;^+NumpadEnd&quot;], body:&quot;DUE IN VENUE: $xxx\nDeposit via 7R: $xxx\n\nPackage: pending\nMixes: pending\nSign: pending\n\n$xxx min spend +5% grat\nTotal: $xxx\n\nxxx guests / arrival pending&quot;},
-{name:&quot;Enquiry post&quot;, cat:&quot;Artesian&quot;, hotkeys:[&quot;^+0&quot;, &quot;^+Numpad0&quot;, &quot;^+NumpadIns&quot;], body:&quot;Venue:\nWhat it's for:\nGuests:\nDay and date:\nMinimum spend and booth suggestion:&quot;},
-{name:&quot;Email address&quot;, cat:&quot;Utility&quot;, hotkeys:[&quot;^+-&quot;, &quot;^+NumpadSub&quot;], body:&quot;jordon.aylward@ausloans.com.au&quot;}
+{name:&quot;Intro, first contact&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;intro&quot;, hotkeys:[&quot;^`&quot;], body:&quot;Hi {First name},\n\nIt's Jordy from Ausloans. I'm one of the senior brokers here at Ausloans and been doing this a long time, so you're in good hands.\n\nI'll be looking after you moving forward to get you the finance you need.\n\nThe process can be fiddly, my job is to make it easier for you. Thank you for completing the links earlier with our admin team.\n\nI will give you a call shortly to see if you're able to get a loan.\n\nOutstanding documents:\n\nSpeak soon\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 1, checklist&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu1&quot;, hotkeys:[&quot;^1&quot;], body:&quot;Hi, just a quick follow-up on the checklist I sent.\n\nOnce received, I'll start your assessment right away.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 2, checking in&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu2&quot;, hotkeys:[&quot;^2&quot;], body:&quot;Just checking in. Have you had a chance to see the outstanding in the last message?\n\nA quick update or ETA is fine. If you need a hand, I can help.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 3, no response&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu3&quot;, hotkeys:[&quot;^3&quot;], body:&quot;I haven't had much response, and that's okay. I'm here when you need me.\n\nI understand life can get in the way. Let me know if you need more time and I'll check back when it suits you.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 4, closing off&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu4&quot;, hotkeys:[&quot;^4&quot;], body:&quot;Friendly heads up: we'll be closing off the enquiry shortly if I don't hear back, so we don't bother you while you're busy or if you're not looking for finance.\n\nIf you'd like to continue, let me know a good time today between 8:30am and 4:15pm for a quick call.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Approved, final form step&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;approved&quot;, hotkeys:[&quot;^5&quot;], body:&quot;All looks good! Let's get you approved!\n\nPlease complete the final step by following link to finalise the lender questions so we can submit your application. From this point if all lenders look correct we can submit and it can take a day for the lender to come back to us:\nhttps://forms.gle/K9CWQ1jWBFGRphJ16\n\nTo avoid having to do it again, please complete correctly and answer all questions.\n\nIf you prefer to do this over the phone instead of the app form text me the word CALL and I will give you a call\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Form link only&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^6&quot;], body:&quot;https://forms.gle/bNkYnfxinjU3vcwM7&quot;},
+{name:&quot;Submitted confirmation&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;submitted&quot;, hotkeys:[&quot;^7&quot;], body:&quot;All submitted!\n\nWe should hear back from them within the next 24 hours, and I'll keep you updated every step of the way.\n\nAs we start this application process, don't go anywhere else and cancel anything else you have going so it doesn't affect the application form with the lender, everyone uses the same lenders it's the relationship with them that gets the deal across the line.&quot;},
+{name:&quot;Pre approval, Drive Approved&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;preapproval&quot;, hotkeys:[&quot;^8&quot;], body:&quot;GREAT NEWS. After completing your assessment with me as your broker and submitting to the right lender we have found a lender that will lend to you! We just need a car invoice to make it a complete full approval.\n\nYou're pre approved with Ausloans / Drive Approved for {Approved amount}.\n\nAll we need now is for \&quot;Drive Approved\&quot; to send me your car choice and generate an invoice so the lender can see if it books well and we can get the full approval. Please sit tight, someone will be in touch with you!\n\nCongrats again.\n\nThree steps below so we can get the lender to draft contracts for you and get you on the road:\n\n1. \&quot;Drive Approved\&quot; will contact you to go through some car choices which they will provide an invoice and send to me.\n\n2. Insurance. As per your contracts, it is a requirement for your vehicle to be covered with comprehensive insurance at all times whilst under finance.\n\nPlease look out for that to be completed when it's sent to you. This will assist me to pull some quotes with Suncorp Insurance. Nothing will be set up until package options are discussed and I receive your approval. You can organise your own insurance if preferred, just let me know.\n\n3. References: We also require 2 personal references. They will need to confirm they know you.\nPlease be advised they cannot be living with you or each other. Please let them know they will be contacted.\n\nPlease supply their full name:\nWho are they to you:\nTheir phone number:\nTheir full email:\n\nKind regards,\nAusloans\nJordy\nAustralian Credit License 383999&quot;},
+{name:&quot;Insurance, 2 options&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;insurance&quot;, hotkeys:[&quot;^9&quot;], body:&quot;Subject: Insurance for your new car, 2 ways to do it\n\nHey,\n\nLast piece of the puzzle is comprehensive insurance. The lender won't release funds without it. You've got 2 options:\n\nOption 1: I sort it for you. As a broker I have access to discounted rates through our insurance partners that aren't available going direct, and I handle all the legwork: the quotes, the setup, making sure every detail the lender needs is on the policy, and getting the certificate where it needs to go. One less job for you, and the policy's guaranteed right first time. Just reply \&quot;sort it\&quot; and I'll have quotes to you today.\n\nOption 2: You arrange your own. Completely fine too. If you go this way, follow this checklist exactly. If any detail is wrong, the lender will bounce the certificate and you'll be on the phone to the insurer fixing it, which burns days right when we're trying to settle:\n\n1. Full comprehensive cover\n2. Cover to start from today\n3. Policy in your name: {Full name}\n4. Vehicle listed under the VIN {VIN}, not the registration number\n5. Interested party listed as \&quot;{Lender name}\&quot;\n6. Agreed value or market value is fine. Either works.\n\nOnce it's active, ask them to email you a Certificate of Currency and send it straight to me. That's the trigger for booking your settlement.\n\nWhichever way you go, I just need that certificate. Any questions, call me.\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Settled, congratulations&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;settled&quot;, hotkeys:[&quot;^0&quot;], body:&quot;Subject: Congratulations {First name}, it's all done\n\nHi {First name},\n\nCongratulations, your loan has settled and the car is officially yours. The dealership will be in touch with you shortly from here.\n\nOne small favour before you go. So many clients just like you have left a review after getting their car sorted. I've attached a few so you can see what they've said. If you've got 2 minutes, I'd love you to join them.\n\nJust head to the link below, scroll down and click the blue \&quot;Leave a Review\&quot; button. If you can mention Jordon Aylward by name, even better.\n\nhttps://www.ausloans.com.au/car-loan-reviews\n\nAny questions down the track, I'm your broker for the life of the loan, so come straight to me.\n\nEnjoy the car!\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Decline, banking conduct&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;decline&quot;, hotkeys:[&quot;^=&quot;], body:&quot;Hey, thanks for sending your documents. After assessing them with the lender, we're running into issues with recent banking conduct. With around 150 lenders on our panel, this has triggered a decline right now.\n\nThe good news: this can improve. If we wait 3 months and submit fresh bank statements, the current conduct will fall off and be replaced with new data, and we can reassess under better circumstances.\n\nIn the meantime, some alternatives to consider:\n\nIs there a friend or family member working who may be able to take out the loan in their name?\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Status list, internal notes&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;&quot;, hotkeys:[&quot;^Numpad8&quot;, &quot;^NumpadUp&quot;], body:&quot;Initial call completed: email &amp; SMS sent\nInitial call completed: email, SMS and voicemail sent, no answer\nBanking, ID and Privacy requested\n\nDay 1 follow up: call + SMS sent\nDay 2 follow up: SMS sent\nDay 3 follow up: SMS sent\n\nDocuments outstanding\nDocuments outstanding: day 1\nDocuments outstanding: day 2\nDocuments outstanding: day 3\n\nReady for assessment\nSubmitted to lender\nSubmitted: awaiting decision\n\nDeclined: credit score\nDeclined: affordability\nDeclined: conduct issues\nDeclined: excessive gambling\nNo contact: multiple attempts via phone and email, automation set for follow up in 90 days&quot;},
+{name:&quot;Suncorp insurance quotes&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;suncorp&quot;, hotkeys:[&quot;^Numpad4&quot;, &quot;^NumpadLeft&quot;], body:&quot;Please see below Suncorp Insurance Quotes. Vehicle insured for market value. If you would like gap insurance you will need to organise this on your own. These are all on a monthly basis and may be subject to change.\n\nYour excess is $1,650. If you wish for this to be changed, please advise by sending me an SMS.\n\n*Please see attached picture of the most basic option available, Option A. Please be aware this is the most basic option and may not be the most suitable for your requirements.\n\n\nI can call you to further explain the additional inclusions for Options B, C and D so you can make a final decision on which product is the most suitable for you.\n\nOption A: Suncorp Basic Comprehensive Insurance, $141.43 per month\n\nOption B: Suncorp Basic Comprehensive Insurance with Roadside Assistance, $148.85 per month\n\nOption C: Suncorp Comprehensive Advantages with window and windscreen cover and hire car, $186.09 per month\n\nOption D: Suncorp Comprehensive Advantages with Roadside Assistance, not available at market value\n\n\n*Please see attached a copy of Suncorp's PDS document.&quot;},
+{name:&quot;Settlement, Ausloans compliance&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;settlement&quot;, hotkeys:[&quot;^Numpad6&quot;, &quot;^NumpadRight&quot;], body:&quot;Hi {First name},\n\nWe're at the pointy end now. There are 2 sets of documents to get through and they'll both come to you by email.\n\n1. Ausloans compliance documents\n\nThese come through DocuSign and should be in your inbox already. There are 4 in the pack:\n\n1. Finance Application Form\n2. Comprehensive Insurance Disclosure Notice\n3. Credit Proposal\n4. Mandatory Disclosure Notice\n\nHave a look through, sign where it asks and that side is done. Check your junk folder if you can't see it.\n\n2. Lender contracts\n\nThese are the actual loan documents. I'll walk you through them on the phone before they come to you so you know exactly what you're signing, then they'll arrive for signing the same way.\n\nOnce you've signed the contracts you'll get a text with a link to verify your ID. That one's legitimate, and it needs doing straight away or it holds up settlement.\n\nI'll also need 2 contacts from you for the lender's paperwork. Just a name, their relationship to you and a phone number for each. They don't get contacted unless something goes wrong down the track, it's a standard requirement.\n\nGive me a call when you get a chance and we'll knock the lot over.&quot;},
+{name:&quot;COC forward, attachments explainer&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;coc&quot;, hotkeys:[&quot;^Numpad5&quot;, &quot;^NumpadClear&quot;], body:&quot;Hi\n\nPlease take the time to review the attached documents and read through these carefully and if something looks incorrect please don’t hesitate to contact myself to have it rectified.\n\nThe explanation for each attachments is listed below. The Distributor Disclosure Document also details how we may be remunerated, information about Suncorp’s dispute resolution service and how you can contact them if you want to make a complaint.\n\nReminder your first payment will be direct debited out of your account which your income goes into in the next 24/48 hours, this will reoccur each month on or around that date.&quot;},
+{name:&quot;Lender submission email&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^Numpad9&quot;, &quot;^NumpadPgUp&quot;], body:&quot;Good Morning,\nPlease see attached credit app and other docs.\n\n1. The applicant is happy with funding even below the requested amount.\n\n2. The applicant can contribute a deposit.\n\n3. Can any loans be paid out for it to service better, if applicable?\n\n4. Applicant has shared expenses.&quot;},
+{name:&quot;Lock in, 2 weeks out&quot;, cat:&quot;Artesian&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^+2&quot;, &quot;^+Numpad2&quot;, &quot;^+NumpadDown&quot;], body:&quot;Could you please also confirm:\n1. Sign wording, max 3 words\n\nExamples: \&quot;Birthday Vibes\&quot;, \&quot;Groom Squad\&quot;, \&quot;Cheers Legends\&quot;\n\n2. Package choice\nTo lock in your bottle service / That package comes off your minimum spend, and any remaining credit can be used on the event\n\n\n3. Mixers, pick any 3\nCoke, Coke No Sugar, Sprite, Lemonade, Soda Water, Tonic Water, Ginger Ale, Orange Juice, Pineapple Juice, Cranberry Juice.\n\nYou can check options and inclusions here:\nhttps://artesiancorp.com/cali-beach-bottle-service/\n\nKeen to finalise everything for an amazing day!&quot;},
+{name:&quot;Lock in, 1 week out&quot;, cat:&quot;Artesian&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^+1&quot;, &quot;^+Numpad1&quot;, &quot;^+NumpadEnd&quot;], body:&quot;DUE IN VENUE: $xxx\nDeposit via 7R: $xxx\n\nPackage: pending\nMixes: pending\nSign: pending\n\n$xxx min spend +5% grat\nTotal: $xxx\n\nxxx guests / arrival pending&quot;},
+{name:&quot;Enquiry post&quot;, cat:&quot;Artesian&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^+0&quot;, &quot;^+Numpad0&quot;, &quot;^+NumpadIns&quot;], body:&quot;Venue:\nWhat it's for:\nGuests:\nDay and date:\nMinimum spend and booth suggestion:&quot;},
+{name:&quot;Email address&quot;, cat:&quot;Utility&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^+-&quot;, &quot;^+NumpadSub&quot;], body:&quot;jordon.aylward@ausloans.com.au&quot;},
+
+/* ── paired text messages and CRM notes · same grp as the email they go with ── */
+{name:&quot;Intro, first contact (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;intro&quot;, hotkeys:[], body:&quot;Hi {First name}, it's Jordy from Ausloans. Just sent you an email with everything I need to get started. Have a look when you get a sec and I'll give you a call shortly.&quot;},
+{name:&quot;Intro, first contact (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;intro&quot;, hotkeys:[], body:&quot;Initial call completed: email and SMS sent. Banking, ID and Privacy requested. Awaiting documents from client.&quot;},
+{name:&quot;Follow up 1, checklist (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu1&quot;, hotkeys:[], body:&quot;Hi {First name}, just following up on the checklist I sent through. Once I've got it I can start your assessment straight away. Reply N if you no longer need the finance.&quot;},
+{name:&quot;Follow up 1, checklist (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu1&quot;, hotkeys:[], body:&quot;Day 1 follow up: call and SMS sent. Documents outstanding: day 1.&quot;},
+{name:&quot;Follow up 2, checking in (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu2&quot;, hotkeys:[], body:&quot;Hi {First name}, checking in. Did you get a chance to look at the outstanding docs? A quick ETA is fine, and happy to help if you're stuck on any of it.&quot;},
+{name:&quot;Follow up 2, checking in (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu2&quot;, hotkeys:[], body:&quot;Day 2 follow up: SMS sent. Documents outstanding: day 2. No response from client.&quot;},
+{name:&quot;Follow up 3, no response (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu3&quot;, hotkeys:[], body:&quot;Hi {First name}, haven't heard back and that's all good. I'm here when you're ready. Let me know if you need more time and I'll check back when it suits you.&quot;},
+{name:&quot;Follow up 3, no response (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu3&quot;, hotkeys:[], body:&quot;Day 3 follow up: SMS sent. Documents outstanding: day 3. No contact from client.&quot;},
+{name:&quot;Follow up 4, closing off (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu4&quot;, hotkeys:[], body:&quot;Hi {First name}, heads up that I'll be closing the enquiry off shortly if I don't hear back. If you want to keep going, let me know a good time today between 8:30am and 4:15pm.&quot;},
+{name:&quot;Follow up 4, closing off (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu4&quot;, hotkeys:[], body:&quot;Closing off notice sent. No contact: multiple attempts via phone, SMS and email. Automation set for follow up in 90 days if no reply.&quot;},
+{name:&quot;Approved, final form step (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;approved&quot;, hotkeys:[], body:&quot;Great news {First name}, let's get you approved. Just emailed you the final form to finish off so I can submit. Text me CALL if you'd rather run through it over the phone.&quot;},
+{name:&quot;Approved, final form step (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;approved&quot;, hotkeys:[], body:&quot;Assessment complete. Final lender questionnaire sent to client. Awaiting completion before submission.&quot;},
+{name:&quot;Submitted confirmation (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;submitted&quot;, hotkeys:[], body:&quot;All submitted {First name}. We should hear back within 24 hours and I'll keep you posted. Don't apply anywhere else in the meantime, it can affect this application.&quot;},
+{name:&quot;Submitted confirmation (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;submitted&quot;, hotkeys:[], body:&quot;Submitted to lender. Awaiting decision. Client advised not to apply elsewhere while the assessment is open.&quot;},
+{name:&quot;Pre approval, Drive Approved (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;preapproval&quot;, hotkeys:[], body:&quot;Great news {First name}, you're pre approved for {Approved amount}. Drive Approved will be in touch about car choices. Check your email, I've listed the next 3 steps in there.&quot;},
+{name:&quot;Pre approval, Drive Approved (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;preapproval&quot;, hotkeys:[], body:&quot;Pre approval received. Approved amount {Approved amount}. Referred to Drive Approved for vehicle sourcing. Outstanding: car invoice, comprehensive insurance, 2 personal references.&quot;},
+{name:&quot;Insurance, 2 options (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;insurance&quot;, hotkeys:[], body:&quot;Hi {First name}, last piece is comprehensive insurance, the lender won't release funds without it. Emailed you 2 options: I sort it, or you arrange your own. Reply SORT IT and I'll get quotes today.&quot;},
+{name:&quot;Insurance, 2 options (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;insurance&quot;, hotkeys:[], body:&quot;Insurance requirement explained. Client given the choice of broker-arranged Suncorp quotes or their own policy. Certificate of Currency outstanding.&quot;},
+{name:&quot;Suncorp insurance quotes (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;suncorp&quot;, hotkeys:[], body:&quot;Hi {First name}, sent your Suncorp quotes through. 4 options, all monthly, excess $1,650. Give me a call and I'll run you through the differences.&quot;},
+{name:&quot;Suncorp insurance quotes (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;suncorp&quot;, hotkeys:[], body:&quot;Suncorp insurance quotes issued, Options A to D, market value, excess $1,650. PDS supplied. Awaiting client selection.&quot;},
+{name:&quot;Settlement, Ausloans compliance (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;settlement&quot;, hotkeys:[], body:&quot;Hi {First name}, we're at the pointy end. Ausloans compliance docs are in your inbox via DocuSign, 4 to sign. Check your junk folder if you can't see them. Lender contracts are next and I'll call you before they land.&quot;},
+{name:&quot;Settlement, Ausloans compliance (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;settlement&quot;, hotkeys:[], body:&quot;Settlement stage. Ausloans compliance pack sent via DocuSign: Finance Application Form, Comprehensive Insurance Disclosure Notice, Credit Proposal, Mandatory Disclosure Notice. Lender contracts to follow. 2 references requested. ID verification link pending contract signing.&quot;},
+{name:&quot;COC forward, attachments explainer (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;coc&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed your documents through. Have a read and let me know if anything looks wrong. First payment comes out in the next 24 to 48 hours, then monthly around that date.&quot;},
+{name:&quot;COC forward, attachments explainer (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;coc&quot;, hotkeys:[], body:&quot;COC and disclosure documents forwarded with attachment explanations. Distributor Disclosure Document included, covers remuneration and Suncorp dispute resolution. First direct debit advised: 24 to 48 hours, recurring monthly.&quot;},
+{name:&quot;Settled, congratulations (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;settled&quot;, hotkeys:[], body:&quot;Congratulations {First name}, your loan has settled and the car is officially yours. The dealership will be in touch shortly. Any questions down the track, come straight to me.&quot;},
+{name:&quot;Settled, congratulations (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;settled&quot;, hotkeys:[], body:&quot;SETTLED. Client notified. Dealership handling delivery. Review request sent.&quot;},
+{name:&quot;Decline, banking conduct (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;decline&quot;, hotkeys:[], body:&quot;Hi {First name}, I've been through it with the lender and recent banking conduct is holding it up, so it's a no for right now. It can improve. Give me a call and I'll run you through the options.&quot;},
+{name:&quot;Decline, banking conduct (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;decline&quot;, hotkeys:[], body:&quot;Declined: conduct issues. Client advised to re-present in 3 months with fresh statements. Alternative discussed: application in the name of a working friend or family member.&quot;}
 ];
 
 /* ================= STATE · autosaved to this browser (DashBroker hub tab) ================= */
-let state = { templates: STARTER.map(t =&gt; ({id:uid(), name:t.name, cat:t.cat, hotkeys:[...t.hotkeys], body:t.body})) };
+let state = { templates: STARTER.map(t =&gt; ({id:uid(), name:t.name, cat:t.cat, ch:t.ch||'email', grp:t.grp||'', hotkeys:[...t.hotkeys], body:t.body})) };
 /* ── autosave · hub tab only. The .ahk export is untouched and is still the portable copy. ── */
 const RD_KEY = 'hub_replydeck_v1';
 function rdSave(){
   try{
     localStorage.setItem(RD_KEY, JSON.stringify({v:1, at:Date.now(),
-      templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
+      templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, ch:chOf(t), grp:t.grp||'', hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
   }catch(e){}
 }
 function rdRestore(){
@@ -3708,7 +3750,7 @@ function rdRestore(){
     if(!sv || !Array.isArray(sv.templates) || !sv.templates.length) return false;
     const nf = {};
     const tpl = sv.templates.map(t =&gt; {
-      const nt = {id:uid(), name:String(t.name||''), cat:String(t.cat||'Other'), hotkeys:Array.isArray(t.hotkeys)?t.hotkeys.map(String):[], body:String(t.body||'')};
+      const nt = {id:uid(), name:String(t.name||''), cat:String(t.cat||'Other'), ch:String(t.ch||'email'), grp:String(t.grp||''), hotkeys:Array.isArray(t.hotkeys)?t.hotkeys.map(String):[], body:String(t.body||'')};
       if(t.fills &amp;&amp; typeof t.fills === 'object') nf[nt.id] = Object.fromEntries(Object.entries(t.fills).map(([k,v]) =&gt; [String(k), String(v)]));
       return nt;
     });
@@ -3720,6 +3762,15 @@ let dirty = false;
 let quickId = state.templates[0].id;
 let fills = {};              // template id -&gt; token -&gt; typed value, kept per template
 let catFilter = 'All';
+let chFilter = 'All';
+/* ── channels · one stage (grp) has an email, a text and a CRM note ── */
+const CH_LIST = [['All','Everything'],['email','Email'],['sms','Text message'],['crm','CRM note']];
+const CH_NAME = {email:'Email', sms:'Text message', crm:'CRM note'};
+function chOf(t){ return t.ch || 'email'; }
+function chLabel(c){ return CH_NAME[c] || 'Email'; }
+function chBadge(c){ return '&lt;span class=&quot;chbadge ' + c + '&quot;&gt;' + esc(chLabel(c)) + '&lt;/span&gt;'; }
+function inChannel(t){ return chFilter === 'All' || chOf(t) === chFilter; }
+function siblingsOf(t){ return (t &amp;&amp; t.grp) ? state.templates.filter(x =&gt; x.grp === t.grp &amp;&amp; x.id !== t.id) : []; }
 let expandedId = null;
 
 function uid(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -3811,9 +3862,36 @@ function qv(){ const t = quickTemplate(); if(!t) return {}; return (fills[t.id] 
 let rdFillTimer = null;
 function rdSaveFillsSoon(){ clearTimeout(rdFillTimer); rdFillTimer = setTimeout(rdSave, 600); }
 
+function visibleQuick(){
+  const v = state.templates.filter(inChannel);
+  return v.length ? v : state.templates;
+}
+function renderQuickChan(){
+  const el = $('#qkChan'); if(!el) return;
+  el.innerHTML = CH_LIST.map(([v,l]) =&gt; {
+    const n = v === 'All' ? state.templates.length : state.templates.filter(t =&gt; chOf(t) === v).length;
+    return '&lt;button class=&quot;chip plain' + (v === chFilter ? ' on' : '') + '&quot; data-ch=&quot;' + v + '&quot;&gt;' +
+      esc(l) + ' &lt;span style=&quot;opacity:.55;font-weight:600&quot;&gt;' + n + '&lt;/span&gt;&lt;/button&gt;';
+  }).join('');
+}
+function renderQuickPairs(){
+  const el = $('#qkPairs'); if(!el) return;
+  const t = quickTemplate();
+  const sibs = siblingsOf(t);
+  if(!t){ el.innerHTML = ''; return; }
+  if(!sibs.length){
+    el.innerHTML = '&lt;span&gt;' + (t.grp ? 'No other channel saved for this one yet.' : 'This one is a standalone, it has no paired message.') + '&lt;/span&gt;';
+    return;
+  }
+  el.innerHTML = '&lt;span&gt;Goes with&lt;/span&gt;' + sibs
+    .sort((a,b) =&gt; ['email','sms','crm'].indexOf(chOf(a)) - ['email','sms','crm'].indexOf(chOf(b)))
+    .map(x =&gt; '&lt;button class=&quot;chip plain&quot; data-goto=&quot;' + x.id + '&quot; title=&quot;' + esc(x.name) + '&quot;&gt;' + esc(chLabel(chOf(x))) + '&lt;/button&gt;').join('');
+}
 function renderQuickSelect(){
+  const vis = visibleQuick();
+  if(!vis.some(t =&gt; t.id === quickId)) quickId = vis[0] ? vis[0].id : null;
   const groups = {};
-  state.templates.forEach(t =&gt; { const c = t.cat || 'Other'; (groups[c] = groups[c] || []).push(t); });
+  vis.forEach(t =&gt; { const c = t.cat || 'Other'; (groups[c] = groups[c] || []).push(t); });
   $('#qkSelect').innerHTML = Object.keys(groups).map(c =&gt;
     '&lt;optgroup label=&quot;' + esc(c) + '&quot;&gt;' +
     groups[c].map(t =&gt; '&lt;option value=&quot;' + t.id + '&quot;' + (t.id === quickId ? ' selected' : '') + '&gt;' +
@@ -3862,20 +3940,40 @@ function renderQuickPreview(){
   $('#qkBench').title = 'Benchmark: ' + w + ' words at ' + wpm + ' wpm (office average is about 40)';
   $('#qkMeta').textContent = body.length + ' characters, ' + w + ' words, ' + body.split('\n').length + ' lines';
 }
-function renderQuick(){ renderQuickSelect(); renderQuickFields(); renderQuickPreview(); }
+function renderQuick(){ renderQuickChan(); renderQuickSelect(); renderQuickPairs(); renderQuickFields(); renderQuickPreview(); }
+$('#qkChan').addEventListener('click', e =&gt; {
+  const b = e.target.closest('[data-ch]'); if(!b) return;
+  chFilter = b.dataset.ch; renderQuick();
+});
+$('#qkPairs').addEventListener('click', e =&gt; {
+  const b = e.target.closest('[data-goto]'); if(!b) return;
+  const t = state.templates.find(x =&gt; x.id === b.dataset.goto); if(!t) return;
+  quickId = t.id;
+  if(chFilter !== 'All') chFilter = chOf(t);
+  renderQuick();
+  toast('Switched to the ' + chLabel(chOf(t)).toLowerCase() + ' for this stage.', 'ok', 2200);
+});
 
-$('#qkSelect').addEventListener('change', e =&gt; { quickId = e.target.value; renderQuickFields(); renderQuickPreview(); });
+$('#qkSelect').addEventListener('change', e =&gt; { quickId = e.target.value; renderQuickPairs(); renderQuickFields(); renderQuickPreview(); });
 $('#qkWpm').addEventListener('input', renderQuickPreview);
 $('#btnQkCopy').addEventListener('click', () =&gt; {
   const t = quickTemplate(); if(!t) return;
   copyText(filledBody(t), 'Copied. Paste it wherever the conversation is.');
 });
 $('#btnQkEdit').addEventListener('click', () =&gt; {
-  expandedId = quickId; catFilter = 'All'; $('#libSearch').value = '';
+  expandedId = quickId; catFilter = 'All'; chFilter = 'All'; $('#libSearch').value = '';
   switchTab('tabBtnLibrary'); renderLibrary();
 });
 
 /* ================= LIBRARY TAB ================= */
+function renderChanChips(){
+  const el = $('#libChan'); if(!el) return;
+  el.innerHTML = CH_LIST.map(([v,l]) =&gt; {
+    const n = v === 'All' ? state.templates.length : state.templates.filter(t =&gt; chOf(t) === v).length;
+    return '&lt;button class=&quot;chip plain' + (v === chFilter ? ' on' : '') + '&quot; data-ch=&quot;' + v + '&quot;&gt;' +
+      esc(l) + ' &lt;span style=&quot;opacity:.55;font-weight:600&quot;&gt;' + n + '&lt;/span&gt;&lt;/button&gt;';
+  }).join('');
+}
 function renderChips(){
   $('#libChips').innerHTML = cats().map(c =&gt;
     '&lt;button class=&quot;chip plain' + (c === catFilter ? ' on' : '') + '&quot; data-cat=&quot;' + esc(c) + '&quot;&gt;' + esc(c) + '&lt;/button&gt;'
@@ -3889,6 +3987,7 @@ function renderRows(){
   const q = $('#libSearch').value.toLowerCase();
   const dups = duplicateMap();
   const rows = state.templates.filter(t =&gt;
+    inChannel(t) &amp;&amp;
     (catFilter === 'All' || (t.cat || 'Other') === catFilter) &amp;&amp;
     (!q || (t.name + ' ' + t.hotkeys.join(' ') + ' ' + t.body).toLowerCase().includes(q))
   );
@@ -3907,8 +4006,18 @@ function renderRows(){
       const editKeys = t.hotkeys.map((k,i) =&gt;
         '&lt;span class=&quot;kwrap&quot;&gt;' + capsHTML(k, !hotkeyValid(k) || (dups[normKey(k)] &amp;&amp; dups[normKey(k)].length &gt; 1)) +
         '&lt;b data-act=&quot;delkey&quot; data-id=&quot;' + t.id + '&quot; data-i=&quot;' + i + '&quot; title=&quot;Remove this hotkey&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;\u2715&lt;/b&gt;&lt;/span&gt;').join('');
+      const sibs = siblingsOf(t);
       inner =
         '&lt;div class=&quot;rowbody&quot;&gt;' +
+          '&lt;div&gt;&lt;label for=&quot;edCh&quot;&gt;Channel&lt;/label&gt;' +
+            '&lt;select data-field=&quot;ch&quot; data-id=&quot;' + t.id + '&quot; aria-label=&quot;Channel&quot;&gt;' +
+              ['email','sms','crm'].map(c =&gt; '&lt;option value=&quot;' + c + '&quot;' + (chOf(t) === c ? ' selected' : '') + '&gt;' + esc(chLabel(c)) + '&lt;/option&gt;').join('') +
+            '&lt;/select&gt;' +
+            '&lt;label for=&quot;edGrp&quot; style=&quot;margin-top:9px&quot;&gt;Stage it belongs to&lt;/label&gt;' +
+            '&lt;input type=&quot;text&quot; data-field=&quot;grp&quot; data-id=&quot;' + t.id + '&quot; value=&quot;' + esc(t.grp || '') + '&quot; placeholder=&quot;e.g. settlement&quot; aria-label=&quot;Stage&quot;&gt;' +
+            '&lt;p class=&quot;hint&quot; style=&quot;margin-top:5px&quot;&gt;Templates sharing a stage are offered to each other as the matching message.' +
+            (sibs.length ? ' Paired with: ' + sibs.map(x =&gt; esc(chLabel(chOf(x)))).join(', ') + '.' : ' Nothing paired yet.') + '&lt;/p&gt;' +
+          '&lt;/div&gt;' +
           '&lt;div&gt;&lt;label for=&quot;edKey&quot;&gt;Hotkeys. Press any of these to paste&lt;/label&gt;' +
             '&lt;div class=&quot;keyedit&quot;&gt;' + editKeys + '&lt;/div&gt;' +
             '&lt;div class=&quot;capbox' + (capturing === t.id ? ' live' : '') + '&quot; id=&quot;capBox&quot;&gt;' +
@@ -3938,7 +4047,7 @@ function renderRows(){
       '&lt;div class=&quot;rowhead&quot;&gt;' +
         '&lt;input type=&quot;text&quot; value=&quot;' + esc(t.name) + '&quot; data-field=&quot;name&quot; data-id=&quot;' + t.id + '&quot; aria-label=&quot;Template name&quot; placeholder=&quot;Template name&quot;&gt;' +
         '&lt;input type=&quot;text&quot; value=&quot;' + esc(t.cat) + '&quot; data-field=&quot;cat&quot; data-id=&quot;' + t.id + '&quot; aria-label=&quot;Category&quot; placeholder=&quot;Category&quot;&gt;' +
-        '&lt;span class=&quot;rowkeys&quot;&gt;' + keyChips + '&lt;/span&gt;' +
+        '&lt;span class=&quot;rowkeys&quot;&gt;' + chBadge(chOf(t)) + ' ' + keyChips + '&lt;/span&gt;' +
         '&lt;button class=&quot;btn small' + (open ? ' primary' : '') + '&quot; data-act=&quot;toggle&quot; data-id=&quot;' + t.id + '&quot;&gt;' + (open ? 'Close' : 'Edit') + '&lt;/button&gt;' +
       '&lt;/div&gt;' +
       (open ? '' :
@@ -4014,11 +4123,15 @@ document.addEventListener('keydown', e =&gt; {
   if(!mods){ paintCapture('', base, 'Add Ctrl, Shift or Alt too, otherwise that key would paste every time you typed it.'); return; }
   finishCapture(mods, base, e.code);
 }, true);
-function renderLibrary(){ renderChips(); renderRows(); renderFoot(); }
+function renderLibrary(){ renderChanChips(); renderChips(); renderRows(); renderFoot(); }
+$('#libChan').addEventListener('click', e =&gt; {
+  const b = e.target.closest('[data-ch]'); if(!b) return;
+  chFilter = b.dataset.ch; renderChanChips(); renderChips(); renderRows();
+});
 
 $('#libSearch').addEventListener('input', renderRows);
 $('#btnLibNew').addEventListener('click', () =&gt; {
-  const t = {id:uid(), name:'New template', cat:(catFilter === 'All' ? 'Sales' : catFilter), hotkeys:[], body:''};
+  const t = {id:uid(), name:'New template', cat:(catFilter === 'All' ? 'Sales' : catFilter), ch:(chFilter === 'All' ? 'email' : chFilter), grp:'', hotkeys:[], body:''};
   state.templates.push(t); expandedId = t.id; markDirty();
   renderLibrary(); renderQuick(); renderBuild();
   const f = document.querySelector('[data-field=&quot;name&quot;][data-id=&quot;' + t.id + '&quot;]');
@@ -4037,6 +4150,7 @@ $('#libRows').addEventListener('input', e =&gt; {
   if(!t) return;
   if(el.dataset.field === 'name'){ t.name = el.value; markDirty(); }
   if(el.dataset.field === 'cat'){ t.cat = el.value; markDirty(); }
+  if(el.dataset.field === 'grp'){ t.grp = el.value.trim(); markDirty(); }
   if(el.id === 'edBody'){
     t.body = el.value; markDirty();
     const m = $('#edMeta'); if(m) m.textContent = libStatsLine(t);
@@ -4045,7 +4159,11 @@ $('#libRows').addEventListener('input', e =&gt; {
 });
 $('#libRows').addEventListener('change', e =&gt; {
   const el = e.target;
-  if(el.dataset.field === 'cat' || el.dataset.field === 'name' || el.id === 'edBody'){
+  if(el.dataset.field === 'ch'){
+    const t = state.templates.find(x =&gt; x.id === el.dataset.id);
+    if(t){ t.ch = el.value; markDirty(); }
+  }
+  if(el.dataset.field === 'cat' || el.dataset.field === 'name' || el.dataset.field === 'ch' || el.dataset.field === 'grp' || el.id === 'edBody'){
     renderLibrary(); renderQuick(); renderBuild();
   }
 });
@@ -4155,11 +4273,12 @@ function buildAhk(templates){
   out.push('#SingleInstance Force');
   out.push('#UseHook');
   out.push('');
+  const keyed = templates.filter(t =&gt; t.hotkeys.length);
   out.push('; -------------------- HOTKEY CHEAT SHEET --------------------');
-  templates.forEach(t =&gt; out.push('; ' + t.hotkeys.join('  or  ') + '  =  ' + t.name));
+  keyed.forEach(t =&gt; out.push('; ' + t.hotkeys.join('  or  ') + '  =  ' + t.name));
   out.push('; -------------------------------------------------------------');
   out.push('');
-  templates.forEach((t, i) =&gt; {
+  keyed.forEach((t, i) =&gt; {
     ahkTemplateBlock(t, '_TPL_' + String(i + 1).padStart(2, '0')).forEach(l =&gt; out.push(l));
     out.push(''); out.push('');
   });
@@ -4167,7 +4286,7 @@ function buildAhk(templates){
   out.push('; ' + BRAND.name + ' data. This lets the app open the script again later.');
   /* AutoHotkey v1 refuses any line past 16,383 characters, so the saved
      library goes out in small chunks and the app joins them back up. */
-  const packed = b64encode(JSON.stringify({templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
+  const packed = b64encode(JSON.stringify({templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, ch:chOf(t), grp:t.grp||'', hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
   for(let i = 0; i &lt; packed.length; i += 2000){ out.push('; @replydeck-data v1 ' + packed.slice(i, i + 2000)); }
   out.push('; ------------------------------------------------------------');
   return out.join('\r\n');
@@ -4181,7 +4300,6 @@ function validateAll(){
   Object.keys(dups).forEach(k =&gt; { if(dups[k].length &gt; 1) errs.push('Hotkey \u201C' + k + '\u201D is used by more than one template: ' + dups[k].join(', ')); });
   state.templates.forEach(t =&gt; {
     const nm = t.name || '(untitled)';
-    if(!t.hotkeys.length) errs.push('\u201C' + nm + '\u201D has no hotkey yet.');
     if(!t.body.trim()) errs.push('\u201C' + nm + '\u201D has an empty message.');
     t.hotkeys.forEach(k =&gt; { if(!hotkeyValid(k)) errs.push('\u201C' + nm + '\u201D: hotkey \u201C' + k + '\u201D looks invalid.'); });
   });
@@ -4200,6 +4318,8 @@ function renderBuildStatus(){
   $('#buildStatus').innerHTML = errs.length
     ? '&lt;p class=&quot;warn&quot; style=&quot;margin:0 0 6px&quot;&gt;&lt;b&gt;' + errs.length + ' thing' + (errs.length &gt; 1 ? 's' : '') + ' to fix before this script will behave:&lt;/b&gt;&lt;br&gt;' + errs.map(esc).join('&lt;br&gt;') + '&lt;/p&gt;'
     : '&lt;p class=&quot;okline&quot; style=&quot;margin:0 0 6px&quot;&gt;All ' + state.templates.length + ' templates check out. No clashes, nothing empty. Ready to build.&lt;/p&gt;';
+  const noKey = state.templates.filter(t =&gt; !t.hotkeys.length).length;
+  if(noKey) $('#buildStatus').innerHTML += '&lt;p class=&quot;hint&quot; style=&quot;margin:0&quot;&gt;' + noKey + ' of them have no hotkey, which is fine. They stay in your library and you pick them on the Quick paste tab. Only the ' + (state.templates.length - noKey) + ' with keys go into the script.&lt;/p&gt;';
 }
 function renderKeyMap(){
   const dups = duplicateMap();
@@ -4288,7 +4408,7 @@ $('#fileAhk').addEventListener('change', e =&gt; {
       if(!confirm('Load ' + s.templates.length + ' templates from this script? It replaces what\u2019s open now.')) return;
       fills = {};
       state = {templates: s.templates.map(t =&gt; {
-        const nt = {id:uid(), name:String(t.name||''), cat:String(t.cat||'Other'), hotkeys:Array.isArray(t.hotkeys)?t.hotkeys.map(String):[], body:String(t.body||'')};
+        const nt = {id:uid(), name:String(t.name||''), cat:String(t.cat||'Other'), ch:String(t.ch||'email'), grp:String(t.grp||''), hotkeys:Array.isArray(t.hotkeys)?t.hotkeys.map(String):[], body:String(t.body||'')};
         if (t.fills &amp;&amp; typeof t.fills === 'object') fills[nt.id] = Object.fromEntries(Object.entries(t.fills).map(([k,v]) =&gt; [String(k), String(v)]));
         return nt;
       })};
@@ -4298,7 +4418,7 @@ $('#fileAhk').addEventListener('change', e =&gt; {
   r.readAsText(f); e.target.value = '';
 });
 function afterLoad(msg){
-  expandedId = null; catFilter = 'All';
+  expandedId = null; catFilter = 'All'; chFilter = 'All';
   quickId = state.templates[0] ? state.templates[0].id : null;
   markClean(); rdSave(); renderAll(); toast(msg, 'ok');
 }

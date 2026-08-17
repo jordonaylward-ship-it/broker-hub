@@ -88,6 +88,7 @@ body.locked .shell{display:none}
 .nav-tab[data-tool=settings].on{background:#2fd6a5;border-color:#2fd6a5;color:#0b0d12}
 .nav-tab[data-tool=warranty].on{background:#e8b4f8;border-color:#e8b4f8;color:#0b0d12}
 .nav-tab[data-tool=replydeck].on{background:#c8e86b;border-color:#c8e86b;color:#0b0d12}
+.nav-tab[data-tool=crm].on{background:#67e8f9;border-color:#67e8f9;color:#0b0d12}
 .nav-tab:hover{border-color:#3a4160}
 </style>
 <style id="zoomcomp"></style>
@@ -161,6 +162,7 @@ body.locked .shell{display:none}
       <button class="nav-tab" data-tool="serviceability"><span class="ico">📐</span> Serviceability</button>
       <button class="nav-tab" data-tool="warranty"><span class="ico">🛡️</span> Warranty</button>
       <button class="nav-tab" data-tool="replydeck"><span class="ico">⚡</span> ReplyDeck</button>
+      <button class="nav-tab" data-tool="crm"><span class="ico">✍️</span> CRM Note</button>
       <button class="nav-tab" data-tool="finance"><span class="ico">💰</span> Finances</button>
       <button class="nav-tab" data-tool="settings"><span class="ico">⚙️</span> Settings</button>
     </div>
@@ -3701,43 +3703,44 @@ const STARTER = [
 {name:&quot;Email address&quot;, cat:&quot;Utility&quot;, ch:&quot;email&quot;, grp:&quot;&quot;, hotkeys:[&quot;^+-&quot;, &quot;^+NumpadSub&quot;], body:&quot;jordon.aylward@ausloans.com.au&quot;},
 
 /* ── paired text messages and CRM notes · same grp as the email they go with ── */
-{name:&quot;Intro, first contact (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;intro&quot;, hotkeys:[], body:&quot;Hi {First name}, it's Jordy from Ausloans. Just sent you an email with everything I need to get started. Have a look when you get a sec and I'll give you a call shortly.&quot;},
-{name:&quot;Intro, first contact (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;intro&quot;, hotkeys:[], body:&quot;Initial call completed: email and SMS sent. Banking, ID and Privacy requested. Awaiting documents from client.&quot;},
-{name:&quot;Follow up 1, checklist (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu1&quot;, hotkeys:[], body:&quot;Hi {First name}, just following up on the checklist I sent through. Once I've got it I can start your assessment straight away. Reply N if you no longer need the finance.&quot;},
-{name:&quot;Follow up 1, checklist (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu1&quot;, hotkeys:[], body:&quot;Day 1 follow up: call and SMS sent. Documents outstanding: day 1.&quot;},
-{name:&quot;Follow up 2, checking in (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu2&quot;, hotkeys:[], body:&quot;Hi {First name}, checking in. Did you get a chance to look at the outstanding docs? A quick ETA is fine, and happy to help if you're stuck on any of it.&quot;},
-{name:&quot;Follow up 2, checking in (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu2&quot;, hotkeys:[], body:&quot;Day 2 follow up: SMS sent. Documents outstanding: day 2. No response from client.&quot;},
-{name:&quot;Follow up 3, no response (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu3&quot;, hotkeys:[], body:&quot;Hi {First name}, haven't heard back and that's all good. I'm here when you're ready. Let me know if you need more time and I'll check back when it suits you.&quot;},
-{name:&quot;Follow up 3, no response (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu3&quot;, hotkeys:[], body:&quot;Day 3 follow up: SMS sent. Documents outstanding: day 3. No contact from client.&quot;},
-{name:&quot;Follow up 4, closing off (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu4&quot;, hotkeys:[], body:&quot;Hi {First name}, heads up that I'll be closing the enquiry off shortly if I don't hear back. If you want to keep going, let me know a good time today between 8:30am and 4:15pm.&quot;},
-{name:&quot;Follow up 4, closing off (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu4&quot;, hotkeys:[], body:&quot;Closing off notice sent. No contact: multiple attempts via phone, SMS and email. Automation set for follow up in 90 days if no reply.&quot;},
-{name:&quot;Approved, final form step (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;approved&quot;, hotkeys:[], body:&quot;Great news {First name}, let's get you approved. Just emailed you the final form to finish off so I can submit. Text me CALL if you'd rather run through it over the phone.&quot;},
-{name:&quot;Approved, final form step (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;approved&quot;, hotkeys:[], body:&quot;Assessment complete. Final lender questionnaire sent to client. Awaiting completion before submission.&quot;},
-{name:&quot;Submitted confirmation (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;submitted&quot;, hotkeys:[], body:&quot;All submitted {First name}. We should hear back within 24 hours and I'll keep you posted. Don't apply anywhere else in the meantime, it can affect this application.&quot;},
-{name:&quot;Submitted confirmation (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;submitted&quot;, hotkeys:[], body:&quot;Submitted to lender. Awaiting decision. Client advised not to apply elsewhere while the assessment is open.&quot;},
-{name:&quot;Pre approval, Drive Approved (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;preapproval&quot;, hotkeys:[], body:&quot;Great news {First name}, you're pre approved for {Approved amount}. Drive Approved will be in touch about car choices. Check your email, I've listed the next 3 steps in there.&quot;},
-{name:&quot;Pre approval, Drive Approved (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;preapproval&quot;, hotkeys:[], body:&quot;Pre approval received. Approved amount {Approved amount}. Referred to Drive Approved for vehicle sourcing. Outstanding: car invoice, comprehensive insurance, 2 personal references.&quot;},
-{name:&quot;Insurance, 2 options (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;insurance&quot;, hotkeys:[], body:&quot;Hi {First name}, last piece is comprehensive insurance, the lender won't release funds without it. Emailed you 2 options: I sort it, or you arrange your own. Reply SORT IT and I'll get quotes today.&quot;},
-{name:&quot;Insurance, 2 options (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;insurance&quot;, hotkeys:[], body:&quot;Insurance requirement explained. Client given the choice of broker-arranged Suncorp quotes or their own policy. Certificate of Currency outstanding.&quot;},
-{name:&quot;Suncorp insurance quotes (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;suncorp&quot;, hotkeys:[], body:&quot;Hi {First name}, sent your Suncorp quotes through. 4 options, all monthly, excess $1,650. Give me a call and I'll run you through the differences.&quot;},
-{name:&quot;Suncorp insurance quotes (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;suncorp&quot;, hotkeys:[], body:&quot;Suncorp insurance quotes issued, Options A to D, market value, excess $1,650. PDS supplied. Awaiting client selection.&quot;},
-{name:&quot;Settlement, Ausloans compliance (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;settlement&quot;, hotkeys:[], body:&quot;Hi {First name}, we're at the pointy end. Ausloans compliance docs are in your inbox via DocuSign, 4 to sign. Check your junk folder if you can't see them. Lender contracts are next and I'll call you before they land.&quot;},
-{name:&quot;Settlement, Ausloans compliance (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;settlement&quot;, hotkeys:[], body:&quot;Settlement stage. Ausloans compliance pack sent via DocuSign: Finance Application Form, Comprehensive Insurance Disclosure Notice, Credit Proposal, Mandatory Disclosure Notice. Lender contracts to follow. 2 references requested. ID verification link pending contract signing.&quot;},
-{name:&quot;COC forward, attachments explainer (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;coc&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed your documents through. Have a read and let me know if anything looks wrong. First payment comes out in the next 24 to 48 hours, then monthly around that date.&quot;},
-{name:&quot;COC forward, attachments explainer (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;coc&quot;, hotkeys:[], body:&quot;COC and disclosure documents forwarded with attachment explanations. Distributor Disclosure Document included, covers remuneration and Suncorp dispute resolution. First direct debit advised: 24 to 48 hours, recurring monthly.&quot;},
-{name:&quot;Settled, congratulations (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;settled&quot;, hotkeys:[], body:&quot;Congratulations {First name}, your loan has settled and the car is officially yours. The dealership will be in touch shortly. Any questions down the track, come straight to me.&quot;},
-{name:&quot;Settled, congratulations (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;settled&quot;, hotkeys:[], body:&quot;SETTLED. Client notified. Dealership handling delivery. Review request sent.&quot;},
-{name:&quot;Decline, banking conduct (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;decline&quot;, hotkeys:[], body:&quot;Hi {First name}, I've been through it with the lender and recent banking conduct is holding it up, so it's a no for right now. It can improve. Give me a call and I'll run you through the options.&quot;},
-{name:&quot;Decline, banking conduct (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;decline&quot;, hotkeys:[], body:&quot;Declined: conduct issues. Client advised to re-present in 3 months with fresh statements. Alternative discussed: application in the name of a working friend or family member.&quot;}
+{name:&quot;Intro, first contact (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;intro&quot;, hotkeys:[], body:&quot;Hi {First name}, it's Jordy from Ausloans. Just sent you an email with everything I need to get your finance started. Have a look when you get a chance and I'll give you a call shortly.&quot;},
+{name:&quot;Intro, first contact (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;intro&quot;, hotkeys:[], body:&quot;Email and SMS sent: introduction and document request. Client advised of outstanding items. Call to follow.&quot;},
+{name:&quot;Follow up 1, checklist (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu1&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you a follow up on the checklist I sent through. Once I have those documents I can start your assessment straight away.&quot;},
+{name:&quot;Follow up 1, checklist (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu1&quot;, hotkeys:[], body:&quot;Email and SMS sent: follow up 1, outstanding checklist. Documents outstanding, day 1.&quot;},
+{name:&quot;Follow up 2, checking in (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu2&quot;, hotkeys:[], body:&quot;Hi {First name}, just sent you an email checking in on the outstanding documents. A quick reply or an ETA is all I need.&quot;},
+{name:&quot;Follow up 2, checking in (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu2&quot;, hotkeys:[], body:&quot;Email and SMS sent: follow up 2, checking in on outstanding documents. No response from client, day 2.&quot;},
+{name:&quot;Follow up 3, no response (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu3&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you. No rush from me, I'm here when you're ready. Let me know if you need more time and I'll check back when it suits.&quot;},
+{name:&quot;Follow up 3, no response (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu3&quot;, hotkeys:[], body:&quot;Email and SMS sent: follow up 3, no response. Client given the option to defer. Documents outstanding, day 3.&quot;},
+{name:&quot;Follow up 4, closing off (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;fu4&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you a heads up that I'll be closing the enquiry off shortly if I don't hear back. Reply or give me a call if you'd like to keep going.&quot;},
+{name:&quot;Follow up 4, closing off (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;fu4&quot;, hotkeys:[], body:&quot;Email and SMS sent: follow up 4, closing off notice. No contact after multiple attempts. Enquiry to be closed, automation set for 90 day follow up.&quot;},
+{name:&quot;Approved, final form step (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;approved&quot;, hotkeys:[], body:&quot;Great news {First name}, just emailed you the final form to complete so I can submit your application. Text me CALL if you'd rather run through it over the phone.&quot;},
+{name:&quot;Approved, final form step (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;approved&quot;, hotkeys:[], body:&quot;Email and SMS sent: assessment complete, final lender questionnaire issued. Awaiting completion before submission.&quot;},
+{name:&quot;Submitted confirmation (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;submitted&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you to confirm your application has been submitted. We should hear back within 24 hours and I'll keep you posted.&quot;},
+{name:&quot;Submitted confirmation (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;submitted&quot;, hotkeys:[], body:&quot;Email and SMS sent: submission confirmation. Awaiting lender decision. Client advised not to apply elsewhere while the application is open.&quot;},
+{name:&quot;Pre approval, Drive Approved (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;preapproval&quot;, hotkeys:[], body:&quot;Great news {First name}, you're pre approved for {Approved amount}. Just emailed you the details and the next 3 steps. Drive Approved will be in touch about car choices.&quot;},
+{name:&quot;Pre approval, Drive Approved (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;preapproval&quot;, hotkeys:[], body:&quot;Email and SMS sent: pre approval advice, {Approved amount}. Referred to Drive Approved for vehicle sourcing. Outstanding: car invoice, comprehensive insurance, 2 personal references.&quot;},
+{name:&quot;Insurance, 2 options (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;insurance&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you about comprehensive insurance, the last piece before settlement. Two options in there. Reply SORT IT and I'll get quotes to you today.&quot;},
+{name:&quot;Insurance, 2 options (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;insurance&quot;, hotkeys:[], body:&quot;Email and SMS sent: insurance requirement explained with both options. Certificate of Currency outstanding.&quot;},
+{name:&quot;Suncorp insurance quotes (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;suncorp&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed your Suncorp quotes through. 4 options, all monthly, excess $1,650. Give me a call and I'll run you through the differences.&quot;},
+{name:&quot;Suncorp insurance quotes (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;suncorp&quot;, hotkeys:[], body:&quot;Email and SMS sent: Suncorp quotes issued, Options A to D, market value, excess $1,650, PDS attached. Awaiting client selection.&quot;},
+{name:&quot;Settlement, Ausloans compliance (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;settlement&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you about your settlement documents. The Ausloans compliance pack is in your inbox via DocuSign, 4 to sign. Check your junk folder if you can't see it. Lender contracts come next and I'll call you first.&quot;},
+{name:&quot;Settlement, Ausloans compliance (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;settlement&quot;, hotkeys:[], body:&quot;Email and SMS sent: settlement stage. Ausloans compliance pack issued via DocuSign: Finance Application Form, Comprehensive Insurance Disclosure Notice, Credit Proposal, Mandatory Disclosure Notice. Lender contracts to follow. 2 references requested. ID verification pending contract signing.&quot;},
+{name:&quot;COC forward, attachments explainer (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;coc&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed your documents through with an explanation of each one. Have a read and let me know if anything looks wrong. First payment comes out in the next 24 to 48 hours.&quot;},
+{name:&quot;COC forward, attachments explainer (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;coc&quot;, hotkeys:[], body:&quot;Email and SMS sent: COC and disclosure documents forwarded with attachment explanations, Distributor Disclosure Document included. First direct debit advised, 24 to 48 hours, recurring monthly.&quot;},
+{name:&quot;Settled, congratulations (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;settled&quot;, hotkeys:[], body:&quot;Congratulations {First name}, just emailed you to confirm your loan has settled and the car is officially yours. The dealership will be in touch shortly.&quot;},
+{name:&quot;Settled, congratulations (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;settled&quot;, hotkeys:[], body:&quot;Email and SMS sent: settlement confirmation. Dealership handling delivery. Review request included.&quot;},
+{name:&quot;Decline, banking conduct (text)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;sms&quot;, grp:&quot;decline&quot;, hotkeys:[], body:&quot;Hi {First name}, just emailed you about your application. Recent banking conduct is holding it up so it's a no for right now, but it can improve. Give me a call and I'll run you through the options.&quot;},
+{name:&quot;Decline, banking conduct (CRM note)&quot;, cat:&quot;Ausloans&quot;, ch:&quot;crm&quot;, grp:&quot;decline&quot;, hotkeys:[], body:&quot;Email and SMS sent: declined, banking conduct. Client advised to re-present in 3 months with fresh statements. Alternative discussed: application in the name of a working friend or family member.&quot;}
 ];
 
 /* ================= STATE · autosaved to this browser (DashBroker hub tab) ================= */
 let state = { templates: STARTER.map(t =&gt; ({id:uid(), name:t.name, cat:t.cat, ch:t.ch||'email', grp:t.grp||'', hotkeys:[...t.hotkeys], body:t.body})) };
 /* ── autosave · hub tab only. The .ahk export is untouched and is still the portable copy. ── */
 const RD_KEY = 'hub_replydeck_v1';
+const SEED_V = 2;   /* bump this whenever stock templates are added to STARTER */
 function rdSave(){
   try{
-    localStorage.setItem(RD_KEY, JSON.stringify({v:1, at:Date.now(),
+    localStorage.setItem(RD_KEY, JSON.stringify({v:1, seedV:SEED_V, at:Date.now(),
       templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, ch:chOf(t), grp:t.grp||'', hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
   }catch(e){}
 }
@@ -3755,6 +3758,29 @@ function rdRestore(){
       return nt;
     });
     state = {templates: tpl}; fills = nf;
+    /* backfill · add stock templates this saved library has never seen, keep every edit intact */
+    const savedSeed = +(sv.seedV || 0);
+    if(savedSeed &lt; SEED_V){
+      /* templates saved before channels existed carry no stage · adopt it from the stock
+         entry of the same name so an email you have already edited still pairs with its
+         new text and CRM note. Body, name and hotkeys are never touched. */
+      const stock = {};
+      STARTER.forEach(t =&gt; { stock[(t.name || '').trim().toLowerCase()] = t; });
+      state.templates.forEach(t =&gt; {
+        const st = stock[(t.name || '').trim().toLowerCase()];
+        if(!st) return;
+        if(!t.grp &amp;&amp; st.grp) t.grp = st.grp;
+        if(!t.ch &amp;&amp; st.ch) t.ch = st.ch;
+      });
+      const have = {};
+      state.templates.forEach(t =&gt; { have[(t.name || '').trim().toLowerCase()] = true; });
+      const added = STARTER.filter(t =&gt; !have[(t.name || '').trim().toLowerCase()]);
+      added.forEach(t =&gt; state.templates.push({id:uid(), name:t.name, cat:t.cat, ch:t.ch||'email', grp:t.grp||'', hotkeys:[...t.hotkeys], body:t.body}));
+      if(added.length) setTimeout(function(){
+        try{ toast(added.length + ' new templates added to your library, including the matching texts and CRM notes.', 'ok', 5200); }catch(e){}
+      }, 400);
+      rdSave();
+    }
     return true;
   }catch(e){ return false; }
 }
@@ -4512,6 +4538,276 @@ renderAll();
 &lt;/body&gt;
 &lt;/html&gt;
 "></iframe></template>
+    <template id="tpl-crm"><iframe id="frame-crm" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;&gt;
+&lt;style&gt;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap');
+:root{--paper:#0d0f14;--card:#151823;--card2:#11141d;--ink:#e9ecf2;--dim:#b9c0d4;--mut:#6f7689;--line:#262c3a;--teal:#3ddc97;--gold:#ffb454;--blue:#4f9cf7;--pink:#f277a8;--red:#ff6b81;}
+*{box-sizing:border-box;font-family:'Poppins',system-ui,sans-serif;}
+body{margin:0;background:var(--paper);color:var(--ink);padding:24px 26px 60px;}
+h1{font-size:20px;margin:0 0 4px;}
+.sub{font-size:12.5px;color:var(--mut);margin-bottom:20px;line-height:1.55;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden;}
+.ch{padding:13px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.ch h2{font-size:14px;margin:0;}
+.cb{padding:15px 17px;}
+label{display:block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600;margin:0 0 6px;}
+input[type=text],select,textarea{width:100%;background:#171b26;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:9px 11px;font-size:13px;font-family:inherit;}
+textarea{line-height:1.55;resize:vertical;}
+.btn{background:linear-gradient(135deg,#128a5f,#17a874);color:#0b0d12;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line);font-weight:600;}
+.btn.blue{background:linear-gradient(135deg,#2b6cb8,#4f9cf7);color:#0b0d12;}
+.btn:hover{filter:brightness(1.09);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.hint{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px;}
+.toast{position:fixed;bottom:20px;right:20px;background:#12291f;color:var(--teal);border:1px solid #1f5c46;border-radius:8px;padding:10px 15px;font-size:12.5px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;}
+.toast.show{opacity:1;}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;CRM Note&lt;/h1&gt;
+&lt;div class=&quot;sub&quot;&gt;Type it however it comes out. Hit Tidy and it comes back clean enough to paste into the CRM. No brackets, no dashes, relaxed grammar.&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Your rough notes&lt;/h2&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;textarea id=&quot;raw&quot; rows=&quot;9&quot; placeholder=&quot;spoke to client today, they want a 4wd, waiting on payslips, said theyd send tonight. seems keen. told him bout the coin thing&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;row&quot; style=&quot;margin-top:10px;&quot;&gt;
+      &lt;button class=&quot;btn&quot; onclick=&quot;doTidy()&quot;&gt;Tidy it up&lt;/button&gt;
+      &lt;button class=&quot;btn blue&quot; id=&quot;aiBtn&quot; onclick=&quot;doAi()&quot;&gt;Polish with AI&lt;/button&gt;
+      &lt;button class=&quot;btn ghost&quot; onclick=&quot;document.getElementById('raw').value='';document.getElementById('out').value='';&quot;&gt;Clear&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;hint&quot; id=&quot;aiHint&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Ready for the CRM&lt;/h2&gt;&lt;button class=&quot;btn&quot; onclick=&quot;copyTxt(document.getElementById('out').value)&quot;&gt;Copy&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;textarea id=&quot;out&quot; rows=&quot;9&quot; placeholder=&quot;your cleaned note lands here…&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;hint&quot; id=&quot;tidyChanges&quot; style=&quot;margin-bottom:6px;&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;hint&quot;&gt;Read it before you paste. It fixes spelling and grammar, it doesn't change what you said or invent anything. Every word it swapped is listed above so nothing changes behind your back.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
+
+&lt;script&gt;
+
+const WORDS=(&quot;the be to of and a in that have i it for not on with he as you do at this but his by from they we say her she or an will my one all would there their what so up out if about who get which go me when make can like time no just him know take people into year your good some could them see other than then now look only come its over think also back after use two how our work first well way even new want because any these give day most us is are was were been has had did does said told call called ask asked send sent put keep set need got made find found feel felt seem left right high low big small long short old young next last same different great little own under while before between through during without within against again ever never always often sometimes usually really quite very much many more less least best better worse able sure clear happy sorry thank thanks please hi hey hello okay yes yeah nope maybe &quot; +
+&quot;client customer clients customers broker brokers lender lenders finance financing loan loans repayment repayments rate rates interest term terms application applications apply applied approval approved approvals preapproval preapproved decline declined declines settlement settled settle settling submit submitted submission submissions assess assessment assessed serviceability affordability document documents documentation doc docs payslip payslips statement statements bank banking account accounts credit score scores equifax bureau enquiry enquiries enquire referral referrer lead leads deal deals file files note notes crm followup follow following followed chase chased chasing quote quoted quoting insurance comprehensive certificate currency vehicle vehicles car cars truck ute van caravan boat marine motorbike dealership dealer private sale purchase purchased buying bought invoice deposit trade tradein balloon security secured unsecured personal commercial consumer income employment employer employed casual permanent fulltime parttime contract abn gst director business turnover expenses living liabilities liability asset assets mortgage rent renting board boarding homeowner conduct gambling default defaults arrears hardship discharged bankruptcy paid unpaid limit balance outstanding weekly fortnightly monthly annual annually yearly month months week weeks year years day days morning afternoon today tomorrow yesterday tonight monday tuesday wednesday thursday friday saturday sunday phone mobile text sms email emailed voicemail message messaged left spoke speaking speak talked talking call calls calling contacted contact reached response responded reply replied answer answered available unavailable busy waiting wait waited sitting hold ready sorted sorting stuff things thing something anything nothing everything relaxed calm confident nervous stressed struggle struggled struggling script scripts objection objections rejection tone pace pause silence listen listened listening confirm confirmed confirmation update updated updates progress process processing&quot; ).split(/\s+/).filter(Boolean);
+const EXTRA2=(&quot;card cards licence license licences licenses medicare passport identification id photo photos copy copies front back side page pages scan scanned upload uploads attach attached attachment file files folder link links form forms field fields box boxes list lists item items number numbers amount amounts total totals date dates time times name names address addresses suburb state postcode country phone email mobile home work title role position job jobs company companies employer employers industry occupation salary wage wages hourly overtime bonus commission allowance super superannuation tax taxes gross net weekly fortnight fortnightly monthly quarterly annual pay payment payments repay repayment repayments instalment installment direct debit credit card cards limit limits balance balances outstanding arrears overdue default defaults judgement bankruptcy insolvency discharge discharged writ paid unpaid clear cleared clearing settle settled settlement settlements approve approved approval approvals decline declined declines conditional unconditional preapproval preapproved submit submitted submission lodge lodged lodgement assess assessed assessment assessments verify verified verification confirm confirmed reference references referee guarantor guarantors applicant applicants coapplicant spouse partner dependant dependants dependent dependents household expenses expense living rent rental mortgage mortgages board boarding owner owners homeowner tenant landlord property properties asset assets liability liabilities equity deposit deposits trade tradein invoice invoices quote quotes quoted policy policies premium excess comprehensive insurance insurer insured cover covered coverage roadside gap warranty vehicle vehicles car cars truck trucks ute utes van vans suv wagon sedan hatch hatchback motorbike bike caravan camper trailer boat boats jetski odometer kilometres kms kays rego registration vin nvic make model year build compliance condition used new demo dealer dealership private seller supplier finance financed financing lender lenders bank banks broker brokers aggregator panel product products guide guides matrix tier tiers band bands grade grades risk profile profiles score scores bureau equifax illion experian veda enquiry enquiries shopping conduct gambling bnpl afterpay zip humm klarna payday sacc centrelink pension jobseeker parenting family benefit benefits child children dependants&quot; ).split(/\s+/).filter(Boolean);
+const EXTRA=(&quot;receive received receiving separate separately definitely occurred accommodation because their there they're recommend recommended immediately probably actually especially particularly unfortunately hopefully basically obviously seriously certainly currently recently previously already almost enough perhaps instead however therefore though although unless until since while during despite towards behind beside besides above below across around along among within without outside inside forward backward together apart aside ahead behind sometimes anyway somewhere anywhere everywhere nowhere everyone anyone someone nobody everybody somebody himself herself themselves yourself ourselves myself itself &quot; +
+&quot;asked asking asks answered answering calling called calls chasing chased checking checked checks sending sending sends sent giving gives given taking takes taken getting gets making makes made putting puts running runs ran going goes went coming comes came seeing sees seen looking looks looked needing needs needed wanting wants wanted trying tries tried working works worked helping helps helped talking talks talked telling tells told meeting meets met paying pays paid buying buys bought selling sells sold moving moves moved starting starts started finishing finished waiting waits waited holding holds held bringing brings brought leaving leaves left keeping keeps kept letting lets writing writes wrote reading reads spending spends spent saving saves saved earning earns earned owing owes owed borrowing borrowed lending lends lent &quot; +
+&quot;happening happens happened understanding understand understood explaining explained explains organising organised organise arranging arranged arrange booking booked books confirming confirmed confirms uploading uploaded upload downloading downloaded signing signed signs completing completed complete completing checking reviewing reviewed review processing processed submitting submitted resubmit approving approved declining declined settling settled quoting quoted assessing assessed verifying verified providing provided provide requesting requested request receiving requiring required require missing missed miss&quot;).split(/\s+/).filter(Boolean);
+const BASE=WORDS.concat(EXTRA).concat(EXTRA2);
+const EXTRA_WORDS=&quot;about advise advised advising afternoon again almost already annoyed answered apologies approx approximately around arvo attach attached attaching auction audi back balloon band bands bank began begin beginning bike bloke bmw bottom brother buffer buzz cab callback came camper caravan centrelink chase chased chasing cheers chuffed come coming concern concerns confirmed confirming confused consolidate consolidation couple dad daughter dealer dealership demo demonstrator deposit difficult disbursed disbursement disconnected doc docs docusign dual eager earlier easy emailed emailing end engaged enough escalate escalated esign evening exactly explain explained explaining family fast few finish finished folks ford fortnight friend front frustrated funded funding gave get getting give given glad gone got guess guy happy hatch hem hesitant holden hope hoping husband hyundai id impatient invoice invoiced issue issues jetski jobseeker keen kia kilometres kms lady later licence license lots many mate mazda medicare mention mentioned mercedes message messaged middle mileage missed mitsubishi morning motorbike msg mum nah nearly nissan nonprime nope odometer ok okay once outstanding paperwork parents partner passport patient payout payouts payslip payslips pending pension please plenty prime problem problems progressed progressing queries query question questions quick quote quoted quotes rang rapt reasonable receipt reckon refinance refinanced registration rego residual retail ring roughly rung salesman salesperson sedan send sending sent settle settles settling several shortfall side sign signature signed signing sister slow son soon sorry spouse start statements still stoked subaru subprime suppose surplus suv ta tesla text texted texting thanks tier tiers today tonight top toyota trade tradein tradie trailer tray twice unanswered understanding unhappy unsure upload uploaded uploading upset ute verification verified verify vin vm voicemail volkswagen wagon weekday weekend went wholesale wife wish wondered wondering yard yeah yep yet&quot;.split(&quot; &quot;);
+const DICT=new Set(BASE.concat(EXTRA_WORDS));
+BASE.forEach(w=&gt;{
+  if(w.length&lt;3)return;
+  if(!/s$/.test(w))DICT.add(w+&quot;s&quot;);
+  if(/[^aeiou]y$/.test(w))DICT.add(w.slice(0,-1)+&quot;ies&quot;);
+  if(/(s|x|z|ch|sh)$/.test(w))DICT.add(w+&quot;es&quot;);
+  if(w.endsWith(&quot;e&quot;)){DICT.add(w+&quot;d&quot;);if(!w.endsWith(&quot;ee&quot;)&amp;&amp;w.length&gt;3)DICT.add(w.slice(0,-1)+&quot;ing&quot;);}
+  else {DICT.add(w+&quot;ed&quot;);DICT.add(w+&quot;ing&quot;);}
+});
+&quot;be being been am is are was were do does did done doing go going gone goes went have has had having he she it we they you i me my his her our your an as at by if in of on or so to up us no not now new one two ten all any few own too very can may might must shall should will would could each both such only same than that this these those what when where which who whom whose why how&quot;.split(&quot; &quot;).forEach(w=&gt;DICT.add(w));
+const FIX={&quot;ith&quot;:&quot;with&quot;,&quot;wiht&quot;:&quot;with&quot;,&quot;witht&quot;:&quot;with&quot;,&quot;hte&quot;:&quot;the&quot;,&quot;taht&quot;:&quot;that&quot;,&quot;fomr&quot;:&quot;from&quot;,&quot;form the&quot;:&quot;from the&quot;,&quot;recieve&quot;:&quot;receive&quot;,&quot;recieved&quot;:&quot;received&quot;,&quot;seperate&quot;:&quot;separate&quot;,&quot;definately&quot;:&quot;definitely&quot;,&quot;occured&quot;:&quot;occurred&quot;,&quot;teh&quot;:&quot;the&quot;,&quot;adn&quot;:&quot;and&quot;,&quot;alot&quot;:&quot;a lot&quot;,&quot;thier&quot;:&quot;their&quot;,&quot;becuase&quot;:&quot;because&quot;,&quot;acomodation&quot;:&quot;accommodation&quot;,&quot;doesnt&quot;:&quot;doesn't&quot;,&quot;dont&quot;:&quot;don't&quot;,&quot;wont&quot;:&quot;won't&quot;,&quot;cant&quot;:&quot;can't&quot;,&quot;isnt&quot;:&quot;isn't&quot;,&quot;wasnt&quot;:&quot;wasn't&quot;,&quot;didnt&quot;:&quot;didn't&quot;,&quot;couldnt&quot;:&quot;couldn't&quot;,&quot;shouldnt&quot;:&quot;shouldn't&quot;,&quot;wouldnt&quot;:&quot;wouldn't&quot;,&quot;havent&quot;:&quot;haven't&quot;,&quot;hasnt&quot;:&quot;hasn't&quot;,&quot;theyre&quot;:&quot;they're&quot;,&quot;youre&quot;:&quot;you're&quot;,&quot;im&quot;:&quot;I'm&quot;,&quot;ive&quot;:&quot;I've&quot;,&quot;tommorow&quot;:&quot;tomorrow&quot;,&quot;tomorow&quot;:&quot;tomorrow&quot;,&quot;untill&quot;:&quot;until&quot;,&quot;alright&quot;:&quot;all right&quot;,&quot;aswell&quot;:&quot;as well&quot;,&quot;ok&quot;:&quot;okay&quot;,&quot;theyd&quot;:&quot;they'd&quot;,&quot;youd&quot;:&quot;you'd&quot;,&quot;hed&quot;:&quot;he'd&quot;,&quot;itd&quot;:&quot;it'd&quot;,&quot;thatd&quot;:&quot;that'd&quot;,&quot;theyve&quot;:&quot;they've&quot;,&quot;youve&quot;:&quot;you've&quot;,&quot;weve&quot;:&quot;we've&quot;,&quot;wouldve&quot;:&quot;would've&quot;,&quot;couldve&quot;:&quot;could've&quot;,&quot;shouldve&quot;:&quot;should've&quot;,&quot;theyll&quot;:&quot;they'll&quot;,&quot;youll&quot;:&quot;you'll&quot;,&quot;itll&quot;:&quot;it'll&quot;,&quot;thats&quot;:&quot;that's&quot;,&quot;whats&quot;:&quot;what's&quot;,&quot;hes&quot;:&quot;he's&quot;,&quot;shes&quot;:&quot;she's&quot;,&quot;lets&quot;:&quot;let's&quot;,&quot;arent&quot;:&quot;aren't&quot;,&quot;werent&quot;:&quot;weren't&quot;,&quot;aint&quot;:&quot;isn't&quot;};
+function known(w){return DICT.has(w);}
+function keepCase(src,rep){return /^[A-Z]/.test(src)?rep.charAt(0).toUpperCase()+rep.slice(1):rep;}
+function lev(a,b,max){
+  if(Math.abs(a.length-b.length)&gt;max)return max+1;
+  const m=a.length,n=b.length;
+  const d=[];
+  for(let i=0;i&lt;=m;i++){d.push(new Array(n+1).fill(0));d[i][0]=i;}
+  for(let j=0;j&lt;=n;j++)d[0][j]=j;
+  for(let i=1;i&lt;=m;i++){
+    let best=Infinity;
+    for(let j=1;j&lt;=n;j++){
+      const cost=a[i-1]===b[j-1]?0:1;
+      let v=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+cost);
+      if(i&gt;1&amp;&amp;j&gt;1&amp;&amp;a[i-1]===b[j-2]&amp;&amp;a[i-2]===b[j-1])v=Math.min(v,d[i-2][j-2]+1);
+      d[i][j]=v;
+      if(v&lt;best)best=v;
+    }
+    if(best&gt;max)return max+1;
+  }
+  return d[m][n];
+}
+function bestFix(w,maxD){
+  const M=maxD||2;
+  const low=w.toLowerCase();
+  if(known(low))return {w:low,cost:0};
+  if(low.length&lt;3)return null;
+  let bd=M+1,cands=[];
+  for(const d of DICT){
+    if(Math.abs(d.length-low.length)&gt;M)continue;
+    const dist=lev(low,d,M);
+    if(dist&lt;bd){bd=dist;cands=[d];}
+    else if(dist===bd&amp;&amp;cands.indexOf(d)&lt;0)cands.push(d);
+  }
+  if(!cands.length||bd&gt;M)return null;
+  if(bd===2&amp;&amp;low.length&lt;7)return null;
+  if(bd===3&amp;&amp;low.length&lt;9)return null;
+  if(cands.length&gt;1){
+    const score=d=&gt;(d[0]===low[0]?4:0)+(d[d.length-1]===low[low.length-1]?2:0)+(d.length===low.length?1:0);
+    let bestScore=-1,winners=[];
+    cands.forEach(d=&gt;{const sc=score(d);if(sc&gt;bestScore){bestScore=sc;winners=[d];}else if(sc===bestScore)winners.push(d);});
+    if(winners.length&gt;1)return null;
+    cands=winners;
+  }
+  return {w:cands[0],cost:bd};
+}
+function splitCompound(w){
+  const low=w.toLowerCase();
+  if(low.length&lt;7||/[0-9$%@]/.test(low))return null;
+  let best=null;
+  for(let k=2;k&lt;=low.length-2;k++){
+    const la=low.slice(0,k), lb=low.slice(k);
+    const a=(la.length&lt;3)?(known(la)?{w:la,cost:0}:null):bestFix(la,la.length&gt;=9?3:2);
+    const b=(lb.length&lt;3)?(known(lb)?{w:lb,cost:0}:null):bestFix(lb,lb.length&gt;=9?3:2);
+    if(!a||!b)continue;
+    if(a.cost&gt;0&amp;&amp;b.cost&gt;0)continue;
+    const anchor=(a.cost===0)?a.w:b.w;
+    if(anchor.length&lt;3)continue;
+    const cost=a.cost+b.cost;
+    if(cost&gt;3)continue;
+    if(!best||cost&lt;best.cost)best={cost,text:a.w+&quot; &quot;+b.w,at:k};
+  }
+  return best;
+}
+let CHANGES=[];
+function noteChange(from,to){ if(from.toLowerCase()!==String(to).toLowerCase()) CHANGES.push(from+&quot; \u2192 &quot;+to); }
+function correct(w){
+  const low=w.toLowerCase();
+  if(FIX[low]){const r=keepCase(w,FIX[low]);noteChange(w,r);return r;}
+  if(known(low))return w;
+  if(/[0-9$%@/\\]/.test(w)||w.length&lt;4)return w;
+  const single=bestFix(low,2);
+  if(single&amp;&amp;single.cost&lt;=1){const r=keepCase(w,single.w);noteChange(w,r);return r;}
+  const sp=splitCompound(low);
+  if(sp){const r=keepCase(w,sp.text);noteChange(w,r);return r;}
+  if(single){const r=keepCase(w,single.w);noteChange(w,r);return r;}
+  return w;
+}
+function soloFixable(t){
+  const l=t.toLowerCase();
+  if(FIX[l])return true;
+  if(l.length&lt;4)return false;          // correct() won't touch these on their own
+  return !!bestFix(l,1);
+}
+function rebalance(tokens){
+  const out=[];
+  for(let i=0;i&lt;tokens.length;i++){
+    const a=tokens[i],b=tokens[i+1];
+    const aBad=a&amp;&amp;!known(a.toLowerCase()), bBad=b&amp;&amp;!known(b.toLowerCase());
+    const soloOk=(!aBad||soloFixable(a))&amp;&amp;(!bBad||soloFixable(b));
+    if(b&amp;&amp;!soloOk&amp;&amp;/^[a-z]+$/i.test(a)&amp;&amp;/^[a-z]+$/i.test(b)&amp;&amp;(aBad||bBad)){
+      const joined=(a+b).toLowerCase();
+      if(known(joined)){out.push(keepCase(a,joined));i++;continue;}
+      let split=null;
+      for(let k=1;k&lt;joined.length;k++){
+        const l=joined.slice(0,k),r=joined.slice(k);
+        if(l.length&gt;=2&amp;&amp;r.length&gt;=2&amp;&amp;known(l)&amp;&amp;known(r)){split=[l,r];break;}
+      }
+      if(!split){const sc=splitCompound(joined);if(sc&amp;&amp;sc.at!==a.length)split=sc.text.split(&quot; &quot;);}
+      if(split){out.push(keepCase(a,split[0]));out.push(split[1]);i++;continue;}
+    }
+    out.push(a);
+  }
+  return out;
+}
+
+
+function tidy(raw){
+  CHANGES=[];
+  if(!raw)return &quot;&quot;;
+  let t=String(raw).replace(/\r\n/g,&quot;\n&quot;);
+  t=t.split(&quot;\n&quot;).map(line=&gt;{
+    let s=line.replace(/[ \t]+/g,&quot; &quot;).trim();
+    if(!s)return &quot;&quot;;
+    const toks=s.split(&quot; &quot;).filter(Boolean);
+    const cores=[],pre=[],post=[];
+    toks.forEach(tk=&gt;{
+      const m=tk.match(/^([^A-Za-z0-9'$]*)(.*?)([^A-Za-z0-9'%]*)$/);
+      pre.push(m?m[1]:&quot;&quot;);cores.push(m?m[2]:tk);post.push(m?m[3]:&quot;&quot;);
+    });
+    let fixed=rebalance(cores);
+    const sameShape=(fixed.length===cores.length);
+    // proper nouns are left alone · a capital after the first word means a name, a lender, a place
+    fixed=fixed.map((w,i)=&gt;{
+      if(i&gt;0&amp;&amp;/^[A-Z]/.test(w))return w;
+      if(i===0&amp;&amp;/^[A-Z]/.test(w)&amp;&amp;w.length&gt;3&amp;&amp;!known(w.toLowerCase()))return w;
+      return correct(w);
+    });
+    s=sameShape?fixed.map((w,i)=&gt;pre[i]+w+post[i]).join(&quot; &quot;):fixed.join(&quot; &quot;);
+    s=s.replace(/\bi\b/g,&quot;I&quot;);
+    s=s.replace(/\s+([,.;:!?])/g,&quot;$1&quot;).replace(/([,;:])(?=\S)/g,&quot;$1 &quot;).replace(/([.!?])(?=[A-Za-z])/g,&quot;$1 &quot;);
+    s=s.replace(/(^|[.!?]\s+)([a-z])/g,(m,p,ch)=&gt;p+ch.toUpperCase());
+    if(!/[.!?:,]$/.test(s)&amp;&amp;s.split(&quot; &quot;).length&gt;2)s+=&quot;.&quot;;
+    return s;
+  }).join(&quot;\n&quot;);
+  return t.replace(/\n{3,}/g,&quot;\n\n&quot;).trim();
+}
+function hubKey(){return (localStorage.getItem('claude_api_key')||'').trim();}
+function hubModel(){const m=localStorage.getItem('anthropic_model');return ['claude-opus-4-7','claude-opus-4-6','claude-sonnet-4-6','claude-haiku-4-5-20251001'].includes(m)?m:'claude-opus-4-7';}
+async function aiPolish(text,instruction,btn){
+  const key=hubKey();
+  if(!key){toast('No API key \u00b7 using local tidy');return null;}
+  const old=btn?btn.textContent:'';
+  if(btn){btn.disabled=true;btn.textContent='Polishing\u2026';}
+  try{
+    const r=await fetch(&quot;https://api.anthropic.com/v1/messages&quot;,{
+      method:&quot;POST&quot;,
+      headers:{&quot;Content-Type&quot;:&quot;application/json&quot;,&quot;x-api-key&quot;:key,&quot;anthropic-version&quot;:&quot;2023-06-01&quot;,&quot;anthropic-dangerous-direct-browser-access&quot;:&quot;true&quot;},
+      body:JSON.stringify({model:hubModel(),max_tokens:1200,system:instruction,messages:[{role:&quot;user&quot;,content:text}]})
+    });
+    const d=await r.json();
+    if(d.error){toast('AI error \u00b7 '+(d.error.message||'').slice(0,40));return null;}
+    const out=(d.content||[]).filter(x=&gt;x.type==='text').map(x=&gt;x.text).join('\n').trim();
+    return out||null;
+  }catch(e){toast('AI unreachable');return null;}
+  finally{if(btn){btn.disabled=false;btn.textContent=old;}}
+}
+function toast(m){const t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');setTimeout(()=&gt;t.classList.remove('show'),1900);}
+function copyTxt(s){if(navigator.clipboard)navigator.clipboard.writeText(s).then(()=&gt;toast('Copied \u2713'),()=&gt;toast('Select and copy manually'));else toast('Select and copy manually');}
+
+function doTidy(){
+  const raw=document.getElementById('raw').value;
+  if(!raw.trim()){toast('Nothing to tidy');return;}
+  document.getElementById('out').value=tidy(raw);
+  renderChanges();
+  toast('Tidied ✓');
+}
+function renderChanges(){
+  const el=document.getElementById('tidyChanges'); if(!el)return;
+  const seen=[],uniq=[];
+  CHANGES.forEach(c=&gt;{ if(seen.indexOf(c)&lt;0){seen.push(c);uniq.push(c);} });
+  if(!uniq.length){ el.innerHTML='Nothing needed changing. Your words are exactly as you typed them.'; return; }
+  el.innerHTML='&lt;b&gt;'+uniq.length+' word'+(uniq.length&gt;1?'s':'')+' changed, check them:&lt;/b&gt; '+
+    uniq.map(c=&gt;'&lt;span style=&quot;display:inline-block;background:#12291f;border:1px solid #1f5c46;border-radius:6px;padding:1px 7px;margin:2px 4px 2px 0;&quot;&gt;'+
+      c.replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;')+'&lt;/span&gt;').join('');
+}
+async function doAi(){
+  const raw=document.getElementById('raw').value;
+  if(!raw.trim()){toast('Nothing to polish');return;}
+  const local=tidy(raw);
+  document.getElementById('out').value=local;
+  const sys=&quot;You are cleaning up a finance broker's rough call notes so they can be pasted into a CRM. Fix spelling, grammar and punctuation. Keep it plain and relaxed, the way a person actually writes a note. Do not invent any facts, do not add detail that isn't there, do not add headings or bullet points, do not use brackets or dashes, do not use em dashes. Keep roughly the same length and the same order of information. Return only the cleaned note with no preamble.&quot;;
+  const out=await aiPolish(raw,sys,document.getElementById('aiBtn'));
+  if(out){document.getElementById('out').value=out;toast('Polished ✓');}
+}
+(function(){
+  const has=!!hubKey();
+  document.getElementById('aiBtn').style.display=has?'':'none';
+  document.getElementById('aiHint').textContent=has?'Tidy is instant and offline. AI polish reads better on messy notes and costs a fraction of a cent.':'Tidy works offline, always. Add an API key in Settings if you want the AI polish option too.';
+})();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe></template>
     <template id="tpl-closer"><iframe id="frame-closer" srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
@@ -15554,7 +15850,7 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
   // ═══ LAZY TOOL BOOT ═══
   // Call Script / Lender / Serviceability live in inert <template> tags so their
   // CDN payloads (Babel, React, pdf.js, tesseract, xlsx) only download on first open.
-  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck"};
+  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck",crm:"CRM Note"};
   function setBoot(on,label){
     var ov=document.getElementById("bootOverlay"),bb=document.getElementById("bootbar"),lb=document.getElementById("bootLabel");
     if(lb&&label)lb.textContent="Loading "+label+"…";

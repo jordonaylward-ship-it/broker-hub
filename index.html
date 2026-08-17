@@ -87,6 +87,7 @@ body.locked .shell{display:none}
 .nav-tab[data-tool=finance].on{background:#ffb454;border-color:#ffb454;color:#0b0d12}
 .nav-tab[data-tool=settings].on{background:#2fd6a5;border-color:#2fd6a5;color:#0b0d12}
 .nav-tab[data-tool=warranty].on{background:#e8b4f8;border-color:#e8b4f8;color:#0b0d12}
+.nav-tab[data-tool=replydeck].on{background:#c8e86b;border-color:#c8e86b;color:#0b0d12}
 .nav-tab:hover{border-color:#3a4160}
 </style>
 <style id="zoomcomp"></style>
@@ -159,6 +160,7 @@ body.locked .shell{display:none}
       <button class="nav-tab" data-tool="lender"><span class="ico">🏦</span> Lender Matcher</button>
       <button class="nav-tab" data-tool="serviceability"><span class="ico">📐</span> Serviceability</button>
       <button class="nav-tab" data-tool="warranty"><span class="ico">🛡️</span> Warranty</button>
+      <button class="nav-tab" data-tool="replydeck"><span class="ico">⚡</span> ReplyDeck</button>
       <button class="nav-tab" data-tool="finance"><span class="ico">💰</span> Finances</button>
       <button class="nav-tab" data-tool="settings"><span class="ico">⚙️</span> Settings</button>
     </div>
@@ -3249,6 +3251,1143 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
   });
   if(picked)buildOutputs();
 });
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></template>
+    <template id="tpl-replydeck"><iframe id="frame-replydeck" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;!-- ============================================================
+  REPLYDECK v1.6. A single file hotkey template studio
+  ------------------------------------------------------------
+  MAKE IT YOURS (for buyers who want to rebrand):
+  1. NAME + TAGLINE: edit the BRAND object near the top of the
+     script section below (search for &quot;REBRAND HERE&quot;). One place
+     changes the header, footer, cheat sheet and .ahk file header.
+  2. COLOURS: edit the :root block at the top of the styles
+     (also marked &quot;REBRAND HERE&quot;). Every colour lives there once.
+  3. FAVICON: the icon link in the head holds a small inline SVG.
+     Change its stroke and fill colours to match your palette.
+  Nothing else needs touching. No build step, no dependencies.
+  ============================================================ --&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;ReplyDeck. Type it once, paste it forever&lt;/title&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='7' fill='%23DFF0EA' stroke='%232E7D6B' stroke-width='2'/%3E%3Cpath d='M18 8 L12 17 h4 l-2 7 8-11 h-4 z' fill='%232E7D6B'/%3E%3C/svg%3E&quot;&gt;
+&lt;style&gt;
+  /* ============ REBRAND HERE: every colour lives in :root ============ */
+  :root{
+    --bg:#FAF6F0;            /* warm off-white page */
+    --card:#FFFFFF;          /* card surfaces */
+    --ink:#33302A;           /* main text */
+    --muted:#847C6E;         /* secondary text */
+    --line:#EAE2D4;          /* hairlines and borders */
+
+    --primary:#2E7D6B;       /* soft green for results, accents and actions */
+    --primary-soft:#DFF0EA;
+    --primary-line:#BCDCD1;
+
+    --info:#4F5FA8;          /* soft periwinkle for info chips */
+    --info-soft:#E7EBF9;
+    --info-line:#CBD3F0;
+
+    --rose:#B3524E;          /* soft rose for warnings and negatives */
+    --rose-soft:#F9E4E1;
+    --rose-line:#EFC7C2;
+
+    --butter-ink:#7A5E17;    /* soft butter for caveat callouts */
+    --butter-soft:#FBF1D3;
+    --butter-line:#EFDFAC;
+
+    --radius:15px;
+    --shadow:0 1px 2px rgba(51,48,42,.05), 0 10px 30px rgba(51,48,42,.07);
+    --mono:ui-monospace,'Cascadia Code',Consolas,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:22px 18px 60px}
+
+  /* header */
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .logo{width:42px;height:42px;flex:0 0 auto}
+  .brand h1{font-size:21px;margin:0;letter-spacing:-.01em}
+  .brand p{margin:1px 0 0;color:var(--muted);font-size:13.5px}
+  .headstat{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;margin-left:auto;text-align:right}
+  .headstat.dirty{color:var(--rose)}
+  .btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);
+       border-radius:11px;padding:9px 15px}
+  .btn:hover{border-color:#D5CCBB}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+  .btn.primary:hover{filter:brightness(1.05)}
+  .btn.ghost{background:transparent}
+  .btn.rose{color:var(--rose);border-color:var(--rose-line)}
+  .btn.rose:hover{background:var(--rose-soft)}
+  .btn.small{padding:6px 11px;font-size:13px;border-radius:9px}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+    outline:2.5px solid var(--primary);outline-offset:2px}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);
+        border-radius:999px;padding:5px;box-shadow:var(--shadow);flex-wrap:wrap;margin-bottom:18px}
+  .tab{flex:1;min-width:110px;text-align:center;border:0;background:transparent;color:var(--muted);
+       font:inherit;font-weight:600;font-size:14px;padding:9px 12px;border-radius:999px;cursor:pointer}
+  .tab[aria-selected=&quot;true&quot;]{background:var(--primary-soft);color:var(--primary)}
+  .tab:hover{color:var(--ink)}
+
+  /* cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+        box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+  .card h2{font-size:16px;margin:0 0 4px}
+  .card .sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+  label{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
+        color:var(--muted);margin:0 0 5px;font-weight:600}
+  input[type=text],input[type=search],select,textarea{
+    font:inherit;background:#FEFDFB;border:1px solid var(--line);color:var(--ink);
+    border-radius:11px;padding:9px 12px;width:100%}
+  textarea{font-family:var(--mono);font-size:13.5px;line-height:1.55;resize:vertical;min-height:190px}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .hint code,.key{font-family:var(--mono)}
+  .warn{color:var(--rose);font-size:13px;margin-top:6px}
+  .okline{color:var(--primary);font-size:13px;margin-top:6px}
+
+  /* chips */
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
+        font-size:12.5px;font-weight:600;border:1px solid var(--info-line);
+        background:var(--info-soft);color:var(--info)}
+  .chip.primary{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary)}
+  .chip.rose{background:var(--rose-soft);border-color:var(--rose-line);color:var(--rose)}
+  .chip.plain{background:transparent;border-color:var(--line);color:var(--muted)}
+  button.chip{cursor:pointer;font:inherit;font-size:12.5px;font-weight:600}
+  button.chip.on{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary)}
+  .chip.num{font-variant-numeric:tabular-nums}
+
+  .key{font-size:12px;padding:2px 9px 3px;border-radius:7px;border:1px solid var(--line);
+       border-bottom-width:3px;background:#F6F2EA;color:var(--ink);white-space:nowrap}
+  .key.assigned{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary)}
+
+  /* quick tab */
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .qfields{display:flex;flex-direction:column;gap:11px}
+  .preview{background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:13px;
+           padding:15px 16px;font-size:14.5px;white-space:pre-wrap;overflow-wrap:break-word;
+           min-height:190px;max-height:420px;overflow:auto}
+  .preview .tok{background:var(--butter-soft);border:1px dashed var(--butter-line);
+                color:var(--butter-ink);border-radius:6px;padding:0 4px;font-family:var(--mono);font-size:.92em}
+  .statrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .meta{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .wpmbox{display:flex;align-items:center;gap:8px;margin-left:auto}
+  .wpmbox input{width:74px;text-align:right;font-variant-numeric:tabular-nums}
+  .wpmbox span{font-size:12.5px;color:var(--muted)}
+  .kcombo{display:inline-flex;align-items:center;white-space:nowrap}
+  .kcap{display:inline-block;padding:2px 8px;border:1.5px solid var(--border);border-bottom-width:3.5px;
+    border-radius:7px;background:#fff;font-weight:700;font-size:11.5px;line-height:1.55;color:var(--ink);
+    font-variant-numeric:tabular-nums;box-shadow:0 1px 0 rgba(51,48,42,.04)}
+  .kcombo.kbad .kcap{border-color:var(--rose-border);color:var(--rose-ink);background:var(--rose-bg)}
+  .kplus{color:var(--muted);font-size:10.5px;margin:0 3px;font-weight:800}
+  .kor{color:var(--muted);font-size:11px;margin:0 7px}
+  .rowprev{white-space:pre-wrap;color:var(--ink);opacity:.78;font-size:13.5px;line-height:1.55;
+    margin:9px 2px 2px;cursor:pointer;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;border-radius:8px}
+  .rowprev.open{display:block;-webkit-line-clamp:unset;opacity:.92}
+  .rowprev:focus-visible{outline:2.5px solid var(--primary);outline-offset:3px}
+  .prevhint{color:var(--muted);font-size:11.5px;margin:3px 2px 0}
+  .kwrap{display:inline-flex;align-items:center;gap:5px;margin:0 8px 8px 0}
+  .kwrap b{cursor:pointer;color:var(--muted);font-size:12px;line-height:1}
+  .kwrap b:hover{color:var(--rose-ink)}
+  .capbox{margin-top:10px;padding:13px 15px;border-radius:12px;border:1.5px dashed var(--border);background:var(--card)}
+  .capbox.live{border-color:var(--primary);background:var(--primary-bg);border-style:solid}
+  .caplive{display:flex;align-items:center;gap:9px;min-height:32px;flex-wrap:wrap}
+  .capdots{color:var(--muted);font-size:13px}
+  .steps{margin:12px 0 2px;padding-left:22px}
+  .steps li{margin:7px 0}
+  .btnrow{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+
+  /* library */
+  .libbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .libbar input[type=search]{flex:1;min-width:180px}
+  .rows{display:flex;flex-direction:column;gap:9px}
+  .rowc{border:1px solid var(--line);border-radius:13px;background:#FEFDFB}
+  .rowc.open{border-color:var(--primary-line);box-shadow:var(--shadow)}
+  .rowhead{display:grid;grid-template-columns:minmax(140px,2fr) minmax(100px,1fr) auto auto;
+           gap:10px;align-items:center;padding:10px 12px}
+  .rowhead input{padding:7px 10px;border-radius:9px}
+  .rowkeys{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+  .rowbody{border-top:1px dashed var(--line);padding:13px 12px;display:flex;flex-direction:column;gap:11px}
+  .rowmeta{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .keyedit{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .keyedit .key{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;padding:4px 9px 5px}
+  .keyedit .key b{cursor:pointer;color:var(--muted);font-weight:400}
+  .keyedit .key b:hover{color:var(--rose)}
+  .keyedit .key.bad{background:var(--rose-soft);border-color:var(--rose-line);color:var(--rose)}
+  .addkey{display:flex;gap:6px}
+  .addkey input{width:150px;padding:6px 10px;border-radius:9px;font-family:var(--mono);font-size:13px}
+  .libfoot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);
+           margin-top:14px;padding-top:13px}
+  .empty{color:var(--muted);text-align:center;padding:34px 16px}
+
+  /* build */
+  .codebox{background:#F6F2EA;border:1px solid var(--line);border-radius:12px;padding:13px 14px;
+           font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre;overflow:auto;max-height:300px}
+  table.cheat{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.cheat th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+                 text-align:left;padding:7px 9px;border-bottom:1px solid var(--line)}
+  table.cheat td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.cheat td.k{white-space:nowrap;font-variant-numeric:tabular-nums}
+  .kmap{overflow-x:auto}
+  .kmap svg{display:block;margin:4px auto 0}
+
+  /* learn */
+  .learngrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .callout{background:var(--butter-soft);border:1px solid var(--butter-line);color:var(--butter-ink);
+           border-radius:13px;padding:14px 16px;font-size:14px}
+  .callout b{display:block;margin-bottom:4px}
+  table.decode{width:100%;border-collapse:collapse;font-size:14px}
+  table.decode td{padding:7px 8px;border-bottom:1px solid var(--line)}
+  table.decode td:first-child{font-family:var(--mono);font-weight:700;width:52px;color:var(--primary)}
+
+  footer{color:var(--muted);font-size:12.5px;text-align:center;margin-top:26px;line-height:1.7}
+
+  /* toast */
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#FBF8F3;
+         border-radius:12px;padding:11px 18px;max-width:560px;white-space:pre-line;display:none;z-index:30;
+         box-shadow:0 10px 32px rgba(51,48,42,.28);font-size:13.5px}
+  #toast.rose{background:var(--rose)}
+  #toast.ok{background:var(--primary)}
+
+  /* print: the app hides, the cheat sheet prints */
+  #printSheet{display:none}
+  @media print{
+    body{background:#fff}
+    .app{display:none}
+    #printSheet{display:block;font-size:12.5pt;color:#000}
+    #printSheet h1{font-size:16pt;margin:0 0 2pt}
+    #printSheet p{margin:0 0 12pt;color:#444}
+    #printSheet table{width:100%;border-collapse:collapse}
+    #printSheet th,#printSheet td{text-align:left;padding:5pt 6pt;border-bottom:1pt solid #ccc;font-size:11pt}
+    #printSheet .foot{margin-top:14pt;color:#666;font-size:9pt}
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .btn,.tab,.chip,.rowc{transition:background .13s,border-color .13s,color .13s}
+  }
+  @media (max-width:720px){
+    .qgrid,.learngrid{grid-template-columns:1fr}
+    .rowhead{grid-template-columns:1fr;gap:7px}
+    .rowkeys{justify-content:flex-start}
+    .wpmbox{margin-left:0}
+    .headstat{width:100%;text-align:left}
+  }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;wrap app&quot;&gt;
+
+  &lt;header&gt;
+    &lt;svg class=&quot;logo&quot; viewBox=&quot;0 0 32 32&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;26&quot; height=&quot;26&quot; rx=&quot;7&quot; fill=&quot;var(--primary-soft)&quot; stroke=&quot;var(--primary)&quot; stroke-width=&quot;2&quot;/&gt;
+      &lt;path d=&quot;M18 8 L12 17 h4 l-2 7 8-11 h-4 z&quot; fill=&quot;var(--primary)&quot;/&gt;
+    &lt;/svg&gt;
+    &lt;div class=&quot;brand&quot;&gt;
+      &lt;h1 id=&quot;brandName&quot;&gt;ReplyDeck&lt;/h1&gt;
+      &lt;p id=&quot;brandTag&quot;&gt;Your best replies, one keystroke away.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;div class=&quot;tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Sections&quot;&gt;
+    &lt;button class=&quot;tab&quot; role=&quot;tab&quot; id=&quot;tabBtnQuick&quot;   aria-controls=&quot;panelQuick&quot;   aria-selected=&quot;true&quot;&gt;Quick paste&lt;/button&gt;
+    &lt;button class=&quot;tab&quot; role=&quot;tab&quot; id=&quot;tabBtnLibrary&quot; aria-controls=&quot;panelLibrary&quot; aria-selected=&quot;false&quot;&gt;Library&lt;/button&gt;
+    &lt;button class=&quot;tab&quot; role=&quot;tab&quot; id=&quot;tabBtnBuild&quot;   aria-controls=&quot;panelBuild&quot;   aria-selected=&quot;false&quot;&gt;Build script&lt;/button&gt;
+    &lt;button class=&quot;tab&quot; role=&quot;tab&quot; id=&quot;tabBtnLearn&quot;   aria-controls=&quot;panelLearn&quot;   aria-selected=&quot;false&quot;&gt;Learn&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- ================= QUICK ================= --&gt;
+  &lt;section id=&quot;panelQuick&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;tabBtnQuick&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;Fill and send&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot;&gt;Pick a template, fill the blanks, copy. Works on any computer, no hotkeys needed here.&lt;/p&gt;
+      &lt;label for=&quot;qkSelect&quot;&gt;Template&lt;/label&gt;
+      &lt;select id=&quot;qkSelect&quot; aria-label=&quot;Choose a template&quot;&gt;&lt;/select&gt;
+      &lt;div class=&quot;qgrid&quot; style=&quot;margin-top:14px&quot;&gt;
+        &lt;div&gt;
+          &lt;label&gt;The blanks&lt;/label&gt;
+          &lt;div class=&quot;qfields&quot; id=&quot;qkFields&quot;&gt;&lt;/div&gt;
+          &lt;p class=&quot;hint&quot; id=&quot;qkHelper&quot;&gt;&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;label for=&quot;qkPreview&quot;&gt;Live preview&lt;/label&gt;
+          &lt;div class=&quot;preview&quot; id=&quot;qkPreview&quot; tabindex=&quot;0&quot; aria-live=&quot;off&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;statrow&quot;&gt;
+        &lt;span class=&quot;chip primary num&quot; id=&quot;qkBench&quot; title=&quot;Compared with typing it out at your speed&quot;&gt;&lt;/span&gt;
+        &lt;span class=&quot;meta&quot; id=&quot;qkMeta&quot;&gt;&lt;/span&gt;
+        &lt;span class=&quot;wpmbox&quot;&gt;
+          &lt;label for=&quot;qkWpm&quot; style=&quot;margin:0&quot;&gt;Your typing speed&lt;/label&gt;
+          &lt;input type=&quot;text&quot; id=&quot;qkWpm&quot; inputmode=&quot;decimal&quot; value=&quot;40&quot; aria-describedby=&quot;qkWpmErr&quot;&gt;
+          &lt;span&gt;wpm&lt;/span&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+      &lt;p class=&quot;warn&quot; id=&quot;qkWpmErr&quot; hidden&gt;That doesn't look like a number, so 40 wpm it is.&lt;/p&gt;
+      &lt;div class=&quot;btnrow&quot;&gt;
+        &lt;button class=&quot;btn primary&quot; id=&quot;btnQkCopy&quot;&gt;Copy filled message&lt;/button&gt;
+        &lt;button class=&quot;btn ghost&quot; id=&quot;btnQkEdit&quot;&gt;Edit in Library&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- ================= LIBRARY ================= --&gt;
+  &lt;section id=&quot;panelLibrary&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;tabBtnLibrary&quot; hidden&gt;
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;Your templates&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot;&gt;Rename anything inline. Open a row to edit the message and its hotkeys. Everything updates live.&lt;/p&gt;
+      &lt;div class=&quot;libbar&quot;&gt;
+        &lt;input type=&quot;search&quot; id=&quot;libSearch&quot; placeholder=&quot;Search templates…&quot; aria-label=&quot;Search templates&quot;&gt;
+        &lt;div class=&quot;chips&quot; id=&quot;libChips&quot; role=&quot;group&quot; aria-label=&quot;Filter by category&quot;&gt;&lt;/div&gt;
+        &lt;button class=&quot;btn small&quot; id=&quot;btnLibNew&quot;&gt;+ New template&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;rows&quot; id=&quot;libRows&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;libfoot&quot; id=&quot;libFoot&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- ================= BUILD ================= --&gt;
+  &lt;section id=&quot;panelBuild&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;tabBtnBuild&quot; hidden&gt;
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;Build your hotkey script&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot;&gt;One file powers every shortcut on your Windows PC. Messages with {blanks} ask for each one in a small box when you press their hotkey. Each box is titled with the message name, shows the sentence your answer lands in, and comes with your last answer already filled in.&lt;/p&gt;
+      &lt;div id=&quot;buildStatus&quot;&gt;&lt;/div&gt;
+      &lt;p class=&quot;warn&quot; id=&quot;dirtyNote&quot; hidden&gt;Your latest changes are not in a downloaded script yet. Download again when you’re done editing.&lt;/p&gt;
+      &lt;div class=&quot;btnrow&quot;&gt;
+        &lt;button class=&quot;btn primary&quot; id=&quot;btnDownloadAhk&quot;&gt;Download ReplyDeck.ahk&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;ol class=&quot;steps&quot;&gt;
+        &lt;li&gt;&lt;b&gt;Download the file&lt;/b&gt; with the button above.&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;Double click it once.&lt;/b&gt; A small green H appears down near your clock. That means it’s running and your hotkeys are live. It needs to stay running, and the free AutoHotkey v1 from autohotkey.com needs to be installed first.&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;Changed something in here?&lt;/b&gt; Download again, replace the old file, then right click that green H and choose &lt;b&gt;Reload This Script&lt;/b&gt;. Your hotkeys update on the spot.&lt;/li&gt;
+      &lt;/ol&gt;
+      &lt;p class=&quot;hint&quot; style=&quot;margin-top:12px&quot;&gt;Coming back another day to make changes? &lt;button class=&quot;btn small&quot; id=&quot;btnImportAhk&quot;&gt;Open my ReplyDeck.ahk&lt;/button&gt; brings your whole library back from the downloaded script, saved answers included.&lt;/p&gt;
+      &lt;input type=&quot;file&quot; id=&quot;fileAhk&quot; accept=&quot;.ahk,.txt&quot; hidden aria-hidden=&quot;true&quot;&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;Your keyboard, mapped&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot;&gt;Filled keys are taken. Empty keys are free real estate for your next template.&lt;/p&gt;
+      &lt;div class=&quot;kmap&quot; id=&quot;keyMap&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;chips&quot; id=&quot;keyOther&quot; style=&quot;margin-top:10px&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;Cheat sheet&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot;&gt;Print it and stick it next to your monitor for the first week. After that your fingers just know.&lt;/p&gt;
+      &lt;div class=&quot;btnrow&quot; style=&quot;margin-bottom:10px&quot;&gt;&lt;button class=&quot;btn small&quot; id=&quot;btnPrintCheat&quot;&gt;Print cheat sheet&lt;/button&gt;&lt;/div&gt;
+      &lt;table class=&quot;cheat&quot; id=&quot;cheatTable&quot;&gt;&lt;/table&gt;
+    &lt;/div&gt;
+
+  &lt;/section&gt;
+
+  &lt;!-- ================= LEARN ================= --&gt;
+  &lt;section id=&quot;panelLearn&quot; role=&quot;tabpanel&quot; aria-labelledby=&quot;tabBtnLearn&quot; hidden&gt;
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;What this actually is&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot; style=&quot;margin-bottom:0&quot;&gt;You already send the same messages every day: the first reply, the follow up, the payment details, the polite close off. ReplyDeck stores your best version of each one, and turns the whole set into a tiny AutoHotkey script. After that, pressing something like &lt;span class=&quot;key&quot;&gt;Ctrl+2&lt;/span&gt; pastes your follow up into any app on your PC. Email, CRM, live chat, anywhere the cursor blinks. Write it once at your best, then send it forever in two seconds.&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+      &lt;h2&gt;How the pieces fit&lt;/h2&gt;
+      &lt;div id=&quot;learnDiagram&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;learngrid&quot;&gt;
+      &lt;div class=&quot;card&quot; style=&quot;margin-bottom:0&quot;&gt;
+        &lt;h2&gt;The hotkey code, decoded&lt;/h2&gt;
+        &lt;p class=&quot;sub&quot;&gt;AutoHotkey writes shortcuts as symbols. This is the whole alphabet:&lt;/p&gt;
+        &lt;table class=&quot;decode&quot;&gt;
+          &lt;tr&gt;&lt;td&gt;^&lt;/td&gt;&lt;td&gt;&lt;b&gt;Ctrl&lt;/b&gt;, so &lt;code&gt;^7&lt;/code&gt; means Ctrl+7&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;+&lt;/td&gt;&lt;td&gt;&lt;b&gt;Shift&lt;/b&gt;, so &lt;code&gt;^+2&lt;/code&gt; means Ctrl+Shift+2&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;!&lt;/td&gt;&lt;td&gt;&lt;b&gt;Alt&lt;/b&gt;, so &lt;code&gt;!m&lt;/code&gt; means Alt+M&lt;/td&gt;&lt;/tr&gt;
+          &lt;tr&gt;&lt;td&gt;#&lt;/td&gt;&lt;td&gt;&lt;b&gt;Win&lt;/b&gt;, the Windows key&lt;/td&gt;&lt;/tr&gt;
+        &lt;/table&gt;
+        &lt;p class=&quot;hint&quot;&gt;Numpad keys are written out: &lt;code&gt;^Numpad5&lt;/code&gt; is Ctrl plus the 5 on your number pad. Pick combos your other apps don't already use. Ctrl with the digits and the numpad are usually safe.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;card&quot; style=&quot;margin-bottom:0&quot;&gt;
+        &lt;h2&gt;Where it shines&lt;/h2&gt;
+        &lt;p class=&quot;sub&quot;&gt;Anywhere you type the same thing twice:&lt;/p&gt;
+        &lt;div class=&quot;chips&quot;&gt;
+          &lt;span class=&quot;chip&quot;&gt;Email replies&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;Live chat&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;CRM notes&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;Quotes and pricing&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;Booking confirmations&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;Payment details&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;Ticketing&lt;/span&gt;
+          &lt;span class=&quot;chip&quot;&gt;DMs&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class=&quot;hint&quot; style=&quot;margin-top:12px&quot;&gt;The starter library is a working follow up system: first contact, three nudges, a close off, and the admin messages around them. Rewrite them in your own voice. That's the whole point.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot; style=&quot;margin-top:16px&quot;&gt;
+      &lt;h2&gt;The honest fine print&lt;/h2&gt;
+      &lt;div class=&quot;callout&quot;&gt;
+        &lt;b&gt;Know the blind spots.&lt;/b&gt;
+        Hotkeys only fire on Windows with AutoHotkey v1 installed and running. No AHK means no shortcuts, though the Copy buttons still work on any computer, Mac included. Pasting replaces whatever was on your clipboard. When a hotkey message has {blanks}, the script pops up a small box for each one and swaps your answers in before it pastes. Each box shows which message it belongs to and the sentence your answer lands in. Press Escape in any box to cancel the whole paste. Prefer no popups? Fill the blanks on the Quick paste tab and copy instead. One more thing: a template is a starting line, not a script. Tweak the first sentence so it sounds like you wrote it today.
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;footer&gt;
+    Works 100% offline. Nothing you type leaves this file. No server, no account, no tracking.&lt;br&gt;
+    General productivity tool, not professional advice. Check your workplace's software policy before installing AutoHotkey.&lt;br&gt;
+    &lt;span id=&quot;brandFoot&quot;&gt;ReplyDeck v1.0&lt;/span&gt;
+  &lt;/footer&gt;
+&lt;/div&gt;
+
+&lt;!-- print-only cheat sheet --&gt;
+&lt;div id=&quot;printSheet&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+
+&lt;div id=&quot;toast&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+
+&lt;script&gt;
+'use strict';
+/* ============ REBRAND HERE: one object for all the names ============ */
+const BRAND = {
+  name: 'ReplyDeck',
+  tagline: 'Type it once. Paste it forever.',
+  version: '1.6',
+  ahkFile: 'ReplyDeck.ahk'
+};
+
+/* ================= STARTER TEMPLATES (shipped set) ================= */
+/* All example content. Rewrite everything in your own voice. */
+const STARTER = [
+{name:&quot;Intro, first contact&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^`&quot;], body:&quot;Hi {First name},\n\nIt's Jordy from Ausloans. I'm one of the senior brokers here at Ausloans and been doing this a long time, so you're in good hands.\n\nI'll be looking after you moving forward to get you the finance you need.\n\nThe process can be fiddly, my job is to make it easier for you. Thank you for completing the links earlier with our admin team.\n\nI will give you a call shortly to see if you're able to get a loan.\n\nOutstanding documents:\n\nSpeak soon\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 1, checklist&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^1&quot;], body:&quot;Hi, just a quick follow-up on the checklist I sent.\n\nOnce received, I'll start your assessment right away.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 2, checking in&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^2&quot;], body:&quot;Just checking in. Have you had a chance to see the outstanding in the last message?\n\nA quick update or ETA is fine. If you need a hand, I can help.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 3, no response&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^3&quot;], body:&quot;I haven't had much response, and that's okay. I'm here when you need me.\n\nI understand life can get in the way. Let me know if you need more time and I'll check back when it suits you.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Follow up 4, closing off&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^4&quot;], body:&quot;Friendly heads up: we'll be closing off the enquiry shortly if I don't hear back, so we don't bother you while you're busy or if you're not looking for finance.\n\nIf you'd like to continue, let me know a good time today between 8:30am and 4:15pm for a quick call.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Approved, final form step&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^5&quot;], body:&quot;All looks good! Let's get you approved!\n\nPlease complete the final step by following link to finalise the lender questions so we can submit your application. From this point if all lenders look correct we can submit and it can take a day for the lender to come back to us:\nhttps://forms.gle/K9CWQ1jWBFGRphJ16\n\nTo avoid having to do it again, please complete correctly and answer all questions.\n\nIf you prefer to do this over the phone instead of the app form text me the word CALL and I will give you a call\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Form link only&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^6&quot;], body:&quot;https://forms.gle/bNkYnfxinjU3vcwM7&quot;},
+{name:&quot;Submitted confirmation&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^7&quot;], body:&quot;All submitted!\n\nWe should hear back from them within the next 24 hours, and I'll keep you updated every step of the way.\n\nAs we start this application process, don't go anywhere else and cancel anything else you have going so it doesn't affect the application form with the lender, everyone uses the same lenders it's the relationship with them that gets the deal across the line.&quot;},
+{name:&quot;Pre approval, Drive Approved&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^8&quot;], body:&quot;GREAT NEWS. After completing your assessment with me as your broker and submitting to the right lender we have found a lender that will lend to you! We just need a car invoice to make it a complete full approval.\n\nYou're pre approved with Ausloans / Drive Approved for {Approved amount}.\n\nAll we need now is for \&quot;Drive Approved\&quot; to send me your car choice and generate an invoice so the lender can see if it books well and we can get the full approval. Please sit tight, someone will be in touch with you!\n\nCongrats again.\n\nThree steps below so we can get the lender to draft contracts for you and get you on the road:\n\n1. \&quot;Drive Approved\&quot; will contact you to go through some car choices which they will provide an invoice and send to me.\n\n2. Insurance. As per your contracts, it is a requirement for your vehicle to be covered with comprehensive insurance at all times whilst under finance.\n\nPlease look out for that to be completed when it's sent to you. This will assist me to pull some quotes with Suncorp Insurance. Nothing will be set up until package options are discussed and I receive your approval. You can organise your own insurance if preferred, just let me know.\n\n3. References: We also require 2 personal references. They will need to confirm they know you.\nPlease be advised they cannot be living with you or each other. Please let them know they will be contacted.\n\nPlease supply their full name:\nWho are they to you:\nTheir phone number:\nTheir full email:\n\nKind regards,\nAusloans\nJordy\nAustralian Credit License 383999&quot;},
+{name:&quot;Insurance, 2 options&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^9&quot;], body:&quot;Subject: Insurance for your new car, 2 ways to do it\n\nHey,\n\nLast piece of the puzzle is comprehensive insurance. The lender won't release funds without it. You've got 2 options:\n\nOption 1: I sort it for you. As a broker I have access to discounted rates through our insurance partners that aren't available going direct, and I handle all the legwork: the quotes, the setup, making sure every detail the lender needs is on the policy, and getting the certificate where it needs to go. One less job for you, and the policy's guaranteed right first time. Just reply \&quot;sort it\&quot; and I'll have quotes to you today.\n\nOption 2: You arrange your own. Completely fine too. If you go this way, follow this checklist exactly. If any detail is wrong, the lender will bounce the certificate and you'll be on the phone to the insurer fixing it, which burns days right when we're trying to settle:\n\n1. Full comprehensive cover\n2. Cover to start from today\n3. Policy in your name: {Full name}\n4. Vehicle listed under the VIN {VIN}, not the registration number\n5. Interested party listed as \&quot;{Lender name}\&quot;\n6. Agreed value or market value is fine. Either works.\n\nOnce it's active, ask them to email you a Certificate of Currency and send it straight to me. That's the trigger for booking your settlement.\n\nWhichever way you go, I just need that certificate. Any questions, call me.\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Settled, congratulations&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^0&quot;], body:&quot;Subject: Congratulations {First name}, it's all done\n\nHi {First name},\n\nCongratulations, your loan has settled and the car is officially yours. The dealership will be in touch with you shortly from here.\n\nOne small favour before you go. So many clients just like you have left a review after getting their car sorted. I've attached a few so you can see what they've said. If you've got 2 minutes, I'd love you to join them.\n\nJust head to the link below, scroll down and click the blue \&quot;Leave a Review\&quot; button. If you can mention Jordon Aylward by name, even better.\n\nhttps://www.ausloans.com.au/car-loan-reviews\n\nAny questions down the track, I'm your broker for the life of the loan, so come straight to me.\n\nEnjoy the car!\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Decline, banking conduct&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^=&quot;], body:&quot;Hey, thanks for sending your documents. After assessing them with the lender, we're running into issues with recent banking conduct. With around 150 lenders on our panel, this has triggered a decline right now.\n\nThe good news: this can improve. If we wait 3 months and submit fresh bank statements, the current conduct will fall off and be replaced with new data, and we can reassess under better circumstances.\n\nIn the meantime, some alternatives to consider:\n\nIs there a friend or family member working who may be able to take out the loan in their name?\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Status list, internal notes&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad8&quot;, &quot;^NumpadUp&quot;], body:&quot;Initial call completed: email &amp; SMS sent\nInitial call completed: email, SMS and voicemail sent, no answer\nBanking, ID and Privacy requested\n\nDay 1 follow up: call + SMS sent\nDay 2 follow up: SMS sent\nDay 3 follow up: SMS sent\n\nDocuments outstanding\nDocuments outstanding: day 1\nDocuments outstanding: day 2\nDocuments outstanding: day 3\n\nReady for assessment\nSubmitted to lender\nSubmitted: awaiting decision\n\nDeclined: credit score\nDeclined: affordability\nDeclined: conduct issues\nDeclined: excessive gambling\nNo contact: multiple attempts via phone and email, automation set for follow up in 90 days&quot;},
+{name:&quot;Suncorp insurance quotes&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad4&quot;, &quot;^NumpadLeft&quot;], body:&quot;Please see below Suncorp Insurance Quotes. Vehicle insured for market value. If you would like gap insurance you will need to organise this on your own. These are all on a monthly basis and may be subject to change.\n\nYour excess is $1,650. If you wish for this to be changed, please advise by sending me an SMS.\n\n*Please see attached picture of the most basic option available, Option A. Please be aware this is the most basic option and may not be the most suitable for your requirements.\n\n\nI can call you to further explain the additional inclusions for Options B, C and D so you can make a final decision on which product is the most suitable for you.\n\nOption A: Suncorp Basic Comprehensive Insurance, $141.43 per month\n\nOption B: Suncorp Basic Comprehensive Insurance with Roadside Assistance, $148.85 per month\n\nOption C: Suncorp Comprehensive Advantages with window and windscreen cover and hire car, $186.09 per month\n\nOption D: Suncorp Comprehensive Advantages with Roadside Assistance, not available at market value\n\n\n*Please see attached a copy of Suncorp's PDS document.&quot;},
+{name:&quot;COC forward, attachments explainer&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad5&quot;, &quot;^NumpadClear&quot;], body:&quot;Hi\n\nPlease take the time to review the attached documents and read through these carefully and if something looks incorrect please don’t hesitate to contact myself to have it rectified.\n\nThe explanation for each attachments is listed below. The Distributor Disclosure Document also details how we may be remunerated, information about Suncorp’s dispute resolution service and how you can contact them if you want to make a complaint.\n\nReminder your first payment will be direct debited out of your account which your income goes into in the next 24/48 hours, this will reoccur each month on or around that date.&quot;},
+{name:&quot;Lender submission email&quot;, cat:&quot;Ausloans&quot;, hotkeys:[&quot;^Numpad9&quot;, &quot;^NumpadPgUp&quot;], body:&quot;Good Morning,\nPlease see attached credit app and other docs.\n\n1. The applicant is happy with funding even below the requested amount.\n\n2. The applicant can contribute a deposit.\n\n3. Can any loans be paid out for it to service better, if applicable?\n\n4. Applicant has shared expenses.&quot;},
+{name:&quot;Lock in, 2 weeks out&quot;, cat:&quot;Artesian&quot;, hotkeys:[&quot;^+2&quot;, &quot;^+Numpad2&quot;, &quot;^+NumpadDown&quot;], body:&quot;Could you please also confirm:\n1. Sign wording, max 3 words\n\nExamples: \&quot;Birthday Vibes\&quot;, \&quot;Groom Squad\&quot;, \&quot;Cheers Legends\&quot;\n\n2. Package choice\nTo lock in your bottle service / That package comes off your minimum spend, and any remaining credit can be used on the event\n\n\n3. Mixers, pick any 3\nCoke, Coke No Sugar, Sprite, Lemonade, Soda Water, Tonic Water, Ginger Ale, Orange Juice, Pineapple Juice, Cranberry Juice.\n\nYou can check options and inclusions here:\nhttps://artesiancorp.com/cali-beach-bottle-service/\n\nKeen to finalise everything for an amazing day!&quot;},
+{name:&quot;Lock in, 1 week out&quot;, cat:&quot;Artesian&quot;, hotkeys:[&quot;^+1&quot;, &quot;^+Numpad1&quot;, &quot;^+NumpadEnd&quot;], body:&quot;DUE IN VENUE: $xxx\nDeposit via 7R: $xxx\n\nPackage: pending\nMixes: pending\nSign: pending\n\n$xxx min spend +5% grat\nTotal: $xxx\n\nxxx guests / arrival pending&quot;},
+{name:&quot;Enquiry post&quot;, cat:&quot;Artesian&quot;, hotkeys:[&quot;^+0&quot;, &quot;^+Numpad0&quot;, &quot;^+NumpadIns&quot;], body:&quot;Venue:\nWhat it's for:\nGuests:\nDay and date:\nMinimum spend and booth suggestion:&quot;},
+{name:&quot;Email address&quot;, cat:&quot;Utility&quot;, hotkeys:[&quot;^+-&quot;, &quot;^+NumpadSub&quot;], body:&quot;jordon.aylward@ausloans.com.au&quot;}
+];
+
+/* ================= STATE · autosaved to this browser (DashBroker hub tab) ================= */
+let state = { templates: STARTER.map(t =&gt; ({id:uid(), name:t.name, cat:t.cat, hotkeys:[...t.hotkeys], body:t.body})) };
+/* ── autosave · hub tab only. The .ahk export is untouched and is still the portable copy. ── */
+const RD_KEY = 'hub_replydeck_v1';
+function rdSave(){
+  try{
+    localStorage.setItem(RD_KEY, JSON.stringify({v:1, at:Date.now(),
+      templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
+  }catch(e){}
+}
+function rdRestore(){
+  let raw = null;
+  try{ raw = localStorage.getItem(RD_KEY); }catch(e){ return false; }
+  if(!raw) return false;
+  try{
+    const sv = JSON.parse(raw);
+    if(!sv || !Array.isArray(sv.templates) || !sv.templates.length) return false;
+    const nf = {};
+    const tpl = sv.templates.map(t =&gt; {
+      const nt = {id:uid(), name:String(t.name||''), cat:String(t.cat||'Other'), hotkeys:Array.isArray(t.hotkeys)?t.hotkeys.map(String):[], body:String(t.body||'')};
+      if(t.fills &amp;&amp; typeof t.fills === 'object') nf[nt.id] = Object.fromEntries(Object.entries(t.fills).map(([k,v]) =&gt; [String(k), String(v)]));
+      return nt;
+    });
+    state = {templates: tpl}; fills = nf;
+    return true;
+  }catch(e){ return false; }
+}
+let dirty = false;
+let quickId = state.templates[0].id;
+let fills = {};              // template id -&gt; token -&gt; typed value, kept per template
+let catFilter = 'All';
+let expandedId = null;
+
+function uid(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+const $ = s =&gt; document.querySelector(s);
+function esc(s){ return String(s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;'); }
+function markDirty(){ dirty = true; const n = document.getElementById('dirtyNote'); if(n) n.hidden = false; rdSave(); }
+function markClean(){ dirty = false; const n = document.getElementById('dirtyNote'); if(n) n.hidden = true; }
+
+/* ================= SHARED CALCS ================= */
+function words(s){ const t = s.trim(); return t ? t.split(/\s+/).length : 0; }
+function curWpm(){ const el = document.getElementById('qkWpm'); const v = el ? parseFloat(String(el.value).replace(',','.')) : NaN; return v &gt; 0 ? v : 40; }
+function fmtDur(mins){
+  const s = Math.round(mins*60);
+  if(s &lt; 60) return s + 's';
+  const m = Math.floor(s/60), r = s%60;
+  return r ? (m + 'm ' + r + 's') : (m + 'm');
+}
+function normKey(k){ return k.trim().toLowerCase(); }
+function hotkeyValid(k){
+  if(!k) return false;
+  const m = k.match(/^([\^\+!#]*)(.+)$/);
+  if(!m) return false;
+  const key = m[2];
+  return /^([a-z0-9`\-=\[\];',.\/\\]|f\d{1,2}|numpad\w+|space|tab|enter|esc|escape|home|end|insert|ins|delete|del|pgup|pgdn|up|down|left|right|backspace|bs|capslock|appskey)$/i.test(key);
+}
+function duplicateMap(){
+  const map = {};
+  state.templates.forEach(t =&gt; t.hotkeys.forEach(k =&gt; {
+    const n = normKey(k); if(!map[n]) map[n] = []; map[n].push(t.name || '(untitled)');
+  }));
+  return map;
+}
+function keyLegend(raw){
+  const np = raw.match(/^numpad(.+)$/i);
+  const sym = {Up:'\u2191',Down:'\u2193',Left:'\u2190',Right:'\u2192',Sub:'-',Add:'+',Div:'/',Mult:'*',Dot:'.',Ins:'Ins',Del:'Del',PgUp:'PgUp',PgDn:'PgDn',Home:'Home',End:'End',Enter:'Enter',Clear:'5'};
+  if(np){
+    const rest = np[1];
+    const norm = rest.charAt(0).toUpperCase() + rest.slice(1).toLowerCase();
+    const fixed = {Pgup:'PgUp', Pgdn:'PgDn'}[norm] || norm;
+    return 'Num ' + (sym[fixed] || fixed);
+  }
+  if(/^f\d{1,2}$/i.test(raw)) return raw.toUpperCase();
+  const word = {space:'Space',tab:'Tab',enter:'Enter',esc:'Esc',escape:'Esc',home:'Home',end:'End',insert:'Ins',ins:'Ins',delete:'Del',del:'Del',pgup:'PgUp',pgdn:'PgDn',up:'\u2191',down:'\u2193',left:'\u2190',right:'\u2192',backspace:'Bksp',bs:'Bksp',capslock:'Caps',appskey:'Menu'}[raw.toLowerCase()];
+  if(word) return word;
+  return raw.length === 1 ? raw.toUpperCase() : raw;
+}
+function capParts(k){
+  const m = k.match(/^([\^\+!#]*)(.+)$/);
+  if(!m) return [k];
+  const mods = [];
+  for(const c of m[1]){ mods.push({'^':'Ctrl','+':'Shift','!':'Alt','#':'Win'}[c]); }
+  return mods.concat([keyLegend(m[2])]);
+}
+function capsHTML(k, bad){
+  return '&lt;span class=&quot;kcombo' + (bad ? ' kbad' : '') + '&quot; title=&quot;' + esc(k) + '&quot;&gt;' +
+    capParts(k).map(p =&gt; '&lt;span class=&quot;kcap&quot;&gt;' + esc(p) + '&lt;/span&gt;').join('&lt;span class=&quot;kplus&quot;&gt;+&lt;/span&gt;') + '&lt;/span&gt;';
+}
+function prettyKey(k){
+  let mods = '', i = 0;
+  for(; i &lt; k.length; i++){
+    const c = k[i];
+    if(c === '^') mods += 'Ctrl+';
+    else if(c === '+') mods += 'Shift+';
+    else if(c === '!') mods += 'Alt+';
+    else if(c === '#') mods += 'Win+';
+    else break;
+  }
+  let key = k.slice(i);
+  if(/^numpad/i.test(key)) key = 'Num ' + key.slice(6);
+  else if(key.length === 1) key = key.toUpperCase();
+  return mods + key;
+}
+function cats(){ return ['All', ...new Set(state.templates.map(t =&gt; t.cat || 'Other'))]; }
+function tokensOf(body){
+  const seen = [], re = /\{([a-zA-Z0-9_ ]{1,40})\}/g; let m;
+  while((m = re.exec(body))) if(!seen.includes(m[1])) seen.push(m[1]);
+  return seen;
+}
+
+/* ================= HEADER ================= */
+
+window.addEventListener('beforeunload', e =&gt; {
+  if(dirty){ e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ================= QUICK TAB ================= */
+function quickTemplate(){ return state.templates.find(t =&gt; t.id === quickId) || state.templates[0] || null; }
+function qv(){ const t = quickTemplate(); if(!t) return {}; return (fills[t.id] = fills[t.id] || {}); }
+let rdFillTimer = null;
+function rdSaveFillsSoon(){ clearTimeout(rdFillTimer); rdFillTimer = setTimeout(rdSave, 600); }
+
+function renderQuickSelect(){
+  const groups = {};
+  state.templates.forEach(t =&gt; { const c = t.cat || 'Other'; (groups[c] = groups[c] || []).push(t); });
+  $('#qkSelect').innerHTML = Object.keys(groups).map(c =&gt;
+    '&lt;optgroup label=&quot;' + esc(c) + '&quot;&gt;' +
+    groups[c].map(t =&gt; '&lt;option value=&quot;' + t.id + '&quot;' + (t.id === quickId ? ' selected' : '') + '&gt;' +
+      esc(t.name || 'Untitled') + (t.hotkeys.length ? ',\u00A0 ' + esc(t.hotkeys.map(prettyKey).join(' or ')) : '') +
+      '&lt;/option&gt;').join('') +
+    '&lt;/optgroup&gt;').join('');
+}
+function renderQuickFields(){
+  const t = quickTemplate(); if(!t){ $('#qkFields').innerHTML = ''; return; }
+  const toks = tokensOf(t.body);
+  $('#qkFields').innerHTML = toks.length ? toks.map((tok,i) =&gt; {
+    const numeric = /(amount|price|qty|quantity|days|number|no\b)/i.test(tok);
+    return '&lt;div&gt;&lt;label for=&quot;qkTok' + i + '&quot;&gt;' + esc(tok.replace(/_/g,' ')) + '&lt;/label&gt;' +
+      '&lt;input type=&quot;text&quot; id=&quot;qkTok' + i + '&quot; data-token=&quot;' + esc(tok) + '&quot;' +
+      (numeric ? ' inputmode=&quot;decimal&quot;' : '') +
+      ' value=&quot;' + esc(qv()[tok] || '') + '&quot; placeholder=&quot;' + esc(tok.replace(/_/g,' ')) + '\u2026&quot;&gt;&lt;/div&gt;';
+  }).join('') : '&lt;p class=&quot;hint&quot; style=&quot;margin-top:2px&quot;&gt;This one has no blanks. Copy it as-is, or add {blanks} to it in the Library.&lt;/p&gt;';
+  document.querySelectorAll('#qkFields input').forEach(inp =&gt; {
+    inp.addEventListener('input', () =&gt; { qv()[inp.dataset.token] = inp.value; markDirty(); renderQuickPreview(); });
+  });
+}
+function filledBody(t){
+  return t.body.replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; (qv()[tok] || '').trim() || m);
+}
+function renderQuickPreview(){
+  const t = quickTemplate(); if(!t) return;
+  const toks = tokensOf(t.body);
+  const nFilled = toks.filter(tok =&gt; (qv()[tok] || '').trim()).length;
+  const html = esc(t.body).replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; {
+    const v = (qv()[tok] || '').trim();
+    return v ? '&lt;b&gt;' + esc(v) + '&lt;/b&gt;' : '&lt;span class=&quot;tok&quot;&gt;{' + esc(tok) + '}&lt;/span&gt;';
+  });
+  $('#qkPreview').innerHTML = html;
+  $('#qkHelper').textContent = toks.length
+    ? (nFilled + ' of ' + toks.length + ' blanks filled. Anything left empty stays highlighted in the preview so it can\u2019t sneak into a sent message.')
+    : 'Nothing to fill in. This one\u2019s ready as it is.';
+  const body = filledBody(t);
+  const w = words(body);
+  let wpm = parseFloat(String($('#qkWpm').value).replace(',','.'));
+  const bad = !(wpm &gt; 0) ;
+  $('#qkWpmErr').hidden = !($('#qkWpm').value.trim()) ? true : !bad ? true : false;
+  if(bad) wpm = 40;
+  const typedMin = w / wpm;
+  const savedMin = Math.max(0, typedMin - 2/60);
+  $('#qkBench').textContent = w ? ('Saves ' + fmtDur(savedMin) + ' every send') : 'Empty message';
+  $('#qkBench').title = 'Benchmark: ' + w + ' words at ' + wpm + ' wpm (office average is about 40)';
+  $('#qkMeta').textContent = body.length + ' characters, ' + w + ' words, ' + body.split('\n').length + ' lines';
+}
+function renderQuick(){ renderQuickSelect(); renderQuickFields(); renderQuickPreview(); }
+
+$('#qkSelect').addEventListener('change', e =&gt; { quickId = e.target.value; renderQuickFields(); renderQuickPreview(); });
+$('#qkWpm').addEventListener('input', renderQuickPreview);
+$('#btnQkCopy').addEventListener('click', () =&gt; {
+  const t = quickTemplate(); if(!t) return;
+  copyText(filledBody(t), 'Copied. Paste it wherever the conversation is.');
+});
+$('#btnQkEdit').addEventListener('click', () =&gt; {
+  expandedId = quickId; catFilter = 'All'; $('#libSearch').value = '';
+  switchTab('tabBtnLibrary'); renderLibrary();
+});
+
+/* ================= LIBRARY TAB ================= */
+function renderChips(){
+  $('#libChips').innerHTML = cats().map(c =&gt;
+    '&lt;button class=&quot;chip plain' + (c === catFilter ? ' on' : '') + '&quot; data-cat=&quot;' + esc(c) + '&quot;&gt;' + esc(c) + '&lt;/button&gt;'
+  ).join('');
+}
+function libStatsLine(t){
+  const w = words(t.body);
+  return w + ' words. Saves ' + fmtDur(Math.max(0, w/curWpm() - 2/60)) + ' per send.';
+}
+function renderRows(){
+  const q = $('#libSearch').value.toLowerCase();
+  const dups = duplicateMap();
+  const rows = state.templates.filter(t =&gt;
+    (catFilter === 'All' || (t.cat || 'Other') === catFilter) &amp;&amp;
+    (!q || (t.name + ' ' + t.hotkeys.join(' ') + ' ' + t.body).toLowerCase().includes(q))
+  );
+  $('#libRows').innerHTML = rows.map(t =&gt; {
+    const open = t.id === expandedId;
+    const keyChips = t.hotkeys.map(k =&gt; capsHTML(k, !hotkeyValid(k) || (dups[normKey(k)] &amp;&amp; dups[normKey(k)].length &gt; 1))).join('&lt;span class=&quot;kor&quot;&gt;or&lt;/span&gt;') || '&lt;span class=&quot;hint&quot;&gt;no hotkey yet&lt;/span&gt;';
+    let inner = '';
+    if(open){
+      const warns = [];
+      t.hotkeys.forEach(k =&gt; {
+        if(!hotkeyValid(k)) warns.push('\u201C' + k + '\u201D doesn\u2019t look like a valid AutoHotkey hotkey. Try the patterns on the Learn tab.');
+        const d = dups[normKey(k)];
+        if(d &amp;&amp; d.length &gt; 1) warns.push('\u201C' + k + '\u201D is also used by: ' + d.filter(n =&gt; n !== (t.name || '(untitled)')).join(', ') + '. Two templates can\u2019t share one key.');
+      });
+      if(!t.body.trim()) warns.push('The message is empty, so the script check will skip it.');
+      const editKeys = t.hotkeys.map((k,i) =&gt;
+        '&lt;span class=&quot;kwrap&quot;&gt;' + capsHTML(k, !hotkeyValid(k) || (dups[normKey(k)] &amp;&amp; dups[normKey(k)].length &gt; 1)) +
+        '&lt;b data-act=&quot;delkey&quot; data-id=&quot;' + t.id + '&quot; data-i=&quot;' + i + '&quot; title=&quot;Remove this hotkey&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;\u2715&lt;/b&gt;&lt;/span&gt;').join('');
+      inner =
+        '&lt;div class=&quot;rowbody&quot;&gt;' +
+          '&lt;div&gt;&lt;label for=&quot;edKey&quot;&gt;Hotkeys. Press any of these to paste&lt;/label&gt;' +
+            '&lt;div class=&quot;keyedit&quot;&gt;' + editKeys + '&lt;/div&gt;' +
+            '&lt;div class=&quot;capbox' + (capturing === t.id ? ' live' : '') + '&quot; id=&quot;capBox&quot;&gt;' +
+              (capturing === t.id
+                ? '&lt;div class=&quot;caplive&quot; id=&quot;capLive&quot;&gt;&lt;span class=&quot;capdots&quot;&gt;Listening. Press your keys now.&lt;/span&gt;&lt;/div&gt;' +
+                  '&lt;p class=&quot;hint&quot; id=&quot;capHint&quot;&gt;Hold Ctrl, Shift or Alt and tap a key. Press Escape on its own to stop.&lt;/p&gt;'
+                : '&lt;button class=&quot;btn small primary&quot; data-act=&quot;capture&quot; data-id=&quot;' + t.id + '&quot;&gt;Press the keys to bind&lt;/button&gt;' +
+                  '&lt;span class=&quot;hint&quot; style=&quot;margin-left:10px&quot;&gt;or type the code &lt;/span&gt;' +
+                  '&lt;span class=&quot;addkey&quot;&gt;&lt;input type=&quot;text&quot; id=&quot;edKey&quot; placeholder=&quot;e.g. ^7&quot; aria-label=&quot;Add a hotkey&quot;&gt;' +
+                  '&lt;button class=&quot;btn small&quot; data-act=&quot;addkey&quot; data-id=&quot;' + t.id + '&quot;&gt;Add&lt;/button&gt;&lt;/span&gt;') +
+            '&lt;/div&gt;' +
+            (warns.length ? '&lt;p class=&quot;warn&quot;&gt;' + warns.map(esc).join('&lt;br&gt;') + '&lt;/p&gt;' : '') +
+          '&lt;/div&gt;' +
+          '&lt;div&gt;&lt;label for=&quot;edBody&quot;&gt;Message. Use {blanks} for the parts that change&lt;/label&gt;' +
+            '&lt;textarea id=&quot;edBody&quot; data-id=&quot;' + t.id + '&quot; spellcheck=&quot;true&quot;&gt;' + esc(t.body) + '&lt;/textarea&gt;' +
+            '&lt;p class=&quot;hint rowmeta&quot; id=&quot;edMeta&quot;&gt;' + esc(libStatsLine(t)) + '&lt;/p&gt;' +
+          '&lt;/div&gt;' +
+          '&lt;div class=&quot;btnrow&quot; style=&quot;margin-top:0&quot;&gt;' +
+            '&lt;button class=&quot;btn small&quot; data-act=&quot;copytext&quot; data-id=&quot;' + t.id + '&quot;&gt;Copy text&lt;/button&gt;' +
+            '&lt;button class=&quot;btn small&quot; data-act=&quot;dup&quot; data-id=&quot;' + t.id + '&quot;&gt;Duplicate&lt;/button&gt;' +
+            '&lt;span style=&quot;flex:1&quot;&gt;&lt;/span&gt;' +
+            '&lt;button class=&quot;btn small rose&quot; data-act=&quot;del&quot; data-id=&quot;' + t.id + '&quot;&gt;Delete&lt;/button&gt;' +
+          '&lt;/div&gt;' +
+        '&lt;/div&gt;';
+    }
+    return '&lt;div class=&quot;rowc' + (open ? ' open' : '') + '&quot;&gt;' +
+      '&lt;div class=&quot;rowhead&quot;&gt;' +
+        '&lt;input type=&quot;text&quot; value=&quot;' + esc(t.name) + '&quot; data-field=&quot;name&quot; data-id=&quot;' + t.id + '&quot; aria-label=&quot;Template name&quot; placeholder=&quot;Template name&quot;&gt;' +
+        '&lt;input type=&quot;text&quot; value=&quot;' + esc(t.cat) + '&quot; data-field=&quot;cat&quot; data-id=&quot;' + t.id + '&quot; aria-label=&quot;Category&quot; placeholder=&quot;Category&quot;&gt;' +
+        '&lt;span class=&quot;rowkeys&quot;&gt;' + keyChips + '&lt;/span&gt;' +
+        '&lt;button class=&quot;btn small' + (open ? ' primary' : '') + '&quot; data-act=&quot;toggle&quot; data-id=&quot;' + t.id + '&quot;&gt;' + (open ? 'Close' : 'Edit') + '&lt;/button&gt;' +
+      '&lt;/div&gt;' +
+      (open ? '' :
+        '&lt;div class=&quot;rowprev&quot; data-act=&quot;prev&quot; data-id=&quot;' + t.id + '&quot; role=&quot;button&quot; tabindex=&quot;0&quot; ' +
+        'aria-expanded=&quot;false&quot; title=&quot;Show the whole message&quot;&gt;' + esc(t.body) + '&lt;/div&gt;' +
+        '&lt;p class=&quot;prevhint&quot;&gt;Tap the message to read all of it. Edit is only for changing it.&lt;/p&gt;') +
+      inner + '&lt;/div&gt;';
+  }).join('') || '&lt;div class=&quot;empty&quot;&gt;No matches. Clear the search, or make a new template.&lt;/div&gt;';
+}
+function renderFoot(){
+  const n = state.templates.length;
+  const nKeys = state.templates.reduce((a,t) =&gt; a + t.hotkeys.length, 0);
+  const totalWords = state.templates.reduce((a,t) =&gt; a + words(t.body), 0);
+  const savedDay = state.templates.reduce((a,t) =&gt; a + Math.max(0, words(t.body)/curWpm() - 2/60), 0);
+  $('#libFoot').innerHTML =
+    '&lt;span class=&quot;chip primary num&quot;&gt;' + n + ' templates&lt;/span&gt;' +
+    '&lt;span class=&quot;chip num&quot;&gt;' + nKeys + ' hotkeys&lt;/span&gt;' +
+    '&lt;span class=&quot;chip plain num&quot;&gt;' + totalWords + ' words on file&lt;/span&gt;' +
+    '&lt;span class=&quot;meta&quot;&gt;Saves you about ' + Math.max(1, Math.round(savedDay)) + ' minutes a day if each of these goes out once.&lt;/span&gt;';
+}
+let capturing = null;
+const NUMLOCK_OFF = {Numpad0:'NumpadIns',Numpad1:'NumpadEnd',Numpad2:'NumpadDown',Numpad3:'NumpadPgDn',Numpad4:'NumpadLeft',Numpad5:'NumpadClear',Numpad6:'NumpadRight',Numpad7:'NumpadHome',Numpad8:'NumpadUp',Numpad9:'NumpadPgUp',NumpadDecimal:'NumpadDel'};
+function ahkKeyFromCode(code){
+  if(/^Key[A-Z]$/.test(code)) return code.slice(3).toLowerCase();
+  if(/^Digit[0-9]$/.test(code)) return code.slice(5);
+  if(/^F\d{1,2}$/.test(code)) return code.toLowerCase();
+  const np = {NumpadAdd:'NumpadAdd',NumpadSubtract:'NumpadSub',NumpadMultiply:'NumpadMult',NumpadDivide:'NumpadDiv',NumpadDecimal:'NumpadDot',NumpadEnter:'NumpadEnter'};
+  if(np[code]) return np[code];
+  if(/^Numpad[0-9]$/.test(code)) return 'Numpad' + code.slice(6);
+  const map = {Backquote:'`',Minus:'-',Equal:'=',BracketLeft:'[',BracketRight:']',Semicolon:';',Quote:&quot;'&quot;,Comma:',',Period:'.',Slash:'/',Backslash:'\\',Space:'space',Tab:'tab',Enter:'enter',Escape:'esc',Home:'home',End:'end',Insert:'ins',Delete:'del',PageUp:'pgup',PageDown:'pgdn',ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Backspace:'bs'};
+  return map[code] || null;
+}
+function modString(e){ return (e.ctrlKey?'^':'') + (e.shiftKey?'+':'') + (e.altKey?'!':'') + (e.metaKey?'#':''); }
+function startCapture(id){ capturing = id; renderRows(); const box = document.getElementById('capBox'); if(box) box.scrollIntoView({block:'nearest'}); }
+function stopCapture(){ if(capturing){ capturing = null; renderRows(); } }
+function paintCapture(mods, keyName, note){
+  const live = document.getElementById('capLive');
+  if(!live) return;
+  const parts = capParts(mods + (keyName || 'x'));
+  if(!keyName) parts[parts.length - 1] = null;
+  const html = parts.filter(Boolean).map(p =&gt; '&lt;span class=&quot;kcap&quot;&gt;' + esc(p) + '&lt;/span&gt;').join('&lt;span class=&quot;kplus&quot;&gt;+&lt;/span&gt;');
+  live.innerHTML = (html ? '&lt;span class=&quot;kcombo&quot;&gt;' + html + '&lt;/span&gt;' : '') +
+    (keyName ? '' : '&lt;span class=&quot;capdots&quot;&gt;' + (html ? 'and now a letter, number or key' : 'Listening. Press your keys now.') + '&lt;/span&gt;');
+  const hint = document.getElementById('capHint');
+  if(hint &amp;&amp; note) hint.textContent = note;
+}
+function finishCapture(mods, base, code){
+  const t = state.templates.find(x =&gt; x.id === capturing);
+  if(!t) return stopCapture();
+  const keys = [mods + base];
+  if(NUMLOCK_OFF[code]) keys.push(mods + NUMLOCK_OFF[code]);
+  const added = [];
+  keys.forEach(k =&gt; { if(!t.hotkeys.includes(k)){ t.hotkeys.push(k); added.push(k); } });
+  capturing = null;
+  markDirty(); renderLibrary(); renderQuick(); renderBuild();
+  if(!added.length){ toast('That combination is already on this message.', 'rose'); return; }
+  const label = capParts(added[0]).join(' + ');
+  const dups = duplicateMap();
+  const clash = added.some(k =&gt; (dups[normKey(k)] || []).length &gt; 1);
+  if(clash){ toast(label + ' is set, but another message already uses it. Check the warning above.', 'rose', 6000); return; }
+  toast(added.length &gt; 1 ? label + ' is set, and it works whether Num Lock is on or off.' : label + ' is set.', 'ok');
+}
+document.addEventListener('keydown', e =&gt; {
+  if(!capturing) return;
+  if(e.key === 'Escape' &amp;&amp; !e.ctrlKey &amp;&amp; !e.shiftKey &amp;&amp; !e.altKey &amp;&amp; !e.metaKey){
+    e.preventDefault(); stopCapture(); toast('Stopped listening. Nothing changed.'); return;
+  }
+  e.preventDefault(); e.stopPropagation();
+  const mods = modString(e);
+  if(['Control','Shift','Alt','Meta'].includes(e.key)){ paintCapture(mods, null); return; }
+  const base = ahkKeyFromCode(e.code);
+  if(!base){ paintCapture(mods, null, 'AutoHotkey can\u2019t use that key. Try a letter, a number or the numpad.'); return; }
+  if(!mods){ paintCapture('', base, 'Add Ctrl, Shift or Alt too, otherwise that key would paste every time you typed it.'); return; }
+  finishCapture(mods, base, e.code);
+}, true);
+function renderLibrary(){ renderChips(); renderRows(); renderFoot(); }
+
+$('#libSearch').addEventListener('input', renderRows);
+$('#btnLibNew').addEventListener('click', () =&gt; {
+  const t = {id:uid(), name:'New template', cat:(catFilter === 'All' ? 'Sales' : catFilter), hotkeys:[], body:''};
+  state.templates.push(t); expandedId = t.id; markDirty();
+  renderLibrary(); renderQuick(); renderBuild();
+  const f = document.querySelector('[data-field=&quot;name&quot;][data-id=&quot;' + t.id + '&quot;]');
+  if(f){ f.focus(); f.select(); }
+});
+$('#libChips').addEventListener('click', e =&gt; {
+  const b = e.target.closest('[data-cat]'); if(!b) return;
+  catFilter = b.dataset.cat; renderChips(); renderRows();
+});
+$('#libRows').addEventListener('keydown', e =&gt; {
+  const el = e.target.closest('[data-act=&quot;prev&quot;]');
+  if(el &amp;&amp; (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); el.click(); }
+});
+$('#libRows').addEventListener('input', e =&gt; {
+  const el = e.target, t = state.templates.find(x =&gt; x.id === el.dataset.id);
+  if(!t) return;
+  if(el.dataset.field === 'name'){ t.name = el.value; markDirty(); }
+  if(el.dataset.field === 'cat'){ t.cat = el.value; markDirty(); }
+  if(el.id === 'edBody'){
+    t.body = el.value; markDirty();
+    const m = $('#edMeta'); if(m) m.textContent = libStatsLine(t);
+    renderFoot();
+  }
+});
+$('#libRows').addEventListener('change', e =&gt; {
+  const el = e.target;
+  if(el.dataset.field === 'cat' || el.dataset.field === 'name' || el.id === 'edBody'){
+    renderLibrary(); renderQuick(); renderBuild();
+  }
+});
+$('#libRows').addEventListener('keydown', e =&gt; {
+  if(e.target.id === 'edKey' &amp;&amp; e.key === 'Enter'){
+    e.preventDefault();
+    const btn = e.target.parentElement.querySelector('[data-act=&quot;addkey&quot;]');
+    if(btn) btn.click();
+  }
+  if(e.target.dataset.act === 'delkey' &amp;&amp; (e.key === 'Enter' || e.key === ' ')){
+    e.preventDefault(); e.target.click();
+  }
+});
+$('#libRows').addEventListener('click', e =&gt; {
+  const el = e.target.closest('[data-act]'); if(!el) return;
+  const t = state.templates.find(x =&gt; x.id === el.dataset.id); if(!t) return;
+  const act = el.dataset.act;
+  if(act === 'toggle'){ stopCapture(); expandedId = (expandedId === t.id ? null : t.id); renderRows(); }
+  if(act === 'prev'){ const on = el.classList.toggle('open'); el.setAttribute('aria-expanded', on); el.title = on ? 'Collapse the message' : 'Show the whole message'; }
+  if(act === 'capture'){ startCapture(t.id); }
+  if(act === 'addkey'){
+    const inp = $('#edKey'); const v = inp ? inp.value.trim() : '';
+    if(!v){ toast('Type a hotkey first, like ^7', 'rose'); return; }
+    t.hotkeys.push(v); markDirty(); renderLibrary(); renderQuick(); renderBuild();
+    setTimeout(() =&gt; { const f = $('#edKey'); if(f) f.focus(); }, 0);
+  }
+  if(act === 'delkey'){ t.hotkeys.splice(+el.dataset.i, 1); markDirty(); renderLibrary(); renderQuick(); renderBuild(); }
+  if(act === 'copytext'){ copyText(t.body, 'Copied. Blanks stay as {blanks}, so use Quick paste to fill them first.'); }
+  if(act === 'dup'){
+    const c = {id:uid(), name:t.name + ' (copy)', cat:t.cat, hotkeys:[], body:t.body};
+    state.templates.splice(state.templates.indexOf(t) + 1, 0, c);
+    expandedId = c.id; markDirty(); renderLibrary(); renderQuick(); renderBuild();
+    toast('Duplicated. Give it its own hotkey before you build the script.', 'ok');
+  }
+  if(act === 'del'){
+    if(!confirm('Delete \u201C' + (t.name || '(untitled)') + '\u201D? This can\u2019t be undone unless you have a backup.')) return;
+    const i = state.templates.indexOf(t); state.templates.splice(i, 1);
+    if(expandedId === t.id) expandedId = null;
+    if(quickId === t.id) quickId = state.templates[0] ? state.templates[0].id : null;
+    markDirty(); renderLibrary(); renderQuick(); renderBuild();
+  }
+});
+
+/* ================= AHK GENERATOR (the bridge) ================= */
+function tokenContext(body, tok){
+  const mark = '{' + tok + '}';
+  const i = body.indexOf(mark);
+  if (i &lt; 0) return '';
+  const a = Math.max(0, i - 34), z = Math.min(body.length, i + mark.length + 34);
+  return (a &gt; 0 ? '...' : '') + body.slice(a, z).replace(/\s+/g, ' ').trim() + (z &lt; body.length ? '...' : '');
+}
+function ahkParam(x){ return String(x).replace(/`/g,'``').replace(/,/g,'`,').replace(/%/g,'`%').replace(/;/g,'`;'); }
+function ahkBodyLines(body){
+  /* A line starting with &quot;)&quot; would end the AHK continuation section early,
+     so it gets padded with one leading space. Same trick, same output. */
+  return body.split('\n').map(line =&gt; line.trimStart().startsWith(')') ? ' ' + line : line);
+}
+function ahkTemplateBlock(t, label){
+  const out = [];
+  const toks = tokensOf(t.body);
+  out.push('; --- ' + t.name + ' (' + t.cat + ') ---');
+  t.hotkeys.forEach(k =&gt; out.push(k + '::Gosub, ' + label));
+  out.push('');
+  out.push(label + ':');
+  if(!toks.length){
+    /* No blanks: exact same block the original generator produced. */
+    out.push('Clipboard =');
+    out.push('( % `');
+    ahkBodyLines(t.body).forEach(l =&gt; out.push(l));
+    out.push(')');
+    out.push('StringReplace, Clipboard, Clipboard, `n, `r`n, All');
+  } else {
+    /* Blanks: load the message into a variable, ask for each blank in a
+       small box, swap it in, then paste. Escape in any box cancels. */
+    out.push('RD_body =');
+    out.push('( % `');
+    ahkBodyLines(t.body).forEach(l =&gt; out.push(l));
+    out.push(')');
+    out.push('StringReplace, RD_body, RD_body, `n, `r`n, All');
+    toks.forEach(tok =&gt; {
+      const v = 'RD_' + tok.replace(/ /g, '_');
+      const question = tok.replace(/_/g, ' ').replace(/^./, c =&gt; c.toUpperCase());
+      const ctx = ahkParam(tokenContext(t.body, tok));
+      const prompt = ahkParam(question) + (ctx ? '`n`nGoes in:  ' + ctx : '');
+      const def = ahkParam(((fills[t.id] || {})[tok] || '').trim());
+      out.push('InputBox, ' + v + ', ' + ahkParam(t.name) + ', ' + prompt + ', , 400, 220' + (def ? ', , , , ' + def : ''));
+      out.push('if ErrorLevel');
+      out.push('    return');
+      out.push('StringReplace, RD_body, RD_body, {' + tok + '}, %' + v + '%, All');
+    });
+    out.push('Clipboard := RD_body');
+  }
+  out.push('ClipWait');
+  out.push('Send ^v');
+  out.push('return');
+  return out;
+}
+function buildAhk(templates){
+  const out = [];
+  out.push('; ============================================================');
+  out.push('; ' + BRAND.name.toUpperCase() + ' HOTKEY CLIPBOARD TEMPLATES for AutoHotkey v1');
+  out.push('; Generated by ' + BRAND.name + ' v' + BRAND.version + '. Do not hand edit this file.');
+  out.push('; Open it back in ' + BRAND.name + ' instead: Build script, then Open a .ahk.');
+  out.push('; Workflow: edit in ' + BRAND.name + ' &gt; Download .ahk &gt; replace this');
+  out.push('; file &gt; right click the AHK tray icon &gt; Reload This Script.');
+  out.push('; ============================================================');
+  out.push('#SingleInstance Force');
+  out.push('#UseHook');
+  out.push('');
+  out.push('; -------------------- HOTKEY CHEAT SHEET --------------------');
+  templates.forEach(t =&gt; out.push('; ' + t.hotkeys.join('  or  ') + '  =  ' + t.name));
+  out.push('; -------------------------------------------------------------');
+  out.push('');
+  templates.forEach((t, i) =&gt; {
+    ahkTemplateBlock(t, '_TPL_' + String(i + 1).padStart(2, '0')).forEach(l =&gt; out.push(l));
+    out.push(''); out.push('');
+  });
+  out.push('; ------------------------------------------------------------');
+  out.push('; ' + BRAND.name + ' data. This lets the app open the script again later.');
+  /* AutoHotkey v1 refuses any line past 16,383 characters, so the saved
+     library goes out in small chunks and the app joins them back up. */
+  const packed = b64encode(JSON.stringify({templates: state.templates.map(t =&gt; ({name:t.name, cat:t.cat, hotkeys:t.hotkeys, body:t.body, fills: fills[t.id] || {}}))}));
+  for(let i = 0; i &lt; packed.length; i += 2000){ out.push('; @replydeck-data v1 ' + packed.slice(i, i + 2000)); }
+  out.push('; ------------------------------------------------------------');
+  return out.join('\r\n');
+}
+function b64encode(s){ return btoa(unescape(encodeURIComponent(s))); }
+function b64decode(s){ return decodeURIComponent(escape(atob(s))); }
+
+function validateAll(){
+  const errs = [];
+  const dups = duplicateMap();
+  Object.keys(dups).forEach(k =&gt; { if(dups[k].length &gt; 1) errs.push('Hotkey \u201C' + k + '\u201D is used by more than one template: ' + dups[k].join(', ')); });
+  state.templates.forEach(t =&gt; {
+    const nm = t.name || '(untitled)';
+    if(!t.hotkeys.length) errs.push('\u201C' + nm + '\u201D has no hotkey yet.');
+    if(!t.body.trim()) errs.push('\u201C' + nm + '\u201D has an empty message.');
+    t.hotkeys.forEach(k =&gt; { if(!hotkeyValid(k)) errs.push('\u201C' + nm + '\u201D: hotkey \u201C' + k + '\u201D looks invalid.'); });
+  });
+  return errs;
+}
+function downloadFile(name, content, mime){
+  const blob = new Blob([content], {type: mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() =&gt; URL.revokeObjectURL(a.href), 4000);
+}
+
+/* ================= BUILD TAB ================= */
+function renderBuildStatus(){
+  const errs = validateAll();
+  $('#buildStatus').innerHTML = errs.length
+    ? '&lt;p class=&quot;warn&quot; style=&quot;margin:0 0 6px&quot;&gt;&lt;b&gt;' + errs.length + ' thing' + (errs.length &gt; 1 ? 's' : '') + ' to fix before this script will behave:&lt;/b&gt;&lt;br&gt;' + errs.map(esc).join('&lt;br&gt;') + '&lt;/p&gt;'
+    : '&lt;p class=&quot;okline&quot; style=&quot;margin:0 0 6px&quot;&gt;All ' + state.templates.length + ' templates check out. No clashes, nothing empty. Ready to build.&lt;/p&gt;';
+}
+function renderKeyMap(){
+  const dups = duplicateMap();
+  const assigned = {};   /* layer|key -&gt; template name */
+  const other = [];
+  state.templates.forEach(t =&gt; t.hotkeys.forEach(k =&gt; {
+    const n = normKey(k);
+    let m;
+    if((m = n.match(/^\^([0-9`\-=])$/)))            assigned['c|' + m[1]] = t.name;
+    else if((m = n.match(/^\^\+([0-9`\-=])$/)))     assigned['cs|' + m[1]] = t.name;
+    else if((m = n.match(/^\^(?:\+)?numpad([0-9])$/))) assigned['np|' + m[1]] = t.name;
+    else other.push({k, name: t.name, bad: !hotkeyValid(k) || (dups[n] &amp;&amp; dups[n].length &gt; 1)});
+  }));
+  const KEY = 46, GAP = 7, PAD = 12;
+  const digits = ['`','1','2','3','4','5','6','7','8','9','0','-','='];
+  function row(y, layer, label){
+    let s = '&lt;text x=&quot;' + PAD + '&quot; y=&quot;' + (y - 8) + '&quot; font-size=&quot;11&quot; fill=&quot;var(--muted)&quot; font-weight=&quot;600&quot;&gt;' + label + '&lt;/text&gt;';
+    digits.forEach((d, i) =&gt; {
+      const x = PAD + i * (KEY + GAP);
+      const who = assigned[layer + '|' + d];
+      s += '&lt;g&gt;' + (who ? '&lt;title&gt;' + esc(who) + '&lt;/title&gt;' : '&lt;title&gt;free&lt;/title&gt;') +
+        '&lt;rect x=&quot;' + x + '&quot; y=&quot;' + y + '&quot; width=&quot;' + KEY + '&quot; height=&quot;' + KEY + '&quot; rx=&quot;9&quot; ' +
+        (who ? 'fill=&quot;var(--primary-soft)&quot; stroke=&quot;var(--primary-line)&quot;' : 'fill=&quot;#FEFDFB&quot; stroke=&quot;var(--line)&quot;') + ' stroke-width=&quot;1.4&quot;/&gt;' +
+        '&lt;text x=&quot;' + (x + KEY/2) + '&quot; y=&quot;' + (y + KEY/2 + 4) + '&quot; text-anchor=&quot;middle&quot; font-size=&quot;13&quot; font-weight=&quot;700&quot; ' +
+        (who ? 'fill=&quot;var(--primary)&quot;' : 'fill=&quot;var(--muted)&quot;') + '&gt;' + esc(d) + '&lt;/text&gt;&lt;/g&gt;';
+    });
+    return s;
+  }
+  const W = PAD * 2 + digits.length * (KEY + GAP) - GAP;
+  let np = '&lt;text x=&quot;' + PAD + '&quot; y=&quot;' + 208 + '&quot; font-size=&quot;11&quot; fill=&quot;var(--muted)&quot; font-weight=&quot;600&quot;&gt;CTRL + NUMPAD&lt;/text&gt;';
+  const order = [['7','8','9'],['4','5','6'],['1','2','3'],['0']];
+  order.forEach((r, ri) =&gt; r.forEach((d, ci) =&gt; {
+    const x = PAD + ci * (KEY + GAP), y = 216 + ri * (KEY + GAP);
+    const who = assigned['np|' + d];
+    np += '&lt;g&gt;' + (who ? '&lt;title&gt;' + esc(who) + '&lt;/title&gt;' : '&lt;title&gt;free&lt;/title&gt;') +
+      '&lt;rect x=&quot;' + x + '&quot; y=&quot;' + y + '&quot; width=&quot;' + (d === '0' ? KEY*2 + GAP : KEY) + '&quot; height=&quot;' + KEY + '&quot; rx=&quot;9&quot; ' +
+      (who ? 'fill=&quot;var(--primary-soft)&quot; stroke=&quot;var(--primary-line)&quot;' : 'fill=&quot;#FEFDFB&quot; stroke=&quot;var(--line)&quot;') + ' stroke-width=&quot;1.4&quot;/&gt;' +
+      '&lt;text x=&quot;' + (x + (d === '0' ? KEY + GAP/2 : KEY/2)) + '&quot; y=&quot;' + (y + KEY/2 + 4) + '&quot; text-anchor=&quot;middle&quot; font-size=&quot;13&quot; font-weight=&quot;700&quot; ' +
+      (who ? 'fill=&quot;var(--primary)&quot;' : 'fill=&quot;var(--muted)&quot;') + '&gt;' + esc(d) + '&lt;/text&gt;&lt;/g&gt;';
+  }));
+  const H = 216 + 4 * (KEY + GAP) + 4;
+  $('#keyMap').innerHTML =
+    '&lt;svg viewBox=&quot;0 0 ' + W + ' ' + H + '&quot; width=&quot;100%&quot; style=&quot;max-width:720px&quot; role=&quot;img&quot; aria-label=&quot;Map of which keyboard shortcuts are assigned&quot;&gt;' +
+    row(28, 'c', 'CTRL + \u2026') + row(28 + KEY + 34, 'cs', 'CTRL + SHIFT + \u2026') + np + '&lt;/svg&gt;';
+  $('#keyOther').innerHTML = other.length
+    ? '&lt;span class=&quot;meta&quot; style=&quot;margin-right:2px&quot;&gt;Also in use:&lt;/span&gt;' + other.map(o =&gt;
+        '&lt;span class=&quot;chip ' + (o.bad ? 'rose' : 'primary') + '&quot; title=&quot;' + esc(o.name) + '&quot;&gt;' + esc(o.k) + '&lt;/span&gt;').join('')
+    : '';
+}
+function renderCheat(){
+  $('#cheatTable').innerHTML =
+    '&lt;tr&gt;&lt;th&gt;Press&lt;/th&gt;&lt;th&gt;Pastes&lt;/th&gt;&lt;th&gt;Category&lt;/th&gt;&lt;/tr&gt;' +
+    state.templates.map(t =&gt;
+      '&lt;tr&gt;&lt;td class=&quot;k&quot;&gt;' + (t.hotkeys.map(k =&gt; '&lt;span class=&quot;key assigned&quot;&gt;' + esc(prettyKey(k)) + '&lt;/span&gt;').join(' ') || '&lt;span class=&quot;hint&quot;&gt;none yet&lt;/span&gt;') + '&lt;/td&gt;' +
+      '&lt;td&gt;' + esc(t.name || '(untitled)') + '&lt;/td&gt;&lt;td class=&quot;hint&quot;&gt;' + esc(t.cat || '') + '&lt;/td&gt;&lt;/tr&gt;'
+    ).join('');
+  $('#printSheet').innerHTML =
+    '&lt;h1&gt;' + esc(BRAND.name) + ' hotkey cheat sheet&lt;/h1&gt;' +
+    '&lt;p&gt;Hold the keys, watch the words appear. AutoHotkey must be running.&lt;/p&gt;' +
+    '&lt;table&gt;&lt;tr&gt;&lt;th&gt;Press&lt;/th&gt;&lt;th&gt;Pastes&lt;/th&gt;&lt;th&gt;Category&lt;/th&gt;&lt;/tr&gt;' +
+    state.templates.map(t =&gt;
+      '&lt;tr&gt;&lt;td&gt;' + esc(t.hotkeys.map(prettyKey).join('  or  ') || 'none yet') + '&lt;/td&gt;' +
+      '&lt;td&gt;' + esc(t.name || 'Untitled') + '&lt;/td&gt;&lt;td&gt;' + esc(t.cat || '') + '&lt;/td&gt;&lt;/tr&gt;').join('') +
+    '&lt;/table&gt;&lt;p class=&quot;foot&quot;&gt;' + esc(BRAND.name) + ' v' + esc(BRAND.version) + ' cheat sheet. The raw codes live in the app.&lt;/p&gt;';
+}
+function renderBuild(){ renderBuildStatus(); renderKeyMap(); renderCheat(); }
+
+$('#btnDownloadAhk').addEventListener('click', () =&gt; {
+  const errs = validateAll();
+  if(errs.length){ toast('Fix these first:\n\n\u2022 ' + errs.join('\n\u2022 '), 'rose', 9000); return; }
+  downloadFile(BRAND.ahkFile, '\ufeff' + buildAhk(state.templates), 'text/plain;charset=utf-8');
+  markClean();
+  toast('Downloaded. Replace your old .ahk, then right click the green AHK tray icon and choose Reload This Script.', 'ok', 7000);
+});
+$('#btnImportAhk').addEventListener('click', () =&gt; $('#fileAhk').click());
+$('#fileAhk').addEventListener('change', e =&gt; {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () =&gt; {
+    const chunks = String(r.result).match(/@replydeck-data v1 [A-Za-z0-9+\/=]+/g);
+    const m = chunks ? [null, chunks.map(x =&gt; x.replace(/^@replydeck-data v1 /, '')).join('')] : null;
+    if(!m){ toast('No saved data found in that script. Only .ahk files downloaded from here carry your library.', 'rose', 6000); return; }
+    try{
+      const s = JSON.parse(b64decode(m[1]));
+      if(!Array.isArray(s.templates)) throw 0;
+      if(!confirm('Load ' + s.templates.length + ' templates from this script? It replaces what\u2019s open now.')) return;
+      fills = {};
+      state = {templates: s.templates.map(t =&gt; {
+        const nt = {id:uid(), name:String(t.name||''), cat:String(t.cat||'Other'), hotkeys:Array.isArray(t.hotkeys)?t.hotkeys.map(String):[], body:String(t.body||'')};
+        if (t.fills &amp;&amp; typeof t.fills === 'object') fills[nt.id] = Object.fromEntries(Object.entries(t.fills).map(([k,v]) =&gt; [String(k), String(v)]));
+        return nt;
+      })};
+      afterLoad('Library loaded from your script. Pick up where you left off.');
+    }catch(err){ toast('That script\u2019s saved data looks damaged and can\u2019t be opened.', 'rose'); }
+  };
+  r.readAsText(f); e.target.value = '';
+});
+function afterLoad(msg){
+  expandedId = null; catFilter = 'All';
+  quickId = state.templates[0] ? state.templates[0].id : null;
+  markClean(); rdSave(); renderAll(); toast(msg, 'ok');
+}
+
+/* ================= TABS ================= */
+const TABS = ['tabBtnQuick','tabBtnLibrary','tabBtnBuild','tabBtnLearn'];
+function switchTab(id){
+  TABS.forEach(t =&gt; {
+    const btn = document.getElementById(t);
+    const on = t === id;
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    btn.tabIndex = on ? 0 : -1;
+    document.getElementById(btn.getAttribute('aria-controls')).hidden = !on;
+  });
+}
+TABS.forEach(t =&gt; {
+  const btn = document.getElementById(t);
+  btn.addEventListener('click', () =&gt; switchTab(t));
+  btn.addEventListener('keydown', e =&gt; {
+    if(e.key !== 'ArrowRight' &amp;&amp; e.key !== 'ArrowLeft') return;
+    const i = TABS.indexOf(t);
+    const next = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+    switchTab(next); document.getElementById(next).focus();
+  });
+});
+
+/* ================= LEARN DIAGRAM ================= */
+function renderDiagram(){
+  const steps = [
+    {t:'1. Write it here', s:'your words, your voice', icon:'M10 14h16M10 19h16M10 24h10'},
+    {t:'2. Download the .ahk', s:'one tiny script file', icon:'M18 10v12m0 0l-5-5m5 5l5-5M11 26h14'},
+    {t:'3. Run it once', s:'AutoHotkey tray icon', icon:'M18 11a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 3v4l3 2'},
+    {t:'4. Press the keys', s:'pastes in any app', icon:'M20 10l-6 9h4l-2 7 8-11h-4z'}
+  ];
+  const W = 760, CW = 158, CH = 96, GAP2 = 40, y = 14;
+  let s = '';
+  steps.forEach((st, i) =&gt; {
+    const x = 8 + i * (CW + GAP2);
+    s += '&lt;rect x=&quot;' + x + '&quot; y=&quot;' + y + '&quot; width=&quot;' + CW + '&quot; height=&quot;' + CH + '&quot; rx=&quot;14&quot; fill=&quot;' + (i === 3 ? 'var(--primary-soft)' : '#FEFDFB') + '&quot; stroke=&quot;' + (i === 3 ? 'var(--primary-line)' : 'var(--line)') + '&quot; stroke-width=&quot;1.6&quot;/&gt;';
+    s += '&lt;g transform=&quot;translate(' + (x + CW/2 - 18) + ',' + (y + 8) + ')&quot;&gt;&lt;path d=&quot;' + st.icon + '&quot; fill=&quot;none&quot; stroke=&quot;var(--primary)&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&lt;/g&gt;';
+    s += '&lt;text x=&quot;' + (x + CW/2) + '&quot; y=&quot;' + (y + 62) + '&quot; text-anchor=&quot;middle&quot; font-size=&quot;13.5&quot; font-weight=&quot;700&quot; fill=&quot;var(--ink)&quot;&gt;' + st.t + '&lt;/text&gt;';
+    s += '&lt;text x=&quot;' + (x + CW/2) + '&quot; y=&quot;' + (y + 80) + '&quot; text-anchor=&quot;middle&quot; font-size=&quot;11.5&quot; fill=&quot;var(--muted)&quot;&gt;' + st.s + '&lt;/text&gt;';
+    if(i &lt; 3){
+      const ax = x + CW + 6;
+      s += '&lt;path d=&quot;M' + ax + ' ' + (y + CH/2) + ' h' + (GAP2 - 16) + ' m-7 -6 l7 6 l-7 6&quot; fill=&quot;none&quot; stroke=&quot;var(--muted)&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;';
+    }
+  });
+  $('#learnDiagram').innerHTML = '&lt;svg viewBox=&quot;0 0 ' + W + ' 124&quot; width=&quot;100%&quot; role=&quot;img&quot; aria-label=&quot;Four steps: write it here, download the script, run it once, press the keys to paste anywhere&quot;&gt;&lt;g&gt;' + s + '&lt;/g&gt;&lt;/svg&gt;';
+}
+
+/* ================= CLIPBOARD + TOAST ================= */
+function copyText(text, okMsg){
+  const done = () =&gt; toast(okMsg || 'Copied.', 'ok');
+  const fail = () =&gt; {
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      ok ? done() : toast('Couldn\u2019t copy automatically. Select the text and copy it yourself.', 'rose');
+    }catch(e){ toast('Couldn\u2019t copy automatically. Select the text and copy it yourself.', 'rose'); }
+  };
+  if(navigator.clipboard &amp;&amp; navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, fail);
+  } else fail();
+}
+let toastTimer = null;
+function toast(msg, kind, ms){
+  const el = $('#toast');
+  el.textContent = msg; el.className = kind || ''; el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() =&gt; el.style.display = 'none', ms || 3800);
+}
+
+/* ================= PRINT + INIT ================= */
+$('#btnPrintCheat').addEventListener('click', () =&gt; { renderCheat(); window.print(); });
+window.addEventListener('beforeprint', renderCheat);
+
+function renderAll(){ renderQuick(); renderLibrary(); renderBuild(); renderDiagram(); }
+if(rdRestore()){ quickId = state.templates[0] ? state.templates[0].id : null; }
+document.addEventListener('input', function(e){ if(e.target &amp;&amp; e.target.closest &amp;&amp; e.target.closest('#panelQuick')) rdSaveFillsSoon(); }, true);
+window.addEventListener('beforeunload', rdSave);
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'hidden') rdSave(); });
+document.getElementById('brandName').textContent = BRAND.name;
+document.getElementById('brandTag').textContent = BRAND.tagline;
+document.getElementById('brandFoot').textContent = BRAND.name + ' v' + BRAND.version;
+document.title = BRAND.name + '. ' + BRAND.tagline;
+renderAll();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -14295,7 +15434,7 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
   // ═══ LAZY TOOL BOOT ═══
   // Call Script / Lender / Serviceability live in inert <template> tags so their
   // CDN payloads (Babel, React, pdf.js, tesseract, xlsx) only download on first open.
-  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher"};
+  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck"};
   function setBoot(on,label){
     var ov=document.getElementById("bootOverlay"),bb=document.getElementById("bootbar"),lb=document.getElementById("bootLabel");
     if(lb&&label)lb.textContent="Loading "+label+"…";

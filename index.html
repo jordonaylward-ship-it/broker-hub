@@ -87,6 +87,7 @@ body.locked .shell{display:none}
 .nav-tab[data-tool=finance].on{background:#ffb454;border-color:#ffb454;color:#0b0d12}
 .nav-tab[data-tool=settings].on{background:#2fd6a5;border-color:#2fd6a5;color:#0b0d12}
 .nav-tab[data-tool=warranty].on{background:#e8b4f8;border-color:#e8b4f8;color:#0b0d12}
+.nav-tab[data-tool=drive].on{background:#ff9e80;border-color:#ff9e80;color:#0b0d12}
 .nav-tab[data-tool=replydeck].on{background:#c8e86b;border-color:#c8e86b;color:#0b0d12}
 .nav-tab[data-tool=crm].on{background:#67e8f9;border-color:#67e8f9;color:#0b0d12}
 .nav-tab:hover{border-color:#3a4160}
@@ -161,6 +162,7 @@ body.locked .shell{display:none}
       <button class="nav-tab" data-tool="lender"><span class="ico">🏦</span> Lender Matcher</button>
       <button class="nav-tab" data-tool="serviceability"><span class="ico">📐</span> Serviceability</button>
       <button class="nav-tab" data-tool="warranty"><span class="ico">🛡️</span> Warranty</button>
+      <button class="nav-tab" data-tool="drive"><span class="ico">🚗</span> Drive Tracker</button>
       <button class="nav-tab" data-tool="replydeck"><span class="ico">⚡</span> ReplyDeck</button>
       <button class="nav-tab" data-tool="crm"><span class="ico">✍️</span> CRM Note</button>
       <button class="nav-tab" data-tool="finance"><span class="ico">💰</span> Finances</button>
@@ -3253,6 +3255,284 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
   });
   if(picked)buildOutputs();
 });
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></template>
+    <template id="tpl-drive"><iframe id="frame-drive" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;&gt;
+&lt;style&gt;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap');
+:root{--paper:#0d0f14;--card:#151823;--card2:#11141d;--ink:#e9ecf2;--dim:#b9c0d4;--mut:#6f7689;--line:#262c3a;--teal:#3ddc97;--gold:#ffb454;--blue:#4f9cf7;--pink:#f277a8;--red:#ff6b81;--coral:#ff9e80;}
+*{box-sizing:border-box;font-family:'Poppins',system-ui,sans-serif;}
+body{margin:0;background:var(--paper);color:var(--ink);padding:24px 26px 70px;}
+.wrap{max-width:880px;margin:0 auto;}
+h1{font-size:20px;margin:0 0 4px;}
+.sub{font-size:12.5px;color:var(--mut);margin-bottom:18px;line-height:1.55;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden;}
+.ch{padding:13px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.ch h2{font-size:14px;margin:0;}
+.cb{padding:15px 17px;}
+label{display:block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600;margin:0 0 6px;}
+input,select,textarea{width:100%;background:#171b26;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:9px 11px;font-size:13px;font-family:inherit;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--coral);}
+textarea{line-height:1.55;resize:vertical;}
+.btn{background:linear-gradient(135deg,#c96a45,#ff9e80);color:#0b0d12;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;}
+.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line);font-weight:600;}
+.btn.green{background:linear-gradient(135deg,#128a5f,#17a874);}
+.btn.sm{padding:6px 11px;font-size:11.5px;border-radius:7px;}
+.btn:hover{filter:brightness(1.09);}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.hint{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:14px;}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px;}
+.stat .k{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600;}
+.stat .v{font-size:23px;font-weight:700;margin-top:3px;}
+.stat .s{font-size:11px;color:var(--mut);margin-top:2px;}
+.stat.owed{border-color:#5a3a2e;}
+.stat.owed .v{color:var(--coral);}
+.stat.paid .v{color:var(--teal);}
+.stat.chase{border-color:#6b2f3a;}
+.stat.chase .v{color:var(--red);}
+.tabs{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;}
+.tb{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.tb.on{background:var(--coral);border-color:var(--coral);color:#0b0d12;}
+.d{border:1px solid var(--line);border-left-width:3px;border-radius:10px;background:var(--card);margin-bottom:8px;padding:11px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.d.owed{border-left-color:var(--coral);}
+.d.late{border-left-color:var(--red);}
+.d.paid{border-left-color:var(--teal);opacity:.72;}
+.d .nm{flex:1;min-width:150px;}
+.d .nm b{font-size:13.5px;font-weight:600;display:block;}
+.d .nm span{font-size:11px;color:var(--mut);}
+.d .amt{font-size:14px;font-weight:700;white-space:nowrap;}
+.d .amt.g{color:var(--teal);}
+.d .acts{display:flex;gap:6px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+.tag.late{background:#3a1620;color:var(--red);}
+.tag.paid{background:#12291f;color:var(--teal);}
+.tag.owed{background:#33210f;color:var(--gold);}
+.empty{text-align:center;color:var(--mut);font-size:12.5px;padding:26px 10px;}
+.toast{position:fixed;bottom:20px;right:20px;background:#12291f;color:var(--teal);border:1px solid #1f5c46;border-radius:8px;padding:10px 15px;font-size:12.5px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;}
+.toast.show{opacity:1;}
+.f3{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;}
+@media(max-width:640px){.f3{grid-template-columns:1fr;}}
+details.io summary{cursor:pointer;font-size:12px;color:var(--mut);padding:4px 0;}
+.contact{font-size:11.5px;color:var(--mut);line-height:1.6;}
+.contact b{color:var(--dim);}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;wrap&quot;&gt;
+&lt;h1&gt;Drive Tracker&lt;/h1&gt;
+&lt;div class=&quot;sub&quot;&gt;Referral fees owed by Drive (Aust) Pty Ltd on settled vehicle deals. Add a deal when it settles, tick it off when the money lands. Everything you type is saved in this browser · nothing here needs code changes.&lt;/div&gt;
+
+&lt;div class=&quot;stats&quot; id=&quot;stats&quot;&gt;&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Add a deal&lt;/h2&gt;&lt;span class=&quot;hint&quot; style=&quot;margin:0&quot;&gt;Settled but not yet paid by Drive&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;div class=&quot;f3&quot;&gt;
+      &lt;div&gt;&lt;label for=&quot;fName&quot;&gt;Client name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;fName&quot; placeholder=&quot;Surname, first name&quot;&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;label for=&quot;fDate&quot;&gt;Settled&lt;/label&gt;&lt;input type=&quot;date&quot; id=&quot;fDate&quot;&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;label for=&quot;fFee&quot;&gt;Fee expected&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;fFee&quot; inputmode=&quot;decimal&quot; placeholder=&quot;500&quot;&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;button class=&quot;btn&quot; id=&quot;btnAdd&quot;&gt;Add&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;hint&quot;&gt;Leave the fee blank if you don't know it yet · fill it in when the remittance arrives. Source of truth is Leads_Log column Y · blank there means it isn't a Drive deal.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;tabs&quot; id=&quot;tabs&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;list&quot;&gt;&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Sheet sync&lt;/h2&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;details class=&quot;io&quot;&gt;&lt;summary&gt;Copy out to the sheet, or paste in from it&lt;/summary&gt;
+      &lt;div style=&quot;margin-top:11px;&quot;&gt;
+        &lt;div class=&quot;row&quot; style=&quot;margin-bottom:10px;&quot;&gt;
+          &lt;button class=&quot;btn ghost sm&quot; id=&quot;btnCopy&quot;&gt;Copy all as CSV&lt;/button&gt;
+          &lt;button class=&quot;btn ghost sm&quot; id=&quot;btnPasteMode&quot;&gt;Paste from sheet&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;pasteBox&quot; style=&quot;display:none;&quot;&gt;
+          &lt;label for=&quot;pasteArea&quot;&gt;Paste rows · name, settled, fee, paid date, paid amount&lt;/label&gt;
+          &lt;textarea id=&quot;pasteArea&quot; rows=&quot;5&quot; placeholder=&quot;Abbas Saman,2026-07-31,500,,&quot;&gt;&lt;/textarea&gt;
+          &lt;div class=&quot;row&quot; style=&quot;margin-top:9px;&quot;&gt;
+            &lt;button class=&quot;btn sm&quot; id=&quot;btnImport&quot;&gt;Import rows&lt;/button&gt;
+            &lt;button class=&quot;btn ghost sm&quot; id=&quot;btnCancelPaste&quot;&gt;Cancel&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;hint&quot;&gt;Adds new names, updates ones already here. Nothing is deleted.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Chasing Drive&lt;/h2&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;div class=&quot;contact&quot;&gt;&lt;b&gt;Jai Clarke&lt;/b&gt; · Vehicle Broker, Drive Approved&lt;br&gt;Jai.Clarke@DriveApproved.com.au · 0448 288 282&lt;br&gt;&lt;br&gt;Remittance advice arrives before the cash does, and payments now land mid-month around the 14th to 15th after their accounts restructure. Anything sitting over 14 days past settlement gets flagged red above.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+var KEY='hub_drive_v1';
+var SEED=[
+ {id:'d1', name:'Abbas Saman',    settled:'2026-07-31', fee:500, paidDate:'', paidAmt:null, note:'Follow-up email sent to Jai'},
+ {id:'d2', name:'Hammond Rodney', settled:'2026-08-18', fee:500, paidDate:'', paidAmt:null, note:''}
+];
+var deals=[], filter='owed';
+
+function uid(){ return 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function load(){
+  var raw=null; try{ raw=localStorage.getItem(KEY); }catch(e){}
+  if(!raw){ deals=SEED.slice(); save(); return; }
+  try{ var o=JSON.parse(raw); deals=Array.isArray(o)?o:(o.deals||[]); }catch(e){ deals=SEED.slice(); }
+  if(!Array.isArray(deals)) deals=SEED.slice();
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(deals)); }catch(e){} }
+function money(n){ if(n===null||n===undefined||n==='') return '—'; var v=Number(n); if(!isFinite(v)) return '—'; return '$'+v.toLocaleString('en-AU',{minimumFractionDigits:(v%1?2:0),maximumFractionDigits:2}); }
+function esc(s){ return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;'); }
+function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.className='toast show'; setTimeout(function(){t.className='toast';},2200); }
+function daysSince(d){ if(!d) return null; var p=d.split('-'); if(p.length!==3) return null; var t=new Date(+p[0],+p[1]-1,+p[2]).getTime(); if(!isFinite(t)) return null; var n=new Date(); n.setHours(0,0,0,0); return Math.round((n.getTime()-t)/86400000); }
+function fmtDate(d){ if(!d) return ''; var p=d.split('-'); if(p.length!==3) return d; return p[2]+'/'+p[1]+'/'+p[0].slice(2); }
+function isPaid(x){ return !!x.paidDate; }
+function valOf(x){ return x.paidAmt!=null?Number(x.paidAmt):(Number(x.fee)||0); }
+
+function renderStats(){
+  var owed=deals.filter(function(x){return !isPaid(x);});
+  var paid=deals.filter(isPaid);
+  var owedSum=owed.reduce(function(a,x){ return a+(Number(x.fee)||0); },0);
+  var paidSum=paid.reduce(function(a,x){ return a+valOf(x); },0);
+  var late=owed.filter(function(x){ var d=daysSince(x.settled); return d!==null &amp;&amp; d&gt;14; });
+  var now=new Date(), ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var thisMonth=paid.filter(function(x){ return (x.paidDate||'').slice(0,7)===ym; });
+  var monthSum=thisMonth.reduce(function(a,x){ return a+valOf(x); },0);
+  document.getElementById('stats').innerHTML=
+    '&lt;div class=&quot;stat owed&quot;&gt;&lt;div class=&quot;k&quot;&gt;Owed by Drive&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(owedSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+owed.length+' deal'+(owed.length===1?'':'s')+' waiting&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;stat chase&quot;&gt;&lt;div class=&quot;k&quot;&gt;Needs chasing&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+late.length+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;over 14 days since settlement&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;stat paid&quot;&gt;&lt;div class=&quot;k&quot;&gt;Paid this month&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(monthSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+thisMonth.length+' received&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;k&quot;&gt;Received all time&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(paidSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+paid.length+' deal'+(paid.length===1?'':'s')+'&lt;/div&gt;&lt;/div&gt;';
+}
+
+function renderTabs(){
+  var owed=deals.filter(function(x){return !isPaid(x);}).length;
+  var paid=deals.length-owed;
+  var defs=[['owed','Waiting on Drive ('+owed+')'],['paid','Paid ('+paid+')'],['all','Everything ('+deals.length+')']];
+  document.getElementById('tabs').innerHTML=defs.map(function(d){
+    return '&lt;button class=&quot;tb'+(filter===d[0]?' on':'')+'&quot; data-f=&quot;'+d[0]+'&quot;&gt;'+d[1]+'&lt;/button&gt;';
+  }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#tabs .tb'), function(b){
+    b.addEventListener('click', function(){ filter=b.getAttribute('data-f'); renderTabs(); renderList(); });
+  });
+}
+
+function renderList(){
+  var rows=deals.filter(function(x){
+    if(filter==='owed') return !isPaid(x);
+    if(filter==='paid') return isPaid(x);
+    return true;
+  });
+  rows.sort(function(a,b){
+    if(isPaid(a)!==isPaid(b)) return isPaid(a)?1:-1;
+    return String(b.settled||'').localeCompare(String(a.settled||''));
+  });
+  var host=document.getElementById('list');
+  if(!rows.length){ host.innerHTML='&lt;div class=&quot;empty&quot;&gt;'+(filter==='paid'?'Nothing marked paid yet.':filter==='owed'?'Nothing outstanding. Drive is square with you.':'No deals yet. Add one above.')+'&lt;/div&gt;'; return; }
+  host.innerHTML=rows.map(function(x){
+    var d=daysSince(x.settled), late=!isPaid(x)&amp;&amp;d!==null&amp;&amp;d&gt;14;
+    var cls=isPaid(x)?'paid':(late?'late':'owed');
+    var tag=isPaid(x)?'&lt;span class=&quot;tag paid&quot;&gt;paid '+fmtDate(x.paidDate)+'&lt;/span&gt;'
+      :late?'&lt;span class=&quot;tag late&quot;&gt;'+d+' days&lt;/span&gt;'
+      :'&lt;span class=&quot;tag owed&quot;&gt;'+(d===null?'waiting':d+' days')+'&lt;/span&gt;';
+    var amt=isPaid(x)?money(x.paidAmt!=null?x.paidAmt:x.fee):money(x.fee);
+    return '&lt;div class=&quot;d '+cls+'&quot;&gt;'+
+      '&lt;div class=&quot;nm&quot;&gt;&lt;b&gt;'+esc(x.name)+'&lt;/b&gt;&lt;span&gt;settled '+(fmtDate(x.settled)||'date not set')+(x.note?' · '+esc(x.note):'')+'&lt;/span&gt;&lt;/div&gt;'+
+      tag+
+      '&lt;div class=&quot;amt'+(isPaid(x)?' g':'')+'&quot;&gt;'+amt+'&lt;/div&gt;'+
+      '&lt;div class=&quot;acts&quot;&gt;'+
+        (isPaid(x)
+          ? '&lt;button class=&quot;btn ghost sm&quot; data-act=&quot;unpay&quot; data-id=&quot;'+x.id+'&quot;&gt;Undo paid&lt;/button&gt;'
+          : '&lt;button class=&quot;btn green sm&quot; data-act=&quot;pay&quot; data-id=&quot;'+x.id+'&quot;&gt;Mark paid&lt;/button&gt;')+
+        '&lt;button class=&quot;btn ghost sm&quot; data-act=&quot;edit&quot; data-id=&quot;'+x.id+'&quot;&gt;Edit&lt;/button&gt;'+
+        '&lt;button class=&quot;btn ghost sm&quot; data-act=&quot;del&quot; data-id=&quot;'+x.id+'&quot;&gt;Delete&lt;/button&gt;'+
+      '&lt;/div&gt;&lt;/div&gt;';
+  }).join('');
+}
+
+function render(){ renderStats(); renderTabs(); renderList(); }
+
+document.getElementById('btnAdd').addEventListener('click', function(){
+  var n=document.getElementById('fName').value.trim();
+  if(!n){ toast('Put a name in first'); document.getElementById('fName').focus(); return; }
+  var fee=document.getElementById('fFee').value.trim();
+  deals.push({id:uid(), name:n, settled:document.getElementById('fDate').value||'', fee:fee===''?null:Number(fee), paidDate:'', paidAmt:null, note:''});
+  save(); render();
+  document.getElementById('fName').value=''; document.getElementById('fFee').value='';
+  toast(n+' added');
+});
+
+document.getElementById('list').addEventListener('click', function(e){
+  var b=e.target.closest('[data-act]'); if(!b) return;
+  var id=b.getAttribute('data-id'), act=b.getAttribute('data-act');
+  var x=deals.filter(function(d){ return d.id===id; })[0]; if(!x) return;
+  if(act==='pay'){
+    var n2=new Date(), today=n2.getFullYear()+'-'+String(n2.getMonth()+1).padStart(2,'0')+'-'+String(n2.getDate()).padStart(2,'0');
+    var when=prompt('Date paid (YYYY-MM-DD)', today); if(when===null) return;
+    var amt=prompt('Amount received', x.fee!=null?String(x.fee):''); if(amt===null) return;
+    x.paidDate=String(when).trim()||today;
+    x.paidAmt=String(amt).trim()===''?(x.fee!=null?x.fee:null):Number(amt);
+    save(); render(); toast(x.name+' marked paid');
+  }
+  if(act==='unpay'){ x.paidDate=''; x.paidAmt=null; save(); render(); toast('Moved back to waiting'); }
+  if(act==='edit'){
+    var nn=prompt('Client name', x.name); if(nn===null) return;
+    var ns=prompt('Settled date (YYYY-MM-DD)', x.settled||''); if(ns===null) return;
+    var nf=prompt('Fee expected', x.fee!=null?String(x.fee):''); if(nf===null) return;
+    var no=prompt('Note (optional)', x.note||''); if(no===null) return;
+    x.name=String(nn).trim()||x.name; x.settled=String(ns).trim(); x.fee=String(nf).trim()===''?null:Number(nf); x.note=String(no).trim();
+    save(); render(); toast('Updated');
+  }
+  if(act==='del'){
+    if(!confirm('Delete '+x.name+'? This only removes it from this tracker.')) return;
+    deals=deals.filter(function(d){ return d.id!==id; });
+    save(); render(); toast('Deleted');
+  }
+});
+
+document.getElementById('btnCopy').addEventListener('click', function(){
+  var out='Name,Settled,Fee expected,Paid date,Paid amount\n'+deals.map(function(x){
+    return [x.name, x.settled||'', x.fee==null?'':x.fee, x.paidDate||'', x.paidAmt==null?'':x.paidAmt]
+      .map(function(v){ v=String(v); return /[&quot;,]/.test(v)?'&quot;'+v.replace(/&quot;/g,'&quot;&quot;')+'&quot;':v; }).join(',');
+  }).join('\n');
+  if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText){ navigator.clipboard.writeText(out).then(function(){toast('Copied '+deals.length+' rows');},function(){toast('Could not copy');}); }
+  else { toast('Could not copy'); }
+});
+document.getElementById('btnPasteMode').addEventListener('click', function(){ document.getElementById('pasteBox').style.display=''; document.getElementById('pasteArea').focus(); });
+document.getElementById('btnCancelPaste').addEventListener('click', function(){ document.getElementById('pasteBox').style.display='none'; });
+document.getElementById('btnImport').addEventListener('click', function(){
+  var txt=document.getElementById('pasteArea').value.trim();
+  if(!txt){ toast('Nothing pasted'); return; }
+  var added=0, updated=0;
+  txt.split(/\r?\n/).forEach(function(line){
+    if(!line.trim()) return;
+    var c=line.split(',').map(function(v){ return v.trim().replace(/^&quot;|&quot;$/g,''); });
+    if(!c[0] || /^name$/i.test(c[0])) return;
+    var hit=deals.filter(function(d){ return d.name.toLowerCase()===c[0].toLowerCase(); })[0];
+    var rec={settled:c[1]||'', fee:c[2]?Number(c[2]):null, paidDate:c[3]||'', paidAmt:c[4]?Number(c[4]):null};
+    if(hit){ if(rec.settled)hit.settled=rec.settled; if(rec.fee!=null)hit.fee=rec.fee; if(rec.paidDate)hit.paidDate=rec.paidDate; if(rec.paidAmt!=null)hit.paidAmt=rec.paidAmt; updated++; }
+    else { deals.push({id:uid(), name:c[0], settled:rec.settled, fee:rec.fee, paidDate:rec.paidDate, paidAmt:rec.paidAmt, note:''}); added++; }
+  });
+  save(); render();
+  document.getElementById('pasteArea').value=''; document.getElementById('pasteBox').style.display='none';
+  toast(added+' added, '+updated+' updated');
+});
+
+load(); render();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -16040,7 +16320,7 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
   // ═══ LAZY TOOL BOOT ═══
   // Call Script / Lender / Serviceability live in inert <template> tags so their
   // CDN payloads (Babel, React, pdf.js, tesseract, xlsx) only download on first open.
-  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck",crm:"CRM Note"};
+  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck",crm:"CRM Note",drive:"Drive Tracker"};
   function setBoot(on,label){
     var ov=document.getElementById("bootOverlay"),bb=document.getElementById("bootbar"),lb=document.getElementById("bootLabel");
     if(lb&&label)lb.textContent="Loading "+label+"…";

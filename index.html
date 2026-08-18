@@ -15018,6 +15018,22 @@ bhfApplyHandoff();
   .barleg .lg{display:flex;align-items:center;gap:5px;}
   .barleg .sw{width:9px;height:9px;border-radius:3px;display:inline-block;}
   .barleg b{color:var(--ink);font-weight:600;}
+  .pqhead{display:flex;justify-content:space-between;align-items:baseline;padding:9px 13px;background:var(--card);border:1px solid var(--line);border-radius:10px 10px 0 0;}
+  .pqhead span{font-size:12px;color:var(--muted);}
+  .pqhead b{font-size:17px;}
+  .pqr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 13px;background:var(--card);border:1px solid var(--line);border-top:none;border-left-width:3px;}
+  .pqr.paid{border-left-color:var(--green);}
+  .pqr.part{border-left-color:var(--gold);}
+  .pqr.unpaid{border-left-color:var(--line);opacity:.62;}
+  .pqr .pql{font-size:13px;color:var(--ink);}
+  .pqr .pqs{font-size:11px;color:var(--muted);margin-top:1px;}
+  .pqr .pqa{font-size:13px;font-weight:600;white-space:nowrap;}
+  .pqr:last-child{border-radius:0 0 10px 10px;}
+  .pqcut{display:flex;align-items:center;gap:8px;padding:7px 13px;background:var(--red-soft);border-top:1px dashed var(--red);border-bottom:1px dashed var(--red);font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--red);text-transform:uppercase;}
+  .pqfoot{margin-top:9px;font-size:12.5px;}
+  .blr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px;}
+  .blr:last-child{border-bottom:none;}
+  .blr i{display:block;font-size:11px;color:var(--muted);font-style:normal;}
   .evd{border:1px solid var(--line);border-radius:10px;margin:7px 0;background:var(--card);}
   .evd summary{display:flex;align-items:center;gap:10px;padding:9px 13px;cursor:pointer;list-style:none;font-size:13px;}
   .evd summary::-webkit-details-marker{display:none;}
@@ -15309,20 +15325,20 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
   &lt;details class=&quot;sec&quot;&gt;&lt;summary&gt;What to keep on hand&lt;/summary&gt;
   &lt;div class=&quot;card&quot;&gt;
     &lt;h2&gt;What to keep on hand&lt;/h2&gt;
-    &lt;p class=&quot;cap&quot;&gt;One bar · each block is a bill, the tick is your balance. When the tick reaches the end of the bar, everything near-term is covered.&lt;/p&gt;
+    &lt;p class=&quot;cap&quot;&gt;Your money pours down this list in the order the bills hit. The red line is where it runs out.&lt;/p&gt;
     &lt;div class=&quot;res-headline&quot;&gt;
       &lt;div class=&quot;rh-label&quot;&gt;Keep on hand right now to stay covered&lt;/div&gt;
       &lt;div class=&quot;rh-num&quot; id=&quot;resNow&quot;&gt;·&lt;/div&gt;
       &lt;div class=&quot;rh-foot&quot;&gt;All known obligations incl. months-out: &lt;b id=&quot;resGrand&quot;&gt;·&lt;/b&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div id=&quot;nowBar&quot; class=&quot;barwrap&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;payQueue&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;res-free&quot;&gt;
       &lt;div class=&quot;rf-calc&quot;&gt;Balance &lt;b id=&quot;resBal&quot;&gt;·&lt;/b&gt; − need now/soon &lt;b id=&quot;resNow2&quot;&gt;·&lt;/b&gt; =&lt;/div&gt;
       &lt;div class=&quot;rf-num&quot; id=&quot;resFree&quot;&gt;·&lt;/div&gt;
       &lt;div class=&quot;rf-label&quot;&gt;free right now&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;rh-label&quot; style=&quot;margin-top:16px;&quot;&gt;Building toward · months out&lt;/div&gt;
-    &lt;div id=&quot;buildBar&quot; class=&quot;barwrap&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;rh-label&quot; style=&quot;margin-top:18px;&quot;&gt;Building toward · months out&lt;/div&gt;
+    &lt;div id=&quot;buildList&quot;&gt;&lt;/div&gt;
     &lt;details class=&quot;more&quot;&gt;&lt;summary&gt;line by line · edit the BAS figure here&lt;/summary&gt;
     &lt;div class=&quot;res-cols&quot;&gt;
       &lt;div class=&quot;res-col now&quot;&gt;
@@ -15447,7 +15463,6 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
     &lt;/details&gt;
   &lt;/div&gt;
     &lt;/details&gt;
-  &lt;/div&gt;
   &lt;/details&gt;
   &lt;!-- ═══ PERSONAL ═══ --&gt;
   &lt;details class=&quot;sec&quot;&gt;&lt;summary&gt;You personally · income tax&lt;/summary&gt;
@@ -15693,30 +15708,44 @@ if(expDayEl) expDayEl.addEventListener('input',()=&gt;{ saveExpect(); renderRunw
 
 const _origRender=render;
 function renderBars(){
-  const host=document.getElementById('nowBar'), host2=document.getElementById('buildBar');
-  if(!host) return;
-  const segs=[
-    {v:PLAN_NEXT+SGC_NEXT, l:'ATO plans · next', c:'var(--gold)'},
-    {v:getGst(), l:'Q4 BAS residual', c:'var(--red)'},
-    {v:PAYROLL_BUFFER, l:'payroll buffer', c:'var(--green)'},
-    {v:QUICKFEE+GMD_STP+GMD_MONTHLY, l:'GMD + QuickFee', c:'var(--blue)'},
-    {v:ASIC_ANNUAL, l:'ASIC', c:'var(--ink-soft)'}
+  const host=document.getElementById('payQueue'); if(!host) return;
+  const q=[
+    {l:'QuickFee (GMD)',          w:'20 Aug · auto-debit',                 v:QUICKFEE},
+    {l:'ATO plan · instalment',   w:'10 Sep · direct debit',               v:PLAN_NEXT},
+    {l:'SGC plan · payment',      w:'12 Sep · direct debit',               v:SGC_NEXT},
+    {l:'GMD + Xero',              w:'monthly · engagement signed',         v:GMD_MONTHLY},
+    {l:'GMD invoice · STP work',  w:'one-off · queued',                    v:GMD_STP},
+    {l:'ASIC annual review',      w:'30 Sep · manual BPAY',                v:ASIC_ANNUAL},
+    {l:'Q4 BAS residual',         w:'25 Aug · folds into the plan on the call', v:getGst()},
+    {l:'Payroll buffer',          w:'2 weeks held back · pay + super',     v:PAYROLL_BUFFER}
   ].filter(x=&gt;x.v&gt;0);
-  const tot=segs.reduce((a,x)=&gt;a+x.v,0);
   const b=inp.value===''?NaN:parseFloat(inp.value);
-  const frac=isFinite(b)?Math.max(0,Math.min(1,b/tot)):null;
-  let h='&lt;div class=&quot;bigbar&quot;&gt;';
-  segs.forEach(x=&gt;{ h+='&lt;div class=&quot;seg&quot; style=&quot;width:'+(100*x.v/tot)+'%;background:'+x.c+';opacity:.82;&quot;&gt;&lt;span style=&quot;position:absolute;inset:0&quot; title=&quot;'+x.l+' · '+fmt(x.v)+'&quot;&gt;&lt;/span&gt;&lt;/div&gt;'; });
-  if(frac!==null) h+='&lt;div class=&quot;btick&quot; style=&quot;left:'+(100*frac)+'%&quot; title=&quot;your balance · '+fmt(b)+'&quot;&gt;&lt;/div&gt;';
-  h+='&lt;/div&gt;&lt;div class=&quot;barleg&quot;&gt;'+segs.map(x=&gt;'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:'+x.c+'&quot;&gt;&lt;/span&gt;'+x.l+' &lt;b&gt;'+fmt(x.v)+'&lt;/b&gt;&lt;/span&gt;').join('')+(frac!==null?'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:var(--ink)&quot;&gt;&lt;/span&gt;your balance &lt;b&gt;'+fmt(b)+'&lt;/b&gt;&lt;/span&gt;':'')+'&lt;/div&gt;';
+  const have=isFinite(b)?b:0;
+  let left=have, cut=false;
+  let h='&lt;div class=&quot;pqhead&quot;&gt;&lt;span&gt;You have&lt;/span&gt;&lt;b&gt;'+(isFinite(b)?fmt(b):'·')+'&lt;/b&gt;&lt;/div&gt;';
+  q.forEach(x=&gt;{
+    let cls,note;
+    if(!isFinite(b)){ cls='unpaid'; note=x.w; }
+    else if(left&gt;=x.v){ left-=x.v; cls='paid'; note=x.w+' · covered, '+fmt(left)+' left'; }
+    else if(left&gt;0){ cls='part'; note=x.w+' · only '+fmt(left)+' of it covered'; left=0; }
+    else { cls='unpaid'; note=x.w; }
+    if(cls!=='paid'&amp;&amp;!cut&amp;&amp;isFinite(b)){ h+='&lt;div class=&quot;pqcut&quot;&gt;money runs out here · everything below needs new income&lt;/div&gt;'; cut=true; }
+    h+='&lt;div class=&quot;pqr '+cls+'&quot;&gt;&lt;div&gt;&lt;div class=&quot;pql&quot;&gt;'+x.l+'&lt;/div&gt;&lt;div class=&quot;pqs&quot;&gt;'+note+'&lt;/div&gt;&lt;/div&gt;'+
+       '&lt;div class=&quot;pqa&quot;&gt;'+fmt(x.v)+(cls==='paid'?' &lt;span style=&quot;color:var(--green)&quot;&gt;✓&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;';
+  });
+  const tot=q.reduce((a,x)=&gt;a+x.v,0), short=tot-have;
+  h+='&lt;div class=&quot;pqfoot&quot;&gt;'+(short&gt;0
+      ? 'Short &lt;b style=&quot;color:var(--red)&quot;&gt;'+fmt(short)+'&lt;/b&gt; across everything due in the next 60 days.'
+      : '&lt;b style=&quot;color:var(--green)&quot;&gt;Everything near-term is covered.&lt;/b&gt; '+fmt(-short)+' free on top.')+'&lt;/div&gt;';
   host.innerHTML=h;
-  if(host2){
-    const bs=[{v:PLAN_REMAINING,l:'ATO plan · to Oct 27',c:'var(--gold)'},{v:SGC_REMAINING,l:'SGC · to Dec 27',c:'var(--gold-soft)'},{v:COMPANY_TAX,l:'company tax · May 27',c:'var(--blue)'}];
-    const t2=bs.reduce((a,x)=&gt;a+x.v,0);
-    let h2='&lt;div class=&quot;bigbar&quot; style=&quot;height:20px;&quot;&gt;';
-    bs.forEach(x=&gt;{ h2+='&lt;div class=&quot;seg&quot; style=&quot;width:'+(100*x.v/t2)+'%;background:'+x.c+';opacity:.82;&quot;&gt;&lt;span style=&quot;position:absolute;inset:0&quot; title=&quot;'+x.l+' · '+fmt(x.v)+'&quot;&gt;&lt;/span&gt;&lt;/div&gt;'; });
-    h2+='&lt;/div&gt;&lt;div class=&quot;barleg&quot;&gt;'+bs.map(x=&gt;'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:'+x.c+'&quot;&gt;&lt;/span&gt;'+x.l+' &lt;b&gt;'+fmt(x.v)+'&lt;/b&gt;&lt;/span&gt;').join('')+'&lt;span class=&quot;lg&quot;&gt;total &lt;b&gt;'+fmt(t2)+'&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;';
-    host2.innerHTML=h2;
+
+  const bl=document.getElementById('buildList');
+  if(bl){
+    const bs=[{l:'ATO plan · remaining',v:PLAN_REMAINING,w:'monthly to Oct 2027'},
+              {l:'SGC plan · remaining',v:SGC_REMAINING,w:'$200/mo to Dec 2027 · incl GIC'},
+              {l:'Company tax',v:COMPANY_TAX,w:'due 15 May 2027'}];
+    bl.innerHTML=bs.map(x=&gt;'&lt;div class=&quot;blr&quot;&gt;&lt;span&gt;'+x.l+'&lt;i&gt;'+x.w+'&lt;/i&gt;&lt;/span&gt;&lt;b&gt;'+fmt(x.v)+'&lt;/b&gt;&lt;/div&gt;').join('')+
+      '&lt;div class=&quot;blr&quot;&gt;&lt;span&gt;&lt;b&gt;Total building toward&lt;/b&gt;&lt;/span&gt;&lt;b&gt;'+fmt(bs.reduce((a,x)=&gt;a+x.v,0))+'&lt;/b&gt;&lt;/div&gt;';
   }
 }
 function renderFloor(){

@@ -15010,6 +15010,22 @@ bhfApplyHandoff();
   .task .due{font-size:11px;color:var(--muted);display:block;}
   .tick{font-size:12.5px;color:var(--green);padding:4px 0;}
   .tick.dim{color:var(--muted);}
+  .barwrap{margin:10px 0 4px;}
+  .bigbar{display:flex;height:34px;border-radius:9px;overflow:hidden;border:1px solid var(--line);position:relative;}
+  .bigbar .seg{height:100%;min-width:2px;position:relative;}
+  .bigbar .btick{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--ink);border-radius:2px;z-index:3;}
+  .barleg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:11.5px;color:var(--muted);}
+  .barleg .lg{display:flex;align-items:center;gap:5px;}
+  .barleg .sw{width:9px;height:9px;border-radius:3px;display:inline-block;}
+  .barleg b{color:var(--ink);font-weight:600;}
+  .evd{border:1px solid var(--line);border-radius:10px;margin:7px 0;background:var(--card);}
+  .evd summary{display:flex;align-items:center;gap:10px;padding:9px 13px;cursor:pointer;list-style:none;font-size:13px;}
+  .evd summary::-webkit-details-marker{display:none;}
+  .evd .evdate{flex:0 0 58px;font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--muted);text-transform:uppercase;}
+  .evd .evlab{flex:1;color:var(--ink);}
+  .evd .evamt{font-weight:700;font-size:13px;white-space:nowrap;}
+  .evd .evbody{padding:2px 13px 12px 81px;font-size:12.5px;color:var(--muted);line-height:1.6;}
+  @media(max-width:640px){.evd .evbody{padding-left:13px;}}
   .chip .dot{width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.7;}
 
   /* ── RESERVE / TOTAL TO HOLD ── */
@@ -15293,12 +15309,21 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
   &lt;details class=&quot;sec&quot;&gt;&lt;summary&gt;What to keep on hand&lt;/summary&gt;
   &lt;div class=&quot;card&quot;&gt;
     &lt;h2&gt;What to keep on hand&lt;/h2&gt;
-    &lt;p class=&quot;cap&quot;&gt;Every near-term commitment plus the longer-term ATO and super bills. The big number is what to keep on hand right now; the split shows near-term vs months-out. &lt;b style=&quot;color:var(--green);&quot;&gt;August plan instalments are paid&lt;/b&gt; · these are the next ones due.&lt;/p&gt;
+    &lt;p class=&quot;cap&quot;&gt;One bar · each block is a bill, the tick is your balance. When the tick reaches the end of the bar, everything near-term is covered.&lt;/p&gt;
     &lt;div class=&quot;res-headline&quot;&gt;
       &lt;div class=&quot;rh-label&quot;&gt;Keep on hand right now to stay covered&lt;/div&gt;
       &lt;div class=&quot;rh-num&quot; id=&quot;resNow&quot;&gt;·&lt;/div&gt;
-      &lt;div class=&quot;rh-foot&quot;&gt;Total known obligations incl. what you're building toward: &lt;b id=&quot;resGrand&quot;&gt;·&lt;/b&gt;&lt;/div&gt;
+      &lt;div class=&quot;rh-foot&quot;&gt;All known obligations incl. months-out: &lt;b id=&quot;resGrand&quot;&gt;·&lt;/b&gt;&lt;/div&gt;
     &lt;/div&gt;
+    &lt;div id=&quot;nowBar&quot; class=&quot;barwrap&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;res-free&quot;&gt;
+      &lt;div class=&quot;rf-calc&quot;&gt;Balance &lt;b id=&quot;resBal&quot;&gt;·&lt;/b&gt; − need now/soon &lt;b id=&quot;resNow2&quot;&gt;·&lt;/b&gt; =&lt;/div&gt;
+      &lt;div class=&quot;rf-num&quot; id=&quot;resFree&quot;&gt;·&lt;/div&gt;
+      &lt;div class=&quot;rf-label&quot;&gt;free right now&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;rh-label&quot; style=&quot;margin-top:16px;&quot;&gt;Building toward · months out&lt;/div&gt;
+    &lt;div id=&quot;buildBar&quot; class=&quot;barwrap&quot;&gt;&lt;/div&gt;
+    &lt;details class=&quot;more&quot;&gt;&lt;summary&gt;line by line · edit the BAS figure here&lt;/summary&gt;
     &lt;div class=&quot;res-cols&quot;&gt;
       &lt;div class=&quot;res-col now&quot;&gt;
         &lt;div class=&quot;rc-head&quot;&gt;Need now / soon &lt;span&gt;next 30 to 60 days&lt;/span&gt;&lt;/div&gt;
@@ -15309,7 +15334,7 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
         &lt;div class=&quot;rcr&quot;&gt;&lt;span&gt;QuickFee (GMD) &lt;i&gt;next ~21 Aug · July paid ✓&lt;/i&gt;&lt;/span&gt;&lt;b&gt;$230&lt;/b&gt;&lt;/div&gt;
         &lt;div class=&quot;rcr&quot;&gt;&lt;span&gt;ASIC annual review &lt;i&gt;due 30 Sep · manual BPAY&lt;/i&gt;&lt;/span&gt;&lt;b&gt;$342&lt;/b&gt;&lt;/div&gt;
         &lt;div class=&quot;rcr&quot;&gt;&lt;span&gt;GMD invoice · FY26 STP work &lt;i&gt;due 14 Aug · one-off · queued behind the BAS&lt;/i&gt;&lt;/span&gt;&lt;b&gt;$165&lt;/b&gt;&lt;/div&gt;
-        &lt;div class=&quot;rcr&quot;&gt;&lt;span&gt;GMD engagement + Xero &lt;i&gt;$429/mo from acceptance (~15 Aug)&lt;/i&gt;&lt;/span&gt;&lt;b&gt;$429&lt;/b&gt;&lt;/div&gt;
+        &lt;div class=&quot;rcr&quot;&gt;&lt;span&gt;GMD engagement + Xero &lt;i&gt;SIGNED ✓ · $429/mo running&lt;/i&gt;&lt;/span&gt;&lt;b&gt;$429&lt;/b&gt;&lt;/div&gt;
         &lt;div class=&quot;rcr&quot;&gt;&lt;span&gt;PAYG instalment &lt;i&gt;none this quarter · GST-only BAS&lt;/i&gt;&lt;/span&gt;&lt;b&gt;$0&lt;/b&gt;&lt;/div&gt;
         &lt;div class=&quot;rc-tot&quot;&gt;Subtotal &lt;b id=&quot;resNowCol&quot;&gt;·&lt;/b&gt;&lt;/div&gt;
       &lt;/div&gt;
@@ -15321,13 +15346,9 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
         &lt;div class=&quot;rc-tot&quot;&gt;Subtotal &lt;b id=&quot;resBuild&quot;&gt;·&lt;/b&gt;&lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;res-free&quot;&gt;
-      &lt;div class=&quot;rf-calc&quot;&gt;Balance &lt;b id=&quot;resBal&quot;&gt;·&lt;/b&gt; − need now/soon &lt;b id=&quot;resNow2&quot;&gt;·&lt;/b&gt; =&lt;/div&gt;
-      &lt;div class=&quot;rf-num&quot; id=&quot;resFree&quot;&gt;·&lt;/div&gt;
-      &lt;div class=&quot;rf-label&quot;&gt;free right now&lt;/div&gt;
-    &lt;/div&gt;
+    
+    &lt;/details&gt;
   &lt;/div&gt;
-
   &lt;/details&gt;
   &lt;!-- ═══ THE MONEY MAP ═══ --&gt;
   &lt;details class=&quot;sec&quot;&gt;&lt;summary&gt;Where your money goes&lt;/summary&gt;
@@ -15372,131 +15393,39 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
   &lt;details class=&quot;sec&quot;&gt;&lt;summary&gt;Bills &amp;amp; timeline&lt;/summary&gt;
   &lt;div class=&quot;card&quot;&gt;
     &lt;h2&gt;Bills &amp;amp; timeline&lt;/h2&gt;
-    &lt;p class=&quot;cap&quot;&gt;Full payment schedule to the end of 2026. Both ATO debts are on plans and run themselves · but the Q4 BAS on 25 Aug sits outside them and is a hard deadline. That's the one to actively manage.&lt;/p&gt;
+    &lt;p class=&quot;cap&quot;&gt;One line per event · open a line for the full story. The chart up top is the same data drawn as a picture.&lt;/p&gt;
 
     &lt;div class=&quot;rw-priority&quot;&gt;
       &lt;div class=&quot;rp-tag&quot;&gt;⚠ Priority&lt;/div&gt;
-      &lt;div class=&quot;rp-body&quot;&gt;&lt;b&gt;$2,188 of the Q4 BAS is still open.&lt;/b&gt; $1,000 went across by BPAY on 15 Aug, so the deadline is no longer a cash cliff · but the remainder still sits outside your payment plans, and an unarranged miss can default both. &lt;b&gt;The fold-in call on the 21st–22nd is what closes it,&lt;/b&gt; not another payment.&lt;/div&gt;
+      &lt;div class=&quot;rp-body&quot;&gt;&lt;b&gt;$2,188 of the Q4 BAS is still open.&lt;/b&gt; $1,000 paid ✓. The fold-in call on the &lt;b&gt;21st–22nd&lt;/b&gt; closes it · not another payment. Deadline the 25th.&lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;div class=&quot;rw-sum&quot;&gt;
-      &lt;div class=&quot;rw-stat crit&quot;&gt;&lt;div class=&quot;k&quot;&gt;⚠ Hard deadline · 25 Aug&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;$2,188&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;Q4 BAS left · &lt;b id=&quot;rwCount&quot;&gt;soon&lt;/b&gt; · $1,000 paid ✓&lt;/div&gt;&lt;/div&gt;
-      &lt;div class=&quot;rw-stat&quot;&gt;&lt;div class=&quot;k&quot;&gt;Into the ATO call · after Thu 20th&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;~$1,439&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;$669 + $1,000 advance − $229.56 QuickFee · risk cleared ✓&lt;/div&gt;&lt;/div&gt;
-      &lt;div class=&quot;rw-stat&quot;&gt;&lt;div class=&quot;k&quot;&gt;August total&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;$4,026&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;$1,000 of it already paid · $230 QuickFee on the 20th&lt;/div&gt;&lt;/div&gt;
-      &lt;div class=&quot;rw-stat&quot;&gt;&lt;div class=&quot;k&quot;&gt;Fixed floor · Sep on&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;~$1,480&lt;small&gt;/mo&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;ATO ~$820 after fold-in + GMD/Xero $429 + QuickFee $230 · Sep adds $342 ASIC&lt;/div&gt;&lt;/div&gt;
-      &lt;div class=&quot;rw-stat gold&quot;&gt;&lt;div class=&quot;k&quot;&gt;Company tax&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;$6,165&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;due 15 May '27&lt;/div&gt;&lt;/div&gt;
-    &lt;/div&gt;
+    &lt;p class=&quot;rw-sech&quot;&gt;This week&lt;/p&gt;
+    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;Thu 20&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;Ausloans advance in · QuickFee out&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--green)&quot;&gt;+$1,000 · −$230&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;Advance lands every Thursday (confirmed with Ivan). QuickFee $229.56 auto-debits the same day · runs to Mar '27. Net effect: ~$1,439 in hand going into the ATO call.&lt;/div&gt;&lt;/details&gt;
+    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;21–22&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;The fold-in call · ATO 13 11 42&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--gold)&quot;&gt;☎&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;&lt;b&gt;1 · ATO 13 11 42 · do this first, 21st or 22nd:&lt;/b&gt; fold the remaining &lt;b&gt;$2,188&lt;/b&gt; into the existing Activity Statement plan · monthly rises $418 → &lt;b&gt;~$620 from September&lt;/b&gt;. This is the whole ballgame before the 25th. &lt;b&gt;2 · Arianne:&lt;/b&gt; the $581.73 &quot;Remove Insurance Income&quot; on the July RCTI · reads as the documented Suncorp strip, but confirm it isn't the PI call · and the separate PI &lt;b&gt;$580 refund&lt;/b&gt; is still owed. &lt;b&gt;3 · Ivan · DONE ✓:&lt;/b&gt; advance confirmed still running, every Thursday. &lt;b&gt;Parked until BAS is sorted:&lt;/b&gt; July lead spend review · $5,410 of live-auction leads was 41% of the month's net.&lt;/div&gt;&lt;/details&gt;
+    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;Mon 25&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;Q4 BAS hard deadline · residual folds into the plan&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--red)&quot;&gt;$2,188&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;&lt;b&gt;Half of this is already handled.&lt;/b&gt; $1,000 paid by BPAY on the 15th ✓. The remaining &lt;b&gt;$2,188&lt;/b&gt; goes onto the Activity Statement plan via the &lt;b&gt;13 11 42&lt;/b&gt; call on the &lt;b&gt;21st–22nd&lt;/b&gt; · monthly rises $418 → &lt;b&gt;~$620 from September&lt;/b&gt;. No further cash needs to be found before the 25th, but the call is not optional · an unarranged miss can default both plans. &lt;b&gt;Queued behind this:&lt;/b&gt; GMD invoices $429 and the $429/mo engagement, both waiting on the next cash in.&lt;/div&gt;&lt;/details&gt;
+    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;done ✓&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;August so far · RCTI, BPAY, plan debits, GMD signed&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--green)&quot;&gt;✓&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;&lt;b&gt;15 Aug · RCTI +$605.87.&lt;/b&gt; &lt;b&gt;Milestone:&lt;/b&gt; the July RCTI wiped the final &lt;b&gt;$6,364.45&lt;/b&gt; of advance and negative-balance carry in full. Ausloans balance: &lt;b&gt;$0&lt;/b&gt;. $605.87 is the first real cash since February. One check: that $6,364 = June's $1,364 carry + &lt;b&gt;$5,000 of July advances&lt;/b&gt; (5 Fridays) · the $1k/wk kept running past the assumed June end. &lt;b&gt;CONFIRMED with Ivan:&lt;/b&gt; the $1k/wk advance is still running, lands every Thursday. Each one accrues against the August RCTI · so expect &lt;b&gt;another low net payout in September&lt;/b&gt;, same as the July pattern. &lt;b&gt;Landed and already put to work:&lt;/b&gt; $1,000 of it went straight onto the Q4 BAS the same day.&lt;br&gt;&lt;br&gt;&lt;b&gt;15 Aug · BAS part-payment −$1,000.&lt;/b&gt; Paid the day the RCTI landed. &lt;b&gt;PRN 002916795205429560.&lt;/b&gt; Q4 BAS drops &lt;b&gt;$3,188 → $2,188&lt;/b&gt;. That converts the 25th from a cash cliff into a phone call · the balance goes onto the plan, it does not need to be found in cash.&lt;br&gt;&lt;br&gt;&lt;b&gt;10 Aug · plan instalments $672.54.&lt;/b&gt; Both hit the account on the 10th, on time. &lt;b&gt;Both plans are now live and performing&lt;/b&gt; · nothing owed outside them except the Q4 BAS. First SGC payment down means that plan's officially in good standing too.&lt;br&gt;&lt;br&gt;&lt;b&gt;GMD engagement + Xero · SIGNED ✓.&lt;/b&gt; Both proposals accepted: $396/mo × 12 + $33/mo Xero = $429/mo, running from acceptance. FY26 group returns (company, trust and personal) are cleared to lodge · ~$247 personal refund expected after lodgement. The $165 STP invoice: &lt;b&gt;Queued for the next cash in&lt;/b&gt; along with the rest of the GMD invoices · &lt;b&gt;$429&lt;/b&gt; total sitting waiting. The engagement itself is signed and running · the FY26 lodgements and the &lt;b&gt;~$247 refund&lt;/b&gt; are triggered, so it pays for its own first month.&lt;/div&gt;&lt;/details&gt;
 
-    &lt;p class=&quot;rw-sech&quot;&gt;August 2026 · the pivot month&lt;/p&gt;
-    &lt;div class=&quot;rw-line&quot;&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot; style=&quot;border-color:var(--green);&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;15 August · RECEIVED ✓&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;First clean RCTI payout · landed&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot; style=&quot;color:var(--green);&quot;&gt;+$606&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;&lt;b&gt;Milestone:&lt;/b&gt; the July RCTI wiped the final &lt;b&gt;$6,364.45&lt;/b&gt; of advance and negative-balance carry in full. Ausloans balance: &lt;b&gt;$0&lt;/b&gt;. $605.87 is the first real cash since February. One check: that $6,364 = June's $1,364 carry + &lt;b&gt;$5,000 of July advances&lt;/b&gt; (5 Fridays) · the $1k/wk kept running past the assumed June end. &lt;b&gt;CONFIRMED with Ivan:&lt;/b&gt; the $1k/wk advance is still running, lands every Thursday. Each one accrues against the August RCTI · so expect &lt;b&gt;another low net payout in September&lt;/b&gt;, same as the July pattern. &lt;b&gt;Landed and already put to work:&lt;/b&gt; $1,000 of it went straight onto the Q4 BAS the same day.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot; style=&quot;border-color:var(--green);&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;15 August · PAID ✓&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;Q4 BAS part-payment · BPAY&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot; style=&quot;color:var(--green);&quot;&gt;−$1,000&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;Paid the day the RCTI landed. &lt;b&gt;PRN 002916795205429560.&lt;/b&gt; Q4 BAS drops &lt;b&gt;$3,188 → $2,188&lt;/b&gt;. That converts the 25th from a cash cliff into a phone call · the balance goes onto the plan, it does not need to be found in cash.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot; style=&quot;border-color:var(--green);&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;Cash runway · from 18 Aug · risk cleared&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;$669 in the account&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot; style=&quot;color:var(--green);&quot;&gt;→ ~$1,439&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;&lt;b&gt;Drive referral +$500 in ✓ · Claude $309 paid ✓&lt;/b&gt; · the overdraw risk is gone. Thursday the 20th: &lt;b&gt;+$1,000&lt;/b&gt; advance lands, &lt;b&gt;−$229.56&lt;/b&gt; QuickFee debits → &lt;b&gt;~$1,439&lt;/b&gt; going into the ATO call on the 21st–22nd. Another $1,000 lands the 27th. Each advance accrues against the Aug RCTI · September's net payout will be low, plan around it.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot; style=&quot;border-color:var(--gold);&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;21st – 22nd August&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;The fold-in call, then two chasers&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot; style=&quot;color:var(--gold);&quot;&gt;☎ ×3&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;&lt;b&gt;1 · ATO 13 11 42 · do this first, 21st or 22nd:&lt;/b&gt; fold the remaining &lt;b&gt;$2,188&lt;/b&gt; into the existing Activity Statement plan · monthly rises $418 → &lt;b&gt;~$620 from September&lt;/b&gt;. This is the whole ballgame before the 25th. &lt;b&gt;2 · Arianne:&lt;/b&gt; the $581.73 &quot;Remove Insurance Income&quot; on the July RCTI · reads as the documented Suncorp strip, but confirm it isn't the PI call · and the separate PI &lt;b&gt;$580 refund&lt;/b&gt; is still owed. &lt;b&gt;3 · Ivan · DONE ✓:&lt;/b&gt; advance confirmed still running, every Thursday. &lt;b&gt;Parked until BAS is sorted:&lt;/b&gt; July lead spend review · $5,410 of live-auction leads was 41% of the month's net.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot; style=&quot;border-color:var(--green);&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;10 August · CLEARED ✓&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;Plan instalments · both debited&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot; style=&quot;color:var(--green);&quot;&gt;$672.54&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-split&quot;&gt;
-            &lt;span class=&quot;sp&quot;&gt;&lt;b&gt;$418.09&lt;/b&gt;&lt;span&gt;BAS plan ✓&lt;/span&gt;&lt;/span&gt;
-            &lt;span class=&quot;sp&quot;&gt;&lt;b&gt;$254.45&lt;/b&gt;&lt;span&gt;SGC plan · first payment ✓&lt;/span&gt;&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;Both hit the account on the 10th, on time. &lt;b&gt;Both plans are now live and performing&lt;/b&gt; · nothing owed outside them except the Q4 BAS. First SGC payment down means that plan's officially in good standing too.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;14 August · one-off&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;GMD invoice · FY26 STP work&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot;&gt;$165&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;&lt;b&gt;Queued for the next cash in&lt;/b&gt; along with the rest of the GMD invoices · &lt;b&gt;$429&lt;/b&gt; total sitting waiting. Separate to that: the &lt;b&gt;annual engagement&lt;/b&gt; ($396/mo + $33 Xero = &lt;b&gt;$429/mo&lt;/b&gt;) · &lt;b&gt;proposals still to sign&lt;/b&gt;. Signing is what triggers the FY26 lodgement and the &lt;b&gt;~$247 refund&lt;/b&gt;, so it pays for its own first month.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat spike&quot;&gt;
-        &lt;div class=&quot;rw-box&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;span class=&quot;rw-badge&quot;&gt;Hard deadline · can default both plans&lt;/span&gt;&lt;div class=&quot;rw-when&quot;&gt;25 August 2026&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;Q4 BAS (Apr to Jun) · residual&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot;&gt;$2,188&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;&lt;b&gt;Half of this is already handled.&lt;/b&gt; $1,000 paid by BPAY on the 15th ✓. The remaining &lt;b&gt;$2,188&lt;/b&gt; goes onto the Activity Statement plan via the &lt;b&gt;13 11 42&lt;/b&gt; call on the &lt;b&gt;21st–22nd&lt;/b&gt; · monthly rises $418 → &lt;b&gt;~$620 from September&lt;/b&gt;. No further cash needs to be found before the 25th, but the call is not optional · an unarranged miss can default both plans. &lt;b&gt;Queued behind this:&lt;/b&gt; GMD invoices $429 and the $429/mo engagement, both waiting on the next cash in.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;rw-total&quot;&gt;August total &lt;b&gt;$4,026&lt;/b&gt; &lt;span&gt;= $418 + $255 + $165 + $3,188 · &lt;b&gt;$1,000 of the BAS already paid ✓&lt;/b&gt; · $2,188 folds into the plan, so remaining August cash out is just the &lt;b&gt;$229.56 QuickFee on the 20th&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;
-
-    &lt;p class=&quot;rw-sech&quot;&gt;September  to  December 2026 · the new fixed floor&lt;/p&gt;
-    &lt;div class=&quot;rw-line&quot;&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;Every month · Sep → Dec&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;~$1,480 fixed floor&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot;&gt;$1,480&lt;small&gt;/mo&lt;/small&gt;&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-split&quot;&gt;
-            &lt;span class=&quot;sp&quot;&gt;&lt;b&gt;~$620&lt;/b&gt;&lt;span&gt;BAS plan · incl. folded Q4&lt;/span&gt;&lt;/span&gt;
-            &lt;span class=&quot;sp&quot;&gt;&lt;b&gt;$200&lt;/b&gt;&lt;span&gt;SGC plan · 12th&lt;/span&gt;&lt;/span&gt;
-            &lt;span class=&quot;sp&quot;&gt;&lt;b&gt;$429&lt;/b&gt;&lt;span&gt;GMD + Xero&lt;/span&gt;&lt;/span&gt;
-            &lt;span class=&quot;sp&quot;&gt;&lt;b&gt;$230&lt;/b&gt;&lt;span&gt;QuickFee · ~21st&lt;/span&gt;&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;All automatic once the engagement is signed. Accounting alone stacks to &lt;b&gt;~$658/mo&lt;/b&gt; (GMD $429 + QuickFee $230) until QuickFee ends &lt;b&gt;Mar '27&lt;/b&gt; · then it drops to $429. &lt;b&gt;Plus ~28 Nov:&lt;/b&gt; Q1 BAS (Jul to Sep) · amount TBD from this quarter's GST.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;rw-beat&quot;&gt;
-        &lt;div class=&quot;rw-box&quot;&gt;
-          &lt;div class=&quot;rw-bh&quot;&gt;
-            &lt;div&gt;&lt;div class=&quot;rw-when&quot;&gt;30 September · manual one-off&lt;/div&gt;&lt;div class=&quot;rw-title&quot;&gt;ASIC annual review fee&lt;/div&gt;&lt;/div&gt;
-            &lt;div class=&quot;rw-amt&quot;&gt;$342&lt;/div&gt;
-          &lt;/div&gt;
-          &lt;div class=&quot;rw-sub&quot;&gt;&lt;b&gt;Doesn't pay itself.&lt;/b&gt; The FuseSign signing lodged the paperwork · the fee is separate. BPAY biller &lt;b&gt;17301&lt;/b&gt;, ref &lt;b&gt;2296 7952 0542 8&lt;/b&gt;. Pay any time before 30 Sep. &lt;b&gt;September total: ~$1,821&lt;/b&gt; = $1,480 floor + $342 ASIC.&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
+    &lt;p class=&quot;rw-sech&quot;&gt;September onward · the locked-in floor&lt;/p&gt;
+    &lt;div id=&quot;floorBar&quot; class=&quot;barwrap&quot;&gt;&lt;/div&gt;
+    &lt;details class=&quot;evd&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;30 Sep&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;ASIC annual review · manual BPAY, doesn't pay itself&lt;/span&gt; &lt;b class=&quot;evamt&quot;&gt;$342&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;&lt;b&gt;Doesn't pay itself.&lt;/b&gt; The FuseSign signing lodged the paperwork · the fee is separate. BPAY biller &lt;b&gt;17301&lt;/b&gt;, ref &lt;b&gt;2296 7952 0542 8&lt;/b&gt;. Pay any time before 30 Sep. &lt;b&gt;September total: ~$1,821&lt;/b&gt; = $1,480 floor + $342 ASIC.&lt;/div&gt;&lt;/details&gt;
 
     &lt;div class=&quot;rw-eoy&quot;&gt;
       &lt;div class=&quot;eoy-k&quot;&gt;Committed to end of 2026&lt;/div&gt;
       &lt;div class=&quot;eoy-v&quot;&gt;~$7,300 &lt;span&gt;all-in to Dec · incl. the folded Q4 BAS inside the ~$620 plan + ASIC $342 + GMD/Xero · + Q1 BAS (Nov, TBD) · QuickFee $230/mo on top to Mar '27&lt;/span&gt;&lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;div class=&quot;rw-lt&quot;&gt;
+    &lt;details class=&quot;more&quot;&gt;&lt;summary&gt;longer term · every plan end date&lt;/summary&gt;
+      &lt;div class=&quot;rw-lt&quot;&gt;
       &lt;h4&gt;Longer-term · keep visible&lt;/h4&gt;
       &lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;tag gold&quot;&gt;to ~Oct '27&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;BAS plan&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;$418/month direct debit, running to about October 2027.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt muted&quot;&gt;$418/mo&lt;/div&gt;&lt;/div&gt;
       &lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;tag gold&quot;&gt;to Dec '27&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;SGC plan&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;$200/month on the 12th, ending December 2027.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt muted&quot;&gt;$200/mo&lt;/div&gt;&lt;/div&gt;
-      &lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;tag gold&quot;&gt;to ~Aug '27&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;GMD engagement + Xero&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;$396/mo × 12 from acceptance (plan: sign ~15 Aug) + Xero $33/mo ongoing = $429/mo accounting line. Acceptance is also the trigger for the FY26 lodgements.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt muted&quot;&gt;$429/mo&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;tag gold&quot;&gt;to ~Aug '27&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;GMD engagement + Xero&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;SIGNED ✓ · $396/mo × 12 + Xero $33/mo ongoing = $429/mo accounting line. FY26 group returns (company, trust, personal) now cleared to lodge.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt muted&quot;&gt;$429/mo&lt;/div&gt;&lt;/div&gt;
       &lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;tag green&quot;&gt;21 Jul paid ✓&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;QuickFee (GMD fees)&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;~$230/month auto-debit, ~21st to 22nd, running to Mar 2027. Stacks with the new engagement · total accounting ~$658/mo until Mar '27, then $429.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt muted&quot;&gt;~$230/mo&lt;/div&gt;&lt;/div&gt;
       &lt;div class=&quot;row&quot;&gt;&lt;span class=&quot;tag red&quot;&gt;15 May '27&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;Company tax (FY26)&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;$6,165 due 15 May 2027. Start the slow set-aside now.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt&quot; style=&quot;color:var(--red);font-weight:600&quot;&gt;$6,165&lt;/div&gt;&lt;/div&gt;
       &lt;div class=&quot;row&quot; style=&quot;border-bottom:none&quot;&gt;&lt;span class=&quot;tag blue&quot;&gt;pending Nick&lt;/span&gt;&lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;FY27 super&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;Accruing ~$104/week in QBO Payroll. Payment method still to be set with Nick.&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;ramt muted&quot;&gt;~$104/wk&lt;/div&gt;&lt;/div&gt;
@@ -15517,14 +15446,15 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
       &lt;/div&gt;
     &lt;/details&gt;
   &lt;/div&gt;
-
+    &lt;/details&gt;
+  &lt;/div&gt;
   &lt;/details&gt;
   &lt;!-- ═══ PERSONAL ═══ --&gt;
   &lt;details class=&quot;sec&quot;&gt;&lt;summary&gt;You personally · income tax&lt;/summary&gt;
   &lt;div class=&quot;card me&quot;&gt;
     &lt;h2&gt;You personally · income tax&lt;/h2&gt;
     &lt;p class=&quot;cap&quot;&gt;Jordon as an individual · separate from the company.&lt;/p&gt;
-    &lt;div class=&quot;me-status&quot;&gt;FY25 lodged and refund received. FY26 is &lt;b&gt;not lodged yet&lt;/b&gt; · accepting the GMD engagement (sign ~15 Aug) is the trigger. Lodgement follows acceptance, and the ~$247 personal refund follows lodgement. Across the group: a small personal refund, set against the $6,165 company tax bill (May 2027).&lt;/div&gt;
+    &lt;div class=&quot;me-status&quot;&gt;FY25 lodged and refund received. FY26 is &lt;b&gt;cleared to lodge&lt;/b&gt; · both GMD proposals are signed, so the company, trust and personal returns are in GMD's queue. The ~$247 personal refund follows lodgement. Across the group: a small personal refund, set against the $6,165 company tax bill (May 2027).&lt;/div&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;span class=&quot;tag green&quot;&gt;Done ✓&lt;/span&gt;
       &lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;FY25 personal return&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;Lodged in the March FuseSign pack. Refund already received.&lt;/div&gt;&lt;/div&gt;
@@ -15532,7 +15462,7 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
     &lt;/div&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;span class=&quot;tag gold&quot;&gt;in progress&lt;/span&gt;
-      &lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;FY26 personal return&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;Queued behind the engagement · sign ~15 Aug, GMD lodges after acceptance. ~$247 refund per Nick's workpaper; exact figure confirmed at lodgment.&lt;/div&gt;
+      &lt;div class=&quot;rm&quot;&gt;&lt;div class=&quot;rn&quot;&gt;FY26 personal return&lt;/div&gt;&lt;div class=&quot;rs&quot;&gt;Engagement signed ✓ · GMD lodging now. ~$247 refund per Nick's workpaper; exact figure confirmed at lodgment.&lt;/div&gt;
         &lt;details class=&quot;more&quot;&gt;&lt;summary&gt;why a small refund&lt;/summary&gt;&lt;div class=&quot;md&quot;&gt;The $20k contractor fee adds to your personal income, so the refund is smaller than the earlier ~$4,600 estimate · but it's still a &lt;b&gt;refund, not a bill&lt;/b&gt;. Nick confirms the exact figure when he lodges after 30 June. Net of the company: a small personal refund plus the $6,165 company tax bill due May 2027.&lt;/div&gt;&lt;/details&gt;
       &lt;/div&gt;
       &lt;div class=&quot;ramt&quot; style=&quot;color:var(--green)&quot;&gt;~$247&lt;/div&gt;
@@ -15563,7 +15493,7 @@ const DEFAULT_BALANCE= 669;    // business account mid-Aug · after Drive $500 i
 const QUICKFEE       = 229.56;    // GMD QuickFee auto-debit · next hits the 20th · leaves ~$249 in the account
 const ASIC_ANNUAL    = 342;       // ASIC annual review fee · due 30 Sep 2026 · manual BPAY biller 17301 ref 2296 7952 0542 8
 const GMD_STP        = 165;       // GMD invoice · FY26 STP work · due 14 Aug · NOT confirmed paid, still reserved
-const GMD_MONTHLY    = 429;       // GMD engagement $396/mo + Xero $33/mo · proposals still to sign · $429 queued for next cash in
+const GMD_MONTHLY    = 429;       // GMD engagement SIGNED · $396/mo × 12 + Xero $33/mo · running from acceptance
 const PAYROLL_WEEK   = 869;       // one week payroll cash out: net ~$765 + super ~$104
 const fmt = n =&gt; isFinite(n) ? new Intl.NumberFormat('en-AU',{style:'currency',currency:'AUD',maximumFractionDigits:0}).format(n) : '·';
 document.getElementById('asat').textContent = 'As at ' + new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
@@ -15638,9 +15568,8 @@ const EVENTS = [
 const RISK = {amt:0, label:'', fromDay:99};   /* Claude sub paid 18 Aug · overdraw risk cleared */
 const TASKS = [
  {id:'t_ato',  label:'Call ATO 13 11 42 · fold the $2,188 into the plan',  due:'21st–22nd · ~$1,439 in hand after Thursday · before the 25th'},
- {id:'t_gmd',  label:'Sign the GMD proposals',                              due:'triggers FY26 lodgement + ~$247 refund'},
 ];
-const DONE_NOTES = ['Claude $309 paid · sub risk cleared','Drive referral $500 in','$1k/wk advance CONFIRMED · every Thursday','RCTI $605.87 in · $1,000 straight onto the BAS ✓'];
+const DONE_NOTES = ['GMD proposals SIGNED · engagement live, FY26 cleared to lodge','Claude $309 paid · sub risk cleared','Drive referral $500 in','$1k/wk advance CONFIRMED · every Thursday','RCTI $605.87 in · $1,000 straight onto the BAS ✓'];
 
 const TKEY='ja_tasks_v1', EKEY='ja_expect_v1';
 let taskState={}; try{ taskState=JSON.parse(localStorage.getItem(TKEY))||{}; }catch(e){}
@@ -15722,20 +15651,25 @@ function renderRunway(){
   pts.forEach((p,i)=&gt;{ const px=x(i),py=y(p.v); dstr+=(i? ' L':'M')+px+' '+py; if(i&amp;&amp;pts[i-1].v!==p.v){} });
   sv+='&lt;path d=&quot;'+dstr+'&quot; fill=&quot;none&quot; stroke=&quot;var(--green)&quot; stroke-width=&quot;2.5&quot; stroke-linejoin=&quot;round&quot;/&gt;';
   // event dots + labels
-  EVENTS.filter(e=&gt;!e.done&amp;&amp;parseLocal(e.d)&gt;=start&amp;&amp;parseLocal(e.d)&lt;=end).forEach(e=&gt;{
-    const d=parseLocal(e.d), px=xd(d);
+  const byDay={};
+  EVENTS.filter(e=&gt;!e.done&amp;&amp;parseLocal(e.d)&gt;=start&amp;&amp;parseLocal(e.d)&lt;=end).forEach(e=&gt;{ (byDay[e.d]=byDay[e.d]||[]).push(e); });
+  Object.keys(byDay).sort().forEach(dk=&gt;{
+    const evs=byDay[dk], d=parseLocal(dk), px=xd(d);
     const pt=pts[Math.round((d-start)/86400000)];
-    const py=e.kind==='deadline'?T:y(pt?pt.v:0);
-    if(e.kind==='deadline'){
-      sv+='&lt;line x1=&quot;'+px+'&quot; y1=&quot;'+T+'&quot; x2=&quot;'+px+'&quot; y2=&quot;'+(H-B)+'&quot; stroke=&quot;var(--red)&quot; stroke-width=&quot;1.5&quot;/&gt;';
-      sv+='&lt;text x=&quot;'+(px-4)+'&quot; y=&quot;'+(T-6)+'&quot; font-size=&quot;10.5&quot; fill=&quot;var(--red)&quot; text-anchor=&quot;end&quot;&gt;BAS 25th&lt;/text&gt;';
-    } else if(e.kind==='call'){
-      sv+='&lt;circle cx=&quot;'+px+'&quot; cy=&quot;'+py+'&quot; r=&quot;4.5&quot; fill=&quot;var(--gold)&quot;&gt;&lt;title&gt;'+e.label+'&lt;/title&gt;&lt;/circle&gt;';
-      sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(py-10)+'&quot; font-size=&quot;10.5&quot; fill=&quot;var(--gold)&quot; text-anchor=&quot;middle&quot;&gt;☎ ATO&lt;/text&gt;';
-    } else {
-      sv+='&lt;circle cx=&quot;'+px+'&quot; cy=&quot;'+py+'&quot; r=&quot;4.5&quot; fill=&quot;'+(e.amt&lt;0?'var(--gold)':'var(--green)')+'&quot;&gt;&lt;title&gt;'+e.label+'&lt;/title&gt;&lt;/circle&gt;';
-      sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(py-10)+'&quot; font-size=&quot;10.5&quot; fill=&quot;'+(e.amt&lt;0?'var(--gold)':'var(--green)')+'&quot; text-anchor=&quot;middle&quot;&gt;'+(e.amt&lt;0?'−':'+')+fmt(Math.abs(e.amt))+'&lt;/text&gt;';
-    }
+    const py=y(pt?pt.v:0);
+    let lifted=0;
+    evs.forEach(e=&gt;{
+      if(e.kind==='deadline'){
+        sv+='&lt;line x1=&quot;'+px+'&quot; y1=&quot;'+T+'&quot; x2=&quot;'+px+'&quot; y2=&quot;'+(H-B)+'&quot; stroke=&quot;var(--red)&quot; stroke-width=&quot;1.5&quot;/&gt;';
+        sv+='&lt;text x=&quot;'+(px-4)+'&quot; y=&quot;'+(T-6)+'&quot; font-size=&quot;10.5&quot; fill=&quot;var(--red)&quot; text-anchor=&quot;end&quot;&gt;BAS 25th&lt;/text&gt;';
+        return;
+      }
+      const col=e.kind==='call'?'var(--gold)':e.amt&lt;0?'var(--gold)':'var(--green)';
+      const txt=e.kind==='call'?'☎ ATO':(e.amt&lt;0?'−':'+')+fmt(Math.abs(e.amt));
+      sv+='&lt;circle cx=&quot;'+px+'&quot; cy=&quot;'+py+'&quot; r=&quot;4.5&quot; fill=&quot;'+col+'&quot;&gt;&lt;title&gt;'+e.label+'&lt;/title&gt;&lt;/circle&gt;';
+      sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(py-10-lifted)+'&quot; font-size=&quot;10.5&quot; fill=&quot;'+col+'&quot; text-anchor=&quot;middle&quot;&gt;'+txt+'&lt;/text&gt;';
+      lifted+=13;
+    });
     sv+='&lt;text x=&quot;'+px+'&quot; y=&quot;'+(H-B+14)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--muted)&quot; text-anchor=&quot;middle&quot;&gt;'+d.getDate()+'&lt;/text&gt;';
   });
   if(hasExp){
@@ -15758,8 +15692,44 @@ if(expAmtEl) expAmtEl.addEventListener('input',()=&gt;{ saveExpect(); renderRunw
 if(expDayEl) expDayEl.addEventListener('input',()=&gt;{ saveExpect(); renderRunway(); });
 
 const _origRender=render;
-render=function(){ _origRender(); renderRunway(); renderNext(); };
-renderTasks(); renderRunway(); renderNext();
+function renderBars(){
+  const host=document.getElementById('nowBar'), host2=document.getElementById('buildBar');
+  if(!host) return;
+  const segs=[
+    {v:PLAN_NEXT+SGC_NEXT, l:'ATO plans · next', c:'var(--gold)'},
+    {v:getGst(), l:'Q4 BAS residual', c:'var(--red)'},
+    {v:PAYROLL_BUFFER, l:'payroll buffer', c:'var(--green)'},
+    {v:QUICKFEE+GMD_STP+GMD_MONTHLY, l:'GMD + QuickFee', c:'var(--blue)'},
+    {v:ASIC_ANNUAL, l:'ASIC', c:'var(--ink-soft)'}
+  ].filter(x=&gt;x.v&gt;0);
+  const tot=segs.reduce((a,x)=&gt;a+x.v,0);
+  const b=inp.value===''?NaN:parseFloat(inp.value);
+  const frac=isFinite(b)?Math.max(0,Math.min(1,b/tot)):null;
+  let h='&lt;div class=&quot;bigbar&quot;&gt;';
+  segs.forEach(x=&gt;{ h+='&lt;div class=&quot;seg&quot; style=&quot;width:'+(100*x.v/tot)+'%;background:'+x.c+';opacity:.82;&quot;&gt;&lt;span style=&quot;position:absolute;inset:0&quot; title=&quot;'+x.l+' · '+fmt(x.v)+'&quot;&gt;&lt;/span&gt;&lt;/div&gt;'; });
+  if(frac!==null) h+='&lt;div class=&quot;btick&quot; style=&quot;left:'+(100*frac)+'%&quot; title=&quot;your balance · '+fmt(b)+'&quot;&gt;&lt;/div&gt;';
+  h+='&lt;/div&gt;&lt;div class=&quot;barleg&quot;&gt;'+segs.map(x=&gt;'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:'+x.c+'&quot;&gt;&lt;/span&gt;'+x.l+' &lt;b&gt;'+fmt(x.v)+'&lt;/b&gt;&lt;/span&gt;').join('')+(frac!==null?'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:var(--ink)&quot;&gt;&lt;/span&gt;your balance &lt;b&gt;'+fmt(b)+'&lt;/b&gt;&lt;/span&gt;':'')+'&lt;/div&gt;';
+  host.innerHTML=h;
+  if(host2){
+    const bs=[{v:PLAN_REMAINING,l:'ATO plan · to Oct 27',c:'var(--gold)'},{v:SGC_REMAINING,l:'SGC · to Dec 27',c:'var(--gold-soft)'},{v:COMPANY_TAX,l:'company tax · May 27',c:'var(--blue)'}];
+    const t2=bs.reduce((a,x)=&gt;a+x.v,0);
+    let h2='&lt;div class=&quot;bigbar&quot; style=&quot;height:20px;&quot;&gt;';
+    bs.forEach(x=&gt;{ h2+='&lt;div class=&quot;seg&quot; style=&quot;width:'+(100*x.v/t2)+'%;background:'+x.c+';opacity:.82;&quot;&gt;&lt;span style=&quot;position:absolute;inset:0&quot; title=&quot;'+x.l+' · '+fmt(x.v)+'&quot;&gt;&lt;/span&gt;&lt;/div&gt;'; });
+    h2+='&lt;/div&gt;&lt;div class=&quot;barleg&quot;&gt;'+bs.map(x=&gt;'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:'+x.c+'&quot;&gt;&lt;/span&gt;'+x.l+' &lt;b&gt;'+fmt(x.v)+'&lt;/b&gt;&lt;/span&gt;').join('')+'&lt;span class=&quot;lg&quot;&gt;total &lt;b&gt;'+fmt(t2)+'&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;';
+    host2.innerHTML=h2;
+  }
+}
+function renderFloor(){
+  const host=document.getElementById('floorBar'); if(!host) return;
+  const fs=[{v:620,l:'BAS plan · incl folded Q4',c:'var(--gold)'},{v:200,l:'SGC plan · 12th',c:'var(--gold-soft)'},{v:429,l:'GMD + Xero · signed',c:'var(--blue)'},{v:230,l:'QuickFee · to Mar 27',c:'var(--ink-soft)'}];
+  const t=fs.reduce((a,x)=&gt;a+x.v,0);
+  let h='&lt;div class=&quot;bigbar&quot; style=&quot;height:26px;&quot;&gt;';
+  fs.forEach(x=&gt;{ h+='&lt;div class=&quot;seg&quot; style=&quot;width:'+(100*x.v/t)+'%;background:'+x.c+';opacity:.82;&quot;&gt;&lt;span style=&quot;position:absolute;inset:0&quot; title=&quot;'+x.l+' · $'+x.v+'/mo&quot;&gt;&lt;/span&gt;&lt;/div&gt;'; });
+  h+='&lt;/div&gt;&lt;div class=&quot;barleg&quot;&gt;'+fs.map(x=&gt;'&lt;span class=&quot;lg&quot;&gt;&lt;span class=&quot;sw&quot; style=&quot;background:'+x.c+'&quot;&gt;&lt;/span&gt;'+x.l+' &lt;b&gt;$'+x.v+'&lt;/b&gt;&lt;/span&gt;').join('')+'&lt;span class=&quot;lg&quot;&gt;= &lt;b&gt;~$1,480/mo&lt;/b&gt; all-in · your $1,280 + the $200 SGC debit&lt;/span&gt;&lt;/div&gt;';
+  host.innerHTML=h;
+}
+render=function(){ _origRender(); renderRunway(); renderNext(); renderBars(); renderFloor(); };
+renderTasks(); renderRunway(); renderNext(); renderBars(); renderFloor();
 
 
 // ── Countdown to the 25 Aug Q4 BAS hard deadline ──

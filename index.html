@@ -15626,6 +15626,7 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
         &lt;span class=&quot;whatif&quot;&gt;expecting &lt;input id=&quot;expAmt&quot; type=&quot;number&quot; inputmode=&quot;decimal&quot; placeholder=&quot;$ in&quot;&gt; on &lt;input id=&quot;expDay&quot; type=&quot;number&quot; min=&quot;1&quot; max=&quot;31&quot; placeholder=&quot;day&quot;&gt; · your pay &lt;input id=&quot;weekOut&quot; type=&quot;number&quot; inputmode=&quot;decimal&quot; placeholder=&quot;800&quot;&gt;&lt;/span&gt;
       &lt;/div&gt;
       &lt;div id=&quot;runway&quot;&gt;&lt;/div&gt;
+      &lt;div id=&quot;dipNote&quot; style=&quot;display:none;font-size:12px;line-height:1.5;margin-top:8px;padding:9px 12px;border-radius:9px;background:var(--red-soft);border:1px solid var(--red);color:var(--ink-soft);&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;dodo&quot;&gt;
@@ -15731,8 +15732,10 @@ details.more .md{background:#151823!important;color:var(--ink)!important}
     &lt;/div&gt;
 
     &lt;p class=&quot;rw-sech&quot;&gt;Next up&lt;/p&gt;
-    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;Thu 27&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;GMD invoices · pay from this advance&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--red)&quot;&gt;−$429&lt;/b&gt;&lt;/summary&gt;
-      &lt;div class=&quot;evbody&quot;&gt;&lt;b&gt;Overdue.&lt;/b&gt; Two invoices: &lt;b&gt;I35039 $396&lt;/b&gt; and &lt;b&gt;I35040 $33&lt;/b&gt;. Pay them out of Thursday's advance. Separate from the QuickFee direct debit, which is the financed portion of the older GMD fees.&lt;/div&gt;&lt;/details&gt;
+    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;21 Aug&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;GMD invoices · PAID ✓&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--green)&quot;&gt;−$429 ✓&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;Settled by bank transfer. &lt;b&gt;I35039 $396&lt;/b&gt; and &lt;b&gt;I35040 $33&lt;/b&gt;. &lt;b&gt;Nothing is outstanding anywhere now&lt;/b&gt; · every bill is either paid or sitting inside a payment plan. Next GMD engagement month is ~6 Sep. Separate from the QuickFee direct debit, which is the financed portion of the older fees.&lt;/div&gt;&lt;/details&gt;
+    &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;6 Sep&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;GMD engagement · next month&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--gold)&quot;&gt;−$429&lt;/b&gt;&lt;/summary&gt;
+      &lt;div class=&quot;evbody&quot;&gt;$396 engagement + $33 Xero. First one lands before the ATO and SGC debits, which is what makes the second week of September the tight patch.&lt;/div&gt;&lt;/details&gt;
     &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;~15 Sep&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;September RCTI · expect it low again&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--gold)&quot;&gt;~$600 est&lt;/b&gt;&lt;/summary&gt;
       &lt;div class=&quot;evbody&quot;&gt;&lt;b&gt;Estimate, not a figure to bank on.&lt;/b&gt; August's weekly advances accrue against this RCTI the same way July's did, so the net payout lands around &lt;b&gt;$600&lt;/b&gt; rather than the gross commission. Plan September around the advance, not the RCTI.&lt;/div&gt;&lt;/details&gt;
     &lt;details class=&quot;evd&quot;&gt;&lt;summary&gt;&lt;span class=&quot;evdate&quot;&gt;21 Aug&lt;/span&gt; &lt;span class=&quot;evlab&quot;&gt;QuickFee auto-debit · PAID ✓&lt;/span&gt; &lt;b class=&quot;evamt&quot; style=&quot;color:var(--green)&quot;&gt;−$229.56 ✓&lt;/b&gt;&lt;/summary&gt;
@@ -15822,7 +15825,8 @@ const EVENTS = [
  {id:'claude',  d:'2026-08-18', amt:-309,    label:'Claude sub · paid',              kind:'out',      done:true},
  {id:'quickfee',d:'2026-08-21', amt:-229.56, label:'QuickFee auto-debit',            kind:'out',      done:true},
  {id:'atocall', d:'2026-08-21', amt:0,       label:'ATO fold-in call · DONE',        kind:'call',     done:true},
- {id:'gmd429',  d:'2026-08-27', amt:-429,    label:'GMD invoices I35039 + I35040',    kind:'out'},
+ {id:'gmd429',  d:'2026-08-21', amt:-429,    label:'GMD I35039 + I35040 · paid',      kind:'out',      done:true},
+ {id:'gmdsep',  d:'2026-09-06', amt:-429,    label:'GMD engagement · monthly',        kind:'out'},
  {id:'rcti15',  d:'2026-09-15', amt:+600,    label:'Sept RCTI · ESTIMATE, low again',  kind:'in'},
  {id:'ato10',   d:'2026-09-10', amt:-600,    label:'ATO plan · new amount',           kind:'out'},
  {id:'sgc12',   d:'2026-09-12', amt:-200,    label:'SGC plan',                        kind:'out'},
@@ -15831,10 +15835,10 @@ const EVENTS = [
 ];
 const RISK = {amt:0, label:'', fromDay:99};   /* Claude sub paid 18 Aug · overdraw risk cleared */
 const TASKS = [
- {id:'t_gmd',  label:'Pay GMD $429 · invoices I35039 ($396) + I35040 ($33)', due:'OVERDUE · pay from the next Thursday advance'},
- {id:'t_asic', label:'Pay the ASIC annual review · BPAY biller 17301, ref 2296 7952 0542 8', due:'$342 by 30 Sep · pay mid-Sept after the RCTI, not this week'},
+ {id:'t_super',label:'Settle the super payment method with Nick', due:'last open item · FY27 super accrues ~$104/wk in QBO with no method set'},
+ {id:'t_asic', label:'Pay the ASIC annual review · BPAY biller 17301, ref 2296 7952 0542 8', due:'$342 by 30 Sep · pay mid-Sept after the RCTI'},
 ];
-const DONE_NOTES = ['BAS FOLDED into the plan · 21 Aug ✓ · nothing owing outside a plan','ATO now $600 on the 10th + $200 SGC on the 12th','QuickFee $229.56 out · 21 Aug ✓','GMD proposals SIGNED · engagement live, FY26 cleared to lodge','Claude $309 paid · sub risk cleared','Drive referral $500 in','$1k/wk advance CONFIRMED · every Thursday','RCTI $605.87 in · $1,000 straight onto the BAS ✓'];
+const DONE_NOTES = ['GMD $429 PAID · I35039 + I35040 · 21 Aug ✓','Nothing outstanding anywhere · all bills paid or on plans','BAS FOLDED into the plan · 21 Aug ✓','ATO now $600 on the 10th + $200 SGC on the 12th','QuickFee $229.56 out · 21 Aug ✓','GMD proposals SIGNED · engagement live, FY26 cleared to lodge','Claude $309 paid · sub risk cleared','Drive referral $500 in','$1k/wk advance CONFIRMED · every Thursday','RCTI $605.87 in · $1,000 straight onto the BAS ✓'];
 
 
 /* THE THURSDAY CYCLE · $1,000 advance lands, $800 goes out as your pay, $200 stays.
@@ -15854,7 +15858,7 @@ const PAYG_IMMINENT  = 0;         // June BAS is GST-only
 const WEEK_COST      = 969;       // weekly payroll: ~$865 wage + ~$104 super
 const PAYROLL_BUFFER = 0;         // EXCLUDED on purpose · self-pay, funded by the weekly Ausloans advance
 const GST_DEFAULT    = 0;      // Q4 BAS FOLDED into the Activity Statement plan on 21 Aug · nothing owing outside a plan
-const DEFAULT_BALANCE= 640.32; // CONFIRMED CommBank, 21 Aug, after the $229.56 QuickFee debit
+const DEFAULT_BALANCE= 211;    // 21 Aug, after the $429 GMD transfer · nothing outstanding anywhere
 const QUICKFEE       = 229.56;    // GMD QuickFee auto-debit · next hits the 20th · leaves ~$249 in the account
 const ASIC_ANNUAL    = 342;       // ASIC annual review fee · due 30 Sep 2026 · manual BPAY biller 17301 ref 2296 7952 0542 8
 const GMD_STP        = 165;       // GMD invoice · FY26 STP work · due 14 Aug · NOT confirmed paid, still reserved
@@ -16040,6 +16044,11 @@ function renderRunway(){
     if(dd.getDay()!==ADV_DOW) continue;
     sv+='&lt;circle cx=&quot;'+x(k2)+'&quot; cy=&quot;'+y(pts[k2].v)+'&quot; r=&quot;3&quot; fill=&quot;var(--green)&quot; opacity=&quot;0.85&quot;&gt;&lt;title&gt;Thursday · +'+fmt(ADVANCE)+' advance less '+fmt(weekOut)+' your pay = '+fmt(ADVANCE-weekOut)+' kept&lt;/title&gt;&lt;/circle&gt;';
   }
+  let negFrom=-1, negTo=-1;
+  pts.forEach((pt,i)=&gt;{ if(pt.v&lt;0){ if(negFrom&lt;0)negFrom=i; negTo=i; } });
+  if(negFrom&gt;=0){
+    sv+='&lt;rect x=&quot;'+x(negFrom)+'&quot; y=&quot;'+y(0)+'&quot; width=&quot;'+Math.max(2,x(negTo)-x(negFrom))+'&quot; height=&quot;'+Math.max(2,(H-B)-y(0))+'&quot; fill=&quot;var(--red)&quot; opacity=&quot;0.13&quot;/&gt;';
+  }
   let lowV=pts[0].v, lowI=0;
   pts.forEach((pt,i)=&gt;{ if(pt.v&lt;lowV){ lowV=pt.v; lowI=i; } });
   if(lowI&gt;0){
@@ -16056,6 +16065,22 @@ function renderRunway(){
   sv+='&lt;circle cx=&quot;'+x(days)+'&quot; cy=&quot;'+y(lastP.v)+'&quot; r=&quot;3.5&quot; fill=&quot;'+endCol+'&quot;/&gt;';
   sv+='&lt;/svg&gt;';
   host.innerHTML=sv;
+
+  const dn=document.getElementById('dipNote');
+  if(dn){
+    if(lowV&lt;0){
+      const dd=pts[lowI].d;
+      const need=Math.ceil((-lowV)/10)*10;
+      dn.style.display='';
+      dn.innerHTML='&lt;b&gt;Heads up · the account goes under on the '+dd.getDate()+' '+dd.toLocaleDateString('en-AU',{month:'short'})+', down to '+fmt(lowV)+'.&lt;/b&gt; '+
+        'The ATO and SGC debits land before the RCTI does. You need about &lt;b&gt;'+fmt(need)+'&lt;/b&gt; more in there before then, or the direct debits can bounce. '+
+        'Options: hold your pay back for a week or two, chase the Drive fee, or move the ASIC payment later in the month.';
+    } else if(lowV&lt;300){
+      dn.style.display='';
+      dn.style.background='var(--gold-soft)'; dn.style.borderColor='var(--gold)';
+      dn.innerHTML='&lt;b&gt;Tight but clear.&lt;/b&gt; Lowest point is '+fmt(lowV)+' on the '+pts[lowI].d.getDate()+'. Nothing bounces, but there is no room for a surprise.';
+    } else { dn.style.display='none'; }
+  }
 }
 
 const expAmtEl=document.getElementById('expAmt'), expDayEl=document.getElementById('expDay');

@@ -1598,10 +1598,10 @@ function rCalc(){
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Leads per month&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_leads&quot; value=&quot;'+v('leads','20')+'&quot; step=&quot;1&quot;&gt;&lt;/label&gt;'
   +'&lt;/div&gt;'
   +'&lt;div class=&quot;sc-grid&quot; style=&quot;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))&quot;&gt;'
-  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_car&quot; '+ck('car')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $500 car finding&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;Drive referral on every settled deal&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_warr&quot; '+ck('warr')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $250 warranty&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;warranty commission on every settled deal&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_car&quot; '+ck('car')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $500 car finding&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;Drive referral · all his, you take no cut&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_warr&quot; '+ck('warr')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $250 warranty&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;per settled deal · your override applies to this too&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_ownLeads&quot; '+ck('ownLeads')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Leads paid by me (owner)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;lead spend comes off my earnings, not his cut&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;My override&lt;/b&gt;&lt;br&gt;&lt;input type=&quot;number&quot; id=&quot;c_ownPct&quot; value=&quot;'+v('ownPct','20')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot; style=&quot;width:64px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt; % of everything he writes&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;My override&lt;/b&gt;&lt;br&gt;&lt;input type=&quot;number&quot; id=&quot;c_ownPct&quot; value=&quot;'+v('ownPct','20')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot; style=&quot;width:64px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt; % of lender + warranty + insurance commission · never his car referrals&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_advOn&quot; '+ck('advOn')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− advance paid out&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_advAmt&quot; value=&quot;'+v('advAmt','1000')+'&quot; step=&quot;50&quot; style=&quot;width:80px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/wk · their wage while they build&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;/div&gt;'
   +'&lt;div id=&quot;c_out&quot;&gt;&lt;/div&gt;';
@@ -1619,11 +1619,13 @@ window._clc=function(){
   try{localStorage.setItem('hub_scalecalc_v2',JSON.stringify({avg:raw('c_avg'),split:raw('c_split'),cpl:raw('c_cpl'),conv:raw('c_conv'),leads:raw('c_leads'),advAmt:raw('c_advAmt'),car:on('c_car'),warr:on('c_warr'),advOn:on('c_advOn'),ownLeads:on('c_ownLeads'),ownPct:raw('c_ownPct')}));}catch(e){}
   const host=document.getElementById('c_out'); if(!host) return;
   const avg=num('c_avg'), split=num('c_split')/100, cpl=num('c_cpl'), conv=num('c_conv')/100, leads=num('c_leads');
-  const extras=(on('c_car')?500:0)+(on('c_warr')?250:0);
+  const carAdd=on('c_car')?500:0;
+  const warrGross=on('c_warr')?250:0;
   const advOn=on('c_advOn'), advWk=num('c_advAmt');
   const ownLeads=on('c_ownLeads');
   const ownPct=(()=&gt;{const e=document.getElementById('c_ownPct');const n=e?parseFloat(e.value):NaN;return isFinite(n)?n:20;})();
-  const kept=avg*split+extras;
+  const warrBroker=warrGross*(1-ownPct/100);
+  const kept=avg*split+carAdd+warrBroker;
   const settles=leads*conv;
   const spend=leads*cpl;
   const gross=settles*kept;
@@ -1638,7 +1640,7 @@ window._clc=function(){
   const col=n=&gt;n&gt;=0?'var(--teal)':'#ff6b81';
   const tile=(k,val,sub,c)=&gt;'&lt;div style=&quot;background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:12px 14px&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600&quot;&gt;'+k+'&lt;/div&gt;&lt;div style=&quot;font-size:21px;font-weight:700;margin-top:3px;color:'+(c||'var(--txt)')+'&quot;&gt;'+val+'&lt;/div&gt;'+(sub?'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;'+sub+'&lt;/div&gt;':'')+'&lt;/div&gt;';
   let h='&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-bottom:13px&quot;&gt;';
-  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'keep '+f(kept)+'/deal'+(extras?' incl '+f(extras)+' extras':'')+(ownLeads?' · leads on the owner':' · leads '+(conv&gt;0?f(cpl/conv):'·')+'/settle'),profitDeal!=null?col(profitDeal):null);
+  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'keep '+f(kept)+'/deal'+(carAdd?' incl $500 car':'')+(warrGross?' + '+f(warrBroker)+' warranty after your cut':'')+(ownLeads?' · leads on the owner':' · leads '+(conv&gt;0?f(cpl/conv):'·')+'/settle'),profitDeal!=null?col(profitDeal):null);
   h+=tile('Settlements',f2(settles)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;','≈ '+f2(settles*12/52)+' a week · '+leads+' leads × '+f2(conv*100)+'%');
   h+=tile('Lead spend'+(ownLeads?' · owner pays':''),f(spend)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(spend*12/52)+' a week · '+leads+' × $'+cpl+(ownLeads?' · not off his cut':''));
   h+=tile('Profit / month',f(profitM),(ownLeads?(advOn?'after the advance · leads on the owner':'leads on the owner · nothing off his cut'):(advOn?'after leads + the advance':'after lead costs')),col(profitM));
@@ -1686,21 +1688,23 @@ window._clc=function(){
      +'&lt;/div&gt;';
   }
   // ── you as the owner · override on what he writes, minus whatever you carry ──
-  const ownGrossW=avg*settles;
+  const ownGrossW=(avg+warrGross)*settles;
   const ownInc=ownGrossW*ownPct/100;
   const ownCosts=ownLeads?spend:0;
   const ownNet=ownInc-ownCosts;
   h+='&lt;div class=&quot;sc-wf&quot; style=&quot;border-color:rgba(61,220,151,.4)&quot;&gt;'
    +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px&quot;&gt;'
    +'&lt;span style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);font-weight:700&quot;&gt;You as the owner&lt;/span&gt;'
-   +'&lt;span style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+f2(ownPct)+'% of everything he writes&lt;/span&gt;'
+   +'&lt;span style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+f2(ownPct)+'% of lender'+(warrGross?' + warranty':'')+' commission'+(carAdd?' · car money is all his':'')+'&lt;/span&gt;'
    +'&lt;/div&gt;'
    +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px&quot;&gt;'
-   +tile('Your override',f(ownInc)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownInc*12/52)+' a week · '+f2(ownPct)+'% × '+f(ownGrossW)+' written')
+   +tile('Your override',f(ownInc)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownInc*12/52)+' a week · '+f2(ownPct)+'% × '+f(ownGrossW)+' lender'+(warrGross?' + warranty':'')+' written')
    +(ownLeads?tile('Less his leads',f(-spend),'you ticked owner pays','#ff6b81'):'')
    +tile('Your net',f(ownNet)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownNet*12/52)+' a week',col(ownNet))
    +'&lt;/div&gt;'
-   +(advOn?'&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin-top:9px;line-height:1.5&quot;&gt;Plus you front the '+f(advWk)+'/wk advance ('+f(advM)+'/mo) · that\'s cashflow, not a cost — it\'s recouped from his commissions, which is exactly why it\'s deducted on his side above.&lt;/div&gt;':'')
+   +(()=&gt;{const rem=100-num('c_split')-ownPct; const remCol=rem&lt;0?'#ff6b81':'var(--mut)';
+      return '&lt;div style=&quot;font-size:11.5px;color:'+remCol+';margin-top:9px;line-height:1.5&quot;&gt;The lender commission three ways: he keeps &lt;b&gt;'+f2(num('c_split'))+'%&lt;/b&gt;, you take &lt;b&gt;'+f2(ownPct)+'%&lt;/b&gt;, leaving &lt;b&gt;'+f2(rem)+'%&lt;/b&gt; to Ausloans.'+(rem&lt;0?' &lt;b&gt;That\'s over 100% · check the two percentages.&lt;/b&gt;':'')+'&lt;/div&gt;';})()
+   +(advOn?'&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5&quot;&gt;Plus you front the '+f(advWk)+'/wk advance ('+f(advM)+'/mo) · that\'s cashflow, not a cost — it\'s recouped from his commissions, which is exactly why it\'s deducted on his side above.&lt;/div&gt;':'')
    +'&lt;/div&gt;';
   host.innerHTML=h;
 };

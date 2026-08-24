@@ -4113,7 +4113,28 @@ function renderRows(){
     (catFilter === 'All' || (t.cat || 'Other') === catFilter) &amp;&amp;
     (!q || (t.name + ' ' + t.hotkeys.join(' ') + ' ' + t.body).toLowerCase().includes(q))
   );
+  /* deal order: category, then journey stage start-to-finish, then email → text → CRM inside each stage */
+  const CHORD = {email:0, sms:1, crm:2};
+  const catRank = c =&gt; c==='Ausloans'?0 : c==='Artesian'?1 : c==='Utility'?2 : 3;
+  const stageIdx = g =&gt; { if(!g) return 99; const i=JOURNEY.findIndex(j=&gt;j[0]===g); return i&lt;0?98:i; };
+  rows.sort((a,b) =&gt;
+    (catRank(a.cat||'Other')-catRank(b.cat||'Other')) ||
+    (stageIdx(a.grp)-stageIdx(b.grp)) ||
+    ((CHORD[chOf(a)]??3)-(CHORD[chOf(b)]??3)) ||
+    (a.name||'').localeCompare(b.name||''));
+  let lastStage = '__none__';
+  const stageName = g =&gt; { const j=JOURNEY.find(x=&gt;x[0]===g); return j?j[1]:null; };
   $('#libRows').innerHTML = rows.map(t =&gt; {
+    let divider='';
+    const sk=(t.cat||'Other')+'|'+(t.grp||'');
+    if(sk!==lastStage){
+      lastStage=sk;
+      const nm=stageName(t.grp);
+      const idx=stageIdx(t.grp);
+      if(nm) divider='&lt;div class=&quot;jsec&quot; style=&quot;margin:14px 2px 6px&quot;&gt;'+(idx&lt;15?(idx+1)+' · ':'')+esc(nm)+' &lt;span style=&quot;font-weight:500;letter-spacing:0;text-transform:none&quot;&gt;· '+esc(t.cat||'')+'&lt;/span&gt;&lt;/div&gt;';
+      else if(!t.grp) divider='&lt;div class=&quot;jsec&quot; style=&quot;margin:14px 2px 6px&quot;&gt;'+esc(t.cat||'Other')+' · one-offs&lt;/div&gt;';
+    }
+    return divider + (t =&gt; {
     const open = t.id === expandedId;
     const keyChips = t.hotkeys.map(k =&gt; capsHTML(k, !hotkeyValid(k) || (dups[normKey(k)] &amp;&amp; dups[normKey(k)].length &gt; 1))).join('&lt;span class=&quot;kor&quot;&gt;or&lt;/span&gt;') || '&lt;span class=&quot;hint&quot;&gt;no hotkey yet&lt;/span&gt;';
     let inner = '';
@@ -4177,6 +4198,7 @@ function renderRows(){
         'aria-expanded=&quot;false&quot; title=&quot;Show the whole message&quot;&gt;' + esc(t.body) + '&lt;/div&gt;' +
         '&lt;p class=&quot;prevhint&quot;&gt;Tap the message to read all of it. Edit is only for changing it.&lt;/p&gt;') +
       inner + '&lt;/div&gt;';
+  })(t);
   }).join('') || '&lt;div class=&quot;empty&quot;&gt;No matches. Clear the search, or make a new template.&lt;/div&gt;';
 }
 function renderFoot(){

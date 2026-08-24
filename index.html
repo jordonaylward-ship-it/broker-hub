@@ -1600,10 +1600,12 @@ function rCalc(){
   +'&lt;div class=&quot;sc-grid&quot; style=&quot;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))&quot;&gt;'
   +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_car&quot; '+ck('car')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $500 car finding&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;Drive referral on every settled deal&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_warr&quot; '+ck('warr')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $250 warranty&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;warranty commission on every settled deal&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_ownLeads&quot; '+ck('ownLeads')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Leads paid by me (owner)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;lead spend comes off my earnings, not his cut&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;My override&lt;/b&gt;&lt;br&gt;&lt;input type=&quot;number&quot; id=&quot;c_ownPct&quot; value=&quot;'+v('ownPct','20')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot; style=&quot;width:64px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt; % of everything he writes&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_advOn&quot; '+ck('advOn')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− advance paid out&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_advAmt&quot; value=&quot;'+v('advAmt','1000')+'&quot; step=&quot;50&quot; style=&quot;width:80px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/wk · their wage while they build&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;/div&gt;'
   +'&lt;div id=&quot;c_out&quot;&gt;&lt;/div&gt;';
-  ['c_avg','c_split','c_cpl','c_conv','c_leads','c_car','c_warr','c_advOn','c_advAmt'].forEach(id=&gt;{
+  ['c_avg','c_split','c_cpl','c_conv','c_leads','c_car','c_warr','c_advOn','c_advAmt','c_ownLeads','c_ownPct'].forEach(id=&gt;{
     const el=document.getElementById(id);
     el.addEventListener('input',window._clc); el.addEventListener('change',window._clc);
   });
@@ -1614,18 +1616,21 @@ window._clc=function(){
   const num=id=&gt;{const n=parseFloat(raw(id)); return isFinite(n)?n:0;};
   const on=id=&gt;{const e=document.getElementById(id); return !!(e&amp;&amp;e.checked);};
   // persist EXACTLY what was typed · no recomputed floats
-  try{localStorage.setItem('hub_scalecalc_v2',JSON.stringify({avg:raw('c_avg'),split:raw('c_split'),cpl:raw('c_cpl'),conv:raw('c_conv'),leads:raw('c_leads'),advAmt:raw('c_advAmt'),car:on('c_car'),warr:on('c_warr'),advOn:on('c_advOn')}));}catch(e){}
+  try{localStorage.setItem('hub_scalecalc_v2',JSON.stringify({avg:raw('c_avg'),split:raw('c_split'),cpl:raw('c_cpl'),conv:raw('c_conv'),leads:raw('c_leads'),advAmt:raw('c_advAmt'),car:on('c_car'),warr:on('c_warr'),advOn:on('c_advOn'),ownLeads:on('c_ownLeads'),ownPct:raw('c_ownPct')}));}catch(e){}
   const host=document.getElementById('c_out'); if(!host) return;
   const avg=num('c_avg'), split=num('c_split')/100, cpl=num('c_cpl'), conv=num('c_conv')/100, leads=num('c_leads');
   const extras=(on('c_car')?500:0)+(on('c_warr')?250:0);
   const advOn=on('c_advOn'), advWk=num('c_advAmt');
+  const ownLeads=on('c_ownLeads');
+  const ownPct=(()=&gt;{const e=document.getElementById('c_ownPct');const n=e?parseFloat(e.value):NaN;return isFinite(n)?n:20;})();
   const kept=avg*split+extras;
   const settles=leads*conv;
   const spend=leads*cpl;
   const gross=settles*kept;
   const advM=advOn?advWk*52/12:0;
-  const profitDeal=conv&gt;0?kept-cpl/conv:null;
-  const profitM=gross-spend-advM;
+  const hisSpend=ownLeads?0:spend;
+  const profitDeal=conv&gt;0?kept-(ownLeads?0:cpl/conv):null;
+  const profitM=gross-hisSpend-advM;
   const profitW=profitM*12/52;
   const r1=v=&gt;Math.round(v*10)/10;
   const f=n=&gt;(n&lt;0?'−$':'$')+Math.round(Math.abs(n)).toLocaleString();
@@ -1633,20 +1638,23 @@ window._clc=function(){
   const col=n=&gt;n&gt;=0?'var(--teal)':'#ff6b81';
   const tile=(k,val,sub,c)=&gt;'&lt;div style=&quot;background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:12px 14px&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600&quot;&gt;'+k+'&lt;/div&gt;&lt;div style=&quot;font-size:21px;font-weight:700;margin-top:3px;color:'+(c||'var(--txt)')+'&quot;&gt;'+val+'&lt;/div&gt;'+(sub?'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;'+sub+'&lt;/div&gt;':'')+'&lt;/div&gt;';
   let h='&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-bottom:13px&quot;&gt;';
-  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'keep '+f(kept)+'/deal'+(extras?' incl '+f(extras)+' extras':'')+' · leads '+(conv&gt;0?f(cpl/conv):'·')+'/settle',profitDeal!=null?col(profitDeal):null);
+  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'keep '+f(kept)+'/deal'+(extras?' incl '+f(extras)+' extras':'')+(ownLeads?' · leads on the owner':' · leads '+(conv&gt;0?f(cpl/conv):'·')+'/settle'),profitDeal!=null?col(profitDeal):null);
   h+=tile('Settlements',f2(settles)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;','≈ '+f2(settles*12/52)+' a week · '+leads+' leads × '+f2(conv*100)+'%');
-  h+=tile('Lead spend',f(spend)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(spend*12/52)+' a week · '+leads+' × $'+cpl);
-  h+=tile('Profit / month',f(profitM),advOn?'after leads + the advance':'after lead costs',col(profitM));
+  h+=tile('Lead spend'+(ownLeads?' · owner pays':''),f(spend)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(spend*12/52)+' a week · '+leads+' × $'+cpl+(ownLeads?' · not off his cut':''));
+  h+=tile('Profit / month',f(profitM),(ownLeads?(advOn?'after the advance · leads on the owner':'leads on the owner · nothing off his cut'):(advOn?'after leads + the advance':'after lead costs')),col(profitM));
   h+=tile('Profit / week',f(profitW),advOn?'advance costs '+f(advWk)+'/wk':null,col(profitW));
   h+='&lt;/div&gt;';
   if(advOn&amp;&amp;profitM&lt;0){
     h+='&lt;div style=&quot;background:rgba(255,107,129,.09);border:1px solid #ff6b81;border-radius:11px;padding:11px 14px;margin-bottom:13px;font-size:12.5px;line-height:1.5;color:var(--dim)&quot;&gt;&lt;b style=&quot;color:#ff6b81&quot;&gt;Deficit · '+f(-profitM)+' a month ('+f(-profitW)+' a week).&lt;/b&gt; The deals don\'t yet cover the leads plus the '+f(advWk)+'/wk advance at this conversion.&lt;/div&gt;';
   }
   // ── break-even · one gauge, plain words, and in settles as well as % ──
-  const beL=kept&gt;0?cpl/kept*100:null;                                  // % where leads pay for themselves
-  const beA=(kept&gt;0&amp;&amp;leads&gt;0)?((spend+advM)/(leads*kept))*100:null;    // % where leads + advance are paid
+  const beL=(kept&gt;0&amp;&amp;!ownLeads)?cpl/kept*100:0;                        // % where his lead share is paid (0 when the owner carries them)
+  const beA=(kept&gt;0&amp;&amp;leads&gt;0)?((hisSpend+advM)/(leads*kept))*100:null;  // % where everything HE carries is paid
   const cur=conv*100;
-  if(beL!=null){
+  const brokerCosts=hisSpend+advM;
+  if(brokerCosts&lt;=0){
+    h+='&lt;div class=&quot;sc-wf&quot;&gt;&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.5&quot;&gt;&lt;b style=&quot;color:var(--teal)&quot;&gt;Nothing comes out of his cut.&lt;/b&gt; You\'re carrying the leads and there\'s no advance ticked, so every settle is clean profit to him. Break-even doesn\'t apply.&lt;/div&gt;&lt;/div&gt;';
+  } else if(beL!=null){
     const top=Math.max(cur,advOn&amp;&amp;beA!=null?beA:beL)*1.35;
     const pos=x=&gt;Math.min(98,Math.max(1,x/top*100));
     const settlesAt=pct=&gt;leads*pct/100;
@@ -1663,13 +1671,13 @@ window._clc=function(){
     h+='&lt;div class=&quot;sc-wf&quot;&gt;'
      +'&lt;div style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:10px&quot;&gt;Where you sit&lt;/div&gt;'
      +'&lt;div style=&quot;position:relative;height:14px;border-radius:7px;overflow:hidden;background:rgba(255,107,129,.25)&quot;&gt;'
-     +(advOn&amp;&amp;beA!=null?'&lt;div style=&quot;position:absolute;left:'+pos(beL)+'%;right:'+(100-pos(beA))+'%;top:0;bottom:0;background:rgba(255,180,84,.35)&quot;&gt;&lt;/div&gt;':'')
+     +(advOn&amp;&amp;beA!=null&amp;&amp;!ownLeads?'&lt;div style=&quot;position:absolute;left:'+pos(beL)+'%;right:'+(100-pos(beA))+'%;top:0;bottom:0;background:rgba(255,180,84,.35)&quot;&gt;&lt;/div&gt;':'')
      +'&lt;div style=&quot;position:absolute;left:'+pos(target)+'%;right:0;top:0;bottom:0;background:rgba(61,220,151,.3)&quot;&gt;&lt;/div&gt;'
      +'&lt;div style=&quot;position:absolute;left:'+pos(cur)+'%;top:-1px;bottom:-1px;width:4px;background:var(--txt);border-radius:2px&quot; title=&quot;you · '+f2(cur)+'%&quot;&gt;&lt;/div&gt;'
      +'&lt;/div&gt;'
      +'&lt;div style=&quot;display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:6px;flex-wrap:wrap;gap:4px&quot;&gt;'
      +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,107,129,.6);vertical-align:-1px&quot;&gt;&lt;/span&gt; losing money&lt;/span&gt;'
-     +(advOn&amp;&amp;beA!=null?'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,180,84,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; leads paid, advance isn\'t · from '+f2(beL)+'%&lt;/span&gt;':'')
+     +(advOn&amp;&amp;beA!=null&amp;&amp;!ownLeads?'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,180,84,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; leads paid, advance isn\'t · from '+f2(beL)+'%&lt;/span&gt;':'')
      +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(61,220,151,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; everything paid · from '+f2(target)+'%&lt;/span&gt;'
      +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:4px;border-radius:2px;background:var(--txt);vertical-align:2px&quot;&gt;&lt;/span&gt; you · '+f2(cur)+'%&lt;/span&gt;'
      +'&lt;/div&gt;'
@@ -1677,6 +1685,23 @@ window._clc=function(){
      +'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:6px&quot;&gt;Each extra point of conversion ≈ '+(kept&gt;0?f(leads*kept/100):'·')+' a month.&lt;/div&gt;'
      +'&lt;/div&gt;';
   }
+  // ── you as the owner · override on what he writes, minus whatever you carry ──
+  const ownGrossW=avg*settles;
+  const ownInc=ownGrossW*ownPct/100;
+  const ownCosts=ownLeads?spend:0;
+  const ownNet=ownInc-ownCosts;
+  h+='&lt;div class=&quot;sc-wf&quot; style=&quot;border-color:rgba(61,220,151,.4)&quot;&gt;'
+   +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px&quot;&gt;'
+   +'&lt;span style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);font-weight:700&quot;&gt;You as the owner&lt;/span&gt;'
+   +'&lt;span style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+f2(ownPct)+'% of everything he writes&lt;/span&gt;'
+   +'&lt;/div&gt;'
+   +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px&quot;&gt;'
+   +tile('Your override',f(ownInc)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownInc*12/52)+' a week · '+f2(ownPct)+'% × '+f(ownGrossW)+' written')
+   +(ownLeads?tile('Less his leads',f(-spend),'you ticked owner pays','#ff6b81'):'')
+   +tile('Your net',f(ownNet)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownNet*12/52)+' a week',col(ownNet))
+   +'&lt;/div&gt;'
+   +(advOn?'&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin-top:9px;line-height:1.5&quot;&gt;Plus you front the '+f(advWk)+'/wk advance ('+f(advM)+'/mo) · that\'s cashflow, not a cost — it\'s recouped from his commissions, which is exactly why it\'s deducted on his side above.&lt;/div&gt;':'')
+   +'&lt;/div&gt;';
   host.innerHTML=h;
 };
 // ── Commission tiers · RETROACTIVE (per Neil, phone Jul 2026): hit a tier and that % applies to the

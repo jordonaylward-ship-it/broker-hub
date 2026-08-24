@@ -366,9 +366,9 @@ html{scrollbar-color:#2c3247 transparent}::-webkit-scrollbar{width:10px;height:1
   &lt;div class=&quot;sec on&quot; id=&quot;sec-alltime&quot;&gt;&lt;div class=&quot;loading&quot; id=&quot;loadMsg&quot;&gt;Loading...&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;sec&quot; id=&quot;sec-monthly&quot;&gt;&lt;/div&gt;
   &lt;div class=&quot;sec&quot; id=&quot;sec-roi&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;sec&quot; id=&quot;sec-leadecon&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;sec&quot; id=&quot;sec-scale&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;sec&quot; id=&quot;sec-solo&quot;&gt;&lt;/div&gt;
+  
+  &lt;div class=&quot;sec&quot; id=&quot;sec-calc&quot;&gt;&lt;/div&gt;
+  
   &lt;div class=&quot;sec&quot; id=&quot;sec-ausloans&quot;&gt;&lt;/div&gt;
   &lt;div class=&quot;sec&quot; id=&quot;sec-losses&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
@@ -395,7 +395,7 @@ function skeletonHTML(){
     +'&lt;div class=&quot;mg mg5&quot;&gt;'+cards+'&lt;/div&gt;'
     +'&lt;div class=&quot;sk&quot; style=&quot;height:220px&quot;&gt;&lt;/div&gt;';
 }
-const TABS=[{k:&quot;alltime&quot;,l:&quot;All Time&quot;},{k:&quot;monthly&quot;,l:&quot;Monthly&quot;},{k:&quot;roi&quot;,l:&quot;ROI&quot;},{k:&quot;leadecon&quot;,l:&quot;Lead Economics&quot;},{k:&quot;scale&quot;,l:&quot;Scale Calc&quot;},{k:&quot;solo&quot;,l:&quot;Scale Calc Solo&quot;},{k:&quot;ausloans&quot;,l:&quot;Ausloans Balance&quot;},{k:&quot;losses&quot;,l:&quot;Loss Reasons&quot;}];
+const TABS=[{k:&quot;alltime&quot;,l:&quot;All Time&quot;},{k:&quot;monthly&quot;,l:&quot;Monthly&quot;},{k:&quot;roi&quot;,l:&quot;ROI&quot;},{k:&quot;calc&quot;,l:&quot;Scale Calc&quot;},{k:&quot;ausloans&quot;,l:&quot;Ausloans Balance&quot;},{k:&quot;losses&quot;,l:&quot;Loss Reasons&quot;}];
 
 // Ausloans RCTI ledger · add a new entry each month after the RCTI arrives
 // &quot;net&quot; = income - costs - gstAdj for that month (the change to your running balance)
@@ -1059,107 +1059,8 @@ function toggleSetup(){const b=document.getElementById(&quot;setupBox&quot;);b.s
 function startRefresh(){if(refreshTimer)clearInterval(refreshTimer);refreshTimer=setInterval(refreshData,60000);}
 function renderTabs(){document.getElementById(&quot;tabs&quot;).innerHTML=TABS.map(t=&gt;'&lt;button class=&quot;tab'+(t.k===activeTab?&quot; on&quot;:&quot;&quot;)+'&quot; onclick=&quot;switchTab(\''+t.k+'\')&quot;&gt;'+t.l+'&lt;/button&gt;').join(&quot;&quot;);}
 function switchTab(k){activeTab=k;renderTabs();document.querySelectorAll(&quot;.sec&quot;).forEach(s=&gt;s.classList.remove(&quot;on&quot;));document.getElementById(&quot;sec-&quot;+k).classList.add(&quot;on&quot;);render();}
-function render(){if(!D)return;({alltime:rAllTime,monthly:rMonthly,roi:rROI,leadecon:rLeadEcon,scale:rScale,solo:rSolo,ausloans:rAusloans,losses:rLosses})[activeTab]?.();}
+function render(){if(activeTab==='calc'){rCalc();return;}if(!D)return;({alltime:rAllTime,monthly:rMonthly,roi:rROI,ausloans:rAusloans,losses:rLosses})[activeTab]?.();}
 
-
-// ── Lead Economics · current channel vs alternative · persists to ja_leadecon_v1 ──
-let _leBuilt=false;
-function rLeadEcon(){
-  if(_leBuilt){leRecalc();return;}
-  _leBuilt=true;
-  const host=document.getElementById('sec-leadecon');
-  const S=(()=&gt;{try{return JSON.parse(localStorage.getItem('ja_leadecon_v1'))||{};}catch(e){return {};}})();
-  const st=Object.assign({comm:2600,split:80,file:30,aCost:360,aConv:28.4,aPer:15,bCost:75,bConv:5,bPer:80},S);
-  const MON=&quot;'JetBrains Mono',ui-monospace,monospace&quot;;
-  const sl=(id,label,min,max,step,unit)=&gt;'&lt;div style=&quot;margin-bottom:13px;&quot;&gt;'
-    +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;&quot;&gt;'
-    +'&lt;span style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6f7689;font-weight:600;&quot;&gt;'+label+'&lt;/span&gt;'
-    +'&lt;span id=&quot;lev-'+id+'&quot; style=&quot;font-family:'+MON+';font-size:14px;color:#e9ecf2;font-weight:600;&quot;&gt;&lt;/span&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;display:flex;gap:8px;align-items:center;&quot;&gt;'
-    +'&lt;input type=&quot;range&quot; id=&quot;ler-'+id+'&quot; min=&quot;'+min+'&quot; max=&quot;'+max+'&quot; step=&quot;'+step+'&quot; style=&quot;flex:1;accent-color:#3ddc97;height:4px;&quot;&gt;'
-    +'&lt;input type=&quot;number&quot; id=&quot;len-'+id+'&quot; min=&quot;'+min+'&quot; max=&quot;'+max+'&quot; step=&quot;'+step+'&quot; style=&quot;width:72px;background:#171b26;color:#e9ecf2;border:1px solid #262c3a;border-radius:6px;padding:4px 6px;font-family:'+MON+';font-size:12.5px;&quot;&gt;&lt;/div&gt;&lt;/div&gt;';
-  const row=(k,vid)=&gt;'&lt;div style=&quot;display:flex;justify-content:space-between;padding:4px 0;font-size:12.5px;&quot;&gt;&lt;span style=&quot;color:#6f7689;&quot;&gt;'+k+'&lt;/span&gt;&lt;span id=&quot;'+vid+'&quot; style=&quot;font-family:'+MON+';font-weight:600;color:#b9c0d4;&quot;&gt;&lt;/span&gt;&lt;/div&gt;';
-  const chan=(p,name,accent)=&gt;'&lt;div style=&quot;flex:1 1 300px;background:#151823;border:1px solid #262c3a;border-top:3px solid '+accent+';border-radius:12px;padding:16px 16px 10px;&quot;&gt;'
-    +'&lt;div style=&quot;font-size:14px;font-weight:700;margin-bottom:12px;color:'+accent+';&quot;&gt;'+name+'&lt;/div&gt;'
-    +sl(p+'Cost','Cost per lead',10,700,5,'$')+sl(p+'Conv','Conversion',0.5,50,0.1,'%')+sl(p+'Per','Leads per month',1,150,1,'')
-    +'&lt;div style=&quot;border-top:1px solid #262c3a;margin-top:2px;padding-top:8px;&quot;&gt;'
-    +row('Leads → 1 settlement',p+'-lps')+row('Lead cost per deal',p+'-lcd')+row('Profit per deal',p+'-ppd')
-    +row('Settlements / month',p+'-set')+row('Lead spend / month',p+'-spd')+row('Profit / week',p+'-wk')+row('Profit / month',p+'-mon')+row('Breakeven conversion',p+'-bec')
-    +'&lt;/div&gt;&lt;/div&gt;';
-  host.innerHTML='&lt;div style=&quot;max-width:1080px;&quot;&gt;'
-    +'&lt;div style=&quot;font-size:12.5px;color:#6f7689;margin:2px 0 14px;&quot;&gt;Same commission engine both sides · only the lead channel changes. Everything drags, everything saves.&lt;/div&gt;'
-    +'&lt;div style=&quot;background:#11141d;border:1px solid #262c3a;border-radius:12px;padding:14px 16px 2px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap;&quot;&gt;'
-    +'&lt;div style=&quot;flex:1 1 180px;&quot;&gt;'+sl('comm','Avg commission / deal',1000,5000,50,'$')+'&lt;/div&gt;'
-    +'&lt;div style=&quot;flex:1 1 180px;&quot;&gt;'+sl('split','Your split',50,100,1,'%')+'&lt;/div&gt;'
-    +'&lt;div style=&quot;flex:1 1 180px;&quot;&gt;'+sl('file','File costs / deal',0,200,5,'$')+'&lt;/div&gt;'
-    +'&lt;div style=&quot;flex:0 0 auto;align-self:center;text-align:right;padding-bottom:10px;&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6f7689;font-weight:600;&quot;&gt;You keep / deal&lt;/div&gt;&lt;div id=&quot;le-keep&quot; style=&quot;font-family:'+MON+';font-size:23px;font-weight:700;color:#3ddc97;&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div style=&quot;display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;&quot;&gt;'
-    +chan('a','A · Live auction (now)','#4f9cf7')+chan('b','B · Cheap volume (instead)','#f277a8')
-    +'&lt;/div&gt;'
-    +'&lt;div style=&quot;background:#151823;border:1px solid #262c3a;border-radius:12px;padding:14px 16px;margin-bottom:16px;&quot;&gt;'
-    +'&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6f7689;font-weight:700;margin-bottom:10px;&quot;&gt;Profit per deal · shared axis&lt;/div&gt;'
-    +'&lt;div style=&quot;position:relative;height:72px;&quot;&gt;&lt;div style=&quot;position:absolute;left:0;right:0;top:35px;height:2px;background:#262c3a;&quot;&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;position:absolute;left:50%;top:21px;bottom:8px;width:2px;background:#6f7689;opacity:.6;&quot;&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;position:absolute;left:50%;transform:translateX(-50%);top:56px;font-size:10px;color:#6f7689;font-family:'+MON+';&quot;&gt;$0 · work for free&lt;/div&gt;'
-    +'&lt;div id=&quot;le-dotA&quot; style=&quot;position:absolute;transform:translateX(-50%);top:5px;text-align:center;&quot;&gt;&lt;div id=&quot;le-dotAt&quot; style=&quot;font-family:'+MON+';font-size:12px;font-weight:700;color:#4f9cf7;white-space:nowrap;&quot;&gt;&lt;/div&gt;&lt;div style=&quot;width:10px;height:10px;border-radius:5px;background:#4f9cf7;margin:2px auto 0;box-shadow:0 0 8px #4f9cf766;&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div id=&quot;le-dotB&quot; style=&quot;position:absolute;transform:translateX(-50%);top:39px;text-align:center;&quot;&gt;&lt;div id=&quot;le-dotBt&quot; style=&quot;font-family:'+MON+';font-size:12px;font-weight:700;color:#f277a8;white-space:nowrap;&quot;&gt;&lt;/div&gt;&lt;div style=&quot;width:10px;height:10px;border-radius:5px;background:#f277a8;margin:2px auto 0;box-shadow:0 0 8px #f277a866;&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;display:flex;gap:14px;flex-wrap:wrap;&quot;&gt;'
-    +'&lt;div style=&quot;flex:1 1 230px;background:#151823;border:1px solid #262c3a;border-radius:12px;padding:12px 16px;&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6f7689;font-weight:700;&quot;&gt;Per deal&lt;/div&gt;&lt;div id=&quot;le-vd&quot; style=&quot;font-family:'+MON+';font-size:18px;font-weight:700;margin-top:4px;&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;flex:1 1 230px;background:#151823;border:1px solid #262c3a;border-radius:12px;padding:12px 16px;&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6f7689;font-weight:700;&quot;&gt;Per month · at these volumes&lt;/div&gt;&lt;div id=&quot;le-vm&quot; style=&quot;font-family:'+MON+';font-size:18px;font-weight:700;margin-top:4px;&quot;&gt;&lt;/div&gt;&lt;div id=&quot;le-vs&quot; style=&quot;font-size:11px;color:#6f7689;margin-top:3px;&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;flex:1 1 230px;background:#151823;border:1px solid #262c3a;border-radius:12px;padding:12px 16px;&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6f7689;font-weight:700;&quot;&gt;For B to match A per deal&lt;/div&gt;&lt;div id=&quot;le-vb&quot; style=&quot;font-family:'+MON+';font-size:18px;font-weight:700;margin-top:4px;color:#ffb454;&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div style=&quot;font-size:11px;color:#6f7689;margin-top:14px;line-height:1.6;&quot;&gt;Cash-flow reality: lead spend leaves the account now · commission lands on the RCTI 6–8 weeks after settlement. Monthly profit here is accrual, not this month’s bank balance.&lt;/div&gt;'
-    +'&lt;/div&gt;';
-  const MAP=[['comm','comm'],['split','split'],['file','file'],['aCost','aCost'],['aConv','aConv'],['aPer','aPer'],['bCost','bCost'],['bConv','bConv'],['bPer','bPer']];
-  const IDMAP={comm:'comm',split:'split',file:'file',aCost:'aCost',aConv:'aConv',aPer:'aPer',bCost:'bCost',bConv:'bConv',bPer:'bPer'};
-  function ids(k){return {r:document.getElementById('ler-'+k),n:document.getElementById('len-'+k),v:document.getElementById('lev-'+k)};}
-  function fmt(n,dp){if(!isFinite(n))return '·';return '$'+n.toLocaleString('en-AU',{maximumFractionDigits:dp||0});}
-  function fnum(n,dp){return isFinite(n)?n.toLocaleString('en-AU',{maximumFractionDigits:dp==null?1:dp}):'·';}
-  window.leRecalc=function(){
-    const g=k=&gt;st[k];
-    const keep=g('comm')*(g('split')/100)-g('file');
-    document.getElementById('le-keep').textContent=fmt(keep);
-    const unit={comm:'$',split:'%',file:'$',aCost:'$',aConv:'%',aPer:'',bCost:'$',bConv:'%',bPer:''};
-    Object.keys(IDMAP).forEach(k=&gt;{const o=ids(k);if(!o.r)return;o.r.value=g(k);o.n.value=g(k);o.v.textContent=unit[k]==='$'?'$'+g(k).toLocaleString():g(k)+unit[k];});
-    function side(p,cost,conv,per){
-      const lps=conv&gt;0?100/conv:Infinity;
-      const lcd=cost*lps, ppd=keep-lcd, set=per*conv/100, spd=per*cost, mon=set*ppd, bec=keep&gt;0?cost/keep*100:Infinity;
-      const put=(id,v,c)=&gt;{const el=document.getElementById(p+'-'+id);if(el){el.textContent=v;if(c)el.style.color=c;else el.style.color='#b9c0d4';}};
-      put('lps',fnum(lps));put('lcd',fmt(lcd));put('ppd',fmt(ppd),ppd&gt;=0?'#3ddc97':'#ff6b81');
-      put('set',fnum(set));put('spd',fmt(spd),'#ffb454');const wk=mon*12/52;put('wk',fmt(wk),wk&gt;=0?'#3ddc97':'#ff6b81');put('mon',fmt(mon),mon&gt;=0?'#3ddc97':'#ff6b81');
-      put('bec',fnum(bec,1)+'%',conv&gt;=bec?'#6f7689':'#ff6b81');
-      return {ppd,mon,spd};
-    }
-    const a=side('a',g('aCost'),g('aConv'),g('aPer'));
-    const b=side('b',g('bCost'),g('bConv'),g('bPer'));
-    const maxAbs=Math.max(Math.abs(a.ppd),Math.abs(b.ppd),keep,1);
-    const pos=v=&gt;Math.max(2,Math.min(98,50+(v/maxAbs)*48));
-    document.getElementById('le-dotA').style.left=pos(a.ppd)+'%';
-    document.getElementById('le-dotB').style.left=pos(b.ppd)+'%';
-    document.getElementById('le-dotAt').textContent='A '+fmt(a.ppd);
-    document.getElementById('le-dotBt').textContent='B '+fmt(b.ppd);
-    const vd=document.getElementById('le-vd');
-    if(a.ppd===b.ppd){vd.textContent='Dead heat';vd.style.color='#b9c0d4';}
-    else{const w=a.ppd&gt;b.ppd;vd.textContent=(w?'A':'B')+' wins by '+fmt(Math.abs(a.ppd-b.ppd));vd.style.color=w?'#4f9cf7':'#f277a8';}
-    const vm=document.getElementById('le-vm');
-    if(a.mon===b.mon){vm.textContent='Dead heat';vm.style.color='#b9c0d4';}
-    else{const w=a.mon&gt;b.mon;vm.textContent=(w?'A':'B')+' wins by '+fmt(Math.abs(a.mon-b.mon));vm.style.color=w?'#4f9cf7':'#f277a8';}
-    document.getElementById('le-vs').textContent='A spends '+fmt(a.spd)+'/mo · B spends '+fmt(b.spd)+'/mo';
-    const need=keep-a.ppd;
-    document.getElementById('le-vb').textContent=(need&gt;0)?fnum(g('bCost')/need*100,1)+'% conversion at $'+g('bCost')+'/lead':'already ahead';
-    try{localStorage.setItem('ja_leadecon_v1',JSON.stringify(st));}catch(e){}
-  };
-  Object.keys(IDMAP).forEach(k=&gt;{
-    const o=ids(k);
-    if(!o.r)return;
-    const upd=v=&gt;{const f=parseFloat(v);if(!isNaN(f)){st[k]=f;leRecalc();}};
-    o.r.addEventListener('input',e=&gt;upd(e.target.value));
-    o.n.addEventListener('input',e=&gt;upd(e.target.value));
-  });
-  leRecalc();
-}
 
 function computeVelocity(leads){
   if(!leads.length)return{leadsPerDay:0,leadsPerWeek:0,settlementsPerMonth:0,approvalsPerMonth:0,daysActive:0,monthsActive:0};
@@ -1680,294 +1581,70 @@ function bidCalculatorBlock(filtered){
   }
 }
 
-// ── Scale Calc · per-broker pod. THE BROKERS' 50% PAYS FOR EVERYTHING: their leads (you buy,
-// on-charged), their $250/mo expenses, their advance · all off their share. Shortfalls roll on THEIR
-// ledger. Your 20% is clean. Each broker gets their own card with their own dials. ──
-function rScale(){
-  if(!D||!D.leads)return;
-  var settled=0,sSum=0;
-  D.leads.forEach(function(l){if((l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Settled&quot;)&amp;&amp;(num(l.commTotal)||0)&gt;0){settled++;sSum+=num(l.commTotal)||0;}});
-  var avgAuto=settled&gt;0?Math.round(sSum/settled):2800;
-  var A={n:3,plc:75,avg:avgAuto,pl:0,pe:0,pa:0,ba:1,bp:60};
-  var B=[];for(var i0=0;i0&lt;10;i0++)B.push({spb:4,lpw:10,adv:1000});
-  try{var sv=localStorage.getItem(&quot;ja_scale_v5&quot;);if(sv){var o=JSON.parse(sv);
-    ['n','plc','avg','pl','pe','pa','ba','bp'].forEach(function(k){if(o[k]!=null&amp;&amp;isFinite(o[k]))A[k]=o[k];});
-    if(o.B&amp;&amp;o.B.length){for(var j0=0;j0&lt;10&amp;&amp;j0&lt;o.B.length;j0++){(function(row,src){['spb','lpw','adv'].forEach(function(k){if(src&amp;&amp;src[k]!=null&amp;&amp;isFinite(src[k]))row[k]=src[k];});})(B[j0],o.B[j0]);}}
-  }}catch(e){}
-  A.n=Math.max(0,Math.min(10,Math.round(A.n)));
-  function sl(id,lbl,min,max,step,v){return '&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;'+lbl+' &lt;b id=&quot;'+id+'V&quot; style=&quot;font-weight:600;color:var(--dim)&quot;&gt;&lt;/b&gt;&lt;/span&gt;&lt;div style=&quot;display:flex;gap:8px;align-items:center&quot;&gt;&lt;input type=&quot;range&quot; id=&quot;'+id+'R&quot; min=&quot;'+min+'&quot; max=&quot;'+max+'&quot; step=&quot;'+step+'&quot; value=&quot;'+v+'&quot; style=&quot;flex:1;min-width:0&quot; oninput=&quot;document.getElementById(\''+id+'\').value=this.value;window._scCalc()&quot;&gt;&lt;input type=&quot;number&quot; id=&quot;'+id+'&quot; value=&quot;'+v+'&quot; style=&quot;width:76px;flex:0 0 auto&quot; oninput=&quot;var r=document.getElementById(\''+id+'R\');if(r)r.value=this.value;window._scCalc()&quot;&gt;&lt;/div&gt;&lt;/label&gt;';}
-  function nm(id,lbl,v){return '&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;'+lbl+'&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;'+id+'&quot; value=&quot;'+v+'&quot; oninput=&quot;window._scCalc()&quot;&gt;&lt;/label&gt;';}
-  var cards='';
-  for(var b=0;b&lt;A.n;b++){
-    cards+='&lt;div class=&quot;mc&quot; style=&quot;padding:16px&quot;&gt;'
-      +'&lt;div class=&quot;mc-l&quot; style=&quot;display:flex;justify-content:space-between;align-items:center&quot;&gt;BROKER '+(b+1)+'&lt;span id=&quot;sc_b'+b+'_sr&quot; style=&quot;font-weight:800;font-size:15px&quot;&gt;&lt;/span&gt;&lt;/div&gt;'
-      +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px 14px;margin:10px 0 6px&quot;&gt;'
-      +sl('sc_b'+b+'_spb','Settlements / mo',0,20,1,B[b].spb)
-      +sl('sc_b'+b+'_lpw','Leads / wk',0,40,1,B[b].lpw)
-      +sl('sc_b'+b+'_adv','Advance / wk',0,2000,50,B[b].adv)
-      +'&lt;/div&gt;'
-      +'&lt;div id=&quot;sc_b'+b+'_out&quot; style=&quot;font-size:12px;line-height:1.65;color:var(--dim)&quot;&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;';
-  }
-  var shell='&lt;div class=&quot;sh&quot; style=&quot;margin-top:4px&quot;&gt;&lt;h2&gt;Scale Calculator · the broker pod&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;TICK WHO PAYS WHAT · SAVES&lt;/span&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;sc-grid&quot; style=&quot;margin-bottom:12px&quot;&gt;'
-    +'&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;Sub-brokers&lt;/span&gt;&lt;div style=&quot;display:flex;gap:8px;align-items:center&quot;&gt;&lt;input type=&quot;range&quot; id=&quot;sc_nR&quot; min=&quot;0&quot; max=&quot;10&quot; step=&quot;1&quot; value=&quot;'+A.n+'&quot; style=&quot;flex:1;min-width:0&quot; oninput=&quot;document.getElementById(\'sc_n\').value=this.value;window._scN(this.value)&quot;&gt;&lt;input type=&quot;number&quot; id=&quot;sc_n&quot; min=&quot;0&quot; max=&quot;10&quot; value=&quot;'+A.n+'&quot; style=&quot;width:76px;flex:0 0 auto&quot; oninput=&quot;var r=document.getElementById(\'sc_nR\');if(r)r.value=this.value;window._scN(this.value)&quot;&gt;&lt;/div&gt;&lt;/label&gt;'
-    +nm('sc_plc','What I pay per lead $',Math.round(A.plc))
-    +nm('sc_avg','Avg earnings per deal $',Math.round(A.avg))
-    +'&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;Broker share %&lt;/span&gt;&lt;div style=&quot;display:flex;gap:10px;align-items:center&quot;&gt;&lt;input type=&quot;number&quot; id=&quot;sc_bp&quot; min=&quot;0&quot; max=&quot;100&quot; step=&quot;5&quot; value=&quot;'+Math.round(A.bp!=null?A.bp:60)+'&quot; style=&quot;width:76px;flex:0 0 auto&quot; oninput=&quot;var a=document.getElementById(\'sc_ba\');if(a)a.checked=false;window._scCalc()&quot;'+(A.ba?' disabled':'')+'&gt;&lt;label class=&quot;sc-chk&quot; style=&quot;margin:0&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sc_ba&quot; '+(A.ba?'checked':'')+' onchange=&quot;window._scCalc()&quot;&gt;&lt;span&gt;auto · tier − your 20&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;&lt;/label&gt;'
-    +'&lt;div style=&quot;grid-column:1/-1;display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--dim);align-items:center&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Pod manager pays for:&lt;/b&gt;'
-      +' &lt;label class=&quot;sc-chk&quot; style=&quot;margin:0&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sc_pl&quot; '+(A.pl?'checked':'')+' onchange=&quot;window._scCalc()&quot;&gt;&lt;span&gt;leads&lt;/span&gt;&lt;/label&gt;'
-      +' &lt;label class=&quot;sc-chk&quot; style=&quot;margin:0&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sc_pe&quot; '+(A.pe?'checked':'')+' onchange=&quot;window._scCalc()&quot;&gt;&lt;span&gt;expenses · $250 per broker&lt;/span&gt;&lt;/label&gt;'
-      +' &lt;label class=&quot;sc-chk&quot; style=&quot;margin:0&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sc_pa&quot; '+(A.pa?'checked':'')+' onchange=&quot;window._scCalc()&quot;&gt;&lt;span&gt;advances&lt;/span&gt;&lt;/label&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div style=&quot;grid-column:1/-1;font-size:12px;color:var(--dim)&quot;&gt;Your cut = pod tier − broker share · on auto the brokers ride the ladder (60 base on the 80% floor from Aug ’26, rising 65/70/80 across the $50/70/100K ex-GST bands) with you on 20 flat · untick auto and set their % by hand · your slice takes the difference · Ausloans always keeps 100 − tier · unticked costs come out of the broker’s share · ticked costs are yours.&lt;/div&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div id=&quot;scTop&quot;&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;sh&quot; style=&quot;margin:4px 0 10px&quot;&gt;&lt;h2 style=&quot;font-size:16px&quot;&gt;Each broker · their own dials&lt;/h2&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:12px;margin-bottom:12px&quot;&gt;'
-    +(A.n&gt;0?cards:'&lt;div style=&quot;font-size:12.5px;color:var(--dim)&quot;&gt;Slide sub-brokers up to add broker cards.&lt;/div&gt;')
-    +'&lt;/div&gt;'
-    +'&lt;div id=&quot;scBot&quot;&gt;&lt;/div&gt;';
-  document.getElementById(&quot;sec-scale&quot;).innerHTML=shell;
-  window._scCalc();
-}
-window._scN=function(v){
-  try{var sv=localStorage.getItem(&quot;ja_scale_v5&quot;);var o=sv?JSON.parse(sv):{};o.n=Math.max(0,Math.min(10,Math.round(parseFloat(v)||0)));localStorage.setItem(&quot;ja_scale_v5&quot;,JSON.stringify(o));}catch(e){}
-  rScale();
-};
-window._scCalc=function(){
-  function gv(id){var e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
-  var n=Math.round(gv('sc_n')),plc=Math.max(0,gv('sc_plc')),avg=Math.max(0,gv('sc_avg'));
-  function gc(id){var e=document.getElementById(id);return e&amp;&amp;e.checked?1:0;}
-  var pl=gc('sc_pl'),pe=gc('sc_pe'),pa=gc('sc_pa'),ba=gc('sc_ba');
-  var e=document.getElementById('sc_nV');if(e)e.textContent=n;
-  var Bsave=[];
-  try{var sv=localStorage.getItem(&quot;ja_scale_v5&quot;);var o0=sv?JSON.parse(sv):{};if(o0.B&amp;&amp;o0.B.length)Bsave=o0.B;}catch(e2){}
-  while(Bsave.length&lt;10)Bsave.push({spb:4,lpw:10,adv:1000});
-  var gross=0,leadTot=0,setTot=0,shortTot=0,advTot=0;
-  for(var b0=0;b0&lt;n;b0++){gross+=gv('sc_b'+b0+'_spb')*avg;}
-  var gEx=gross/1.1;
-  var rate=tierRate(gEx,nowYm());
-  var autoB=Math.max(0,rate-.20);
-  var bpEl=document.getElementById('sc_bp');
-  var bset=bpEl?(parseFloat(bpEl.value)||0)/100:autoB;
-  var bRate=ba?autoB:Math.min(rate,Math.max(0,bset));
-  var bClamped=(!ba&amp;&amp;bset&gt;rate);
-  var myRate=Math.max(0,rate-bRate);
-  if(bpEl){bpEl.disabled=!!ba;if(ba)bpEl.value=Math.round(autoB*100);}
-  for(var b=0;b&lt;n;b++){
-    var spb=gv('sc_b'+b+'_spb'),lpw=gv('sc_b'+b+'_lpw'),adv=gv('sc_b'+b+'_adv');
-    Bsave[b]={spb:spb,lpw:lpw,adv:adv};
-    var lm=lpw*4.33, sr=lm&gt;0?Math.round(spb/lm*1000)/10:0;
-    var gB=spb*avg, share=bRate*gB, lc=lm*plc, advMo=adv*4.33;
-    var ledger=share-(pl?0:lc)-(pe?0:250)-(pa?0:advMo);
-    var pay=Math.max(0,ledger), short=Math.max(0,-ledger);
-    leadTot+=lc; setTot+=spb; shortTot+=short; advTot+=advMo;
-    var t=document.getElementById('sc_b'+b+'_lpwV');if(t)t.textContent='≈'+Math.round(lm)+'/mo';
-    t=document.getElementById('sc_b'+b+'_sr');if(t){t.textContent=(lm&gt;0&amp;&amp;spb&gt;0?sr+'% conv':'·');t.style.color=sr&gt;=25?'var(--green)':(sr&gt;=8?'var(--amber)':'var(--red)');}
-    t=document.getElementById('sc_b'+b+'_out');
-    var ded='';
-    if(!pl)ded+=' · − leads '+fmtFull(Math.round(lc));
-    if(!pe)ded+=' · − $250 exp';
-    if(!pa)ded+=' · − draw '+fmtFull(advMo);
-    if(pl&amp;&amp;pe&amp;&amp;pa)ded=' · pod manager carries leads, expenses &amp; advance';
-    if(t)t.innerHTML='Earns '+Math.round(bRate*100)+'%: &lt;b style=&quot;color:var(--txt)&quot;&gt;'+fmtFull(share)+'&lt;/b&gt;/mo'+ded+'&lt;br&gt;'
-      +(ledger&gt;=0
-        ?'→ &lt;b style=&quot;color:var(--green)&quot;&gt;payout '+fmtFull(pay)+'/mo&lt;/b&gt; · total in hand ≈&lt;b style=&quot;color:var(--txt)&quot;&gt;'+fmtFull((advMo+pay)/4.33)+'/wk&lt;/b&gt; · draw + payout'
-        :'→ &lt;b style=&quot;color:var(--red)&quot;&gt;−'+fmtFull(short)+'/mo rolls forward on their ledger&lt;/b&gt; · in hand = draw '+fmtFull(adv)+'/wk only');
-  }
-  try{localStorage.setItem(&quot;ja_scale_v5&quot;,JSON.stringify({n:n,plc:plc,avg:avg,pl:pl,pe:pe,pa:pa,ba:ba,bp:(bpEl?Math.round(parseFloat(bpEl.value)||0):Math.round(bRate*100)),B:Bsave}));}catch(e3){}
-  var myCut=myRate*gross;
-  var myCosts=(pl?leadTot:0)+(pe?250*n:0)+(pa?advTot:0);
-  var myEarn=myCut-myCosts;
-  var aus=(1-rate)*gross;
-  var nxt=null;for(var t2=0;t2&lt;TIER_DEFS.length;t2++){if(gEx&lt;TIER_DEFS[t2].at&amp;&amp;TIER_DEFS[t2].r&gt;rate){nxt=TIER_DEFS[t2];break;}}
-  function wm(v){return fmtFull(v)+' &lt;span style=&quot;font-size:12px;color:var(--dim);font-weight:600&quot;&gt;/mo · ≈'+fmtFull(v/4.33)+'/wk&lt;/span&gt;';}
-  var top='&lt;div class=&quot;mc&quot; style=&quot;border-color:var(--teal);padding:18px;margin-bottom:12px&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;YOU · EARNINGS'+((pl||pe||pa)?'':' · CLEAN '+Math.round(myRate*100)+'%')+'&lt;/div&gt;'
-    +'&lt;div class=&quot;cm '+(myEarn&gt;=0?'c-pos':'c-neg')+'&quot; style=&quot;font-size:30px;font-weight:800&quot;&gt;'+wm(myEarn)+'&lt;/div&gt;'
-    +'&lt;div style=&quot;font-size:12px;color:var(--dim);margin-top:5px&quot;&gt;'+Math.round(myRate*100)+'% '+fmtFull(myCut)+(pl?' − leads '+fmtFull(Math.round(leadTot)):'')+(pe?' − expenses '+fmtFull(250*n):'')+(pa?' − advances '+fmtFull(advTot):'')+((pl||pe||pa)?'':' · no costs on your side')+' · lands in your Ausloans bank'
-    +(shortTot&gt;0?'&lt;br&gt;&lt;span style=&quot;color:var(--amber)&quot;&gt;⚠ broker ledgers rolling −'+fmtFull(shortTot)+'/mo pod-wide · rolls on their own RCTIs · confirmed with Neil&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mg mg4&quot; style=&quot;margin-bottom:12px&quot;&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Pod gross&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(gross)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+setTot+' settlements/mo · ≈'+fmtFull(gross/4.33)+'/wk&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Ausloans · '+Math.round((1-rate)*100)+'%&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(aus)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;≈'+fmtFull(aus/4.33)+'/wk&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead spend · total&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot; style=&quot;color:var(--amber)&quot;&gt;'+fmtFull(Math.round(leadTot))+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;≈'+fmtFull(leadTot/4.33)+'/wk · bought at '+fmtFull(plc)+' · '+(pl?'paid by you':'on-charged to broker shares')+'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Pod tier · sets broker cut&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot; style=&quot;color:var(--teal)&quot;&gt;'+Math.round(rate*100)+'% → '+Math.round(bRate*100)+'%&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(nxt?fmtFull((nxt.at-gEx)*1.1)+' more inc GST '+(ba?('lifts every broker to '+Math.round(Math.max(0,nxt.r-.20)*100)+'%'):('lifts your cut to '+Math.round(Math.max(0,nxt.r-bRate)*100)+'% · brokers stay '+Math.round(bRate*100)+'%')):'top tier')+' · tier basis '+fmtFull(gEx)+' ex GST · '+(ba?('you '+Math.round(myRate*100)+' flat'):('broker share set by hand'+(bClamped?' · capped at the tier':'')))+' · pooling confirmed ✓&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;';
-  e=document.getElementById('scTop');if(e)e.innerHTML=top;
-  e=document.getElementById('scBot');
-  if(e)e.innerHTML='&lt;div style=&quot;font-size:11px;color:var(--mut);line-height:1.6&quot;&gt;Your cut = pod tier − broker share (auto: brokers 60 up to 80 by band on the 80% pod floor from Aug ’26), Ausloans keeps the remainder · tick boxes decide whether leads, expenses and advances sit on the broker’s share or on you (advances you carry move through your Ausloans bank) · negative broker months roll forward on their own RCTI · structure confirmed with Neil · pod income pools for the tier, every broker keeps a separate RCTI · all figures pre GST and tax.&lt;/div&gt;';
-};
-
-// ── Scale Calc Solo · just you as the broker. Same dial language, no team. Commission via the real
-// retroactive tiers or a flat what-if %; Ausloans keeps the remainder. Draw = your Ausloans advance. ──
-function rSolo(){
-  if(!D||!D.leads)return;
-  var settled=[],totalSpend=0,paidCt=0,totalLeads=0;
-  D.leads.forEach(function(l){totalLeads++;var c0=num(l.cost)||0;totalSpend+=c0;if(c0&gt;0)paidCt++;
-    if((l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Settled&quot;)&amp;&amp;(num(l.commTotal)||0)&gt;0)settled.push(l);});
-  var sCt=settled.length,sSum=0;settled.forEach(function(l){sSum+=num(l.commTotal)||0;});
-  var avgAuto=sCt&gt;0?Math.round(sSum/sCt):2800;
-  var vel=(typeof computeVelocity===&quot;function&quot;)?computeVelocity(D.leads):null;
-  var dAuto=Math.max(1,Math.round((vel&amp;&amp;vel.settlementsPerMonth)||1));
-  var moRecvSet={};D.leads.forEach(function(l){if(l.month)moRecvSet[l.month]=1;});
-  var moRecv=Object.keys(moRecvSet).length||1;
-  var budAuto=Math.max(500,Math.round(totalSpend/moRecv));
-  var LT=['Live','SQL','MQL'];var ts={};
-  LT.forEach(function(T){
-    var pool=filterLeadsByType(D.leads,T),nL=pool.length,setC=0,spendT=0,paidT=0;
-    pool.forEach(function(l){var c0=num(l.cost)||0;if(c0&gt;0){spendT+=c0;paidT++;}if((l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Settled&quot;)&amp;&amp;(num(l.commTotal)||0)&gt;0)setC++;});
-    ts[T]={sr:nL&gt;0?Math.round(setC/nL*1000)/10:0,plc:paidT&gt;0?Math.round(spendT/paidT):0};
+// ── Scale Calc · one page. Type five numbers, read the answer. Persists to hub_scalecalc_v1. ──
+function rCalc(){
+  const host=document.getElementById('sec-calc'); if(!host) return;
+  const S=(()=&gt;{try{return JSON.parse(localStorage.getItem('hub_scalecalc_v1'))||{};}catch(e){return {};}})();
+  const v=(k,d)=&gt;S[k]!==undefined&amp;&amp;S[k]!==''?S[k]:d;
+  host.innerHTML=
+   '&lt;div class=&quot;sh&quot; style=&quot;margin-top:4px&quot;&gt;&lt;h2&gt;Scale Calc · the whole picture on one page&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;SAVES AS YOU TYPE&lt;/span&gt;&lt;/div&gt;'
+  +'&lt;div class=&quot;sc-grid&quot;&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Avg commission / deal&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_avg&quot; value=&quot;'+v('avg',2560)+'&quot; step=&quot;10&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;gross, before the split&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Your split %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_split&quot; value=&quot;'+v('split',80)+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;80 floor on digital leads from Aug 26&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Cost per lead&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_cpl&quot; value=&quot;'+v('cpl',75)+'&quot; step=&quot;5&quot;&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Conversion %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_conv&quot; value=&quot;'+v('conv',28.4)+'&quot; step=&quot;0.1&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;leads that settle · your live rate is ~28.4&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Leads per month&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_leads&quot; value=&quot;'+v('leads',20)+'&quot; step=&quot;1&quot;&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot; style=&quot;align-self:end&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_advOn&quot; '+(v('advOn',false)?'checked':'')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Pay a $/week advance&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;their wage while they build · $&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_advAmt&quot; value=&quot;'+v('advAmt',1000)+'&quot; step=&quot;50&quot; style=&quot;width:80px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/wk&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;/div&gt;'
+  +'&lt;div id=&quot;c_out&quot;&gt;&lt;/div&gt;';
+  ['c_avg','c_split','c_cpl','c_conv','c_leads','c_advOn','c_advAmt'].forEach(id=&gt;{
+    const el=document.getElementById(id);
+    el.addEventListener('input',window._clc); el.addEventListener('change',window._clc);
   });
-  ts['Blended']={sr:totalLeads&gt;0?Math.round(sCt/totalLeads*1000)/10:0,plc:paidCt&gt;0?Math.round(totalSpend/paidCt):0};
-  var A={d:dAuto,lpw:20,sr:(ts['Live'].sr||10),plc:(ts['Live'].plc||300),bud:budAuto,avg:avgAuto,oh:250,adv:1000,pct:70,shareMode:'tier',t:'Live',m:'deals',lt:'bud'};
-  try{var sv=localStorage.getItem(&quot;ja_solo_v1&quot;);if(sv){var o=JSON.parse(sv);for(var k in A){if(o[k]!=null)A[k]=o[k];}}}catch(e){}
-  if(!ts[A.t])A.t='Blended';
-  window._soLive={ts:ts,t:A.t,m:A.m,shareMode:A.shareMode,lt:A.lt};
-  function sl(id,lbl,min,max,step,v,h){var hh=h||'window._soCalc()';return '&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;'+lbl+' &lt;b id=&quot;'+id+'V&quot; style=&quot;font-weight:600;color:var(--dim)&quot;&gt;&lt;/b&gt;&lt;/span&gt;&lt;div style=&quot;display:flex;gap:8px;align-items:center&quot;&gt;&lt;input type=&quot;range&quot; id=&quot;'+id+'R&quot; min=&quot;'+min+'&quot; max=&quot;'+max+'&quot; step=&quot;'+step+'&quot; value=&quot;'+v+'&quot; style=&quot;flex:1;min-width:0&quot; oninput=&quot;document.getElementById(\''+id+'\').value=this.value;'+hh+'&quot;&gt;&lt;input type=&quot;number&quot; id=&quot;'+id+'&quot; value=&quot;'+v+'&quot; style=&quot;width:76px;flex:0 0 auto&quot; oninput=&quot;var r=document.getElementById(\''+id+'R\');if(r)r.value=this.value;'+hh+'&quot;&gt;&lt;/div&gt;&lt;/label&gt;';}
-  function nm(id,lbl,v,step){return '&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;'+lbl+'&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;'+id+'&quot;'+(step?' step=&quot;'+step+'&quot;':'')+' value=&quot;'+v+'&quot; oninput=&quot;window._soCalc()&quot;&gt;&lt;/label&gt;';}
-  var modeHint=A.m==='leads'?'You set the leads you buy per week · it works out your settlements at the success rate.'
-    :A.m==='implied'?'You set both deals and weekly leads · it works out the conversion rate you’d need.'
-    :'You set your deals per month · it works out the leads that takes at the success rate.';
-  var shell='&lt;div class=&quot;sh&quot; style=&quot;margin-top:4px&quot;&gt;&lt;h2&gt;Scale Calc Solo · just you&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;WHAT IF · SAVES AS YOU GO&lt;/span&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot; style=&quot;border-color:var(--teal);padding:18px;margin-bottom:12px&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;YOUR NET · SOLO BOOK&lt;/div&gt;'
-    +'&lt;div id=&quot;soHeroNet&quot; class=&quot;cm&quot; style=&quot;font-size:33px;font-weight:800;line-height:1.15&quot;&gt;·&lt;/div&gt;'
-    +'&lt;div id=&quot;soHeroSub&quot; style=&quot;font-size:12.5px;color:var(--dim);margin-top:3px&quot;&gt;&lt;/div&gt;'
-    +'&lt;div id=&quot;soHeroPills&quot; style=&quot;margin-top:10px&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;sc-grid&quot; style=&quot;margin-bottom:12px&quot;&gt;'
-    +'&lt;div style=&quot;grid-column:1/-1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--dim)&quot;&gt;Leads:'
-      +['Live','SQL','MQL','Blended'].map(function(T){return ' &lt;button class=&quot;filter-btn'+(A.t===T?' on':'')+'&quot; onclick=&quot;window._soType(\''+T+'\')&quot;&gt;'+T+'&lt;/button&gt;';}).join('')
-      +'&lt;span style=&quot;width:14px&quot;&gt;&lt;/span&gt;Plan from:'+[['deals','Set deals'],['leads','Set leads'],['implied','Find the rate']].map(function(M){return ' &lt;button class=&quot;filter-btn'+(A.m===M[0]?' on':'')+'&quot; onclick=&quot;window._soMode(\''+M[0]+'\')&quot;&gt;'+M[1]+'&lt;/button&gt;';}).join('')+'&lt;/div&gt;'
-    +'&lt;div style=&quot;grid-column:1/-1;font-size:11.5px;color:var(--mut);margin:-4px 0 0&quot;&gt;'+modeHint+'&lt;/div&gt;'
-    +(A.m!=='leads'?sl('so_d','Your deals / mo',0,40,1,A.d)
-      :'&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;Your deals / mo &lt;span style=&quot;color:var(--teal);font-weight:600&quot;&gt;● from leads × rate&lt;/span&gt;&lt;/span&gt;&lt;div style=&quot;font-size:19px;font-weight:700;color:var(--txt);padding:6px 0&quot;&gt;&lt;span id=&quot;so_dOut&quot;&gt;·&lt;/span&gt;&lt;/div&gt;&lt;/label&gt;')
-    +(A.m!=='deals'?sl('so_lpw','Leads bought / wk ⇄ budget',0,80,1,A.lpw,&quot;window._soTouch('lpw')&quot;):'')
-    +(A.m!=='implied'?nm('so_sr','Success rate · '+A.t+' %',A.sr,'0.1')
-      :'&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;Success rate · implied &lt;span style=&quot;color:var(--amber);font-weight:600&quot;&gt;● output&lt;/span&gt;&lt;/span&gt;&lt;div style=&quot;font-size:19px;font-weight:700;color:var(--txt);padding:6px 0&quot;&gt;&lt;span id=&quot;so_srOut&quot;&gt;·&lt;/span&gt;&lt;/div&gt;&lt;/label&gt;')
-    +nm('so_plc','Cost per lead $',Math.round(A.plc))
-    +(A.m!=='deals'
-      ?'&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;Lead budget / mo $ &lt;span style=&quot;color:var(--teal);font-weight:600&quot;&gt;⇄ leads&lt;/span&gt;&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;so_bud&quot; value=&quot;'+Math.round(A.bud)+'&quot; oninput=&quot;window._soTouch(\'bud\')&quot;&gt;&lt;/label&gt;'
-      :'&lt;label class=&quot;sc-f&quot;&gt;&lt;span&gt;Lead spend / mo &lt;span style=&quot;color:var(--teal);font-weight:600&quot;&gt;● from your deals&lt;/span&gt;&lt;/span&gt;&lt;div style=&quot;font-size:19px;font-weight:700;color:var(--txt);padding:6px 0&quot;&gt;&lt;span id=&quot;so_budOut&quot;&gt;·&lt;/span&gt;&lt;/div&gt;&lt;/label&gt;')
-    +'&lt;div style=&quot;grid-column:1/-1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--dim)&quot;&gt;Commission:'
-      +' &lt;button class=&quot;filter-btn'+(A.shareMode==='tier'?' on':'')+'&quot; onclick=&quot;window._soShare(\'tier\')&quot;&gt;Auto tiers (real)&lt;/button&gt;'
-      +' &lt;button class=&quot;filter-btn'+(A.shareMode==='flat'?' on':'')+'&quot; onclick=&quot;window._soShare(\'flat\')&quot;&gt;Flat %&lt;/button&gt;&lt;/div&gt;'
-    +(A.shareMode==='flat'?nm('so_pct','My brokerage share (%) · Ausloans keeps the rest',A.pct,'1'):'')
-    +nm('so_avg','Avg gross commission / deal $',Math.round(A.avg))
-    +nm('so_oh','Overheads / mo $',Math.round(A.oh))
-    +sl('so_adv','My advance draw / wk',0,2000,50,A.adv)
-    +'&lt;div style=&quot;grid-column:1/-1;font-size:12px;color:var(--dim)&quot; id=&quot;soLeadSum&quot;&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div id=&quot;soOut&quot;&gt;&lt;/div&gt;';
-  document.getElementById(&quot;sec-solo&quot;).innerHTML=shell;
-  window._soCalc();
+  window._clc();
 }
-window._soCalc=function(){
-  function gv(id){var e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
-  var L=window._soLive||{};var m=L.m||'deals',smode=L.shareMode||'tier',t=L.t||'Live';
-  var d=gv('so_d'),lpw=gv('so_lpw'),sr=Math.max(0,gv('so_sr')),plc=Math.max(0,gv('so_plc')),bud=Math.max(0,gv('so_bud'));
-  var avg=Math.max(0,gv('so_avg')),oh=Math.max(0,gv('so_oh')),adv=gv('so_adv'),pct=Math.max(0,Math.min(100,gv('so_pct')||70));
-  var lt=L.lt||'bud';
-  if(plc&gt;0&amp;&amp;m!=='deals'){
-    if(lt==='bud'){lpw=bud/(4.33*plc);var eS=document.getElementById('so_lpw');if(eS)eS.value=Math.round(lpw*10)/10;var eS2=document.getElementById('so_lpwR');if(eS2)eS2.value=Math.round(lpw*10)/10;}
-    else{bud=lpw*4.33*plc;var eB=document.getElementById('so_bud');if(eB&amp;&amp;document.activeElement!==eB)eB.value=Math.round(bud);}
+window._clc=function(){
+  const g=id=&gt;{const e=document.getElementById(id); if(!e)return 0; const n=parseFloat(e.value); return isFinite(n)?n:0;};
+  const avg=g('c_avg'), split=g('c_split')/100, cpl=g('c_cpl'), conv=g('c_conv')/100, leads=g('c_leads');
+  const advOn=document.getElementById('c_advOn')&amp;&amp;document.getElementById('c_advOn').checked;
+  const advWk=g('c_advAmt');
+  try{localStorage.setItem('hub_scalecalc_v1',JSON.stringify({avg:avg,split:split*100,cpl:cpl,conv:conv*100,leads:leads,advOn:advOn,advAmt:advWk}));}catch(e){}
+  const host=document.getElementById('c_out'); if(!host) return;
+  const kept=avg*split;
+  const settles=leads*conv;
+  const spend=leads*cpl;
+  const gross=settles*kept;
+  const advM=advOn?advWk*52/12:0;
+  const profitDeal=conv&gt;0?kept-cpl/conv:null;
+  const profitM=gross-spend-advM;
+  const profitW=profitM*12/52;
+  const beLeads=kept&gt;0?cpl/kept*100:null;
+  const beAll=(kept&gt;0&amp;&amp;leads&gt;0)?((spend+advM)/(leads*kept))*100:null;
+  const f=n=&gt;'$'+Math.round(n).toLocaleString();
+  const f2=n=&gt;n==null?'·':n.toLocaleString(undefined,{maximumFractionDigits:1});
+  const col=n=&gt;n&gt;=0?'var(--teal)':'#ff6b81';
+  const tile=(k,val,sub,c)=&gt;'&lt;div style=&quot;background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:12px 14px&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600&quot;&gt;'+k+'&lt;/div&gt;&lt;div style=&quot;font-size:21px;font-weight:700;margin-top:3px;color:'+(c||'var(--txt)')+'&quot;&gt;'+val+'&lt;/div&gt;'+(sub?'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;'+sub+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+  let h='&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:13px&quot;&gt;';
+  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'you keep '+f(kept)+' · leads cost '+(conv&gt;0?f(cpl/conv):'·')+' per settle',profitDeal!=null?col(profitDeal):null);
+  h+=tile('Settlements / month',f2(settles),leads+' leads × '+f2(conv*100)+'%');
+  h+=tile('Lead spend / month',f(spend),leads+' × $'+cpl);
+  h+=tile('Profit / month',f(profitM),advOn?'after leads + the advance':'after lead costs',col(profitM));
+  h+=tile('Profit / week',f(profitW),null,col(profitW));
+  h+='&lt;/div&gt;';
+  if(advOn&amp;&amp;profitM&lt;0){
+    h+='&lt;div style=&quot;background:rgba(255,107,129,.09);border:1px solid #ff6b81;border-radius:11px;padding:11px 14px;margin-bottom:13px;font-size:12.5px;line-height:1.5;color:var(--dim)&quot;&gt;&lt;b style=&quot;color:#ff6b81&quot;&gt;Running at a deficit · '+f(-profitM)+'/month ('+f(-profitW)+'/week).&lt;/b&gt; The '+f(advWk)+'/wk advance ('+f(advM)+'/mo) is bigger than what the deals bring in at this conversion. It closes at the break-even line below.&lt;/div&gt;';
   }
-  if(m==='leads'){d=lpw*4.33*(sr/100);}
-  else if(m==='implied'){sr=lpw&gt;0?Math.round(d/(lpw*4.33)*1000)/10:0;}
-  if(plc&gt;0&amp;&amp;m==='deals'&amp;&amp;sr&gt;0){bud=(d/(sr/100))*plc;}
-  var _dEl=!!document.getElementById('so_d'),_lEl=!!document.getElementById('so_lpw'),_pEl=!!document.getElementById('so_pct');
-  try{localStorage.setItem(&quot;ja_solo_v1&quot;,JSON.stringify({d:(_dEl?d:undefined)!==undefined&amp;&amp;_dEl?d:10,lpw:(_lEl?lpw:20),sr:sr,plc:plc,bud:bud,avg:avg,oh:oh,adv:adv,pct:(_pEl?pct:70),shareMode:smode,t:t,m:m,lt:lt}));}catch(e){}
-  var e=document.getElementById('so_lpwV');if(e)e.textContent='≈'+Math.round(lpw*4.33)+'/mo';
-  e=document.getElementById('so_budOut');if(e)e.textContent=fmtFull(Math.round(bud))+' /mo';
-  e=document.getElementById('so_dOut');if(e)e.textContent=(Math.round(d*10)/10)+' deals';
-  e=document.getElementById('so_srOut');if(e)e.textContent=sr+'%';
-  var d1=function(x){return Math.round(x*10)/10;};
-  var cps=sr&gt;0&amp;&amp;plc&gt;0?plc/(sr/100):0;
-  function econ(dd){
-    var f=1,capped=false;
-    var dA=dd*f,gross=dA*avg;
-    var rate=smode==='flat'?pct/100:Math.max(.80,tierRate(gross/1.1));
-    var share=gross*rate,spend=plc&gt;0?dA*cps:0;
-    return{f:f,capped:capped,dA:dA,gross:gross,rate:rate,share:share,spend:spend,net:share-spend-oh};
-  }
-  var E=econ(d);
-  var advMo=adv*4.33,ledger=E.net-advMo;
-  var perDeal=avg*E.rate-(plc&gt;0?cps:0);
-  var payDeals=perDeal&gt;0?Math.ceil((oh+advMo)/perDeal):null;
-  var leadsWk=sr&gt;0&amp;&amp;plc&gt;0?(E.dA/(sr/100))/4.33:0;
-  var nxt=null;if(smode==='tier'){for(var i2=0;i2&lt;TIER_DEFS.length;i2++){if(E.gross/1.1&lt;TIER_DEFS[i2].at&amp;&amp;TIER_DEFS[i2].r&gt;.80){nxt=TIER_DEFS[i2];break;}}}
-  e=document.getElementById('soHeroNet');
-  if(e){e.innerHTML=fmtFull(E.net)+'&lt;span style=&quot;font-size:15px;color:var(--dim);font-weight:600&quot;&gt; /mo · ≈'+fmtFull(E.net/4.33)+'/wk&lt;/span&gt;';e.className='cm '+(E.net&gt;=0?'c-pos':'c-neg');}
-  e=document.getElementById('soHeroSub');
-  if(e)e.textContent=d1(E.dA)+' deals/mo · you keep '+Math.round(E.rate*100)+'% · Ausloans '+Math.round((1-E.rate)*100)+'% · '+fmtFull(E.gross)+' gross written · pre GST/tax';
-  var pills='';function pill(tx,c,b){pills+='&lt;span class=&quot;sc-pill&quot; style=&quot;color:'+c+';background:'+b+'&quot;&gt;'+tx+'&lt;/span&gt;';}
-  if(adv&gt;0){if(ledger&gt;=0)pill('✓ RCTI clears · payout ≈'+fmtFull(ledger)+'/mo on top of the draw','var(--green)','rgba(61,220,151,.12)');
-    else pill('⚠ RCTI −'+fmtFull(-ledger)+'/mo after your '+fmtFull(adv)+'/wk draw · rolls forward','var(--amber)','rgba(255,180,84,.12)');}
-  else if(E.net&lt;0)pill('⚠ book runs negative','var(--red)','rgba(255,107,129,.12)');
-  if(!pills)pill('no draw · net is straight cash','var(--dim)','rgba(255,255,255,.05)');
-  e=document.getElementById('soHeroPills');if(e)e.innerHTML=pills;
-  e=document.getElementById('soLeadSum');
-  if(e)e.innerHTML=sr&gt;0?('&lt;b style=&quot;color:var(--txt)&quot;&gt;'+t+'&lt;/b&gt; · '+sr+'% conv'+(plc&gt;0?' · '+fmtFull(plc)+'/lead · ≈'+fmtFull(Math.round(cps))+'/settlement · needs ≈'+d1(leadsWk)+' leads/wk · spend ≈'+fmtFull(E.spend)+'/mo'+(m==='deals'?' · from your deals':' ⇄ budget'):' · free leads')):'Set a success rate to size the lead engine.';
-  var mx=Math.max(E.gross,1);
-  function wr(lbl,v,col,neg){var w=Math.max(0.5,Math.abs(v)/mx*100);
-    return '&lt;div class=&quot;sc-wr&quot;&gt;&lt;div class=&quot;sc-wl&quot;&gt;'+lbl+'&lt;/div&gt;&lt;div class=&quot;sc-wb&quot;&gt;&lt;i style=&quot;width:'+w+'%;background:'+col+'&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;sc-wv&quot; style=&quot;color:'+col+'&quot;&gt;'+(neg?'−':'')+fmtFull(Math.abs(v))+'&lt;div style=&quot;font-size:10px;color:var(--mut);font-weight:500&quot;&gt;'+(neg?'−':'')+fmtFull(Math.abs(v)/4.33)+'/wk&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';}
-  var out='&lt;div class=&quot;mc&quot; style=&quot;margin-bottom:12px;padding:16px&quot;&gt;'
-    +wr('Gross written',E.gross,'var(--blue)',false)
-    +wr('Ausloans · '+Math.round((1-E.rate)*100)+'%',-(E.gross-E.share),'var(--dim)',true)
-    +wr('Your share · '+Math.round(E.rate*100)+'%',E.share,'var(--teal)',false)
-    +(E.spend&gt;0?wr('Leads',-E.spend,'var(--amber)',true):'')
-    +wr('Overheads',-oh,'var(--red)',true)
-    +wr('Net earned',E.net,E.net&gt;=0?'var(--green)':'var(--red)',E.net&lt;0)
-    +'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:6px&quot;&gt;'+(adv&gt;0?('Draw '+fmtFull(advMo)+'/mo ('+fmtFull(adv)+'/wk) → RCTI '+(ledger&gt;=0?'pays out &lt;b&gt;'+fmtFull(ledger)+'&lt;/b&gt;/mo on top · in hand = '+fmtFull(adv)+' draw + '+fmtFull(ledger/4.33)+' payout = &lt;b&gt;'+fmtFull(E.net/4.33)+'/wk&lt;/b&gt; · the draw is early payment of net, not a cost':'runs &lt;b&gt;−'+fmtFull(-ledger)+'&lt;/b&gt;/mo · rolls forward · in hand = draw only')):'No draw · earned = paid.')+'&lt;/div&gt;'
-    +(smode==='tier'?(nxt
-      ?'&lt;div style=&quot;margin:12px 0 3px;font-size:12px;color:var(--dim)&quot;&gt;Tier · &lt;b style=&quot;color:var(--teal)&quot;&gt;'+Math.round(E.rate*100)+'%&lt;/b&gt; · 80 floor · digital · Aug+ on '+fmtFull(E.gross/1.1)+' ex GST · '+fmtFull((nxt.at-E.gross/1.1)*1.1)+' more inc GST hits '+Math.round(nxt.r*100)+'% · +'+fmtFull(E.gross*(nxt.r-Math.max(.80,tierRate(E.gross/1.1))))+' instantly, more as you write&lt;/div&gt;&lt;div style=&quot;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden&quot;&gt;&lt;i style=&quot;display:block;height:100%;width:'+Math.min(100,(E.gross/1.1)/nxt.at*100)+'%;background:var(--teal)&quot;&gt;&lt;/i&gt;&lt;/div&gt;'
-      :'&lt;div style=&quot;margin:12px 0 3px;font-size:12px;color:var(--dim)&quot;&gt;Tier · &lt;b style=&quot;color:var(--teal)&quot;&gt;100%&lt;/b&gt; · the lot is yours (Platinum rules apply)&lt;/div&gt;'):'')
-    +'&lt;/div&gt;'
-    +'&lt;div class=&quot;mg mg4&quot; style=&quot;margin-bottom:12px&quot;&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Per settled deal&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(perDeal&gt;=0?'c-pos':'c-neg')+'&quot;&gt;'+fmtFull(Math.round(perDeal))+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;your '+Math.round(E.rate*100)+'% share'+(cps&gt;0?' − ≈'+fmtFull(Math.round(cps))+' lead cost':'')+'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals for payout&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(payDeals!=null?payDeals+' / mo':'·')+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(payDeals!=null?'covers overheads + your draw · ≈'+d1(payDeals/4.33)+'/wk':'per-deal ≤ $0 at these settings')+'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Leads needed&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(leadsWk&gt;0?Math.ceil(leadsWk)+' /wk':'·')+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(sr&gt;0?('at '+sr+'% conversion'):'set a rate')+'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead spend / mo&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot; style=&quot;color:var(--amber)&quot;&gt;'+fmtFull(E.spend)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(plc&gt;0?(m==='deals'?'what your deal target costs':'⇄ locked to leads bought'):'free leads')+'&lt;/div&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;';
-  var W=1000,H=300,Lm=64,Rm=18,T=20,B=34;
-  var pts=[];for(var kk=0;kk&lt;=10;kk++)pts.push(econ(kk*4).net);
-  var mn=Math.min(0,Math.min.apply(null,pts)),mxv=Math.max.apply(null,pts.concat([1000]));
-  function X(k){return Lm+(k/10)*(W-Lm-Rm);}
-  function Y(v){return (H-B)-((v-mn)/(mxv-mn||1))*(H-T-B);}
-  var line='',dots='',lbls='';var curK=Math.max(0,Math.min(10,Math.round(d/4)));
-  pts.forEach(function(v,k){
-    line+=(k===0?'M':'L')+X(k)+' '+Y(v)+' ';
-    var cur=k===curK;
-    dots+='&lt;circle cx=&quot;'+X(k)+'&quot; cy=&quot;'+Y(v)+'&quot; r=&quot;'+(cur?7:4.5)+'&quot; fill=&quot;'+(cur?'var(--amber)':'var(--teal)')+'&quot; stroke=&quot;#0d0f14&quot; stroke-width=&quot;2&quot;/&gt;';
-    lbls+='&lt;text x=&quot;'+X(k)+'&quot; y=&quot;'+(Y(v)-11)+'&quot; fill=&quot;'+(cur?'var(--amber)':'var(--dim)')+'&quot; font-size=&quot;10.5&quot; text-anchor=&quot;middle&quot;'+(cur?' font-weight=&quot;700&quot;':'')+'&gt;'+fmt(v)+'&lt;/text&gt;'
-      +'&lt;text x=&quot;'+X(k)+'&quot; y=&quot;'+(H-11)+'&quot; fill=&quot;var(--mut)&quot; font-size=&quot;11&quot; text-anchor=&quot;middle&quot;&gt;'+(k*4)+'&lt;/text&gt;';
-  });
-  var zero=(mn&lt;0)?'&lt;line x1=&quot;'+Lm+'&quot; y1=&quot;'+Y(0)+'&quot; x2=&quot;'+(W-Rm)+'&quot; y2=&quot;'+Y(0)+'&quot; stroke=&quot;var(--bdr2)&quot; stroke-width=&quot;1&quot; stroke-dasharray=&quot;3 3&quot;/&gt;':'';
-  out+='&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;Your net / mo vs deals written &lt;span class=&quot;hist-badge&quot;&gt;'+(smode==='flat'?('FLAT '+Math.round(pct)+'%'):'REAL TIERS · watch the jumps')+'&lt;/span&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;font-size:10.5px;color:var(--mut);margin:2px 0 4px&quot;&gt;monthly · ÷4.33 for weekly · leads ⇄ budget locked&lt;/div&gt;'
-    +'&lt;svg viewBox=&quot;0 0 '+W+' '+H+'&quot; style=&quot;width:100%;height:250px&quot;&gt;'+zero
-    +'&lt;path d=&quot;'+line+'&quot; fill=&quot;none&quot; stroke=&quot;var(--teal)&quot; stroke-width=&quot;2.5&quot;/&gt;'+dots+lbls
-    +'&lt;text x=&quot;'+(W/2)+'&quot; y=&quot;'+(H-0.5)+'&quot; fill=&quot;var(--mut)&quot; font-size=&quot;10&quot; text-anchor=&quot;middle&quot;&gt;deals / mo&lt;/text&gt;&lt;/svg&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:10px;line-height:1.6&quot;&gt;Solo view · just your book · commission via the real retroactive tiers · assessed on ex-GST commission ÷1.1 · or a flat what-if % · Ausloans keeps the rest · the draw is your Ausloans advance, recouped off your RCTI; negative months roll forward · lead-type buttons load that type’s real numbers, then every field is yours and it saves · pre GST and tax · &lt;b style=&quot;color:var(--dim)&quot;&gt;RCTI reality, Apr to Jun reconciled:&lt;/b&gt; the invoice pays 70% on its own claimed commission (not your sheet’s total), carries ≈$100/mo of fees beyond a $250 overhead, and strips claimed insurance until received (−$2.2K → −$0.6K/mo, shrinking) · so Balance to Pay lands under this net by roughly that much while claims mature · &lt;b style=&quot;color:var(--dim)&quot;&gt;Neil deal:&lt;/b&gt; 80% floor on digital lead settlements from Aug 2026 · tiers above still apply · 3 month review · referrals &amp; repeat clients stay on the standard ladder.&lt;/div&gt;';
-  e=document.getElementById('soOut');if(e)e.innerHTML=out;
-};
-window._soType=function(t){
-  try{var sv=localStorage.getItem(&quot;ja_solo_v1&quot;);var o=sv?JSON.parse(sv):{};o.t=t;
-    var L=window._soLive;var s=L&amp;&amp;L.ts&amp;&amp;L.ts[t];
-    if(s){o.sr=s.sr;o.plc=s.plc;}
-    localStorage.setItem(&quot;ja_solo_v1&quot;,JSON.stringify(o));}catch(e){}
-  rSolo();
-};
-window._soMode=function(m){
-  try{var sv=localStorage.getItem(&quot;ja_solo_v1&quot;);var o=sv?JSON.parse(sv):{};o.m=m;localStorage.setItem(&quot;ja_solo_v1&quot;,JSON.stringify(o));}catch(e){}
-  rSolo();
-};
-window._soShare=function(sm){
-  try{var sv=localStorage.getItem(&quot;ja_solo_v1&quot;);var o=sv?JSON.parse(sv):{};o.shareMode=sm;localStorage.setItem(&quot;ja_solo_v1&quot;,JSON.stringify(o));}catch(e){}
-  rSolo();
-};
-window._soTouch=function(w){
-  var L=window._soLive||{};L.lt=w;window._soLive=L;
-  try{var sv=localStorage.getItem(&quot;ja_solo_v1&quot;);var o=sv?JSON.parse(sv):{};o.lt=w;localStorage.setItem(&quot;ja_solo_v1&quot;,JSON.stringify(o));}catch(e){}
-  window._soCalc();
+  const cur=conv*100;
+  const beRow=(label,be)=&gt;{
+    if(be==null) return '';
+    const okv=cur&gt;=be, gap=cur-be;
+    return '&lt;div class=&quot;sc-wr&quot;&gt;&lt;span class=&quot;sc-wl&quot;&gt;'+label+'&lt;/span&gt;&lt;span class=&quot;sc-wb&quot;&gt;&lt;i style=&quot;width:'+Math.min(100,be*2.5)+'%;background:'+(okv?'var(--teal)':'#ffb454')+';opacity:.75&quot;&gt;&lt;/i&gt;&lt;/span&gt;&lt;span class=&quot;sc-wv&quot; style=&quot;color:'+(okv?'var(--teal)':'#ff6b81')+'&quot;&gt;'+f2(be)+'%&lt;/span&gt;&lt;span style=&quot;font-size:11px;color:'+(okv?'var(--teal)':'#ff6b81')+';width:120px&quot;&gt;'+(okv?'✓ you clear it by '+f2(gap)+' pts':'✗ short by '+f2(-gap)+' pts')+'&lt;/span&gt;&lt;/div&gt;';
+  };
+  h+='&lt;div class=&quot;sc-wf&quot;&gt;&lt;div style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:6px&quot;&gt;Break-even conversion · you convert at '+f2(cur)+'%&lt;/div&gt;';
+  h+=beRow('pays for the leads',beLeads);
+  if(advOn) h+=beRow('leads + the advance',beAll);
+  h+='&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:8px;line-height:1.5&quot;&gt;Below the line, every month digs the hole deeper. Above it, each extra point of conversion is roughly '+(kept&gt;0?f(leads*kept/100):'·')+'/month of profit.&lt;/div&gt;&lt;/div&gt;';
+  host.innerHTML=h;
 };
 // ── Commission tiers · RETROACTIVE (per Neil, phone Jul 2026): hit a tier and that % applies to the
 // WHOLE month's commission, not just the slice above the line. Tiers reset every calendar month. ──

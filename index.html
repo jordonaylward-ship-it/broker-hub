@@ -3476,6 +3476,23 @@ load(); render();
   .rowhead input{padding:7px 10px;border-radius:9px}
   .pairrow{margin-top:9px;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:26px}
   .pairrow .chip{cursor:pointer}
+  .jrow{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;margin-bottom:6px;cursor:pointer;background:var(--card);transition:border-color .12s}
+  .jrow:hover{border-color:var(--primary-line)}
+  .jrow.onrow{border-color:var(--primary);background:var(--primary-soft)}
+  .jnum{flex:0 0 26px;height:26px;border-radius:50%;background:var(--primary-soft);border:1px solid var(--primary-line);color:var(--primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .jrow.onrow .jnum{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .jmain{flex:1;min-width:0}
+  .jname{font-size:13px;font-weight:600;color:var(--ink)}
+  .jsnip{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .jrow.onrow .jsnip{color:var(--ink);opacity:.75}
+  .jch{display:flex;gap:4px;flex-shrink:0}
+  .jc{font-size:10px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#FEFDFB;cursor:pointer}
+  .jc.has{border-color:var(--info-line);background:var(--info-soft);color:var(--info)}
+  .jc.has.sms{border-color:var(--primary-line);background:var(--primary-soft);color:var(--primary)}
+  .jc.has.crm{border-color:var(--butter-line);background:var(--butter-soft);color:var(--butter-ink)}
+  .jc.sel{outline:2px solid var(--primary);outline-offset:1px}
+  .jc.none{opacity:.4;cursor:default;text-decoration:line-through}
+  .jsec{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:12px 2px 6px}
   .chbadge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;
     border:1px solid var(--line);background:#FEFDFB;color:var(--muted);white-space:nowrap}
   .chbadge.email{background:var(--info-soft);border-color:var(--info-line);color:var(--info)}
@@ -3575,11 +3592,9 @@ load(); render();
     &lt;div class=&quot;card&quot;&gt;
       &lt;h2&gt;Fill and send&lt;/h2&gt;
       &lt;p class=&quot;sub&quot;&gt;Pick a template, fill the blanks, copy. Works on any computer, no hotkeys needed here.&lt;/p&gt;
-      &lt;label&gt;Channel&lt;/label&gt;
-      &lt;div class=&quot;chips&quot; id=&quot;qkChan&quot; role=&quot;group&quot; aria-label=&quot;Filter by channel&quot; style=&quot;margin-bottom:14px&quot;&gt;&lt;/div&gt;
-      &lt;label for=&quot;qkSelect&quot;&gt;Template&lt;/label&gt;
-      &lt;select id=&quot;qkSelect&quot; aria-label=&quot;Choose a template&quot;&gt;&lt;/select&gt;
-      &lt;div id=&quot;qkPairs&quot; class=&quot;pairrow&quot;&gt;&lt;/div&gt;
+      &lt;label&gt;The deal, start to finish · pick the stage, then the channel&lt;/label&gt;
+      &lt;div id=&quot;qkJourney&quot;&gt;&lt;/div&gt;
+      &lt;select id=&quot;qkSelect&quot; aria-label=&quot;Choose a template&quot; style=&quot;display:none&quot;&gt;&lt;/select&gt;
       &lt;div class=&quot;qgrid&quot; style=&quot;margin-top:14px&quot;&gt;
         &lt;div&gt;
           &lt;label&gt;The blanks&lt;/label&gt;
@@ -3952,39 +3967,73 @@ function visibleQuick(){
   const v = state.templates.filter(inChannel);
   return v.length ? v : state.templates;
 }
-function renderQuickChan(){
-  const el = $('#qkChan'); if(!el) return;
-  el.innerHTML = CH_LIST.map(([v,l]) =&gt; {
-    const n = v === 'All' ? state.templates.length : state.templates.filter(t =&gt; chOf(t) === v).length;
-    return '&lt;button class=&quot;chip plain' + (v === chFilter ? ' on' : '') + '&quot; data-ch=&quot;' + v + '&quot;&gt;' +
-      esc(l) + ' &lt;span style=&quot;opacity:.55;font-weight:600&quot;&gt;' + n + '&lt;/span&gt;&lt;/button&gt;';
-  }).join('');
+/* ── the deal journey · stages in the order they happen on a real file ── */
+const JOURNEY=[
+ ['intro','First contact'],['fu1','Follow up 1'],['fu2','Follow up 2'],['fu3','Follow up 3'],
+ ['fu4','Closing off'],['approved','Approved · final form'],['submitted','Submitted'],
+ ['preapproval','Pre approval'],['insurance','Insurance · 2 options'],['suncorp','Suncorp quotes'],
+ ['settlement','Compliance docs'],['coc','COC forward'],['remittance','Dealer remittance'],
+ ['settled','Settled 🎉'],['decline','Decline · conduct']
+];
+function tplFor(grp,ch){ return state.templates.find(t=&gt;t.grp===grp&amp;&amp;chOf(t)===ch)||null; }
+function snip(t){ if(!t) return ''; const b=filledBodyOf(t); return b.replace(/\s+/g,' ').trim().slice(0,110); }
+function filledBodyOf(t){
+  const fv=fills[t.id]||{};
+  return t.body.replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g,(m,tok)=&gt;(fv[tok]||'').trim()||m);
 }
-function renderQuickPairs(){
-  const el = $('#qkPairs'); if(!el) return;
-  const t = quickTemplate();
-  const sibs = siblingsOf(t);
-  if(!t){ el.innerHTML = ''; return; }
-  if(!sibs.length){
-    el.innerHTML = '&lt;span&gt;' + (t.grp ? 'No other channel saved for this one yet.' : 'This one is a standalone, it has no paired message.') + '&lt;/span&gt;';
+function renderJourney(){
+  const host=$('#qkJourney'); if(!host) return;
+  const cur=quickTemplate();
+  const curGrp=cur?cur.grp:'';
+  let h='';
+  JOURNEY.forEach(([g,label],i)=&gt;{
+    const e=tplFor(g,'email'), sm=tplFor(g,'sms'), cr=tplFor(g,'crm');
+    if(!e&amp;&amp;!sm&amp;&amp;!cr) return;
+    const on=curGrp===g;
+    const shown=on&amp;&amp;cur?cur:(e||sm||cr);
+    const chip=(t,cls,txt)=&gt;t
+      ? '&lt;span class=&quot;jc has '+cls+(on&amp;&amp;cur&amp;&amp;cur.id===t.id?' sel':'')+'&quot; data-pick=&quot;'+t.id+'&quot; title=&quot;'+esc(t.name)+'&quot;&gt;'+txt+'&lt;/span&gt;'
+      : '&lt;span class=&quot;jc none&quot; title=&quot;no '+txt+' saved for this stage yet · add one in the Library with stage '+g+'&quot;&gt;'+txt+'&lt;/span&gt;';
+    h+='&lt;div class=&quot;jrow'+(on?' onrow':'')+'&quot; data-grp=&quot;'+g+'&quot;&gt;'
+      +'&lt;span class=&quot;jnum&quot;&gt;'+(i&lt;14?i+1:'!')+'&lt;/span&gt;'
+      +'&lt;span class=&quot;jmain&quot;&gt;&lt;span class=&quot;jname&quot;&gt;'+label+'&lt;/span&gt;'
+      +'&lt;span class=&quot;jsnip&quot;&gt;'+esc(snip(shown))+'&lt;/span&gt;&lt;/span&gt;'
+      +'&lt;span class=&quot;jch&quot;&gt;'+chip(e,'','Email')+chip(sm,'sms','Text')+chip(cr,'crm','CRM')+'&lt;/span&gt;'
+      +'&lt;/div&gt;';
+  });
+  const solo=state.templates.filter(t=&gt;!t.grp);
+  if(solo.length){
+    h+='&lt;div class=&quot;jsec&quot;&gt;One-offs · not part of the journey&lt;/div&gt;';
+    solo.forEach(t=&gt;{
+      const on=cur&amp;&amp;cur.id===t.id;
+      h+='&lt;div class=&quot;jrow'+(on?' onrow':'')+'&quot; data-pick=&quot;'+t.id+'&quot;&gt;'
+        +'&lt;span class=&quot;jnum&quot;&gt;·&lt;/span&gt;'
+        +'&lt;span class=&quot;jmain&quot;&gt;&lt;span class=&quot;jname&quot;&gt;'+esc(t.name)+'&lt;/span&gt;'
+        +'&lt;span class=&quot;jsnip&quot;&gt;'+esc(snip(t))+'&lt;/span&gt;&lt;/span&gt;'
+        +'&lt;span class=&quot;jch&quot;&gt;&lt;span class=&quot;jc has '+(chOf(t)==='sms'?'sms':chOf(t)==='crm'?'crm':'')+'&quot;&gt;'+esc(chLabel(chOf(t)))+'&lt;/span&gt;&lt;/span&gt;'
+        +'&lt;/div&gt;';
+    });
+  }
+  host.innerHTML=h;
+}
+function renderQuickSelect(){ /* hidden select kept for compatibility */
+  const sel=$('#qkSelect'); if(!sel) return;
+  sel.innerHTML=state.templates.map(t=&gt;'&lt;option value=&quot;'+t.id+'&quot;'+(t.id===quickId?' selected':'')+'&gt;'+esc(t.name)+'&lt;/option&gt;').join('');
+}
+$('#qkJourney').addEventListener('click', e =&gt; {
+  const pick=e.target.closest('[data-pick]');
+  if(pick&amp;&amp;!pick.classList.contains('none')){
+    quickId=pick.dataset.pick;
+    renderJourney(); renderQuickFields(); renderQuickPreview();
     return;
   }
-  el.innerHTML = '&lt;span&gt;Goes with&lt;/span&gt;' + sibs
-    .sort((a,b) =&gt; ['email','sms','crm'].indexOf(chOf(a)) - ['email','sms','crm'].indexOf(chOf(b)))
-    .map(x =&gt; '&lt;button class=&quot;chip plain&quot; data-goto=&quot;' + x.id + '&quot; title=&quot;' + esc(x.name) + '&quot;&gt;' + esc(chLabel(chOf(x))) + '&lt;/button&gt;').join('');
-}
-function renderQuickSelect(){
-  const vis = visibleQuick();
-  if(!vis.some(t =&gt; t.id === quickId)) quickId = vis[0] ? vis[0].id : null;
-  const groups = {};
-  vis.forEach(t =&gt; { const c = t.cat || 'Other'; (groups[c] = groups[c] || []).push(t); });
-  $('#qkSelect').innerHTML = Object.keys(groups).map(c =&gt;
-    '&lt;optgroup label=&quot;' + esc(c) + '&quot;&gt;' +
-    groups[c].map(t =&gt; '&lt;option value=&quot;' + t.id + '&quot;' + (t.id === quickId ? ' selected' : '') + '&gt;' +
-      esc(t.name || 'Untitled') + (t.hotkeys.length ? ',\u00A0 ' + esc(t.hotkeys.map(prettyKey).join(' or ')) : '') +
-      '&lt;/option&gt;').join('') +
-    '&lt;/optgroup&gt;').join('');
-}
+  const row=e.target.closest('[data-grp]');
+  if(row){
+    const g=row.dataset.grp;
+    const t=tplFor(g,'email')||tplFor(g,'sms')||tplFor(g,'crm');
+    if(t){ quickId=t.id; renderJourney(); renderQuickFields(); renderQuickPreview(); }
+  }
+});
 function renderQuickFields(){
   const t = quickTemplate(); if(!t){ $('#qkFields').innerHTML = ''; return; }
   const toks = tokensOf(t.body);
@@ -3996,7 +4045,7 @@ function renderQuickFields(){
       ' value=&quot;' + esc(qv()[tok] || '') + '&quot; placeholder=&quot;' + esc(tok.replace(/_/g,' ')) + '\u2026&quot;&gt;&lt;/div&gt;';
   }).join('') : '&lt;p class=&quot;hint&quot; style=&quot;margin-top:2px&quot;&gt;This one has no blanks. Copy it as-is, or add {blanks} to it in the Library.&lt;/p&gt;';
   document.querySelectorAll('#qkFields input').forEach(inp =&gt; {
-    inp.addEventListener('input', () =&gt; { qv()[inp.dataset.token] = inp.value; markDirty(); renderQuickPreview(); });
+    inp.addEventListener('input', () =&gt; { qv()[inp.dataset.token] = inp.value; markDirty(); renderQuickPreview(); renderJourney(); });
   });
 }
 function filledBody(t){
@@ -4026,21 +4075,8 @@ function renderQuickPreview(){
   $('#qkBench').title = 'Benchmark: ' + w + ' words at ' + wpm + ' wpm (office average is about 40)';
   $('#qkMeta').textContent = body.length + ' characters, ' + w + ' words, ' + body.split('\n').length + ' lines';
 }
-function renderQuick(){ renderQuickChan(); renderQuickSelect(); renderQuickPairs(); renderQuickFields(); renderQuickPreview(); }
-$('#qkChan').addEventListener('click', e =&gt; {
-  const b = e.target.closest('[data-ch]'); if(!b) return;
-  chFilter = b.dataset.ch; renderQuick();
-});
-$('#qkPairs').addEventListener('click', e =&gt; {
-  const b = e.target.closest('[data-goto]'); if(!b) return;
-  const t = state.templates.find(x =&gt; x.id === b.dataset.goto); if(!t) return;
-  quickId = t.id;
-  if(chFilter !== 'All') chFilter = chOf(t);
-  renderQuick();
-  toast('Switched to the ' + chLabel(chOf(t)).toLowerCase() + ' for this stage.', 'ok', 2200);
-});
-
-$('#qkSelect').addEventListener('change', e =&gt; { quickId = e.target.value; renderQuickPairs(); renderQuickFields(); renderQuickPreview(); });
+function renderQuick(){ renderJourney(); renderQuickSelect(); renderQuickFields(); renderQuickPreview(); }
+$('#qkSelect').addEventListener('change', e =&gt; { quickId = e.target.value; renderJourney(); renderQuickFields(); renderQuickPreview(); });
 $('#qkWpm').addEventListener('input', renderQuickPreview);
 $('#btnQkCopy').addEventListener('click', () =&gt; {
   const t = quickTemplate(); if(!t) return;
@@ -9038,7 +9074,8 @@ details.api-details[open] &gt; summary::after { transform: rotate(180deg); }
 .tab-panel#panel-client .results-col {
   display: none;
 }
-
+.lvr-ref td{padding:6px 8px;border-top:1px solid #262c3a;vertical-align:top;line-height:1.45;}
+.lvr-ref td:first-child{font-weight:600;white-space:nowrap;}
 &lt;/style&gt;
 &lt;!-- PDF.js for client-side PDF text extraction (used to populate the readable text view) --&gt;
 &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js&quot;&gt;&lt;/script&gt;
@@ -9992,7 +10029,37 @@ button.danger-ghost,.liability-row .remove-btn{color:var(--danger)!important}
       &lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;table class=&quot;compare-table&quot; id=&quot;compare-table&quot;&gt;
+        &lt;details class=&quot;card&quot; style=&quot;margin-bottom:14px;&quot;&gt;
+      &lt;summary style=&quot;cursor:pointer;padding:13px 16px;font-weight:700;font-size:13.5px;&quot;&gt;LVR cheat sheet · what each lender books against &lt;span style=&quot;font-weight:500;font-size:11px;color:var(--mut);margin-left:8px;&quot;&gt;for Drive referrals · from the lender guides, 24 Aug 2026&lt;/span&gt;&lt;/summary&gt;
+      &lt;div style=&quot;padding:4px 16px 14px;&quot;&gt;
+      &lt;div style=&quot;font-size:11.5px;color:var(--mut);line-height:1.5;margin-bottom:10px;&quot;&gt;LVR is judged against the &lt;b&gt;valuation&lt;/b&gt; (Glass's or Redbook), not the sale price · and most lenders count fees, insurance and warranties inside it. The deal % in the table is loan ÷ price, so treat it as indicative.&lt;/div&gt;
+      &lt;table style=&quot;width:100%;font-size:12px;border-collapse:collapse;&quot; class=&quot;lvr-ref&quot;&gt;
+        &lt;thead&gt;&lt;tr style=&quot;text-align:left;color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;&quot;&gt;&lt;th style=&quot;padding:5px 8px;&quot;&gt;Lender&lt;/th&gt;&lt;th style=&quot;padding:5px 8px;&quot;&gt;Cap&lt;/th&gt;&lt;th style=&quot;padding:5px 8px;&quot;&gt;Watch&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;Money3&lt;/td&gt;&lt;td&gt;&lt;b&gt;180%&lt;/b&gt; to $10k · &lt;b&gt;150%&lt;/b&gt; to $30k · &lt;b&gt;140%&lt;/b&gt; over&lt;/td&gt;&lt;td&gt;Glass's · total credit incl fees, insurance, brokerage · write-offs 140%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;NOW Finance&lt;/td&gt;&lt;td&gt;&lt;b&gt;150%&lt;/b&gt; Prem/T1/T2 · &lt;b&gt;130%&lt;/b&gt; T3 · &lt;b&gt;120%&lt;/b&gt; T4&lt;/td&gt;&lt;td&gt;bikes 130→110 by tier · EVs 110% · balloons 110% · thin-file renter 120% + $40k&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Azora&lt;/td&gt;&lt;td&gt;&lt;b&gt;170%&lt;/b&gt; under $25k · &lt;b&gt;140%&lt;/b&gt; over&lt;/td&gt;&lt;td&gt;Redbook · 260k km petrol / 280k diesel · 20yr max at end of term&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Wisr&lt;/td&gt;&lt;td&gt;&lt;b&gt;180%&lt;/b&gt; 640+ &amp;amp; under $80k · &lt;b&gt;150%&lt;/b&gt; 640+ · &lt;b&gt;130%&lt;/b&gt; else&lt;/td&gt;&lt;td&gt;Glass's retail · 130% if over $80k or car 11+ yrs at term end&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Pepper&lt;/td&gt;&lt;td&gt;&lt;b&gt;180%&lt;/b&gt; Tier A/B · &lt;b&gt;120%&lt;/b&gt; Tier C&lt;/td&gt;&lt;td&gt;caravans 140% · marine 130%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Liberty&lt;/td&gt;&lt;td&gt;&lt;b&gt;150%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;C grade under $10k → 120% · rate loading above 120%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;MoneyMe Autopay&lt;/td&gt;&lt;td&gt;&lt;b&gt;130%&lt;/b&gt; top band&lt;/td&gt;&lt;td&gt;priced in LVR bands · thin-file non-HO 120% + $40k&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Firstmac&lt;/td&gt;&lt;td&gt;&lt;b&gt;100%&lt;/b&gt; new on invoice (120% w/ add-ons) · &lt;b&gt;130%&lt;/b&gt; used/refi&lt;/td&gt;&lt;td&gt;used against Glass's retail&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Finance One&lt;/td&gt;&lt;td&gt;&lt;b&gt;160%&lt;/b&gt; Redbook · Economy product &lt;b&gt;200%&lt;/b&gt;&lt;/td&gt;&lt;td&gt;250k km petrol / 350k diesel&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Rapid Loans&lt;/td&gt;&lt;td&gt;&lt;b&gt;150%&lt;/b&gt; Glass's above-avg&lt;/td&gt;&lt;td&gt;principal only · deposit maybe needed over $25k&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;APF&lt;/td&gt;&lt;td&gt;&lt;b&gt;160%&lt;/b&gt; Glass's AutoEdge above-avg&lt;/td&gt;&lt;td&gt;incl every fee + warranty · max $25k · 250k/300k km · 15yr max&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Gamma&lt;/td&gt;&lt;td&gt;&lt;b&gt;150%&lt;/b&gt; auto · &lt;b&gt;100%&lt;/b&gt; secured personal&lt;/td&gt;&lt;td&gt;Glass's · incl fees + warranties · max $50k&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;ACL&lt;/td&gt;&lt;td&gt;&lt;b&gt;140%&lt;/b&gt; ceiling&lt;/td&gt;&lt;td&gt;score 400-499 → 140% + 4yr max · 25 and under → 100% · bridging visa / write-off / remote → 80%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;C1&lt;/td&gt;&lt;td&gt;&lt;b&gt;140%&lt;/b&gt; km-adjusted&lt;/td&gt;&lt;td&gt;cars 11yr max, luxury 8yr · $35k Prem / $30k Std / $20k Lite&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Plenti&lt;/td&gt;&lt;td&gt;&lt;b&gt;180%&lt;/b&gt; dealer · &lt;b&gt;150%&lt;/b&gt; private · &lt;b&gt;130%&lt;/b&gt; refi&lt;/td&gt;&lt;td&gt;under-600 score or thin file → 150%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Moneyplace&lt;/td&gt;&lt;td&gt;&lt;b&gt;150%&lt;/b&gt; under 13yr · &lt;b&gt;130%&lt;/b&gt; 13yr+&lt;/td&gt;&lt;td&gt;Glass's Guide&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;RACV&lt;/td&gt;&lt;td&gt;&lt;b&gt;150%&lt;/b&gt; strong types · &lt;b&gt;120%&lt;/b&gt; weakest&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;CarStart&lt;/td&gt;&lt;td&gt;&lt;b&gt;no published LVR&lt;/b&gt;&lt;/td&gt;&lt;td&gt;$7k-$50k, car assessed case by case · tell Drive to check the car with CarStart first&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+      &lt;div style=&quot;font-size:11.5px;color:var(--mut);line-height:1.6;margin-top:10px;&quot;&gt;&lt;b&gt;No-statements shortcuts:&lt;/b&gt; ACL any level with a good file · Azora loans 1-3 (score 622+) · NOW Premium/T1/T2 (score 660+, ok address) · Wisr PAYG with score 640+.&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+&lt;table class=&quot;compare-table&quot; id=&quot;compare-table&quot;&gt;
       &lt;thead&gt;
         &lt;tr&gt;
           &lt;th&gt;Lender&lt;/th&gt;
@@ -10000,6 +10067,7 @@ button.danger-ghost,.liability-row .remove-btn{color:var(--danger)!important}
           &lt;th&gt;Indicative Rate&lt;/th&gt;
           &lt;th&gt;Servicing Max&lt;/th&gt;
           &lt;th&gt;Comfort Max (+$300/mo buffer)&lt;/th&gt;
+          &lt;th&gt;LVR cap&lt;/th&gt;
           &lt;th&gt;Repayment&lt;/th&gt;
           &lt;th&gt;Result&lt;/th&gt;
           &lt;th&gt;Key Note&lt;/th&gt;
@@ -14250,10 +14318,54 @@ function renderLenderPane(paneId, r, s, base) {
   `;
 }
 
+
+// ── LVR caps · from the lender guides Jordy supplied 24 Aug 2026 ──
+// Basis differs per lender (Glass's vs Redbook vs invoice) · the cap function returns
+// {cap, basis, note} for the CURRENT deal so the compare table can judge it live.
+function lvrCapFor(key, s, r){
+  const amt = s.loanAmt||0;
+  const tier = (r&amp;&amp;r.tier?String(r.tier):'').toLowerCase();
+  switch(key){
+    case 'firstmac': case 'firstmacstd':
+      if (s.vehicleCondition==='new') return {cap:120, basis:&quot;invoice&quot;, note:&quot;100% new on invoice · to 120% with add-ons&quot;};
+      return {cap:130, basis:&quot;Glass's retail&quot;, note:&quot;used / refinance&quot;};
+    case 'azora':
+      return amt&lt;25000 ? {cap:170, basis:&quot;Redbook&quot;, note:&quot;under $25k&quot;} : {cap:140, basis:&quot;Redbook&quot;, note:&quot;$25k and over&quot;};
+    case 'now': {
+      let cap = /tier 3/.test(tier)?130:/tier 4/.test(tier)?120:150;
+      let note = /tier 3/.test(tier)?'Tier 3':/tier 4/.test(tier)?'Tier 4':'Premium / T1 / T2';
+      if (s.balloonPct&gt;0 &amp;&amp; cap&gt;110){ cap=110; note+=' · balloon caps it at 110%'; }
+      return {cap:cap, basis:&quot;&quot;, note:note+&quot; · EVs capped 110%&quot;};
+    }
+    case 'moneyme':
+      return {cap:130, basis:&quot;priced in bands&quot;, note:&quot;top band 130% · thin-file non-HO 120% / $40k&quot;};
+    case 'liberty': {
+      if (amt&lt;10000 &amp;&amp; /c/.test(tier.replace(/grade\s*/,'').charAt(0))) return {cap:120, basis:&quot;&quot;, note:&quot;C grade under $10k&quot;};
+      return {cap:150, basis:&quot;&quot;, note:&quot;rate loading above 120%&quot;};
+    }
+    case 'pepper':
+      return /tier c/.test(tier) ? {cap:120, basis:&quot;&quot;, note:&quot;Tier C&quot;} : {cap:180, basis:&quot;&quot;, note:&quot;cars · Tier A/B · caravans 140, marine 130&quot;};
+    case 'wisr': {
+      const score=s.creditScore||0;
+      if (score&gt;=640 &amp;&amp; amt&lt;80000 &amp;&amp; s.vehicleAgeEnd&lt;=10) return {cap:180, basis:&quot;Glass's retail&quot;, note:&quot;640+ score, under $80k&quot;};
+      if (score&gt;=640) return {cap:150, basis:&quot;Glass's retail&quot;, note:&quot;640+ score&quot;};
+      return {cap:130, basis:&quot;Glass's retail&quot;, note:&quot;over $80k or car 11+ yrs at end of term&quot;};
+    }
+    case 'money3':
+      if (amt&lt;=10000) return {cap:180, basis:&quot;Glass's&quot;, note:&quot;$2k-$10k · total credit incl fees&quot;};
+      if (amt&lt;=30000) return {cap:150, basis:&quot;Glass's&quot;, note:&quot;$10k-$30k · total credit incl fees&quot;};
+      return {cap:140, basis:&quot;Glass's&quot;, note:&quot;over $30k · write-offs 140%&quot;};
+    default: return null;
+  }
+}
+function dealLvr(s){
+  if (!(s.loanAmt&gt;0) || !(s.vehiclePrice&gt;0)) return null;
+  return s.loanAmt / s.vehiclePrice * 100;
+}
 // ============================================================================
 // COMPARE TABLE
 // ============================================================================
-function renderCompare(results) {
+function renderCompare(results, s) {
   renderSurplusChart(results);
   const tbody = document.getElementById('compare-tbody');
   if (!tbody) return;
@@ -14275,6 +14387,14 @@ function renderCompare(results) {
       badge = '&lt;span class=&quot;result-badge fail&quot;&gt;Short&lt;/span&gt;';
       note = r.metric + ': ' + r.metricValue;
     }
+    const lv = lvrCapFor(key, s, r);
+    const dl = dealLvr(s);
+    let lvrCell = '·';
+    if (lv) {
+      const over = dl !== null &amp;&amp; dl &gt; lv.cap;
+      const dealBit = dl !== null ? `&lt;div style=&quot;font-size:10px;color:${over?'#ff6b81':'#3ddc97'};&quot;&gt;deal ${dl.toFixed(0)}% ${over?'· OVER':'✓'}&lt;/div&gt;` : '';
+      lvrCell = `&lt;div title=&quot;${lv.note}${lv.basis?' · against '+lv.basis:''}&quot;&gt;&lt;b style=&quot;color:${over?'#ff6b81':'inherit'}&quot;&gt;${lv.cap}%&lt;/b&gt;${dealBit}&lt;/div&gt;`;
+    }
     const servicingMaxStr = r.servicingMax &gt; 0 ? fmt(r.servicingMax) : '·';
     const comfortMaxStr = r.comfortableMax &gt; 0 ? fmt(r.comfortableMax) : '·';
     return `
@@ -14284,6 +14404,7 @@ function renderCompare(results) {
         &lt;td&gt;${r.rate !== null ? fmt2(r.rate) + '%' : '·'}&lt;/td&gt;
         &lt;td style=&quot;color:#3ddc97;font-weight:600;&quot;&gt;${servicingMaxStr}&lt;/td&gt;
         &lt;td style=&quot;color:#854d0e;&quot;&gt;${comfortMaxStr}&lt;/td&gt;
+        &lt;td&gt;${lvrCell}&lt;/td&gt;
         &lt;td&gt;${r.rate !== null ? fmt(r.repayment) + '/mo' : '·'}&lt;/td&gt;
         &lt;td&gt;${badge}&lt;/td&gt;
         &lt;td class=&quot;notes&quot;&gt;${note}&lt;/td&gt;
@@ -14553,7 +14674,7 @@ function renderAllLenders() {
   if (azName) azName.textContent = s.applicantName || '·';
   if (azLoan) azLoan.textContent = `TPP ${fmt(s.totalPurchasePrice)} / ${s.loanTerm}mo`;
 
-  renderCompare(results);
+  renderCompare(results, s);
   renderLenderStrip(results);
   renderMaxLendSummary(results, s);
 }

@@ -3556,7 +3556,10 @@ tr.star td{background:rgba(20,184,166,.05)}
   &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partner book&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;pgrid&quot; id=&quot;pgrid&quot;&gt;&lt;/div&gt;
   &lt;div style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin-top:14px&quot;&gt;
-    &lt;div style=&quot;font-weight:700;font-size:13px;margin-bottom:8px&quot;&gt;Sheet sync · your performance workbook&lt;/div&gt;
+    &lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px&quot;&gt;
+      &lt;div style=&quot;font-weight:700;font-size:13px&quot;&gt;Sheet sync · your performance workbook&lt;/div&gt;
+      &lt;div id=&quot;pxStatus&quot; style=&quot;font-size:11px;color:var(--faint);border:1px solid var(--bdr2);border-radius:999px;padding:4px 10px&quot;&gt;checking the sheet…&lt;/div&gt;
+    &lt;/div&gt;
     &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.55;margin-bottom:10px&quot;&gt;Make two tabs in the workbook: &lt;b style=&quot;color:var(--txt)&quot;&gt;Partners&lt;/b&gt; and &lt;b style=&quot;color:var(--txt)&quot;&gt;PartnerLeads&lt;/b&gt;. Copy out to fill them, paste back to load. Names are matched either way round, nothing is deleted on import.&lt;/div&gt;
     &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px&quot;&gt;
       &lt;button id=&quot;pxCopyP&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Copy Partners CSV&lt;/button&gt;
@@ -3570,16 +3573,33 @@ tr.star td{background:rgba(20,184,166,.05)}
         &lt;button id=&quot;pxCancel&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;border-radius:8px;padding:8px 14px&quot;&gt;Cancel&lt;/button&gt;
       &lt;/div&gt;
     &lt;/div&gt;
-    &lt;details style=&quot;margin-top:10px&quot;&gt;&lt;summary style=&quot;cursor:pointer;font-size:12px;color:var(--faint)&quot;&gt;Later · live auto-sync from the same workbook (Apps Script snippet)&lt;/summary&gt;
-      &lt;div style=&quot;font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:8px&quot;&gt;Your dashboard already pulls from an Apps Script /exec URL. Add this to that script, redeploy, and next session we wire this tab to pull live:&lt;/div&gt;
-      &lt;pre style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:10px;font-size:10.5px;overflow:auto;margin-top:6px;color:var(--dim)&quot;&gt;function partnersJson(){
+    &lt;details style=&quot;margin-top:10px&quot;&gt;&lt;summary style=&quot;cursor:pointer;font-size:12px;color:var(--faint)&quot;&gt;Turn on live auto-sync · one paste into your Apps Script&lt;/summary&gt;
+      &lt;div style=&quot;font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:8px&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;This tab already polls your dashboard's script every 60 seconds.&lt;/b&gt; It just needs the script to answer. Open &lt;b&gt;Extensions → Apps Script&lt;/b&gt; in the workbook, paste this at the bottom, run &lt;b&gt;setupPartnerTabs&lt;/b&gt; once (it creates and formats the Partners + PartnerLeads tabs for you), then &lt;b&gt;Deploy → Manage deployments → Edit → New version&lt;/b&gt;:&lt;/div&gt;
+      &lt;pre style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:10px;font-size:10.5px;overflow:auto;margin-top:6px;color:var(--dim)&quot;&gt;function setupPartnerTabs(){
+  const ss=SpreadsheetApp.getActive();
+  const mk=(name,headers)=&gt;{
+    let sh=ss.getSheetByName(name);
+    if(!sh){ sh=ss.insertSheet(name); }
+    if(sh.getLastRow()===0){
+      sh.getRange(1,1,1,headers.length).setValues([headers])
+        .setFontWeight('bold').setBackground('#0d3b34').setFontColor('#ffffff');
+      sh.setFrozenRows(1);
+    }
+    return sh;
+  };
+  mk('Partners',['Business','Contact','Type','Industry','Phone','Notes']);
+  mk('PartnerLeads',['Partner','Client','Asset','Received','Stage','Outcome']);
+}
+function partnersJson(){
   const ss=SpreadsheetApp.getActive();
   const grab=n=&gt;{const sh=ss.getSheetByName(n);return sh?sh.getDataRange().getValues():[];};
   return ContentService.createTextOutput(JSON.stringify({
-    partners:grab('Partners'), leads:grab('PartnerLeads')
+    ok:true, partners:grab('Partners'), leads:grab('PartnerLeads')
   })).setMimeType(ContentService.MimeType.JSON);
 }
-// in doGet(e): if(e.parameter.fn==='partners') return partnersJson();&lt;/pre&gt;
+// add ONE line inside your existing doGet(e), before its normal return:
+//   if(e &amp;&amp; e.parameter &amp;&amp; e.parameter.fn==='partners') return partnersJson();&lt;/pre&gt;
+      &lt;div style=&quot;font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:6px&quot;&gt;Until that's done, the pill above says the script isn't answering and this tab runs on local data + CSV. The moment it's deployed, anyone you add to the sheet appears here on the next poll — no more pasting.&lt;/div&gt;
     &lt;/details&gt;
   &lt;/div&gt;
 &lt;/section&gt;
@@ -4466,7 +4486,52 @@ $('#pxImport').onclick=()=&gt;{
   toast('Imported',addedP+' partners added, '+upd+' updated, '+addedL+' leads added.');
 };
 
+/* ── live pull from the workbook · same script the dashboard reads ── */
+const EXEC_URL='https://script.google.com/macros/s/AKfycbza_HzauQ02hFJFB0ZwTqMQ3C6AlMQ9rd5y7ToLAwNXQZAxcmimv2xXizsU5J_JxDGndA/exec';
+function pxStat(msg,ok){const el=$('#pxStatus');if(el){el.textContent=msg;el.style.color=ok?'var(--teal)':'var(--faint)';el.style.borderColor=ok?'var(--teal)':'var(--bdr2)';}}
+function sheetMerge(pRows,lRows){
+  let addedP=0,upd=0,addedL=0;
+  (pRows||[]).forEach((c,i)=&gt;{
+    if(!c||!c[0]||/^business$/i.test(String(c[0])))return;
+    const biz=String(c[0]).trim(); if(!biz)return;
+    const hit=partners.find(x=&gt;nmKey(x.biz)===nmKey(biz));
+    if(hit){ if(c[1])hit.name=String(c[1]); if(c[2])hit.type=String(c[2]); if(c[3])hit.ind=String(c[3]); if(c[4])hit.phone=String(c[4]); upd++; }
+    else{
+      partners.push({id:Date.now()+i,name:String(c[1]||'—'),biz:biz,type:String(c[2]||'Referral'),ind:String(c[3]||'—'),phone:String(c[4]||'—'),
+        leadsMTD:0,lastLead:0,nextCI:now+7*day,q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
+        eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
+        hist:[{d:now,t:'Synced in from the sheet.'}],h:null});
+      addedP++;
+    }
+  });
+  (lRows||[]).forEach((c,i)=&gt;{
+    if(!c||!c[0]||/^partner$/i.test(String(c[0])))return;
+    const P=partners.find(x=&gt;nmKey(x.biz)===nmKey(String(c[0])));
+    const client=String(c[1]||'').trim();
+    if(P&amp;&amp;client&amp;&amp;!leads.some(L=&gt;L.pid===P.id&amp;&amp;nmKey(L.client)===nmKey(client))){
+      leads.push({id:Date.now()+9000+i,pid:P.id,client:client,asset:String(c[2]||'—'),recv:Date.now(),stage:0,att:0,outcome:null});
+      addedL++;
+    }
+  });
+  return {addedP:addedP,upd:upd,addedL:addedL};
+}
+let _pxBusy=false;
+function pullSheet(){
+  if(_pxBusy)return; _pxBusy=true;
+  let fp=null;
+  try{ fp=fetch(EXEC_URL+'?fn=partners',{method:'GET'}); }
+  catch(e){ _pxBusy=false; pxStat('script not answering the partner call yet · local data + CSV',false); return; }
+  fp.then(r=&gt;r.json()).then(j=&gt;{
+    _pxBusy=false;
+    if(!j||!j.ok){ pxStat('script not answering the partner call yet · local data + CSV',false); return; }
+    const r=sheetMerge(j.partners,j.leads);
+    if(r.addedP||r.addedL){ pSave();fillAddPickers();fillPickers();paintPartners();paintSLA();paintKPIs(); }
+    pxStat('synced with the sheet · '+new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})+(r.addedP?' · +'+r.addedP+' partners':'')+(r.addedL?' · +'+r.addedL+' leads':''),true);
+  }).catch(()=&gt;{ _pxBusy=false; pxStat('script not answering the partner call yet · local data + CSV',false); });
+}
 fillAddPickers();fillPickers();paintPartners();paintSLA();paintMarketing();paintKPIs();
+setInterval(pullSheet,60000);
+pullSheet();
 document.fonts.ready.then(drawTile);
 window.closeDrawer=closeDrawer;window.reEngage=reEngage;window.pitchAgency=pitchAgency;window.copyPrep=copyPrep;
 window.goCheckin=goCheckin;window.goQuarterly=goQuarterly;window.openDrawer=openDrawer;

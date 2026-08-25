@@ -3550,12 +3550,12 @@ tr.star td{background:rgba(20,184,166,.05)}
 .hold-chip{font-size:10.5px;color:var(--amber);border:1px dashed rgba(245,178,73,.5);border-radius:7px;padding:6px 10px;line-height:1.4}
 
 /* tiles */
-.tile-wrap{display:grid;grid-template-columns:400px 1fr;gap:16px;align-items:start}
+
 .canvas-box{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
-#tileCanvas{width:100%;max-width:460px;border-radius:10px;border:1px solid var(--bdr)}
+
 .swatches{display:flex;gap:8px}
-.sw{width:26px;height:26px;border-radius:8px;border:2px solid transparent;padding:0}
-.sw.on{border-color:#fff}
+
+
 .phr{display:flex;flex-direction:column;gap:6px;padding:2px 0}
 .phr .tog{font-size:11.5px}
 .phr .locked{color:var(--faint)}
@@ -3571,7 +3571,7 @@ tr.star td{background:rgba(20,184,166,.05)}
 
 @media(max-width:960px){
   .kpis{grid-template-columns:repeat(2,1fr)}
-  .fwrap,.two-col,.tile-wrap{grid-template-columns:1fr}
+  .fwrap,.two-col,
   .side{position:static}
   .grid3{grid-template-columns:1fr 1fr}
   .sla{grid-template-columns:96px 1fr;gap:12px}
@@ -3595,7 +3595,6 @@ tr.star td{background:rgba(20,184,166,.05)}
     &lt;button class=&quot;nav-tab&quot; data-tab=&quot;quarterly&quot;&gt;4 · Quarterly review&lt;/button&gt;
     &lt;button class=&quot;nav-tab&quot; data-tab=&quot;myscore&quot;&gt;5 · How I'm scored&lt;/button&gt;
     &lt;button class=&quot;nav-tab&quot; data-tab=&quot;marketing&quot;&gt;Money I've spent&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;tiles&quot;&gt;Make a pricing tile&lt;/button&gt;
   &lt;/div&gt;
   &lt;div class=&quot;proto&quot;&gt;Saves in this browser · &lt;b&gt;sheet sync via CSV in the Partners pane&lt;/b&gt;&lt;/div&gt;
 &lt;/nav&gt;
@@ -3825,6 +3824,18 @@ function partnersJson(){
         &lt;div class=&quot;rule-note&quot;&gt;&lt;b&gt;Upfront payment only — never on terms.&lt;/b&gt; Every sale adds its cost to an already-negative RCTI balance. Bank first, order second.&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;fcard&quot; style=&quot;margin-top:14px&quot;&gt;
+        &lt;h3&gt;Log any other spend &lt;span class=&quot;tag&quot;&gt;not from the catalogue&lt;/span&gt;&lt;/h3&gt;
+        &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.55;margin:0 0 10px&quot;&gt;For anything you paid for on a partner that is not a catalogue item. Printing, a boosted post, a giveaway.&lt;/div&gt;
+&lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin:0&quot;&gt;
+    &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nmPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+    &lt;div style=&quot;flex:2;min-width:190px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;WHAT&lt;/label&gt;&lt;input id=&quot;nmItem&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;FB ad set · pricing tiles&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;width:100px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;MY COST $&lt;/label&gt;&lt;input id=&quot;nmCost&quot; type=&quot;number&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;width:100px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;INVOICED $&lt;/label&gt;&lt;input id=&quot;nmInv&quot; type=&quot;number&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/div&gt;
+    &lt;label style=&quot;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);padding-bottom:9px&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;nmPaid&quot;&gt; paid&lt;/label&gt;
+    &lt;button id=&quot;nmAdd&quot; style=&quot;background:var(--teal);border:none;color:#fff;font-weight:700;font-size:12.5px;border-radius:8px;padding:9px 16px&quot;&gt;Add spend&lt;/button&gt;
+  &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;fcard&quot; style=&quot;margin-top:14px&quot;&gt;
         &lt;h3&gt;Sales ledger&lt;/h3&gt;
         &lt;table&gt;
           &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Partner&lt;/th&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Cost&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Invoiced&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Paid&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
@@ -3848,53 +3859,7 @@ function partnersJson(){
   &lt;/div&gt;
 &lt;/section&gt;
 
-&lt;section class=&quot;pane&quot; id=&quot;pane-tiles&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Make a pricing tile for a partner&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;the free version of the $200 ad set · compliant lines baked in · 1080×1080 PNG&lt;/div&gt;
-  &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin:0 0 12px&quot;&gt;
-    &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nmPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
-    &lt;div style=&quot;flex:2;min-width:190px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;WHAT&lt;/label&gt;&lt;input id=&quot;nmItem&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;FB ad set · pricing tiles&quot;&gt;&lt;/div&gt;
-    &lt;div style=&quot;width:100px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;MY COST $&lt;/label&gt;&lt;input id=&quot;nmCost&quot; type=&quot;number&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/div&gt;
-    &lt;div style=&quot;width:100px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;INVOICED $&lt;/label&gt;&lt;input id=&quot;nmInv&quot; type=&quot;number&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/div&gt;
-    &lt;label style=&quot;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);padding-bottom:9px&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;nmPaid&quot;&gt; paid&lt;/label&gt;
-    &lt;button id=&quot;nmAdd&quot; style=&quot;background:var(--teal);border:none;color:#fff;font-weight:700;font-size:12.5px;border-radius:8px;padding:9px 16px&quot;&gt;Add spend&lt;/button&gt;
-  &lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;tile-wrap&quot;&gt;
-    &lt;div class=&quot;fcard&quot;&gt;
-      &lt;div class=&quot;fbody&quot;&gt;
-        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Partner / business name&lt;/label&gt;&lt;input id=&quot;tBiz&quot; value=&quot;&quot; placeholder=&quot;partner business name&quot;&gt;&lt;/div&gt;
-        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Asset title&lt;/label&gt;&lt;input id=&quot;tAsset&quot; value=&quot;2024 Quintrex 481 Fishabout&quot;&gt;&lt;/div&gt;
-        &lt;div class=&quot;grid2&quot;&gt;
-          &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Price $&lt;/label&gt;&lt;input id=&quot;tPrice&quot; type=&quot;number&quot; value=&quot;52990&quot;&gt;&lt;/div&gt;
-          &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Was $ (optional)&lt;/label&gt;&lt;input id=&quot;tWas&quot; type=&quot;number&quot; placeholder=&quot;&quot;&gt;&lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Finance from $/week (you calc this)&lt;/label&gt;&lt;input id=&quot;tWeek&quot; type=&quot;number&quot; value=&quot;129&quot;&gt;&lt;/div&gt;
-        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Accent&lt;/label&gt;
-          &lt;div class=&quot;swatches&quot; id=&quot;swatches&quot;&gt;
-            &lt;button class=&quot;sw on&quot; data-c=&quot;#14b8a6&quot; style=&quot;background:#14b8a6&quot; aria-label=&quot;teal&quot;&gt;&lt;/button&gt;
-            &lt;button class=&quot;sw&quot; data-c=&quot;#3b82c4&quot; style=&quot;background:#3b82c4&quot; aria-label=&quot;blue&quot;&gt;&lt;/button&gt;
-            &lt;button class=&quot;sw&quot; data-c=&quot;#e8927c&quot; style=&quot;background:#e8927c&quot; aria-label=&quot;coral&quot;&gt;&lt;/button&gt;
-            &lt;button class=&quot;sw&quot; data-c=&quot;#8b7cf6&quot; style=&quot;background:#8b7cf6&quot; aria-label=&quot;violet&quot;&gt;&lt;/button&gt;
-            &lt;button class=&quot;sw&quot; data-c=&quot;#2d2a26&quot; style=&quot;background:#2d2a26&quot; aria-label=&quot;charcoal&quot;&gt;&lt;/button&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Safe phrases (Ausloans library)&lt;/label&gt;
-          &lt;div class=&quot;phr&quot; id=&quot;phr&quot;&gt;
-            &lt;label class=&quot;tog locked&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; Eligibility criteria apply. &lt;em style=&quot;font-size:10px&quot;&gt;(always on)&lt;/em&gt;&lt;/label&gt;
-            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;No impact to your credit score to check.&quot; checked&gt; No impact to your credit score to check.&lt;/label&gt;
-            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;Compare 70+ lenders.&quot;&gt; Compare 70+ lenders.&lt;/label&gt;
-            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;Fast pre-qualification.&quot;&gt; Fast pre-qualification.&lt;/label&gt;
-            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;Subject to lender approval.&quot; checked&gt; Subject to lender approval.&lt;/label&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class=&quot;hold-chip&quot;&gt;⚠ Blocked: &quot;guaranteed approval&quot;, rate quoting. &lt;b&gt;Finance-only offers: ON HOLD&lt;/b&gt; pending Ausloans ruling (Chris, Module 4).&lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;canvas-box&quot;&gt;
-      &lt;canvas id=&quot;tileCanvas&quot; width=&quot;1080&quot; height=&quot;1080&quot;&gt;&lt;/canvas&gt;
-      &lt;button class=&quot;btn pri&quot; id=&quot;tileDl&quot;&gt;Download PNG&lt;/button&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/section&gt;
+
 
 &lt;/main&gt;
 
@@ -4756,60 +4721,8 @@ $('#saleGo').onclick=()=&gt;{
   const c=CATALOGUE[$('#saleI').value];
   if(!$('#salePaid').checked){toast('Blocked — upfront only',&quot;Bank the partner's cash before the cost hits your RCTI. Tick paid to record.&quot;);return}
   ledger.unshift({pid:+$('#saleP').value,item:c.n,cost:c.c,inv:+($('#saleAmt').value||c.s),paid:true});
-  paintMarketing();paintKPIs();
+  pSave();paintMarketing();paintKPIs();
   toast('Sale recorded',money(c.c)+' will land on your RCTI · margin banked '+money((+$('#saleAmt').value||c.s)-c.c)+'.');
-};
-
-/* ================= TILE MAKER ================= */
-let accent='#14b8a6';
-$('#swatches').addEventListener('click',e=&gt;{const b=e.target.closest('.sw');if(!b)return;
-  document.querySelectorAll('.sw').forEach(x=&gt;x.classList.remove('on'));b.classList.add('on');accent=b.dataset.c;drawTile()});
-['tBiz','tAsset','tPrice','tWas','tWeek'].forEach(id=&gt;$('#'+id).addEventListener('input',drawTile));
-$('#phr').addEventListener('change',drawTile);
-function drawTile(){
-  const c=$('#tileCanvas'),x=c.getContext('2d');
-  const biz=val('tBiz')||'Your Business',asset=val('tAsset')||'Asset';
-  const price=num('tPrice'),was=num('tWas'),wk=num('tWeek');
-  const phrases=['Eligibility criteria apply.'].concat([...document.querySelectorAll('#phr input[data-p]:checked')].map(i=&gt;i.dataset.p));
-  x.fillStyle='#faf8f5';x.fillRect(0,0,1080,1080);
-  x.fillStyle=accent;x.fillRect(0,0,1080,14);
-  x.fillStyle='#7a7570';x.font='600 34px &quot;DM Sans&quot;';x.textBaseline='alphabetic';
-  x.fillText(biz.toUpperCase(),72,118);
-  x.fillStyle=accent;x.fillRect(72,140,64,6);
-  x.fillStyle='#2d2a26';x.font='700 76px &quot;DM Sans&quot;';
-  wrap(x,asset,72,250,940,86,2);
-  let py=470;
-  if(was&gt;price&amp;&amp;was&gt;0){
-    x.fillStyle='#a39d94';x.font='600 46px &quot;DM Sans&quot;';
-    const wtxt='WAS '+money(was);x.fillText(wtxt,72,py);
-    const w=x.measureText(wtxt).width;x.strokeStyle='#a39d94';x.lineWidth=4;
-    x.beginPath();x.moveTo(72,py-16);x.lineTo(72+w,py-16);x.stroke();py+=30;
-  }
-  x.fillStyle='#2d2a26';x.font='700 150px &quot;DM Sans&quot;';x.fillText(money(price),66,py+150);
-  const by=py+220;
-  x.fillStyle=accent;roundRect(x,72,by,936,170,22);x.fill();
-  x.fillStyle='#fff';x.font='600 40px &quot;DM Sans&quot;';x.fillText('FINANCE FROM',110,by+68);
-  x.font='700 92px &quot;DM Sans&quot;';x.fillText('$'+wk+'/week*',110,by+148);
-  x.fillStyle='#efe9df';x.fillRect(0,960,1080,120);
-  x.fillStyle='#7a7570';x.font='500 26px &quot;DM Sans&quot;';
-  wrap(x,'*'+phrases.join(' '),72,1002,940,34,3);
-  x.fillStyle='#a39d94';x.font='600 24px &quot;DM Sans&quot;';x.textAlign='right';
-  x.fillText('Finance via FundOne × Ausloans',1008,930);x.textAlign='left';
-}
-function wrap(x,text,tx,ty,maxW,lh,maxLines){
-  const words=text.split(' ');let line='',lines=0;
-  for(const w of words){
-    const t=line?line+' '+w:w;
-    if(x.measureText(t).width&gt;maxW&amp;&amp;line){x.fillText(line,tx,ty);ty+=lh;line=w;lines++;if(lines&gt;=maxLines-1){break}}
-    else line=t;
-  }
-  if(line&amp;&amp;lines&lt;maxLines)x.fillText(line,tx,ty);
-}
-function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
-$('#tileDl').onclick=()=&gt;{
-  const a=document.createElement('a');a.download='fundone-weekly-tile.png';
-  a.href=$('#tileCanvas').toDataURL('image/png');a.click();
-  toast('Tile downloaded',&quot;1080×1080 — ready for the partner's socials. That's the $250 product, free.&quot;);
 };
 
 /* ================= TABS + INIT ================= */
@@ -4822,7 +4735,6 @@ function switchTab(name){
   if(name==='quarterly')renderQuarterly();
   if(name==='qualify')renderQualify();
   if(name==='myscore')renderBroker();
-  if(name==='tiles'&amp;&amp;document.fonts&amp;&amp;document.fonts.ready)if(document.fonts&amp;&amp;document.fonts.ready)document.fonts.ready.then(drawTile);
 }
 document.querySelectorAll('.nav-tab').forEach(b=&gt;b.onclick=()=&gt;switchTab(b.dataset.tab));
 $('#ciPartner').addEventListener('change',renderCheckin);
@@ -4985,7 +4897,6 @@ function pullSheet(){
 fillAddPickers();fillPickers();paintPartners();paintSLA();paintMarketing();paintKPIs();
 setInterval(pullSheet,60000);
 pullSheet();
-document.fonts.ready.then(drawTile);
 window.closeDrawer=closeDrawer;window.reEngage=reEngage;window.pitchAgency=pitchAgency;window.copyPrep=copyPrep;
 window.goCheckin=goCheckin;window.goQuarterly=goQuarterly;window.openDrawer=openDrawer;
 &lt;/script&gt;
@@ -5022,20 +4933,20 @@ window.goCheckin=goCheckin;window.goQuarterly=goQuarterly;window.openDrawer=open
     --line:#252a38;          /* hairlines and borders */
 
     --primary:#14b8a6;       /* soft green for results, accents and actions */
-    --primary-soft:#DFF0EA;
-    --primary-line:#BCDCD1;
+    --primary-soft:rgba(20,184,166,.14);
+    --primary-line:rgba(20,184,166,.42);
 
     --info:#7d8fe0;          /* soft periwinkle for info chips */
-    --info-soft:#E7EBF9;
-    --info-line:#CBD3F0;
+    --info-soft:rgba(125,143,224,.16);
+    --info-line:rgba(125,143,224,.45);
 
     --rose:#f47067;          /* soft rose for warnings and negatives */
-    --rose-soft:#F9E4E1;
-    --rose-line:#EFC7C2;
+    --rose-soft:rgba(244,112,103,.15);
+    --rose-line:rgba(244,112,103,.45);
 
-    --butter-ink:#7A5E17;    /* soft butter for caveat callouts */
-    --butter-soft:#FBF1D3;
-    --butter-line:#EFDFAC;
+    --butter-ink:#f5b249;    /* soft butter for caveat callouts */
+    --butter-soft:rgba(245,178,73,.15);
+    --butter-line:rgba(245,178,73,.45);
 
     --radius:15px;
     --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 30px rgba(0,0,0,.4);
@@ -5157,15 +5068,16 @@ window.goCheckin=goCheckin;window.goQuarterly=goQuarterly;window.openDrawer=open
   .rowhead input{padding:7px 10px;border-radius:9px}
   .pairrow{margin-top:9px;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:26px}
   .pairrow .chip{cursor:pointer}
-  .jrow{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;margin-bottom:6px;cursor:pointer;background:var(--card);transition:border-color .12s}
-  .jrow:hover{border-color:var(--primary-line)}
-  .jrow.onrow{border-color:var(--primary);background:var(--primary-soft)}
+  .jrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;margin-bottom:6px;cursor:pointer;background:var(--card);transition:border-color .12s,background .12s}
+  .jrow:hover{border-color:var(--primary-line);background:#151821}
+  .jrow.onrow{border-color:var(--primary);background:rgba(20,184,166,.12)}
   .jnum{flex:0 0 26px;height:26px;border-radius:50%;background:var(--primary-soft);border:1px solid var(--primary-line);color:var(--primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .jrow.onrow .jnum{background:var(--primary);color:#10131b;border-color:var(--primary)}
-  .jmain{flex:1;min-width:0}
-  .jname{font-size:13px;font-weight:600;color:var(--ink)}
-  .jsnip{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-  .jrow.onrow .jsnip{color:var(--ink);opacity:.75}
+  .jrow.onrow .jnum{background:var(--primary);color:#06251f;border-color:var(--primary)}
+  .jrow.onrow .jname{color:#fff}
+  .jmain{display:block;flex:1;min-width:0;overflow:hidden}
+  .jname{display:block;font-size:13px;font-weight:600;color:var(--ink);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+  .jsnip{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0;line-height:1.4}
+  .jrow.onrow .jsnip{color:var(--muted);opacity:1}
   .jch{display:flex;gap:4px;flex-shrink:0}
   .jc{font-size:10px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#151821;cursor:pointer}
   .jc.has{border-color:var(--info-line);background:var(--info-soft);color:var(--info)}

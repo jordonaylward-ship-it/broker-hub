@@ -3352,6 +3352,12 @@ input,select,textarea{font-family:inherit}
 @media(max-width:640px){.hx .hxb{width:210px;left:auto;right:-6px;transform:none}}
 .guide{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px}
 .guide&gt;summary{cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:0 0 14px}
+.hs{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:11px 13px}
+.hs .n{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:var(--teal);color:#06251f;font-size:11px;font-weight:700;margin-bottom:6px}
+.hs .t{font-size:12.5px;font-weight:600;color:var(--txt);margin-bottom:3px}
+.hs .d{font-size:11.5px;color:var(--faint);line-height:1.5}
+.hs.when{border-style:dashed}
 .guide&gt;summary::-webkit-details-marker{display:none}
 .guide&gt;summary::after{content:'›';color:var(--faint);font-size:17px;transition:transform .18s}
 .guide[open]&gt;summary::after{transform:rotate(90deg)}
@@ -3551,14 +3557,14 @@ tr.star td{background:rgba(20,184,166,.05)}
 &lt;nav class=&quot;topnav&quot;&gt;
   &lt;div class=&quot;brand&quot;&gt;FundOne&lt;span&gt;·&lt;/span&gt;Partner Manager&lt;/div&gt;
   &lt;div class=&quot;nav-tabs&quot;&gt;
-    &lt;button class=&quot;nav-tab on&quot; data-tab=&quot;partners&quot;&gt;Partners&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;sla&quot;&gt;Live SLA &lt;span id=&quot;nSla&quot;&gt;&lt;/span&gt;&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;checkin&quot;&gt;Monthly Check-In&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;quarterly&quot;&gt;Quarterly Review&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;qualify&quot;&gt;Qualify New&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;myscore&quot;&gt;My Scorecard&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;marketing&quot;&gt;Marketing $&lt;/button&gt;
-    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;tiles&quot;&gt;Tile Maker&lt;/button&gt;
+    &lt;button class=&quot;nav-tab on&quot; data-tab=&quot;partners&quot;&gt;My partners&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;qualify&quot;&gt;1 · Score a new one&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;sla&quot;&gt;2 · Leads they send &lt;span id=&quot;nSla&quot;&gt;&lt;/span&gt;&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;checkin&quot;&gt;3 · Monthly catch-up&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;quarterly&quot;&gt;4 · Quarterly review&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;myscore&quot;&gt;5 · How I'm scored&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;marketing&quot;&gt;Money I've spent&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;tiles&quot;&gt;Make a pricing tile&lt;/button&gt;
   &lt;/div&gt;
   &lt;div class=&quot;proto&quot;&gt;Saves in this browser · &lt;b&gt;sheet sync via CSV in the Partners pane&lt;/b&gt;&lt;/div&gt;
 &lt;/nav&gt;
@@ -3574,8 +3580,15 @@ tr.star td{background:rgba(20,184,166,.05)}
 &lt;main class=&quot;wrap&quot;&gt;
 
 &lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partner book&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;
-  &lt;details class=&quot;guide&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My partners&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;
+    &lt;div class=&quot;howto&quot;&gt;
+    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;1&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Score a new one&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Before you sign anyone. 12 questions on the phone, tells you yes or no.&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;2&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Leads they send&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Every client they refer. Log it, ring inside 60 minutes.&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;3&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Monthly catch-up&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Once a month per partner. How'd the month go, what do they need.&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;4&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Quarterly review&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Every 3 months. Scores their health out of 100 and colours their card.&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;hs when&quot;&gt;&lt;span class=&quot;n&quot;&gt;5&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;How I'm scored&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Ausloans marking you, not them. Update it monthly.&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;details class=&quot;guide&quot;&gt;
     &lt;summary&gt;What good looks like · plain-English guide to every number here&lt;/summary&gt;
     &lt;div class=&quot;gb&quot;&gt;
       &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:12px&quot;&gt;Every number on this tab comes from an Ausloans worksheet. Here's what each one means, what a good result looks like, and what should worry you. Hover the &lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;Like this. They're on every number.&lt;/span&gt;&lt;/span&gt; next to any figure for the same thing in context.&lt;/div&gt;
@@ -3649,7 +3662,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-sla&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Live partner leads — 60-minute SLA&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Every lead a partner sends, with a clock on it.&lt;/b&gt; Ausloans expects contact inside 60 minutes and 3 attempts before you hand it back.&lt;i&gt;&lt;span class='g'&gt;Good:&lt;/span&gt; nothing sitting in New for more than an hour.&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Bad:&lt;/span&gt; leads ageing here. The partner hears about it from their customer before you.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;scorecard KPIs: 90% contacted &amp;lt;60m · 3 attempts · stage updates within 2h&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Step 2 · Every lead a partner sends you&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Every lead a partner sends, with a clock on it.&lt;/b&gt; Ausloans expects contact inside 60 minutes and 3 attempts before you hand it back.&lt;i&gt;&lt;span class='g'&gt;Good:&lt;/span&gt; nothing sitting in New for more than an hour.&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Bad:&lt;/span&gt; leads ageing here. The partner hears about it from their customer before you.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;Log a lead the moment it arrives. A clock starts — ring the customer inside 60 minutes.&lt;/div&gt;&lt;/div&gt;
   &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:12px&quot;&gt;
     &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nlPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;CLIENT NAME&lt;/label&gt;&lt;input id=&quot;nlClient&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;who they sent&quot;&gt;&lt;/div&gt;
@@ -3658,13 +3671,13 @@ function partnersJson(){
   &lt;/div&gt;
   &lt;div class=&quot;sla-list&quot; id=&quot;slaList&quot;&gt;&lt;/div&gt;
   &lt;div style=&quot;margin-top:22px&quot;&gt;
-    &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Recent SLA log&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;evidence for your quarterly broker scorecard&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Call record · your proof&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;Every lead you've contacted and how fast. This is what you show at review time.&lt;/div&gt;&lt;/div&gt;
     &lt;div id=&quot;slaLog&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-checkin&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Monthly Check-In&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;AUSLOANS – Partner Monthly Check-In Worksheet v3 · agency sections show only for Agent partners&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Step 3 · Your monthly catch-up with a partner&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;AUSLOANS – Partner Monthly Check-In Worksheet v3 · agency sections show only for Agent partners&lt;/div&gt;
     &lt;select id=&quot;ciPartner&quot; style=&quot;margin-left:auto;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:12.5px&quot;&gt;&lt;/select&gt;
   &lt;/div&gt;
   &lt;div class=&quot;fwrap&quot;&gt;
@@ -3680,7 +3693,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-quarterly&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Quarterly Strategy Review&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;AUSLOANS – Partner Strategy Review Worksheet · scores compute live with the exact sheet formulas&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Step 4 · Quarterly review · gives them a health score&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;AUSLOANS – Partner Strategy Review Worksheet · scores compute live with the exact sheet formulas&lt;/div&gt;
     &lt;select id=&quot;qPartner&quot; style=&quot;margin-left:auto;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:12.5px&quot;&gt;&lt;/select&gt;
   &lt;/div&gt;
   &lt;div class=&quot;fwrap&quot;&gt;
@@ -3700,7 +3713,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-qualify&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Qualify a new partner&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Score a prospect before you take them on.&lt;/b&gt; Answer the 12 questions on the call.&lt;i&gt;&lt;span class='g'&gt;80+&lt;/span&gt; agency candidate · &lt;span class='g'&gt;67+&lt;/span&gt; good referral partner&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Under 40&lt;/span&gt; means walk away politely — they'll cost more than they send.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;official 12-question Partner Scorecard · run it live on the qualification call (pitch deck slide 18)&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Step 1 · Score a new partner before you take them on&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Score a prospect before you take them on.&lt;/b&gt; Answer the 12 questions on the call.&lt;i&gt;&lt;span class='g'&gt;80+&lt;/span&gt; agency candidate · &lt;span class='g'&gt;67+&lt;/span&gt; good referral partner&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Under 40&lt;/span&gt; means walk away politely — they'll cost more than they send.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;Answer these 12 questions while you're on the phone with them. Scores them out of 100 and tells you whether to sign them, and how.&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;fwrap&quot;&gt;
     &lt;div class=&quot;fmain&quot; id=&quot;qsForm&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;side&quot;&gt;
@@ -3725,7 +3738,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-myscore&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My quarterly broker scorecard&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How Ausloans marks you, not your partners.&lt;/b&gt; Ten KPIs, weighted into a score out of 5.&lt;i&gt;&lt;span class='g'&gt;4.5+&lt;/span&gt; Outstanding · &lt;span class='g'&gt;4.0+&lt;/span&gt; Strong · &lt;span class='g'&gt;3.0+&lt;/span&gt; Satisfactory&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Under 2.0&lt;/span&gt; is performance managed. Fill this in monthly so a quarterly review never surprises you.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;how Ausloans marks you — enter your quarter, statuses and auto-scores use the exact sheet thresholds&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Step 5 · How Ausloans scores YOU&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How Ausloans marks you, not your partners.&lt;/b&gt; Ten KPIs, weighted into a score out of 5.&lt;i&gt;&lt;span class='g'&gt;4.5+&lt;/span&gt; Outstanding · &lt;span class='g'&gt;4.0+&lt;/span&gt; Strong · &lt;span class='g'&gt;3.0+&lt;/span&gt; Satisfactory&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Under 2.0&lt;/span&gt; is performance managed. Fill this in monthly so a quarterly review never surprises you.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;Not your partners — you. Fill it in monthly so the quarterly review is never a surprise. Same ten KPIs and weightings as their sheet.&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;fwrap&quot;&gt;
     &lt;div class=&quot;fmain&quot;&gt;
       &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;KPI inputs (quarterly)&lt;/h3&gt;
@@ -3784,7 +3797,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-tiles&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Weekly pricing tile&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;the free version of the $200 ad set · compliant lines baked in · 1080×1080 PNG&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Make a pricing tile for a partner&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;the free version of the $200 ad set · compliant lines baked in · 1080×1080 PNG&lt;/div&gt;
   &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin:0 0 12px&quot;&gt;
     &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nmPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;div style=&quot;flex:2;min-width:190px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;WHAT&lt;/label&gt;&lt;input id=&quot;nmItem&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;FB ad set · pricing tiles&quot;&gt;&lt;/div&gt;

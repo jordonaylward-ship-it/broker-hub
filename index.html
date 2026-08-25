@@ -3803,6 +3803,7 @@ function partnersJson(){
     &lt;div&gt;
       &lt;div class=&quot;fcard&quot;&gt;
         &lt;h3&gt;Catalogue &lt;span class=&quot;tag&quot;&gt;cost hits your RCTI&lt;/span&gt;&lt;/h3&gt;
+        &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.55;margin:0 0 10px&quot;&gt;Tap any item to see what it is, how the partner uses it and an example you can read out on the call.&lt;/div&gt;
         &lt;table&gt;
           &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;RCTI cost&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Sell&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Margin&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
           &lt;tbody id=&quot;catBody&quot;&gt;&lt;/tbody&gt;
@@ -3954,17 +3955,82 @@ const STAGES=[&quot;Received&quot;,&quot;Contacted&quot;,&quot;Docs&quot;,&quot;
 let slaLogRows=[];
 (function(){ try{ const o=JSON.parse(localStorage.getItem(PKEY))||{}; if(Array.isArray(o.slaLog)) slaLogRows=o.slaLog; }catch(e){} })();
 const CATALOGUE=[
- {n:&quot;Seasonal Campaign Pack (EOFY / stock run-out)&quot;,c:500,s:1000,star:true},
- {n:&quot;AI Product &amp; Finance Video Ad (15–30s)&quot;,c:300,s:350},
- {n:&quot;FB/IG Ad Set — 4× weekly pricing tiles&quot;,c:200,s:250},
- {n:&quot;Full Website Promo Kit (hero + 2 banners)&quot;,c:200,s:250},
- {n:&quot;Custom Pull-up Banner&quot;,c:200,s:250},
- {n:&quot;Finance Email Campaign ×4&quot;,c:150,s:200},
- {n:&quot;Offline Print Ad (300dpi + bleed)&quot;,c:150,s:200},
- {n:&quot;Website Finance Banner / CTA&quot;,c:100,s:140},
- {n:&quot;Marketplace Listing Finance Copy&quot;,c:100,s:125},
- {n:&quot;Staff Finance Scripts Pack&quot;,c:100,s:120},
- {n:&quot;In-store Offer Poster A1&quot;,c:100,s:120}
+ {n:&quot;Seasonal Campaign Pack&quot;,c:500,s:1000,star:true,
+  sub:&quot;End of financial year, stock run out or a service promotion&quot;,
+  what:&quot;This is a full campaign built around one event, rather than a single ad. You get the artwork, the wording, the social posts, the emails and the in store signage, all saying the same thing at the same time.&quot;,
+  use:&quot;You pick the event. End of financial year is the big one for business customers, because they want the purchase in before June. Stock run out works when you need to clear older units. Service promotions suit workshops in the quieter months. I build everything around that one message and you run it for two to four weeks.&quot;,
+  eg:&quot;A caravan dealer runs it in May. The message is buy before June and claim it this financial year, from a weekly figure. Same wording on the ads, the emails, a sign at the door and the sales team's script. Customers hear it four times instead of once.&quot;,
+  when:&quot;Best value in the list. Use it when you have a real reason for customers to act now, not just as general advertising.&quot;},
+
+ {n:&quot;AI Product and Finance Video Ad&quot;,c:300,s:350,
+  sub:&quot;Fifteen to thirty seconds, made for social&quot;,
+  what:&quot;A short video advert built from photos of your actual stock, with a weekly repayment figure on screen and a clear next step for the viewer.&quot;,
+  use:&quot;You send me photos of a unit and the price. I turn it into a video you can put on Facebook, Instagram or your website. Video gets shown to more people than a photo does, and the weekly figure is what stops the scroll.&quot;,
+  eg:&quot;A trailer at nineteen thousand looks expensive as a number. The same trailer on screen with a weekly figure underneath feels affordable, and the customer taps through instead of scrolling past.&quot;,
+  when:&quot;Good when you have one hero product worth pushing, or when your social posts are getting seen but nobody is enquiring.&quot;},
+
+ {n:&quot;Facebook and Instagram Ad Set&quot;,c:200,s:250,
+  sub:&quot;Four pricing tiles, one a week&quot;,
+  what:&quot;Four ready made square images, each showing a different product with its weekly repayment figure. One to post each week for a month.&quot;,
+  use:&quot;You post one a week and your page always has fresh pricing on it. Customers who follow you see a payment they can picture, instead of a total they have to think about. All the wording is compliant, so nothing you post creates a problem.&quot;,
+  eg:&quot;Four different mowers, one posted each Monday. By the end of the month your regulars have seen four weekly prices and at least one of them fits their budget.&quot;,
+  when:&quot;The best starting point if you already post on social but never mention finance.&quot;},
+
+ {n:&quot;Full Website Promo Kit&quot;,c:200,s:250,
+  sub:&quot;One hero banner and two supporting banners&quot;,
+  what:&quot;Three pieces of artwork sized for your website. A large one for the top of your home page and two smaller ones for further down or on product pages.&quot;,
+  use:&quot;Your web person drops them in. The top banner tells every visitor you have finance before they look at a single price. The smaller ones sit next to your products so the message follows them around the site.&quot;,
+  eg:&quot;A visitor lands on your home page and sees finance available from a weekly figure. When they open a product they see it again beside the price. Two reminders before they have spoken to anybody.&quot;,
+  when:&quot;Use it when you get website traffic but the site says nothing about payment options.&quot;},
+
+ {n:&quot;Custom Pull-up Banner&quot;,c:200,s:250,
+  sub:&quot;Printed, freestanding, roughly two metres tall&quot;,
+  what:&quot;A physical banner on a stand that you set up and pack down in about a minute. Your branding, your finance message, a QR code that takes people to your application page.&quot;,
+  use:&quot;Stand it at your entrance, beside your best unit, or take it to shows and markets. It works when nobody is available to talk, because the customer can scan the code and start an application themselves.&quot;,
+  eg:&quot;At a weekend show your banner stands beside the display while your team is busy. Six people scan the code out of hours. Those enquiries land with me on Monday morning.&quot;,
+  when:&quot;Worth it if you attend shows, markets or open days. Less useful if all your business comes online.&quot;},
+
+ {n:&quot;Finance Email Campaign&quot;,c:150,s:200,
+  sub:&quot;Four emails, written and ready to send&quot;,
+  what:&quot;Four emails you send to your own customer list over a month, each with a different angle on finance and a link to your application page.&quot;,
+  use:&quot;You send them from your usual email system. This is aimed at people who already bought from you or enquired and never went ahead. They know you, so they open your emails.&quot;,
+  eg:&quot;You email four hundred past customers. Twenty of them are quietly thinking about an upgrade. Three reply. That is three deals out of a list you already owned.&quot;,
+  when:&quot;Only worth doing if you have an email list. If you do, it is the cheapest source of enquiries you have.&quot;},
+
+ {n:&quot;Offline Print Ad&quot;,c:150,s:200,
+  sub:&quot;Print ready artwork at full resolution&quot;,
+  what:&quot;A properly set up advert for print. Correct resolution, correct bleed, ready to send straight to a magazine, newspaper or club newsletter without the printer asking questions.&quot;,
+  use:&quot;You give it to whoever is printing. Because the finance message and the weekly figure are built into the artwork, the advert is doing more work than a picture and a phone number.&quot;,
+  eg:&quot;A quarter page in a local club magazine showing your product with a weekly price and a QR code, instead of just your logo and a number.&quot;,
+  when:&quot;Use it when you already advertise in print and the ad is not mentioning finance.&quot;},
+
+ {n:&quot;Website Finance Banner&quot;,c:100,s:140,
+  sub:&quot;One banner with a call to action&quot;,
+  what:&quot;A single piece of artwork for your website with a button or link that sends the customer to your application page.&quot;,
+  use:&quot;This is the smaller version of the full website kit. One banner, one place, usually the home page or a finance page.&quot;,
+  eg:&quot;A strip across the top of your home page reading finance available, apply in two minutes, with a button. Customers who were not going to phone you will click a button.&quot;,
+  when:&quot;Good first step for a website. Move up to the full kit later if it brings enquiries.&quot;},
+
+ {n:&quot;Marketplace Listing Finance Copy&quot;,c:100,s:125,
+  sub:&quot;Wording for Facebook Marketplace, Gumtree and similar&quot;,
+  what:&quot;Written wording you paste into your online listings, including the weekly repayment line and the application link, worded so it stays compliant.&quot;,
+  use:&quot;Paste it at the bottom of every listing. Buyers on marketplace sites are comparing on price, so being the only listing showing a weekly figure makes yours stand out.&quot;,
+  eg:&quot;Ten listings all showing the same price. Yours also says from a weekly figure with finance available. Yours gets the message.&quot;,
+  when:&quot;Do this first if marketplace is where most of your enquiries come from. Cheap and it goes on everything.&quot;},
+
+ {n:&quot;Staff Finance Scripts Pack&quot;,c:100,s:120,
+  sub:&quot;What to say, written down&quot;,
+  what:&quot;A short set of scripts for your team covering how to raise finance, what to say when a customer says the price is too high, and how to hand the customer over to me.&quot;,
+  use:&quot;Print it and keep it at the counter. It removes the guesswork for newer staff and stops the awkward moment where nobody knows how to bring finance up.&quot;,
+  eg:&quot;A customer says it is a bit more than they wanted to spend. Instead of the staff member offering a discount, they say we can look at a weekly payment if that helps, and the sale stays alive.&quot;,
+  when:&quot;Worth it for any business with more than one person selling. Pairs well with the staff training session.&quot;},
+
+ {n:&quot;In store Offer Poster&quot;,c:100,s:120,
+  sub:&quot;A1 size, printed&quot;,
+  what:&quot;A large printed poster with your offer, a weekly repayment figure and a QR code customers can scan.&quot;,
+  use:&quot;Put it where people wait. Beside the counter, in the service area, on the wall near your best stock. It talks to customers while your team is busy with somebody else.&quot;,
+  eg:&quot;A poster in the service waiting area. Customers sitting there for twenty minutes read it, scan the code, and start an application while they wait.&quot;,
+  when:&quot;Simple and cheap. Use it wherever customers stand still for more than a minute.&quot;}
 ];
 
 
@@ -4639,7 +4705,31 @@ window.handback=id=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.p
 
 /* ================= MARKETING ================= */
 function paintMarketing(){
-  $('#catBody').innerHTML=CATALOGUE.map(c=&gt;'&lt;tr'+(c.star?' class=&quot;star&quot;':'')+'&gt;&lt;td&gt;'+c.n+(c.star?' &lt;span style=&quot;color:var(--teal);font-size:10px;font-weight:700&quot;&gt;★ BEST MARGIN&lt;/span&gt;':'')+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(c.c)+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(c.s)+'&lt;/td&gt;&lt;td class=&quot;mono r margin-pos&quot;&gt;+'+money(c.s-c.c)+'&lt;/td&gt;&lt;/tr&gt;').join('');
+  $('#catBody').innerHTML=CATALOGUE.map((c,idx)=&gt;
+     '&lt;tr'+(c.star?' class=&quot;star&quot;':'')+' data-cat=&quot;'+idx+'&quot; style=&quot;cursor:pointer&quot;&gt;'
+      +'&lt;td&gt;&lt;span style=&quot;color:var(--teal);font-size:11px;margin-right:5px&quot; id=&quot;catArrow'+idx+'&quot;&gt;▸&lt;/span&gt;'+c.n
+      +(c.star?' &lt;span style=&quot;color:var(--teal);font-size:10px;font-weight:700&quot;&gt;★ BEST MARGIN&lt;/span&gt;':'')
+      +(c.sub?'&lt;div style=&quot;font-size:11px;color:var(--faint);margin-top:2px;margin-left:16px&quot;&gt;'+c.sub+'&lt;/div&gt;':'')
+      +'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(c.c)+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(c.s)+'&lt;/td&gt;&lt;td class=&quot;mono r margin-pos&quot;&gt;+'+money(c.s-c.c)+'&lt;/td&gt;&lt;/tr&gt;'
+     +'&lt;tr id=&quot;catDet'+idx+'&quot; style=&quot;display:none&quot;&gt;&lt;td colspan=&quot;4&quot; style=&quot;padding:0 0 14px&quot;&gt;'
+      +'&lt;div style=&quot;background:var(--panel2);border-left:3px solid var(--teal);border-radius:8px;padding:12px 14px;margin-left:16px&quot;&gt;'
+      +'&lt;div style=&quot;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:5px&quot;&gt;What it is&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.6&quot;&gt;'+c.what+'&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:11px 0 5px&quot;&gt;How they use it&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.6&quot;&gt;'+c.use+'&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:11px 0 5px&quot;&gt;For example&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:12.5px;color:var(--txt);line-height:1.6;font-style:italic&quot;&gt;'+c.eg+'&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:11px;padding-top:9px;border-top:1px solid var(--bdr)&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;When to sell it:&lt;/b&gt; '+c.when+'&lt;/div&gt;'
+      +'&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;').join('');
+  $('#catBody').querySelectorAll('tr[data-cat]').forEach(tr=&gt;{
+    tr.onclick=()=&gt;{
+      const i=tr.getAttribute('data-cat');
+      const d=document.getElementById('catDet'+i), a=document.getElementById('catArrow'+i);
+      const open=d.style.display==='none';
+      d.style.display=open?'table-row':'none';
+      a.textContent=open?'▾':'▸';
+    };
+  });
   $('#ledgerBody').innerHTML=ledger.map(l=&gt;{const p=partners.find(x=&gt;x.id===l.pid);return '&lt;tr&gt;&lt;td&gt;'+(p?p.biz:'—')+'&lt;/td&gt;&lt;td&gt;'+l.item+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(l.cost)+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(l.inv)+'&lt;/td&gt;&lt;td class=&quot;mono r '+(l.paid?'paid-y':'paid-n')+'&quot;&gt;'+(l.paid?'PAID':'UNPAID')+'&lt;/td&gt;&lt;/tr&gt;'}).join('');
 }
 function fillPickers(){

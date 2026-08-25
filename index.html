@@ -3358,6 +3358,9 @@ input,select,textarea{font-family:inherit}
 .hs .t{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px}
 .hs .d{font-size:12.5px;color:var(--dim);line-height:1.55}
 .hs.when{border-style:dashed}
+.alab{font-size:11.5px;color:var(--dim)}
+.ainp{width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel2);border:1px solid var(--bdr2);border-radius:7px;padding:8px 10px;color:var(--txt);font-size:12.5px;font-family:inherit}
+.ainp:focus{outline:none;border-color:var(--teal)}
 .pk{border:1px solid var(--bdr);border-radius:11px;background:var(--panel);padding:13px 15px;margin-bottom:10px;opacity:.62;transition:all .18s}
 .pk.on{opacity:1;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal) inset}
 .pk .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px}
@@ -3627,7 +3630,24 @@ tr.star td{background:rgba(20,184,166,.05)}
     &lt;/div&gt;
   &lt;/details&gt;
 &lt;/div&gt;
-  &lt;div class=&quot;pgrid&quot; id=&quot;pgrid&quot;&gt;&lt;/div&gt;
+  &lt;details style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px&quot;&gt;
+      &lt;summary style=&quot;cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none&quot;&gt;+ Add a partner directly &lt;span style=&quot;font-weight:400;color:var(--faint);font-size:11.5px&quot;&gt;· for ones head office signed up, where you skip the scorecard&lt;/span&gt;&lt;/summary&gt;
+      &lt;div style=&quot;padding:13px 15px;border-top:1px solid var(--bdr)&quot;&gt;
+        &lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px&quot;&gt;
+          &lt;label class=&quot;alab&quot;&gt;Business name&lt;input id=&quot;apBiz&quot; class=&quot;ainp&quot; placeholder=&quot;Amibo Finance&quot;&gt;&lt;/label&gt;
+          &lt;label class=&quot;alab&quot;&gt;Contact&lt;input id=&quot;apName&quot; class=&quot;ainp&quot; placeholder=&quot;Michael&quot;&gt;&lt;/label&gt;
+          &lt;label class=&quot;alab&quot;&gt;Type&lt;select id=&quot;apType&quot; class=&quot;ainp&quot;&gt;&lt;option&gt;Referral&lt;/option&gt;&lt;option&gt;Agent&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+          &lt;label class=&quot;alab&quot;&gt;Industry&lt;input id=&quot;apInd&quot; class=&quot;ainp&quot; placeholder=&quot;Commercial finance / broking&quot;&gt;&lt;/label&gt;
+          &lt;label class=&quot;alab&quot;&gt;Phone&lt;input id=&quot;apPhone&quot; class=&quot;ainp&quot; placeholder=&quot;optional&quot;&gt;&lt;/label&gt;
+          &lt;label class=&quot;alab&quot;&gt;Email&lt;input id=&quot;apEmail&quot; class=&quot;ainp&quot; placeholder=&quot;michael@amibofinance.com&quot;&gt;&lt;/label&gt;
+          &lt;label class=&quot;alab&quot;&gt;Onboarding stage&lt;select id=&quot;apStage&quot; class=&quot;ainp&quot;&gt;&lt;/select&gt;&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;label class=&quot;alab&quot; style=&quot;display:block;margin-top:10px&quot;&gt;Notes&lt;textarea id=&quot;apNotes&quot; class=&quot;ainp&quot; rows=&quot;2&quot; placeholder=&quot;Anything worth remembering — scope, who signed, how they like to be dealt with.&quot;&gt;&lt;/textarea&gt;&lt;/label&gt;
+        &lt;button id=&quot;apAdd&quot; style=&quot;margin-top:11px;background:var(--teal);border:none;color:#06251f;font-weight:700;font-size:12.5px;border-radius:8px;padding:9px 16px;cursor:pointer;font-family:inherit&quot;&gt;Add to partner book&lt;/button&gt;
+        &lt;div style=&quot;font-size:11.5px;color:var(--faint);margin-top:8px;line-height:1.5&quot;&gt;No score is set — run Step 4 (Quarterly review) when you're ready and their health score fills in.&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/details&gt;
+    &lt;div class=&quot;pgrid&quot; id=&quot;pgrid&quot;&gt;&lt;/div&gt;
   &lt;div style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin-top:14px&quot;&gt;
     &lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px&quot;&gt;
       &lt;div style=&quot;font-weight:700;font-size:13px&quot;&gt;Sheet sync · your performance workbook&lt;/div&gt;
@@ -3907,11 +3927,20 @@ function calcHealth(p){
 
 /* ================= SEED DATA (session only) ================= */
 const PKEY='hub_partners_v1';
+/* onboarding pipeline · the stages a partner moves through before they can send you anything */
+const ONB=['Agreement out','Partner signed','Zink live','Assets issued','Live'];
+const ONB_C={'Agreement out':'var(--amber)','Partner signed':'var(--blue)','Zink live':'var(--blue)','Assets issued':'var(--green)','Live':'var(--teal)'};
+/* every partner gets these, old records included */
+function pipeDefaults(o){
+  o=o||{};
+  return {email:o.email||'',stage:o.stage||'Agreement out',page:o.page||'',qr:!!o.qr,zink:!!o.zink};
+}
+function ensurePipe(p){ p.pipe=pipeDefaults(p.pipe); return p }
 let partners=[],leads=[],ledger=[];
 (function(){
   try{
     const o=JSON.parse(localStorage.getItem(PKEY))||{};
-    partners=Array.isArray(o.partners)?o.partners:[];
+    partners=(Array.isArray(o.partners)?o.partners:[]).map(ensurePipe);
     leads=Array.isArray(o.leads)?o.leads:[];
     ledger=Array.isArray(o.ledger)?o.ledger:[];
   }catch(e){}
@@ -3967,7 +3996,9 @@ function paintPartners(){
     card.style.setProperty('--hc',b.c);
     card.innerHTML=
       '&lt;div class=&quot;top&quot;&gt;&lt;div&gt;&lt;div class=&quot;biz&quot;&gt;'+p.biz+((p.h&amp;&amp;p.h.H&lt;40)?' ⚠':'')+'&lt;/div&gt;&lt;div class=&quot;ind&quot;&gt;'+p.ind+' · '+p.name+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'+(agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'
+      +((p.pipe&amp;&amp;p.pipe.stage&amp;&amp;p.pipe.stage!=='Live')?'&lt;span class=&quot;chip&quot; style=&quot;border-color:'+(ONB_C[p.pipe.stage]||'var(--bdr2)')+';color:'+(ONB_C[p.pipe.stage]||'var(--dim)')+'&quot;&gt;'+p.pipe.stage.toUpperCase()+'&lt;/span&gt;':'')
+      +(agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;hscore&quot;&gt;&lt;div&gt;&lt;div class=&quot;ring&quot;&gt;'+(p.h?p.h.H:'—')+'&lt;/div&gt;&lt;div class=&quot;band&quot;&gt;'+b.t+'&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;nums&quot;&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.leadsMTD+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LEADS MTD&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.lastLead+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LAST LEAD&lt;/div&gt;&lt;/div&gt;'+
@@ -3979,6 +4010,85 @@ function paintPartners(){
   paintKPIs();
 }
 
+/* ── add a partner without the scorecard (HQ-onboarded) ── */
+(function(){
+  const sel=document.getElementById('apStage');
+  if(sel) sel.innerHTML=ONB.map(x=&gt;'&lt;option&gt;'+x+'&lt;/option&gt;').join('');
+  const btn=document.getElementById('apAdd');
+  if(!btn)return;
+  btn.onclick=()=&gt;{
+    const g=id=&gt;document.getElementById(id).value.trim();
+    const biz=g('apBiz');
+    if(!biz){toast('Business name needed','That is the one field the sheet matches on, so it cannot be blank.');return}
+    if(partners.some(x=&gt;nmKey(x.biz)===nmKey(biz))){toast('Already in the book',biz+' is here already — open their card to edit.');return}
+    const p={id:Date.now(),name:g('apName')||'—',biz:biz,type:document.getElementById('apType').value,
+      ind:g('apInd')||'—',phone:g('apPhone')||'—',leadsMTD:0,lastLead:0,nextCI:now+30*day,
+      q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
+      eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
+      pipe:pipeDefaults({email:g('apEmail'),stage:document.getElementById('apStage').value}),
+      hist:[{d:now,t:'Added directly'+(g('apNotes')?' — '+g('apNotes'):'.')}]};
+    p.h=null;partners.push(p);pSave();paintPartners();fillPickers();fillAddPickers();paintKPIs();
+    ['apBiz','apName','apInd','apPhone','apEmail','apNotes'].forEach(id=&gt;document.getElementById(id).value='');
+    toast('Added to book',biz+' — first check-in set for 30 days. Run a quarterly review when you want a health score.');
+  };
+})();
+
+/* ── onboarding pipeline · shown until they're Live ── */
+function onbBlock(p){
+  ensurePipe(p);
+  const done=i=&gt;ONB.indexOf(p.pipe.stage)&gt;=i;
+  const dot=(i,label)=&gt;'&lt;div style=&quot;flex:1;min-width:0&quot;&gt;&lt;div style=&quot;height:4px;border-radius:3px;background:'+(done(i)?'var(--teal)':'var(--bdr2)')+'&quot;&gt;&lt;/div&gt;'
+    +'&lt;div style=&quot;font-size:10px;color:'+(done(i)?'var(--teal)':'var(--faint)')+';margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis&quot;&gt;'+label+'&lt;/div&gt;&lt;/div&gt;';
+  return '&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin:12px 0&quot;&gt;'
+   +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px&quot;&gt;'
+   +'&lt;span style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Onboarding&lt;/span&gt;'
+   +'&lt;select id=&quot;onbStage&quot; style=&quot;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:5px 9px;color:'+(ONB_C[p.pipe.stage]||'var(--txt)')+';font-size:12px;font-weight:600;font-family:inherit&quot;&gt;'
+   + ONB.map(x=&gt;'&lt;option'+(x===p.pipe.stage?' selected':'')+'&gt;'+x+'&lt;/option&gt;').join('')+'&lt;/select&gt;&lt;/div&gt;'
+   +'&lt;div style=&quot;display:flex;gap:5px;margin-bottom:11px&quot;&gt;'+ONB.map((x,i)=&gt;dot(i,x)).join('')+'&lt;/div&gt;'
+   +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px&quot;&gt;'
+   +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Email&lt;input id=&quot;onbEmail&quot; value=&quot;'+(p.pipe.email||'')+'&quot; placeholder=&quot;none yet&quot; style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;&gt;&lt;/label&gt;'
+   +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Partner page link&lt;input id=&quot;onbPage&quot; value=&quot;'+(p.pipe.page||'')+'&quot; placeholder=&quot;not issued yet&quot; style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;&gt;&lt;/label&gt;'
+   +'&lt;/div&gt;'
+   +'&lt;div style=&quot;display:flex;gap:16px;margin-top:10px;font-size:12px;color:var(--dim)&quot;&gt;'
+   +'&lt;label style=&quot;display:flex;gap:6px;align-items:center;cursor:pointer&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;onbQr&quot;'+(p.pipe.qr?' checked':'')+'&gt; QR &amp;amp; assets issued&lt;/label&gt;'
+   +'&lt;label style=&quot;display:flex;gap:6px;align-items:center;cursor:pointer&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;onbZink&quot;'+(p.pipe.zink?' checked':'')+'&gt; Zink account live&lt;/label&gt;'
+   +'&lt;/div&gt;'
+   +(p.pipe.stage!=='Live'?'&lt;div style=&quot;font-size:11.5px;color:var(--faint);margin-top:9px;line-height:1.5&quot;&gt;'+onbNext(p)+'&lt;/div&gt;':'')
+   +'&lt;/div&gt;';
+}
+function onbNext(p){
+  const st=p.pipe.stage;
+  if(st==='Agreement out')return 'Next: chase the DocuSign. Nothing else moves until it is signed by every director.';
+  if(st==='Partner signed')return 'Next: head office sets up their Zink account. Tick it here when it is live.';
+  if(st==='Zink live')return 'Next: send the launch pack — partner page link, QR code, templates, calculator.';
+  if(st==='Assets issued')return 'Next: run the team walkthrough, then set them Live. First target is 3 to 5 referrals in 30 days.';
+  return '';
+}
+function wireOnb(){
+  const p=curP; if(!p)return;
+  const g=id=&gt;document.getElementById(id);
+  if(!g('onbStage'))return;
+  const save=()=&gt;{
+    ensurePipe(p);
+    p.pipe.stage=g('onbStage').value;
+    p.pipe.email=g('onbEmail').value.trim();
+    p.pipe.page=g('onbPage').value.trim();
+    p.pipe.qr=g('onbQr').checked;
+    p.pipe.zink=g('onbZink').checked;
+    /* ticks imply progress, never go backwards */
+    if(p.pipe.zink&amp;&amp;ONB.indexOf(p.pipe.stage)&lt;2){p.pipe.stage='Zink live';g('onbStage').value='Zink live';}
+    if(p.pipe.qr&amp;&amp;ONB.indexOf(p.pipe.stage)&lt;3){p.pipe.stage='Assets issued';g('onbStage').value='Assets issued';}
+    pSave();paintPartners();paintKPIs();
+  };
+  g('onbStage').onchange=()=&gt;{
+    const was=p.pipe.stage;save();
+    p.hist=p.hist||[];p.hist.unshift({d:Date.now(),t:'Onboarding moved '+was+' → '+p.pipe.stage+'.'});
+    pSave();openDrawer(p.id);
+  };
+  ['onbEmail','onbPage'].forEach(id=&gt;{g(id).onchange=save});
+  ['onbQr','onbZink'].forEach(id=&gt;{g(id).onchange=()=&gt;{save();openDrawer(p.id)}});
+}
+
 /* ================= DRAWER ================= */
 let curP=null;
 function openDrawer(id){
@@ -3987,8 +4097,9 @@ function openDrawer(id){
   const mk=ledger.filter(l=&gt;l.pid===p.id);
   const q=p.q||{};
   $('#drawer').innerHTML=
-    '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+p.name+' · '+p.phone+' · '+p.ind+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+p.name+' · '+p.phone+(p.pipe&amp;&amp;p.pipe.email?' · '+p.pipe.email:'')+' · '+p.ind+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;button class=&quot;d-close&quot; onclick=&quot;closeDrawer()&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;'+
+    onbBlock(p)+
     '&lt;div class=&quot;chips&quot; style=&quot;justify-content:flex-start;margin-top:9px&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'+
     '&lt;span class=&quot;chip&quot; style=&quot;color:'+b.c+';border-color:'+b.c+'&quot;&gt;'+(p.h?p.h.H+' · ':'')+b.t.toUpperCase()+'&lt;/span&gt;'+
     (agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
@@ -4016,6 +4127,7 @@ function openDrawer(id){
       (agencyReady(p)?'&lt;button class=&quot;btn&quot; style=&quot;color:var(--violet);border-color:rgba(139,124,246,.45)&quot; onclick=&quot;pitchAgency()&quot;&gt;Queue Agency pitch&lt;/button&gt;':'')+
     '&lt;/div&gt;&lt;/div&gt;';
   $('#scrim').classList.add('on');$('#drawer').classList.add('on');
+  wireOnb();
 }
 function closeDrawer(){$('#scrim').classList.remove('on');$('#drawer').classList.remove('on')}
 $('#scrim').onclick=closeDrawer;
@@ -4396,6 +4508,7 @@ $('#qsAdd').onclick=()=&gt;{
   const p={id:Date.now(),name,biz,type:val('n_type')||'Referral',ind:val('n_ind')||'—',phone:'—',leadsMTD:0,lastLead:0,nextCI:now+7*day,
     q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
     eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
+    pipe:pipeDefaults({}),
     hist:[{d:now,t:'Qualified '+r.t+'/100 — '+r.out.t+'. Kick-off call to book within 24h of HQ handover.'}]};
   p.h=null;partners.push(p);pSave();paintPartners();fillPickers();fillAddPickers();paintKPIs();
   toast('Added to book',''+biz+' — '+r.out.t+'. First target: 3–5 leads in 30 days. Run their first quarterly to score health.');
@@ -4632,7 +4745,8 @@ function copyCsv(txt,msg){
   else toast('Could not copy','');
 }
 $('#pxCopyP').onclick=()=&gt;{
-  const out='Business,Contact,Type,Industry,Phone,Leads MTD\n'+partners.map(p=&gt;[p.biz,p.name,p.type,p.ind,p.phone,p.leadsMTD||0].map(csvEsc).join(',')).join('\n');
+  const out='Business,Contact,Type,Industry,Phone,Leads MTD,Email,Stage,Partner page,QR issued,Zink live\n'+partners.map(p=&gt;{const q=(ensurePipe(p),p.pipe);
+    return [p.biz,p.name,p.type,p.ind,p.phone,p.leadsMTD||0,q.email,q.stage,q.page,q.qr?'Yes':'No',q.zink?'Yes':'No'].map(csvEsc).join(',')}).join('\n');
   copyCsv(out,partners.length+' partners → paste into the Partners tab');
 };
 $('#pxCopyL').onclick=()=&gt;{
@@ -4688,9 +4802,17 @@ function sheetMerge(pRows,lRows){
     if(!c||!c[0]||/^business$/i.test(String(c[0])))return;
     const biz=String(c[0]).trim(); if(!biz)return;
     const hit=partners.find(x=&gt;nmKey(x.biz)===nmKey(biz));
-    if(hit){ if(c[1])hit.name=String(c[1]); if(c[2])hit.type=String(c[2]); if(c[3])hit.ind=String(c[3]); if(c[4])hit.phone=String(c[4]); upd++; }
+    if(hit){ if(c[1])hit.name=String(c[1]); if(c[2])hit.type=String(c[2]); if(c[3])hit.ind=String(c[3]); if(c[4])hit.phone=String(c[4]);
+      ensurePipe(hit);
+      if(c[6]!=null&amp;&amp;String(c[6]).trim())hit.pipe.email=String(c[6]).trim();
+      if(c[7]!=null&amp;&amp;String(c[7]).trim())hit.pipe.stage=String(c[7]).trim();
+      if(c[8]!=null&amp;&amp;String(c[8]).trim())hit.pipe.page=String(c[8]).trim();
+      if(c[9]!=null&amp;&amp;String(c[9]).trim())hit.pipe.qr=/^(y|yes|true|1)$/i.test(String(c[9]).trim());
+      if(c[10]!=null&amp;&amp;String(c[10]).trim())hit.pipe.zink=/^(y|yes|true|1)$/i.test(String(c[10]).trim());
+      upd++; }
     else{
       partners.push({id:Date.now()+i,name:String(c[1]||'—'),biz:biz,type:String(c[2]||'Referral'),ind:String(c[3]||'—'),phone:String(c[4]||'—'),
+        pipe:pipeDefaults({email:c[6],stage:c[7],page:c[8],qr:/^(y|yes|true|1)$/i.test(String(c[9]||'')),zink:/^(y|yes|true|1)$/i.test(String(c[10]||''))}),
         leadsMTD:0,lastLead:0,nextCI:now+7*day,q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
         eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
         hist:[{d:now,t:'Synced in from the sheet.'}],h:null});

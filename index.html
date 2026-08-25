@@ -4326,29 +4326,41 @@ $('#qCopy').onclick=()=&gt;{
    so the score and the paperwork still line up. 'read' = your judgement, don't ask it. */
 const ASK={
  'How many staff are involved in sales/customer service?':
-   {say:&quot;Besides yourself, who else deals with customers day to day?&quot;,why:&quot;If they're unsure, say: “I ask because every person who chats to your customers is a chance to mention finance. It tells me who's worth including when we do the training.”&quot;},
+   {say:&quot;How many people do you have dealing with customers day to day, including yourself?&quot;,
+    why:&quot;If they are not sure, say: It does not have to be exact. Count anyone who serves customers or takes enquiries, whether that is on the floor, on the phone or online. I ask because each one of those people is someone I can train to spot a finance customer.&quot;},
  &quot;What's their average transaction value?&quot;:
-   {say:&quot;Roughly what's a typical sale worth for you?&quot;,why:&quot;If they're unsure, say: “Ballpark is fine. It just tells me whether finance makes a real difference on your tickets — the bigger the sale, the more finance helps your customer say yes.”&quot;},
+   {say:&quot;What does an average sale come to for you? A ballpark figure is fine.&quot;,
+    why:&quot;If they are not sure, say: Just think about what a typical customer spends. If most of your sales sit around twenty thousand, say twenty. If you are selling caravans or machinery it might be forty or more. I ask because finance makes the biggest difference on larger purchases, so it tells me how much of your business we can help with.&quot;},
  'How comfortable are they with technology?':
-   {say:&quot;How does your team usually go when you bring in new software?&quot;,why:&quot;If they're unsure, say: “No wrong answer — it just decides how we set you up. Tech-confident teams can run their own credit checks; otherwise I handle all of that and you just send the customer through.”&quot;},
+   {say:&quot;How does your team go with new software? Do they pick things up easily, or do they prefer to keep it simple?&quot;,
+    why:&quot;If they are not sure, say: Think about the last system you brought in, a booking tool or a new point of sale. Did the team take to it, or did it take a while to stick? I ask because a confident team can run the credit checks themselves in store. If that is not your team, I do all of that for you instead.&quot;},
  &quot;What's their current finance lead volume or enquiries?&quot;:
-   {say:&quot;How many customers a month ask you about payments or finance?&quot;,why:&quot;If they're unsure, say: “Think of everyone who asked about payment plans, or went quiet when they heard the price. Those are all finance conversations — it tells me what we can realistically expect from month one.”&quot;},
+   {say:&quot;In a normal month, how many customers ask about paying it off or spreading the cost?&quot;,
+    why:&quot;If they are not sure, say: Include anyone who asked about a payment plan, asked whether you do finance, or went quiet once they heard the price. They all count. A rough number is fine. It tells me what to expect in your first month.&quot;},
  'Do they currently offer any finance options?':
-   {say:&quot;At the moment, do you offer finance, or do people go sort it themselves?&quot;,why:&quot;If they're unsure, say: “Either answer is fine — I just need to know if we're replacing something that isn't working or starting fresh. Starting fresh is often easier.”&quot;},
+   {say:&quot;Do you have a finance option now, or do customers go and organise it themselves?&quot;,
+    why:&quot;If they are not sure, say: Some businesses have a provider they use, some hand out a brochure, and plenty just leave it with the customer. Any of those is a fine answer. I only need to know whether I am improving something you already have or starting fresh.&quot;},
  'How do they handle customer affordability concerns?':
-   {say:&quot;When a customer says it's a bit more than I wanted to spend, what happens next?&quot;,why:&quot;If they're unsure, say: “I ask because that exact moment is where finance earns its keep. If your answer today is ‘they walk away’, that's the sale we're going to save.”&quot;},
+   {say:&quot;When a customer says the price is more than they wanted to spend, what happens from there?&quot;,
+    why:&quot;If they are not sure, say: Walk me through the last time it happened. Do you come down on price, move them to a cheaper model, or do they usually leave and say they will think about it? That moment is exactly where finance does its work.&quot;},
  'Are they interested in learning about finance as a sales tool?':
-   {say:&quot;How keen would you be to learn how to use finance to close more sales?&quot;,why:&quot;If they're unsure, say: “It's not a test — it tells me how much training to bring. Partners who lean into this close more sales; I'd rather know now how hands-on you want me.”&quot;},
+   {say:&quot;Would your team want training on using finance to close a sale, or would you rather I handle that side of it?&quot;,
+    why:&quot;If they are not sure, say: Neither answer is wrong. Some partners want their staff quoting weekly repayments themselves. Others would rather just introduce the customer and let me do the rest. It only tells me how much training to bring with me.&quot;},
  'Do they have competitors offering finance?':
-   {say:&quot;Do the businesses you compete against offer finance?&quot;,why:&quot;If they're unsure, say: “If they do, we're catching you up. If they don't, you'd be the only one in your area a customer can walk into and drive out financed — that's worth knowing.”&quot;},
+   {say:&quot;Do the businesses you compete with offer finance to their customers?&quot;,
+    why:&quot;If they are not sure, say: Think of the two or three you lose customers to. If they advertise weekly prices or payment plans, they have finance behind them. If none of them do, that is a genuine advantage and worth building your advertising around.&quot;},
  'How responsive are they to communication?':
-   {say:&quot;If I message you about one of your customers, how fast do you usually get back?&quot;,why:&quot;If they're unsure, say: “When your customer's deal needs one document, an hour's delay can mean a lost approval. I ask so I know the best way and time to reach you — not to hassle you.”&quot;},
+   {say:&quot;During the day, what is the quickest way to reach you, and how soon do you normally see a message?&quot;,
+    why:&quot;If they are not sure, say: I ask because deals often need one more document, and an approval can be lost waiting on it. Knowing whether you are best on a text, an email or a call means I only contact you the way that actually works for you.&quot;},
  'Do they follow through on commitments?':
-   {say:&quot;Your read, don't ask this one.&quot;,read:true,why:&quot;Score it on how they've handled the process so far. Did they show up on time, reply when they said they would, send what they promised? That's your answer.&quot;},
+   {say:&quot;Your read. Do not ask this one.&quot;,read:true,
+    why:&quot;Score it on how they have dealt with you so far. Did they turn up when they said they would, reply to your messages, and send through what they promised? That is your answer.&quot;},
  'Are they open to new ideas and suggestions?':
-   {say:&quot;If I came to you with an idea to get more finance customers, how would that land?&quot;,why:&quot;If they're unsure, say: “Part of my job is bringing you ideas — pricing on your ads, QR codes in store, campaign stuff. Some partners want all of it, some just want the basics. Both are fine, I just tailor it.”&quot;},
+   {say:&quot;Are you open to me bringing you ideas to pull in more finance customers, or would you rather keep it simple?&quot;,
+    why:&quot;If they are not sure, say: I mean things like weekly pricing on your ads, a QR code at the counter, or a campaign at the end of financial year. Some partners want all of it, some want none of it. Both work fine, I just need to know which one you are.&quot;},
  'Do they see finance as valuable to their business?':
-   {say:&quot;What do you reckon finance actually does for a business like yours?&quot;,why:&quot;If they're unsure, say: “There's no right answer — I'm asking because in my experience finance turns ‘I'll think about it’ into ‘can I pick it up Friday’, and I want to know if you've seen that yet.”&quot;}
+   {say:&quot;Have you had customers walk away because they could not pay for it all up front?&quot;,
+    why:&quot;If they are not sure, say: Most businesses have. It is usually the ones who said they would think about it and never came back. I ask because that is the exact gap finance fills, and I want to know whether you have seen it happen in your own business.&quot;}
 };
 
 /* ── What you put in front of them once you know the score.
@@ -4448,8 +4460,11 @@ function renderQualify(){
        const head=a.read
          ? '&lt;span style=&quot;display:block;font-size:14.5px;font-weight:600;color:var(--amber);line-height:1.5;text-transform:none;letter-spacing:0&quot;&gt;'+esc(a.say)+'&lt;/span&gt;'
          : '&lt;span style=&quot;display:block;font-size:14.5px;font-weight:600;color:var(--txt);line-height:1.5;text-transform:none;letter-spacing:0&quot;&gt;&amp;ldquo;'+esc(a.say||qq.q)+'&amp;rdquo;&lt;/span&gt;';
-       const sub='&lt;span style=&quot;display:block;font-size:12.5px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0;margin-top:5px;line-height:1.55&quot;&gt;'+esc(a.why||'')+'&lt;/span&gt;'
-                +'&lt;span style=&quot;display:block;font-size:10.5px;color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0;margin-top:4px&quot;&gt;Ausloans wording: '+esc(qq.q)+'&lt;/span&gt;';
+       const sub=(a.read
+         ? '&lt;span style=&quot;display:block;font-size:12.5px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0;margin-top:6px;line-height:1.6&quot;&gt;'+esc(a.why||'')+'&lt;/span&gt;'
+         : '&lt;details style=&quot;margin-top:7px&quot;&gt;&lt;summary style=&quot;cursor:pointer;font-size:12px;color:var(--teal);font-weight:600;list-style:none;text-transform:none;letter-spacing:0&quot;&gt;If they are not sure how to answer&lt;/summary&gt;'
+           +'&lt;span style=&quot;display:block;font-size:12.5px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0;margin-top:6px;line-height:1.6;padding-left:11px;border-left:2px solid var(--bdr2)&quot;&gt;'+esc((a.why||'').replace(/^If they are not sure, say: /,''))+'&lt;/span&gt;&lt;/details&gt;')
+                +'&lt;span style=&quot;display:block;font-size:10.5px;color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0;margin-top:8px;padding-top:7px;border-top:1px solid var(--bdr)&quot;&gt;Ausloans wording: '+esc(qq.q)+'&lt;/span&gt;';
        return fSel(id,head+sub,Object.keys(qq.a),'')}).join('')
    )).join('')+
    '&lt;div id=&quot;qsOutcome&quot;&gt;&lt;/div&gt;';

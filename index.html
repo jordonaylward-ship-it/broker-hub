@@ -3342,6 +3342,27 @@ input,select,textarea{font-family:inherit}
 .nav-tab.on{background:var(--teal);color:#fff;border-color:var(--teal)}
 .proto{margin-left:auto;font-size:10.5px;color:var(--faint);border:1px dashed var(--bdr2);border-radius:6px;padding:5px 10px}
 .proto b{color:var(--amber);font-weight:600}
+.hx{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--bdr2);color:var(--faint);font-size:10px;font-weight:700;cursor:help;margin-left:5px;position:relative;flex-shrink:0;vertical-align:middle;background:transparent}
+.hx:hover,.hx:focus{border-color:var(--teal);color:var(--teal);outline:none}
+.hx .hxb{display:none;position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:280px;background:#0a0c12;border:1px solid var(--bdr2);border-radius:9px;padding:10px 12px;font-size:11.5px;font-weight:400;line-height:1.55;color:var(--dim);text-align:left;z-index:60;box-shadow:0 8px 26px rgba(0,0,0,.6);cursor:default;letter-spacing:0;text-transform:none}
+.hx:hover .hxb,.hx:focus .hxb{display:block}
+.hx .hxb b{color:var(--txt);font-weight:600}
+.hx .hxb .g{color:var(--teal)}.hx .hxb .b{color:var(--coral)}
+.hx .hxb i{font-style:normal;display:block;margin-top:5px}
+@media(max-width:640px){.hx .hxb{width:210px;left:auto;right:-6px;transform:none}}
+.guide{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px}
+.guide&gt;summary{cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.guide&gt;summary::-webkit-details-marker{display:none}
+.guide&gt;summary::after{content:'›';color:var(--faint);font-size:17px;transition:transform .18s}
+.guide[open]&gt;summary::after{transform:rotate(90deg)}
+.guide[open]&gt;summary{border-bottom:1px solid var(--bdr)}
+.gb{padding:13px 15px}
+.gt{width:100%;border-collapse:collapse;font-size:12px}
+.gt th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:5px 8px;font-weight:600}
+.gt td{padding:6px 8px;border-top:1px solid var(--bdr);vertical-align:top;line-height:1.5;color:var(--dim)}
+.gt td:first-child{color:var(--txt);font-weight:600;white-space:nowrap}
+.gt .g{color:var(--teal);white-space:nowrap}
+.gt .b{color:var(--coral);white-space:nowrap}
 
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px 20px 4px;max-width:1280px;margin:0 auto;width:100%}
 .kpi{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px}
@@ -3543,17 +3564,40 @@ tr.star td{background:rgba(20,184,166,.05)}
 &lt;/nav&gt;
 
 &lt;div class=&quot;kpis&quot;&gt;
-  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kActive&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partners healthy (Good+)&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kLeads&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partner leads MTD&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot;&gt;38m&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Avg first contact&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi warn&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kDue&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Check-ins due / overdue&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi bad&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kRcti&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;RCTI marketing exposure&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kActive&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partners healthy (Good+)&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How many partners score 75+ health, out of your whole book.&lt;/b&gt; Health comes from the quarterly review.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; most of the book. If you have 6 partners, 4+ healthy.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; under half. Means you're carrying names that don't send you deals.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kLeads&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partner leads MTD&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Leads your partners sent you this month.&lt;/b&gt; Ausloans' minimum commitment is 3+ per partner per month.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; 3 × your partner count. Six partners = 18+.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; under 2 per partner. Time for a check-in about why.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot;&gt;38m&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Avg first contact&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How long you take to ring a partner's client.&lt;/b&gt; This is the KPI Ausloans marks you hardest on.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; under 60 minutes. Under 30 is excellent.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; over 60 minutes — the partner's customer goes cold and the partner stops referring.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi warn&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kDue&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Check-ins due / overdue&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Partners needing their monthly catch-up in the next 7 days.&lt;/b&gt;&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; 0-2 sitting here. You're on top of it.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; 3+, or any that have gone past their date. Missed check-ins are the number one reason partners go quiet.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi bad&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kRcti&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;RCTI marketing exposure&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Money you've spent on partner marketing that hasn't come back yet.&lt;/b&gt; Ads, tiles, posters you funded.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; small, and each spend traceable to leads that followed.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; growing with no lift in that partner's lead count. You're funding someone who isn't referring.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;main class=&quot;wrap&quot;&gt;
 
 &lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partner book&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partner book&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;
+  &lt;details class=&quot;guide&quot;&gt;
+    &lt;summary&gt;What good looks like · plain-English guide to every number here&lt;/summary&gt;
+    &lt;div class=&quot;gb&quot;&gt;
+      &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:12px&quot;&gt;Every number on this tab comes from an Ausloans worksheet. Here's what each one means, what a good result looks like, and what should worry you. Hover the &lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;Like this. They're on every number.&lt;/span&gt;&lt;/span&gt; next to any figure for the same thing in context.&lt;/div&gt;
+      &lt;table class=&quot;gt&quot;&gt;
+        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Number&lt;/th&gt;&lt;th&gt;What it means&lt;/th&gt;&lt;th class=&quot;g&quot;&gt;Good&lt;/th&gt;&lt;th class=&quot;b&quot;&gt;Bad&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;Readiness score&lt;/td&gt;&lt;td&gt;Qualify New · how ready a prospect is to be a finance partner, out of 100&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;80+ agency&lt;br&gt;67+ referral&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 40&lt;br&gt;walk away&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Health score&lt;/td&gt;&lt;td&gt;Quarterly Review · how a partner is actually performing now&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;75+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 40&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Leads per partner&lt;/td&gt;&lt;td&gt;Referrals they send you monthly&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;3+ (the commitment)&lt;br&gt;10+ is a star&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;0-1 for two months running&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;First contact time&lt;/td&gt;&lt;td&gt;How fast you ring their customer&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;under 60 min&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;over 60 min&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Approval rate&lt;/td&gt;&lt;td&gt;Approvals ÷ decisions on their leads&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;60%+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 40% · lead quality problem&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Settlement rate&lt;/td&gt;&lt;td&gt;Settled ÷ approved&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;70%+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 50% · deals dying after approval&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Conversion (lead→funded)&lt;/td&gt;&lt;td&gt;Of everything they send, how much funds&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;25%+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 10%&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Days since last lead&lt;/td&gt;&lt;td&gt;Silence is the earliest warning sign&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;under 14 days&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;30+ days · ring them today&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Your broker score&lt;/td&gt;&lt;td&gt;My Scorecard · how Ausloans marks you, out of 5&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;4.0+ Strong&lt;br&gt;4.5+ Outstanding&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 3.0&lt;br&gt;under 2.0 = performance managed&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;Marketing spend&lt;/td&gt;&lt;td&gt;What you fund for a partner&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;followed by more leads&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;spend with flat leads&lt;/td&gt;&lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+      &lt;div style=&quot;font-size:11.5px;color:var(--faint);line-height:1.6;margin-top:11px&quot;&gt;&lt;b style=&quot;color:var(--dim)&quot;&gt;The one rule of thumb:&lt;/b&gt; a partner who sends 3 leads a month and answers the phone is worth more than one who promises twenty and goes quiet. Volume with silence is the pattern to kill early.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/details&gt;
+&lt;/div&gt;
   &lt;div class=&quot;pgrid&quot; id=&quot;pgrid&quot;&gt;&lt;/div&gt;
   &lt;div style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin-top:14px&quot;&gt;
     &lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px&quot;&gt;
@@ -3605,7 +3649,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-sla&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Live partner leads — 60-minute SLA&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;scorecard KPIs: 90% contacted &amp;lt;60m · 3 attempts · stage updates within 2h&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Live partner leads — 60-minute SLA&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Every lead a partner sends, with a clock on it.&lt;/b&gt; Ausloans expects contact inside 60 minutes and 3 attempts before you hand it back.&lt;i&gt;&lt;span class='g'&gt;Good:&lt;/span&gt; nothing sitting in New for more than an hour.&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Bad:&lt;/span&gt; leads ageing here. The partner hears about it from their customer before you.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;scorecard KPIs: 90% contacted &amp;lt;60m · 3 attempts · stage updates within 2h&lt;/div&gt;&lt;/div&gt;
   &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:12px&quot;&gt;
     &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nlPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;CLIENT NAME&lt;/label&gt;&lt;input id=&quot;nlClient&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;who they sent&quot;&gt;&lt;/div&gt;
@@ -3656,7 +3700,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-qualify&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Qualify a new partner&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;official 12-question Partner Scorecard · run it live on the qualification call (pitch deck slide 18)&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Qualify a new partner&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Score a prospect before you take them on.&lt;/b&gt; Answer the 12 questions on the call.&lt;i&gt;&lt;span class='g'&gt;80+&lt;/span&gt; agency candidate · &lt;span class='g'&gt;67+&lt;/span&gt; good referral partner&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Under 40&lt;/span&gt; means walk away politely — they'll cost more than they send.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;official 12-question Partner Scorecard · run it live on the qualification call (pitch deck slide 18)&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;fwrap&quot;&gt;
     &lt;div class=&quot;fmain&quot; id=&quot;qsForm&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;side&quot;&gt;
@@ -3665,6 +3709,7 @@ function partnersJson(){
         &lt;div class=&quot;big&quot; id=&quot;qsBig&quot;&gt;—&lt;/div&gt;
         &lt;div class=&quot;band&quot; id=&quot;qsBandT&quot;&gt;/100 weighted&lt;/div&gt;
         &lt;div class=&quot;ss-list&quot; id=&quot;qsSubs&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;qsPlain&quot; style=&quot;font-size:11.5px;line-height:1.55;color:var(--dim);border-top:1px solid var(--bdr);margin-top:10px;padding-top:9px&quot;&gt;&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;Minimum commitment &lt;span class=&quot;tag&quot;&gt;DECK S19&lt;/span&gt;&lt;/h3&gt;
         &lt;div class=&quot;fbody commit&quot;&gt;
@@ -3680,7 +3725,7 @@ function partnersJson(){
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-myscore&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My quarterly broker scorecard&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;how Ausloans marks you — enter your quarter, statuses and auto-scores use the exact sheet thresholds&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My quarterly broker scorecard&lt;/h2&gt;&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How Ausloans marks you, not your partners.&lt;/b&gt; Ten KPIs, weighted into a score out of 5.&lt;i&gt;&lt;span class='g'&gt;4.5+&lt;/span&gt; Outstanding · &lt;span class='g'&gt;4.0+&lt;/span&gt; Strong · &lt;span class='g'&gt;3.0+&lt;/span&gt; Satisfactory&lt;/i&gt;&lt;i&gt;&lt;span class='b'&gt;Under 2.0&lt;/span&gt; is performance managed. Fill this in monthly so a quarterly review never surprises you.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;sub&quot;&gt;how Ausloans marks you — enter your quarter, statuses and auto-scores use the exact sheet thresholds&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;fwrap&quot;&gt;
     &lt;div class=&quot;fmain&quot;&gt;
       &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;KPI inputs (quarterly)&lt;/h3&gt;
@@ -4195,6 +4240,24 @@ function qsCalc(){
    '&lt;div class=&quot;outcard&quot; style=&quot;border-color:'+out.c+'&quot;&gt;&lt;div class=&quot;ot&quot; style=&quot;color:'+out.c+'&quot;&gt;'+out.t+'&lt;/div&gt;'+
    '&lt;b style=&quot;font-size:11px;letter-spacing:.5px;color:var(--faint)&quot;&gt;CHARACTERISTICS&lt;/b&gt;&lt;ul&gt;'+out.ch.map(x=&gt;'&lt;li&gt;'+x+'&lt;/li&gt;').join('')+'&lt;/ul&gt;'+
    '&lt;b style=&quot;font-size:11px;letter-spacing:.5px;color:var(--faint)&quot;&gt;STRATEGY&lt;/b&gt;&lt;ul&gt;'+out.st.map(x=&gt;'&lt;li&gt;'+x+'&lt;/li&gt;').join('')+'&lt;/ul&gt;&lt;/div&gt;':'';
+  const pe=$('#qsPlain');
+  if(pe){
+    if(!full){ pe.innerHTML='&lt;span style=&quot;color:var(--faint)&quot;&gt;Answer all 12 and a plain-English verdict lands here.&lt;/span&gt;'; }
+    else{
+      const gap=Math.round((80-t)*10)/10;
+      let v;
+      if(t&gt;=80) v='&lt;b style=&quot;color:var(--teal)&quot;&gt;Sign them as an agency partner.&lt;/b&gt; They can run their own soft checks in Zink. Strong on all three sections.';
+      else if(t&gt;=67) v='&lt;b style=&quot;color:var(--green)&quot;&gt;Take them on as a referral partner, not agency.&lt;/b&gt; They\'re '+gap+' points off the agency mark. Work the weak answers through monthly check-ins and revisit in 6-12 months.';
+      else if(t&gt;=40) v='&lt;b style=&quot;color:var(--amber)&quot;&gt;Maintenance only.&lt;/b&gt; Worth having, not worth heavy investment. Standard monthly check-in, no marketing spend until they prove volume.';
+      else v='&lt;b style=&quot;color:var(--coral)&quot;&gt;Walk away politely.&lt;/b&gt; Under 40 they cost more time than they send you deals.';
+      const weak=[]; let wi=0;
+      QS.forEach(sec=&gt;sec.qs.forEach(q=&gt;{
+        const v=val('qs'+(wi++));
+        if(v&amp;&amp;q.a[v]&lt;=2) weak.push(q.q);
+      }));
+      pe.innerHTML=v+(weak.length?'&lt;div style=&quot;margin-top:7px&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Their weak spots ('+weak.length+'):&lt;/b&gt; '+weak.map(x=&gt;x.replace(/\?$/,'')).join(' · ')+'. These are what your check-ins should chip away at.&lt;/div&gt;':'&lt;div style=&quot;margin-top:7px;color:var(--teal)&quot;&gt;No weak answers — nothing scored 2 or below.&lt;/div&gt;');
+    }
+  }
   window._qsres={t,full,out};
 }
 $('#qsAdd').onclick=()=&gt;{

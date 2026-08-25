@@ -4118,6 +4118,7 @@ function onbBlock(p){
    + ONB.map(x=&gt;'&lt;option'+(x===p.pipe.stage?' selected':'')+'&gt;'+x+'&lt;/option&gt;').join('')+'&lt;/select&gt;&lt;/div&gt;'
    +'&lt;div style=&quot;display:flex;gap:5px;margin-bottom:11px&quot;&gt;'+ONB.map((x,i)=&gt;dot(i,x)).join('')+'&lt;/div&gt;'
    +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px&quot;&gt;'
+   +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Phone&lt;input id=&quot;onbPhone&quot; value=&quot;'+((p.phone&amp;&amp;p.phone!=='—')?p.phone:'')+'&quot; placeholder=&quot;none yet&quot; style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;&gt;&lt;/label&gt;'
    +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Email&lt;input id=&quot;onbEmail&quot; value=&quot;'+(p.pipe.email||'')+'&quot; placeholder=&quot;none yet&quot; style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;&gt;&lt;/label&gt;'
    +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Partner page link&lt;input id=&quot;onbPage&quot; value=&quot;'+(p.pipe.page||'')+'&quot; placeholder=&quot;not issued yet&quot; style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;&gt;&lt;/label&gt;'
    +'&lt;/div&gt;'
@@ -4143,6 +4144,7 @@ function wireOnb(){
   const save=()=&gt;{
     ensurePipe(p);
     p.pipe.stage=g('onbStage').value;
+    p.phone=g('onbPhone').value.trim()||'—';
     p.pipe.email=g('onbEmail').value.trim();
     p.pipe.page=g('onbPage').value.trim();
     p.pipe.qr=g('onbQr').checked;
@@ -4157,7 +4159,7 @@ function wireOnb(){
     p.hist=p.hist||[];p.hist.unshift({d:Date.now(),t:'Onboarding moved '+was+' → '+p.pipe.stage+'.'});
     pSave();openDrawer(p.id);
   };
-  ['onbEmail','onbPage'].forEach(id=&gt;{g(id).onchange=save});
+  ['onbPhone','onbEmail','onbPage'].forEach(id=&gt;{g(id).onchange=save});
   ['onbQr','onbZink'].forEach(id=&gt;{g(id).onchange=()=&gt;{save();openDrawer(p.id)}});
 }
 
@@ -4169,7 +4171,7 @@ function openDrawer(id){
   const mk=ledger.filter(l=&gt;l.pid===p.id);
   const q=p.q||{};
   $('#drawer').innerHTML=
-    '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+p.name+' · '+p.phone+(p.pipe&amp;&amp;p.pipe.email?' · '+p.pipe.email:'')+' · '+p.ind+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+[p.name,(p.phone&amp;&amp;p.phone!=='—')?p.phone:'',(p.pipe&amp;&amp;p.pipe.email)?p.pipe.email:'',p.ind].filter(function(x){return x&amp;&amp;x!=='—'}).join(' · ')+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;button class=&quot;d-close&quot; onclick=&quot;closeDrawer()&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;'+
     onbBlock(p)+
     (p.readiness?'&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:11px 14px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap&quot;&gt;'

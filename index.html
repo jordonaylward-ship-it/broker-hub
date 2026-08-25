@@ -9747,7 +9747,136 @@ const CONSUMER=[
     if(f.asset==='marine'&amp;&amp;f.age!=null&amp;&amp;f.age&gt;30){bad++;w.push('Boats cap at 30 years at end of term')}
     if(f.asset==='bike'&amp;&amp;f.age!=null&amp;&amp;f.age&gt;15){bad++;w.push('Bikes cap at 15 years at end of term')}
     warn++;w.push('No rates in the guide you have. Get a current rate card before you quote.');
-    return R(bad?'OUT':'CHECK',w)}}
+    return R(bad?'OUT':'CHECK',w)}},
+ {name:'Liberty',src:'Consumer Motor Introducer Guide, effective 20 August 2025',
+  range:'From $5,000. Under 23 caps at $35,000 AAA down to $25,000. Over 23: AAA $100,000, AA $75,000, A+ and below $50,000.',
+  rates:'By grade and vehicle age. New 7.85% AAA to 18.45% C · 0 to 4 years 8.35% to 19.45% · 5 to 9 years 9.45% to 19.95% · 10 plus 9.95% to 19.95%. Plug in EVs get 0.25% off. LVR over 120% adds 0.15%, over 135% adds 0.30%.',
+  more:'Grades AAA down to C. Score minimums for homeowners: AAA 741, AA 621, A plus 461. Non homeowners: AAA and AA not available, A plus needs 741. Terms 2 to 5 years on all grades, 6 and 7 years on AAA and AA only. LVR 150% at $10,000 or more, 120% under that below AAA. Balloon needs the vehicle under 8 years at end of term. Fees: application $595 to Liberty with your component up to $1,950, monthly $10 or $15 under $10,000, predetermination fee $245 if paid out early. Equalisation fee on the lower grades: A 2%, B plus 3%, B 9%, C 10%.',
+  no:'The guide covers motor vehicles only. Caravan, marine and bike are never mentioned, so treat it as cars until Liberty confirms. Private sale is not mentioned either. Bank statements needed on B plus, B and C only.',
+  assets:['car'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.asset!=='car'){bad++;w.push('This guide is motor vehicles only, nothing on '+f.asset)}
+    if(f.amt!=null&amp;&amp;f.amt&lt;5000){bad++;w.push('Minimum $5,000')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;100000){bad++;w.push('$100,000 is the AAA ceiling')}
+    if(f.res!=='owner'&amp;&amp;f.score!=null&amp;&amp;f.score&lt;741){bad++;w.push('Non homeowners need 741 and that is A plus, AAA and AA are not available to them')}
+    if(f.res==='owner'&amp;&amp;f.score!=null&amp;&amp;f.score&lt;461){warn++;w.push('Under 461 sits below A plus, pricing is on the overall profile')}
+    if(f.score!=null&amp;&amp;f.score&lt;600){warn++;w.push('Lower grades carry an equalisation fee, up to 10% of the loan on grade C')}
+    if(f.privateSale){warn++;w.push('Private sale is not covered in their guide. Check with Liberty before you promise it.')}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
+ {name:'Branded Financial',src:'Consumer guide, effective 23 October 2025',
+  range:'$5,000 to $250,000 standard, $150,000 on private sales. Their Plus product runs $5,000 to $100,000.',
+  rates:'New or demo 8.25% Tier 1 to 11.60% Tier 4. Used 2021 to 2025 8.10% Ultra Prime to 12.30%. Used 2015 and older 9.25% to 12.99%. Non asset backed adds 1.25%, private sale adds 0.50%. Plus product caps at 15.98%.',
+  more:'Scored on Experian CCR: Ultra Prime 990, Tier 1 800, Tier 2 600, Tier 3 550 with a 20% deposit, Tier 4 400 with a 20% deposit. Terms 12 to 84 months, but bikes, caravans and campervans cap at 60 months with no balloon. Asset 15 years at start on terms to 60 months, or 7 years if the term is longer. LVR 120% with no deposit. Fees: establishment $490 or $590 private sale, origination to $1,650, monthly $8.',
+  no:'Hard declines: any individual under 400 CCR, anyone currently bankrupt, and net monthly income under $2,318. No debt consolidation, cash raising, top ups, sale and buyback or mid term refinance. Nothing in ABS very remote areas. No interlock licences. Marine is not on their asset list.',
+  assets:['car','caravan','bike'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.asset==='marine'){bad++;w.push('Marine is not on their asset list')}
+    if(f.amt!=null&amp;&amp;f.amt&lt;5000){bad++;w.push('Minimum $5,000')}
+    if(f.privateSale&amp;&amp;f.amt&gt;150000){bad++;w.push('Private sales cap at $150,000')}
+    if(f.score!=null&amp;&amp;f.score&lt;400){bad++;w.push('Under 400 CCR is an automatic decline, no resubmission')}
+    if(f.bankrupt){bad++;w.push('Currently bankrupt is an automatic decline')}
+    if(f.score!=null&amp;&amp;f.score&lt;550){warn++;w.push('Tier 3 and 4 both need a 20% deposit')}
+    if(f.privateSale){w.push('Private sale adds 0.50% and a $100 higher establishment fee')}
+    if(f.age!=null&amp;&amp;f.age&gt;15){warn++;w.push('15 years at start on terms to 60 months, 7 years if you go longer')}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
+ {name:'RACV Finance',src:'Product guide, rates current 3 June 2025',
+  range:'From $5,000. Recommended maximum by borrower type: Type 1 $150,000, Type 2 $80,000, Type 3 $40,000. Boats, jet skis and bikes run $5,000 to $50,000.',
+  rates:'By Equifax comprehensive score. 832 plus 6.59% to 9.39% · 725 to 831 7.89% to 10.49% · 621 to 724 9.59% to 11.19% · 509 to 620 10.09% to 11.99% · 400 to 508 16.59% to 17.69%. Caravans price the same as cars. Boats, jet skis and bikes run 10.29% to 15.49%. Six year term adds 0.25%, seven adds 0.50%. Repairable write off or grey import adds 2%.',
+  more:'Asset to 20 years at origination on everything. LVR 150% on Type 1 and 2, 120% on Type 3. Fees: application $550, no monthly fee, early termination $325. Brokerage $550 to $1,210 by loan size. Their rate card is the same whether the client comes direct or through you, so there is no flex down.',
+  no:'They do not generally lend to discharged bankrupts, including historical ones. No active payday loans and no payday enquiries in 6 months. No financier defaults at all, paid telco and utility only. No bridging or student visas. No balloons on any product. No GAP, CCI or warranty funded, including free dealer warranties.',
+  assets:['car','caravan','marine','bike'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;f.amt&lt;5000){bad++;w.push('Minimum $5,000')}
+    if(f.bankrupt){bad++;w.push('They do not lend to discharged bankrupts either, even historical')}
+    if(f.defaults){bad++;w.push('No financier defaults at all, only paid telco and utility')}
+    if(f.score!=null&amp;&amp;f.score&lt;509){warn++;w.push('Under 509 the rate jumps to 16.59% or higher, big cliff')}
+    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('20 years at origination is the cap')}
+    if(f.privateSale){warn++;w.push('Private sale is allowed on cars, caravans and boats but needs a Verimoto report, roadworthy, and a gas certificate on caravans. The state by state grid did not extract, check it.')}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
+ {name:'Azora Consumer',src:'Consumer Product Guide, November 2025. Pricing changed 13 April 2026 and the new rates are not in the guide you hold.',
+  range:'$8,500 to $100,000. Loan 4 and 5 cap at $50,000, Loan 6 at $35,000. Under 25 caps at $30,000, score under 300 caps at $20,000.',
+  rates:'By score band. 833 plus 9.49% · 726 to 832 9.99% · 622 to 725 10.49% · 510 to 621 13.99% · 401 to 509 21.99% · 0 to 400 24.99% · negative bankrupt or Part IX 18.99%. You can cut the rate 1% for every 1% of commission you give back, up to 2%.',
+  more:'This is the permissive one. No minimum score, 0 to 400 is just a priced tier. Terms 7 years on Loans 1 to 3, 3 to 5 years on the rest. Asset 20 years at end of term, 260,000km petrol or 280,000km diesel. LVR 170% under $25,000, 140% over. No bank statements needed on Loans 1 to 3. Fees: settlement $695, risk fee nil on Loans 1 to 4 or $1,995 on 5 to 8, monthly $15, application fee up to $1,990 which is yours.',
+  no:'What they accept is the point: missed payments, gambling to 15% of income, paid and unpaid non financial defaults, paid financial defaults, unpaid financial defaults older than 6 months, current or discharged Part IX and X and bankrupts, MyBudget, up to 2 payday facilities, and 100% Centrelink income. Income floor is $45,000 gross. Long postcode exclusion list. Cars only.',
+  assets:['car'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.asset!=='car'){bad++;w.push('Their consumer product is car loans only')}
+    if(f.amt!=null&amp;&amp;(f.amt&lt;8500||f.amt&gt;100000)){bad++;w.push('Outside $8,500 to $100,000')}
+    if(f.income!=null&amp;&amp;f.income&lt;45000){bad++;w.push('Income floor is $45,000 gross')}
+    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('20 years at end of term')}
+    if(f.defaults){w.push('Unpaid financial defaults older than 6 months are fine here, max 2 and under $15,000 combined')}
+    if(f.bankrupt){w.push('Current and discharged bankrupts and Part IX both have their own priced tier at 18.99%')}
+    if(f.score!=null&amp;&amp;f.score&lt;400){warn++;w.push('Score under 400 prices at 24.99%, and under 300 caps the loan at $20,000')}
+    warn++;w.push('Their pricing changed 13 April 2026. The rates above are the November 2025 card. Get the current one.');
+    return R(bad?'OUT':'CHECK',w)}},
+
+ {name:'Rapid Loans',src:'Product and Credit Guide, August 2025',
+  range:'Bronze $5,000 to $25,000 · Silver and Platinum $5,000 to $50,000',
+  rates:'Bronze 22% · Silver 18.75% · Platinum 16.75%.',
+  more:'Scores: Bronze over 400, Silver over 500, Platinum over 600, and a fail at one tier drops you to the next rather than declining. Terms 24 to 48 months Bronze, 24 to 60 the others. Asset age is open, no maximum at either end, which is rare. LVR 150% of Glass above average. Takes cars, bikes, caravans, trucks, boats and jet skis, plus grey imports and repairable write offs. Already encumbered security accepted with a $7,000 max lend. Fees: establishment 8.5% capped $995, provider fee 8% to 15% of principal by tier.',
+  no:'Citizenship or permanent residency required, no visas at all. Current bankruptcy or Part 9 excluded on every tier, and Platinum also excludes previous bankruptcy. Max 2 finance defaults, under $2,000 outstanding. Income floors $500, $650 and $800 a week by tier. Centrelink only caps the lend at $12,000.',
+  assets:['car','caravan','marine','bike'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;f.amt&lt;5000){bad++;w.push('Minimum $5,000')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;50000){bad++;w.push('$50,000 is the ceiling')}
+    if(f.score!=null&amp;&amp;f.score&lt;400){bad++;w.push('400 is the Bronze floor and there is nothing below it')}
+    if(f.bankrupt){bad++;w.push('Current bankruptcy or Part 9 is out on every tier')}
+    if(f.income!=null&amp;&amp;f.income&lt;26000){warn++;w.push('Bronze needs $500 a week, Silver $650, Platinum $800')}
+    if(f.age!=null){w.push('No maximum asset age at either end, which is unusual and useful on an old unit')}
+    if(f.privateSale){w.push('Private sale accepted, needs a safety certificate except in SA, WA and NT')}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
+ {name:'C1 Finance',src:'Introducer Product Guide v5.1, 17 March 2026',
+  range:'From $10,000. Premium to $35,000 · Standard to $30,000 · Lite to $20,000.',
+  rates:'Premium 24.99% · Standard 27.99% · Lite 29.99%. Flat by tier, no score matrix.',
+  more:'They say it outright: credit score is not applicable, they care about defaults and CCR. What matters is credit file age, 2 years on Premium and Standard, 1 year on Lite. Terms 24 to 60 months by tier. Asset 11 years at settlement, 8 for luxury European. LVR 140%. Fees: establishment $995, monthly $28, risk fee 8% to 9% of the loan, funded broker fee to $1,595. No upfront credit check, the enquiry only happens at the last moment.',
+  no:'Living in NT or northern WA, or in a caravan park. Current or double bankrupt, terminated Part IX, current hardship. Under 12 months credit history. No student visas. Must hold an Australian licence. Long remote area exclusion list, and over 250km from a major centre may decline. Gambling over 40% of income declines.',
+  assets:['car','caravan','bike'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.asset==='marine'){warn++;w.push('Boats and trailers are case by case on request, not standard')}
+    if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;35000)){bad++;w.push('Their range is $10,000 to $35,000')}
+    if(f.bankrupt){warn++;w.push('Current or double bankrupt is out. Discharged is fine on Standard and Lite from day one, capped $20,000, but Premium will not take it.')}
+    if(f.asset!=='car'&amp;&amp;f.amt&gt;20000){warn++;w.push('Bikes and caravans cap at $20,000 on a single security')}
+    if(f.age!=null&amp;&amp;f.age&gt;11){bad++;w.push('11 years at settlement, 8 for luxury European')}
+    if(f.privateSale){w.push('They create the invoice and chase the seller docs themselves, which saves you the work')}
+    w.push('No credit score minimum and no upfront credit check');
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
+ {name:'CarStart',src:'Product Guide, undated in the document, filename says 2023. Their target market determinations are dated 5 October 2025.',
+  range:'Mid Prime $10,000 to $50,000 · Sub Prime $7,000 to $50,000 · Sub Prime Lite for pensioners $7,000 to $10,000',
+  rates:'Mid Prime 15.99% to 19.99% · Sub Prime 19.49% to 27.90% · Sub Prime Lite 19.49% to 29.99%. Priced off an internal scorecard, not published bands.',
+  more:'Mid Prime needs a 450 CCR. Sub Prime has no minimum score at all, they do not use scores there. Credit file only needs 3 months. Terms 36 to 60 months. Two things worth knowing: they match a cash deposit dollar for dollar as extra lend, and they add 50% of a trade in value on top, and you can use both together. Permanent employment tenure is one day. Fees: establishment $450 to $700, origination to $1,250, risk fee to $1,300 on sub prime, monthly $4.95, no exit fees.',
+  no:'Undischarged Part IX. 10 or more direct debit reversals in 90 days. Any financial default in the last 90 days, or defaults inside 6 months. Cash in hand or seasonal work. Over 50% reliance on Centrelink. Bankruptcy considered only if filed over 2 years ago.',
+  assets:['car','caravan','marine','bike'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;(f.amt&lt;7000||f.amt&gt;50000)){bad++;w.push('Their range is $7,000 to $50,000')}
+    if(f.defaults){warn++;w.push('Any default inside 6 months is a hard no, older ones are workable on sub prime')}
+    if(f.bankrupt){warn++;w.push('Only if the bankruptcy was filed more than 2 years ago')}
+    if(f.score!=null&amp;&amp;f.score&lt;450){w.push('Sub prime has no minimum score, they do not use credit scores there')}
+    if(f.privateSale){w.push('Private sales fine, no loading stated')}
+    w.push('Deposit match and trade in credit both add to the lend, and they stack');
+    warn++;w.push('The only real criteria document is undated. Their newer market determinations show a wider range, so confirm the tier pricing.');
+    return R(bad?'OUT':'CHECK',w)}},
+
+ {name:'Gamma Duo',src:'Product Brochure, valid from 9 February 2026',
+  range:'$8,000 to $50,000',
+  rates:'Alpha 19.99% · Beta 22.99% · Gamma 24.99%. Tier comes off the credit report, dishonours and payday count, not a score band.',
+  more:'Terms 36 to 84 months, but secured personal loans cap at 60. Under $30,000 caps at 60 months, under $40,000 at 72. Asset to 25 years at end of term, 250,000km petrol or 400,000km diesel. LVR 150% of Glass. Income floor is $35,000 gross with at least $30,000 of it from PAYG. Fees: establishment 5% capped $1,500, risk fee 2% to 4% capped $1,500, monthly $20, brokerage $990 or $1,210.',
+  no:'Self employed are not accepted on their consumer auto products at all. No caravan or marine, cars and road registered bikes only. Commitments over 35% of net income. More than 3 payday facilities. Obvious gambling including pub and club ATM withdrawals. 45 days overdrawn. Under 21 caps at $20,000, learner licence the same.',
+  assets:['car','bike'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.asset==='caravan'||f.asset==='marine'){bad++;w.push('Cars and road registered bikes only')}
+    if(f.amt!=null&amp;&amp;(f.amt&lt;8000||f.amt&gt;50000)){bad++;w.push('Their range is $8,000 to $50,000')}
+    if(f.emp==='selfemp'){bad++;w.push('Self employed are not accepted on their consumer auto products')}
+    if(f.income!=null&amp;&amp;f.income&lt;35000){bad++;w.push('Income floor $35,000, and $30,000 of it has to be PAYG')}
+    if(f.bankrupt){warn++;w.push('No active bankruptcy or Part IX, but discharged is fine from a day')}
+    if(f.age!=null&amp;&amp;f.age&gt;25){bad++;w.push('25 years at end of term')}
+    if(f.privateSale){warn++;w.push('The brochure says nothing about private sale. Check with them before you commit.')}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}}
+
 ];
 
 /* ── PERSONAL LOANS ─────────────────────────────────────────────── */
@@ -10020,7 +10149,23 @@ const EQUIP=[
     if(f.amt!=null&amp;&amp;f.amt&gt;3000000){bad++;w.push('$3m is the ceiling')}
     if(f.trad!=null&amp;&amp;f.trad&lt;12){warn++;w.push('12 months confirmable trading, younger by exception')}
     w.push('No credit score requirement, no bank statements, no financials. Worth remembering when a file is messy but the asset is good.');
-    return R(bad?'OUT':'CHECK',w)}}
+    return R(bad?'OUT':'CHECK',w)}},
+ {name:'MoneyMe Commercial',src:'Autopay Broker Guide, accurate as at 11 August 2025',
+  range:'$10,000 to $150,000',
+  rates:'Property owner AA 6.75% to 9.95% by asset age and LVR · A from 7.10% · BB from 7.30% · B from 7.70%, capped at $50,000. Non property owner AA 7.70% to 11.30%. Add 1.5% where the vehicle is 16 years plus at end of term, add 1% for casuals, take 1% off for a full EV. Your 5% broker fee adds 2% to the client rate, and cutting it cuts theirs.',
+  more:'Two paths. Low doc needs 2 years ABN, a 650 score and the applicant must be a property owner. Full doc drops to 3 months ABN and a 550 score but they must be cashflow positive. Neither path requires GST registration, which is unusual. Over $100,000 needs 26 plus, a full licence, asset under 12 years at end of term and the loan capped at one times annual turnover. Cars, SUVs, vans, utes and light commercial to 4.5 tonne, dealer sale only. Fees: establishment $350 to $550, monthly $12.50, no exit fee. Settlement can be inside an hour, 7 days.',
+  no:'No paid or unpaid default judgements, court actions or bankruptcy. Utility and telco defaults must stay under $500. No current arrears. RHI 2 or more in 3 months. Repairable write offs not accepted here on the commercial side. Credit file under 12 months caps at $20,000.',
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;150000)){bad++;w.push('Their range is $10,000 to $150,000')}
+    if(f.defaults){bad++;w.push('No defaults, judgements or court actions at all')}
+    if(f.score!=null&amp;&amp;f.score&lt;550){bad++;w.push('550 is the full doc floor, low doc needs 650')}
+    if(f.trad!=null&amp;&amp;f.trad&lt;3){bad++;w.push('3 months ABN on full doc, 2 years on low doc')}
+    else if(f.trad!=null&amp;&amp;f.trad&lt;24&amp;&amp;f.prop){warn++;w.push('Under 2 years ABN means full doc rather than low doc')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;100000){warn++;w.push('Over $100,000 needs 26 plus, a 650 score, asset under 12 years and the loan capped at one times turnover')}
+    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('20 years at end of term')}
+    w.push('No GST registration required on either path, which not many will do');
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}}
+
 ];
 
 /* ── COMMERCIAL: CASHFLOW AND WORKING CAPITAL ───────────────────── */
@@ -10107,7 +10252,61 @@ const CASH=[
     if(f.trad!=null&amp;&amp;f.trad&lt;24){bad++;w.push('24 months ABN and GST minimum')}
     if(f.score!=null&amp;&amp;f.score&lt;500){bad++;w.push('500 score floor')}
     w.push('Open to non property owners, secured against primary assets');
-    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+ {name:'Moula',src:'Product Guide, effective 1 August 2024',
+  range:'$10,000 to $250,000 · terms 12 to 36 months',
+  rates:'A real interest rate, not a factor rate. 15.99% to 35.99% APR, and the tier is set by turnover and time in business rather than score alone.',
+  more:'The pricing ladder: 15.99% needs $5m turnover and 5 years trading. 20.09% needs $1m and 3 years. 25.99% needs $200,000 and 2 years. 29.99% needs $75,000 and 18 months. 35.99% needs $75,000 and 6 months. Professional services get in at 18 months on the top three tiers. Fortnightly direct debit only, no daily or weekly. Score 600 plus across every tier. GST registration required. No property security. Fees: no establishment, monthly or line fee. The origination fee is whatever commission you take, 0% to 4%.',
+  no:'Conduct rules bump the rate a full tier: no dishonours or overdrawn in 6 months, ATO up to date, no defaults, court actions or insolvencies. Miss those and you move to 21.99%, 25.99%, 29.99% or 35.99%. Excluded: property developers and builders, gambling, adult, debt collection, tattoo studios, lenders and pawnbrokers, rideshare and taxi.',
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;250000)){bad++;w.push('Their range is $10,000 to $250,000')}
+    if(f.score!=null&amp;&amp;f.score&lt;600){bad++;w.push('600 is the floor on every tier')}
+    if(f.trad!=null&amp;&amp;f.trad&lt;6){bad++;w.push('6 months trading is the absolute floor and that prices at 35.99%')}
+    else if(f.trad!=null&amp;&amp;f.trad&lt;18){warn++;w.push('Under 18 months puts them at 35.99%')}
+    else if(f.trad!=null&amp;&amp;f.trad&lt;24){warn++;w.push('18 months lands at 29.99% unless they are professional services')}
+    if(f.rev!=null){var ann=f.rev*12;
+      if(ann&lt;75000){bad++;w.push('Turnover '+money(ann)+' a year is under their $75,000 floor')}
+      else if(ann&lt;200000){w.push('That turnover prices around 29.99%')}
+      else if(ann&lt;1000000){w.push('That turnover prices around 25.99%')}
+      else if(ann&lt;5000000){w.push('That turnover prices around 20.09%')}
+      else {w.push('Turnover qualifies for their best rate at 15.99%')}}
+    if(f.ato){bad++;w.push('ATO must be up to date, lodged and paid. Arrears bump them a full pricing tier or decline.')}
+    if(f.defaults){warn++;w.push('Defaults push them to the next rate tier up')}
+    w.push('Fortnightly repayments only, no daily debits, which suits a client who hates the daily hit');
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
+ {name:'Lumi',src:'Pricing Guide. No date anywhere in the document, and it had no text layer so this is read from a scan.',
+  range:'Business loan $10,000 to $750,000 · line of credit $10,000 to $750,000, Tier 3 caps at $300,000',
+  rates:'APR, not a factor rate. Business loan by tier: 15.50% · 17.50% · 22.50% · 29.50% · 39.50% · 44.50%. Line of credit runs the top four of those. Outside policy the ceiling is 49.95%.',
+  more:'Tiers stack score, trading time and turnover together. Top tier wants 750 Equifax, 5 years trading and $5m turnover. The bottom tier takes 400, 1 year trading and $50,000 turnover. Terms to 5 years, 4 on the bottom two tiers. Line of credit amortises over 24 to 60 months. Business loan establishment fee is 2.50% of the loan, the line of credit is a flat fee. No drawdown fee and no monthly fee on the line of credit. Two features worth knowing: Payment Pause gives a 4 week interest free break on the top tiers, and Rate Ease reduces the rate over the term.',
+  no:'Defaults push the minimum rate to 39.50%. Restricted industries floor at 22.5%. Two active competitor facilities adds 5%. Excluded: adult, agriculture, tobacco, coal, debt collection, financial institutions, firearms, gambling, horse and dog racing, mining, publishing, property development, rideshare, structural steel erection, tattoo studios and vape.',
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;750000)){bad++;w.push('Their range is $10,000 to $750,000')}
+    if(f.score!=null&amp;&amp;f.score&lt;400){bad++;w.push('400 Equifax is the bottom tier floor')}
+    if(f.trad!=null&amp;&amp;f.trad&lt;12){bad++;w.push('12 months trading is the floor')}
+    if(f.rev!=null&amp;&amp;f.rev*12&lt;50000){bad++;w.push('$50,000 a year turnover is the floor')}
+    if(f.score!=null&amp;&amp;f.score&lt;500){warn++;w.push('Under 500 prices at 39.50% or 44.50%')}
+    if(f.defaults){warn++;w.push('Any default sets the floor rate at 39.50%')}
+    warn++;w.push('This guide is undated and was read off a scan. Confirm the numbers with Lumi before you quote them.');
+    return R(bad?'OUT':'CHECK',w)}},
+
+ {name:'Capify',src:'Product Guide, August 2025. Also covers their Rapital brand.',
+  range:'Business loan $5,000 to $300,000 unsecured, or to $1,000,000 secured by a second mortgage. Invoice payment $2,000 to $150,000. Rapital $5,000 to $100,000.',
+  rates:'Not stated for the business loan or the Rapital loan, you have to get a quote. Only the invoice product is priced: 4% for a one month term on daily payments, 5% weekly, 8% and 10% for two months.',
+  more:'Business loan needs 12 months trading and $5,000 a month revenue, which is the lowest turnover bar of any of them. Term is set by score: over 600 gets 13 to 18 months, 451 to 599 gets 9 to 12, 300 to 450 gets 7 to 8. Daily or weekly repayments, 6 months bank statements, no financials. Non property owners cap at $200,000. Their invoice product only needs 3 months trading and a 200 score. Rapital is the non conforming arm: 3 months trading, 200 score, 2.5 to 5 month terms. Your commission is up to 10% of the loan.',
+  no:'Active or discharged bankruptcy is not accepted on Capify, though Rapital does take discharged. Unpaid financial defaults under $5,000 considered, but not if owed to another unsecured cashflow lender. One competitor loan is fine, two needs 36 months trading and a stronger score. Excluded: property development, non profits, adult, debt collection, payday lenders, medical marijuana, travel agents and MLM.',
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;f.amt&lt;5000){bad++;w.push('Minimum $5,000')}
+    if(f.trad!=null&amp;&amp;f.trad&lt;12){warn++;w.push('The business loan needs 12 months. Their invoice product and Rapital both take 3 months.')}
+    if(f.rev!=null&amp;&amp;f.rev&lt;5000){bad++;w.push('$5,000 a month revenue is their floor')}
+    else if(f.rev!=null){w.push('$5,000 a month is the lowest revenue bar in this list, worth remembering for a small operator')}
+    if(f.score!=null&amp;&amp;f.score&lt;300){warn++;w.push('Under 300 goes to Rapital, which takes a 200 score')}
+    else if(f.score!=null&amp;&amp;f.score&lt;451){warn++;w.push('300 to 450 caps the term at 7 to 8 months')}
+    if(f.defaults){w.push('Unpaid financial defaults under $5,000 considered, unless owed to another cashflow lender')}
+    if(f.ind==='ct'){warn++;w.push('Builders and contractors reliant on commercial builder income are restricted: 7 month term, 36 months trading')}
+    warn++;w.push('No rates in their guide for the business loan. You have to request a quote.');
+    return R(bad?'OUT':'CHECK',w)}}
+
 ];
 
 /* ── INPUT SETS PER PRODUCT ─────────────────────────────────────── */
@@ -10117,7 +10316,7 @@ const tog=function(id,label){return '&lt;label style=&quot;display:flex;gap:6px;
 
 const FORMS={
  consumer:{
-  src:'Sources: Pepper 1 Oct 2025 · Finance One 14 Apr 2026 · Money3 Jul 2026 v5.13 · Wisr May 2026 · NOW Finance 14 Feb 2026 · Plenti 13 Apr 2026 · Autopay 29 Jul 2026 · ACL Jun 2026 · Firstmac 5 Aug 2026 · APF v18.7 16 Mar 2026 · AMMF undated',
+  src:'19 lenders. Pepper 1 Oct 2025 · Finance One 14 Apr 2026 · Money3 Jul 2026 · Wisr May 2026 · NOW Finance 14 Feb 2026 · Plenti 13 Apr 2026 · Autopay 29 Jul 2026 · ACL Jun 2026 · Firstmac 5 Aug 2026 · APF 16 Mar 2026 · AMMF undated · Liberty 20 Aug 2025 · Branded 23 Oct 2025 · RACV 3 Jun 2025 · Azora Nov 2025 · Rapid Aug 2025 · C1 17 Mar 2026 · CarStart undated · Gamma Duo 9 Feb 2026',
   fields:inp('mAmt','Loan amount $','number','35000')
    +sel('mAsset','Asset type',[['car','Car, ute or light commercial'],['caravan','Caravan or motorhome'],['marine','Boat or jet ski'],['bike','Motorbike']])
    +inp('mAge','Asset age at end of term · yrs','number','8')
@@ -10137,7 +10336,7 @@ const FORMS={
   toggles:tog('mDef','Defaults on file')+tog('mBank','Bankruptcy, current or discharged')+tog('mJoint','Joint application')},
 
  commercial:{
-  src:'Sources: Azora Aug 2026 · Dynamoney Jul 2026 · flexicommercial 16 Jun 2025 · Morris May 2026 · Selfco May 2026 · Finance One 22 Jul 2026 · Multipli Jun 2025 · Plenti 21 May 2026 · Moneytech 29 Jan 2026 · Pepper 1 Feb 2026 · Latitude Apr 2026 · Iron Capital undated · Bizcap 2024 · Angle Feb 2026',
+  src:'23 lenders across equipment and cashflow. Azora Aug 2026 · Dynamoney Jul 2026 · flexicommercial Jun 2025 · Morris May 2026 · Selfco May 2026 · Finance One 22 Jul 2026 · Multipli Jun 2025 · Plenti 21 May 2026 · Moneytech 29 Jan 2026 · Pepper 1 Feb 2026 · Latitude Apr 2026 · Iron Capital undated · MoneyMe 11 Aug 2025 · Angle Feb 2026 · Bizcap 2024 · Moula 1 Aug 2024 · Lumi undated · Capify Aug 2025',
   fields:sel('mKind','What do they need',[['equip','Equipment or asset finance'],['cash','Cashflow or working capital']])
    +inp('mAmt','Amount $','number','80000')
    +inp('mRev','Monthly turnover $','number','45000')
@@ -10214,7 +10413,7 @@ function mRun(){
      +'&lt;/div&gt;';
    }).join('');
   $('mGaps').innerHTML='&lt;div style=&quot;font-size:11.5px;color:var(--mut);line-height:1.6;border:1px dashed var(--bdr2);border-radius:9px;padding:9px 12px&quot;&gt;'
-   +'&lt;b style=&quot;color:var(--dim)&quot;&gt;Where the guides fall short:&lt;/b&gt; AMMF, Pepper Commercial, flexicommercial and Latitude publish no rates in the documents you hold. Latitude has no consumer credit policy at all, only the compliance scripting. NOW Finance personal loan tiers are images in the briefing and did not extract. Get a current rate card from those four before you quote a number.&lt;/div&gt;';
+   +'&lt;b style=&quot;color:var(--dim)&quot;&gt;Where the guides fall short:&lt;/b&gt; No rates published in the documents you hold for AMMF, Pepper Commercial, flexicommercial, Latitude Sole Trader or the Capify business loan. Latitude consumer has no credit policy at all, only compliance scripting. NOW Finance personal loan tiers are images and did not extract. Lumi is undated and was read off a scan. Azora consumer repriced on 13 April 2026 and your guide is the November 2025 one. Get a current card for those before you quote a number.&lt;br&gt;&lt;b style=&quot;color:var(--dim)&quot;&gt;Two conflicts worth resolving:&lt;/b&gt; your Firstmac policy is January 2025 but the rate matrix is August 2026 and they disagree on the minimum loan. Morris publish three different tier tables across their guide, matrix and flyers.&lt;/div&gt;';
 }
 document.addEventListener('DOMContentLoaded',function(){
   var b=document.querySelector('.mmode');

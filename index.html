@@ -3350,13 +3350,16 @@ input,select,textarea{font-family:inherit}
 .hx .hxb .g{color:var(--teal)}.hx .hxb .b{color:var(--coral)}
 .hx .hxb i{font-style:normal;display:block;margin-top:5px}
 @media(max-width:640px){.hx .hxb{width:210px;left:auto;right:-6px;transform:none}}
-.guide{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px}
+.guide{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 10px;display:block;width:100%}
 .guide&gt;summary{cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
-.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:0 0 14px}
-.hs{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:11px 13px}
-.hs .n{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:var(--teal);color:#06251f;font-size:11px;font-weight:700;margin-bottom:6px}
+.howto{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 0 12px;align-items:stretch}
+@media(max-width:1100px){.howto{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.howto{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.howto{grid-template-columns:1fr}}
+.hs{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 13px;display:flex;flex-direction:column;min-height:0}
+.hs .n{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--teal);color:#06251f;font-size:11px;font-weight:700;margin-bottom:7px;flex:0 0 auto;align-self:flex-start}
 .hs .t{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px}
-.hs .d{font-size:12.5px;color:var(--dim);line-height:1.55}
+.hs .d{font-size:12px;color:var(--dim);line-height:1.5}
 .hs.when{border-style:dashed}
 .alab{font-size:11.5px;color:var(--dim)}
 .ainp{width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel2);border:1px solid var(--bdr2);border-radius:7px;padding:8px 10px;color:var(--txt);font-size:12.5px;font-family:inherit}
@@ -3392,17 +3395,20 @@ input,select,textarea{font-family:inherit}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px 20px 4px;max-width:1280px;margin:0 auto;width:100%}
 .kpi{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px}
 .kpi .v{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.5px}
-.kpi .l{font-size:12px;color:var(--dim);margin-top:3px}
+.kpi .l{font-size:12px;color:var(--dim);margin-top:4px;display:flex;align-items:center;gap:2px;line-height:1.35}
 .kpi.warn .v{color:var(--amber)} .kpi.bad .v{color:var(--coral)} .kpi.good .v{color:var(--teal)}
 
 .wrap{max-width:1280px;margin:0 auto;padding:14px 20px 90px;width:100%}
 .pane{display:none}.pane.on{display:block}
-.sect-h{display:flex;align-items:baseline;gap:10px;margin:14px 0 10px;flex-wrap:wrap}
+.sect-h{display:flex;align-items:baseline;gap:4px 10px;margin:16px 0 11px;flex-wrap:wrap}
+.sect-h h2{margin:0}
+.sect-h .sub{flex:1 1 100%}
+@media(min-width:900px){.sect-h .sub{flex:1 1 auto}}
 .sect-h h2{font-size:15px;font-weight:700}
 .sect-h .sub{font-size:13px;color:var(--dim)}
 
 /* partner cards */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,340px));gap:12px;justify-content:start;align-items:start}
 .pcard{position:relative;background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px 14px 20px;text-align:left;color:var(--txt);transition:border-color .2s,transform .15s;overflow:hidden}
 .pcard:hover{border-color:var(--bdr2);transform:translateY(-1px)}
 .pcard::before{content:&quot;&quot;;position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--hc,var(--faint))}
@@ -3599,8 +3605,9 @@ tr.star td{background:rgba(20,184,166,.05)}
 &lt;main class=&quot;wrap&quot;&gt;
 
 &lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My partners&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;
-    &lt;div class=&quot;howto&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My partners&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;howto&quot;&gt;
     &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;1&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Score a new one&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Before you sign anyone. 12 questions on the phone, tells you yes or no.&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;2&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Leads they send&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Every client they refer. Log it, ring inside 60 minutes.&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;3&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Monthly catch-up&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Once a month per partner. How'd the month go, what do they need.&lt;/div&gt;&lt;/div&gt;
@@ -3629,8 +3636,7 @@ tr.star td{background:rgba(20,184,166,.05)}
       &lt;div style=&quot;font-size:11.5px;color:var(--faint);line-height:1.6;margin-top:11px&quot;&gt;&lt;b style=&quot;color:var(--dim)&quot;&gt;The one rule of thumb:&lt;/b&gt; a partner who sends 3 leads a month and answers the phone is worth more than one who promises twenty and goes quiet. Volume with silence is the pattern to kill early.&lt;/div&gt;
     &lt;/div&gt;
   &lt;/details&gt;
-&lt;/div&gt;
-  &lt;details style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px&quot;&gt;
+  &lt;details style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px;display:block;width:100%&quot;&gt;
       &lt;summary style=&quot;cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none&quot;&gt;+ Add a partner directly &lt;span style=&quot;font-weight:400;color:var(--faint);font-size:11.5px&quot;&gt;· for ones head office signed up, where you skip the scorecard&lt;/span&gt;&lt;/summary&gt;
       &lt;div style=&quot;padding:13px 15px;border-top:1px solid var(--bdr)&quot;&gt;
         &lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px&quot;&gt;

@@ -3796,7 +3796,7 @@ function partnersJson(){
   &lt;div class=&quot;tile-wrap&quot;&gt;
     &lt;div class=&quot;fcard&quot;&gt;
       &lt;div class=&quot;fbody&quot;&gt;
-        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Partner / business name&lt;/label&gt;&lt;input id=&quot;tBiz&quot; value=&quot;Bayside Marine Sales&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Partner / business name&lt;/label&gt;&lt;input id=&quot;tBiz&quot; value=&quot;&quot; placeholder=&quot;partner business name&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Asset title&lt;/label&gt;&lt;input id=&quot;tAsset&quot; value=&quot;2024 Quintrex 481 Fishabout&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;grid2&quot;&gt;
           &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Price $&lt;/label&gt;&lt;input id=&quot;tPrice&quot; type=&quot;number&quot; value=&quot;52990&quot;&gt;&lt;/div&gt;
@@ -3886,17 +3886,14 @@ let partners=[],leads=[],ledger=[];
     ledger=Array.isArray(o.ledger)?o.ledger:[];
   }catch(e){}
 })();
-function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger})); }catch(e){} }
+function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger,slaLog:(typeof slaLogRows!=='undefined'?slaLogRows.slice(0,60):[])})); }catch(e){} }
 
 partners.forEach(p=&gt;p.h=calcHealth(p));
 
 const STAGES=[&quot;Received&quot;,&quot;Contacted&quot;,&quot;Docs&quot;,&quot;Submitted&quot;,&quot;Outcome&quot;];
 
-let slaLogRows=[
- {t:&quot;Yesterday 4:12p&quot;,p:&quot;Bayside Marine&quot;,c:&quot;M. Torres&quot;,r:&quot;Contacted 29m ✓&quot;,ok:true},
- {t:&quot;Yesterday 11:03a&quot;,p:&quot;Southside Prestige&quot;,c:&quot;K. Abdi&quot;,r:&quot;Contacted 74m ✗ BREACH&quot;,ok:false},
- {t:&quot;Fri 2:41p&quot;,p:&quot;Moreton Motorcycles&quot;,c:&quot;L. Nguyen&quot;,r:&quot;Contacted 12m ✓&quot;,ok:true}
-];
+let slaLogRows=[];
+(function(){ try{ const o=JSON.parse(localStorage.getItem(PKEY))||{}; if(Array.isArray(o.slaLog)) slaLogRows=o.slaLog; }catch(e){} })();
 const CATALOGUE=[
  {n:&quot;Seasonal Campaign Pack (EOFY / stock run-out)&quot;,c:500,s:1000,star:true},
  {n:&quot;AI Product &amp; Finance Video Ad (15–30s)&quot;,c:300,s:350},
@@ -4366,6 +4363,7 @@ function paintSLA(){
     row.innerHTML=tHTML+'&lt;div class=&quot;who&quot;&gt;&lt;div class=&quot;cl&quot;&gt;'+L.client+'&lt;/div&gt;&lt;div class=&quot;meta&quot;&gt;&lt;b&gt;'+p.biz+'&lt;/b&gt; · '+L.asset+'&lt;/div&gt;&lt;div class=&quot;pips&quot;&gt;'+pips+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;act&quot;&gt;'+act+'&lt;/div&gt;';
     list.append(row);
   });
+  if(!slaLogRows.length){ $('#slaLog').innerHTML='&lt;div style=&quot;border:1px dashed var(--bdr2);border-radius:10px;padding:18px;text-align:center;color:var(--faint);font-size:12px;line-height:1.6&quot;&gt;Nothing logged yet.&lt;br&gt;Every lead you contact from the board above lands here with its response time — that\'s your evidence at review time.&lt;/div&gt;'; return; }
   $('#slaLog').innerHTML=slaLogRows.map(r=&gt;'&lt;div class=&quot;log-line&quot;&gt;&lt;span style=&quot;width:110px&quot;&gt;'+r.t+'&lt;/span&gt;&lt;span style=&quot;flex:1&quot;&gt;'+r.p+' — '+r.c+'&lt;/span&gt;&lt;span class=&quot;'+(r.ok?'ok':'bad')+'&quot;&gt;'+r.r+'&lt;/span&gt;&lt;/div&gt;').join('');
   paintKPIs();
 }
@@ -4373,7 +4371,8 @@ setInterval(()=&gt;{_now=Date.now();if($('#pane-sla').classList.contains('on'))p
 function findL(id){return leads.find(l=&gt;l.id===id)}
 window.attempt=id=&gt;{const L=findL(id);L.att=Math.min(3,L.att+1);pSave();toast('Attempt '+L.att+'/3 logged','Noted against the lead.');paintSLA()};
 window.contact=id=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);const m=Math.round((now0()-L.recv)/60000);L.stage=1;L.contactAt=m;pSave();
-  slaLogRows.unshift({t:'Just now',p:p.biz,c:L.client,r:'Contacted '+m+'m '+(m&lt;=60?'✓':'✗ BREACH'),ok:m&lt;=60});
+  slaLogRows.unshift({t:new Date().toLocaleDateString('en-AU',{weekday:'short'})+' '+new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}).toLowerCase(),p:p.biz,c:L.client,r:'Contacted '+m+'m '+(m&lt;=60?'✓':'✗ BREACH'),ok:m&lt;=60});
+  pSave();
   smsToast(p,SMS[1](L.client));paintSLA()};
 window.advance=id=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);L.stage++;pSave();smsToast(p,SMS[L.stage](L.client));paintSLA()};
 window.outcome=(id,o)=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);L.outcome=o;L.stage=4;pSave();smsToast(p,SMS[o](L.client));paintSLA()};

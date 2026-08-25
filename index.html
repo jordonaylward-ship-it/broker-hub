@@ -3782,6 +3782,7 @@ function partnersJson(){
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;button class=&quot;btn pri&quot; id=&quot;qsAdd&quot;&gt;Add to partner book&lt;/button&gt;
+      &lt;div id=&quot;scoreMode&quot; style=&quot;display:none;font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:9px;border:1px dashed var(--bdr2);border-radius:8px;padding:9px 11px&quot;&gt;&lt;/div&gt;
       &lt;div id=&quot;qsPacks&quot; style=&quot;margin-top:14px&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
@@ -4044,7 +4045,8 @@ function paintPartners(){
       '&lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'
       +((p.pipe&amp;&amp;p.pipe.stage&amp;&amp;p.pipe.stage!=='Live')?'&lt;span class=&quot;chip&quot; style=&quot;border-color:'+(ONB_C[p.pipe.stage]||'var(--bdr2)')+';color:'+(ONB_C[p.pipe.stage]||'var(--dim)')+'&quot;&gt;'+p.pipe.stage.toUpperCase()+'&lt;/span&gt;':'')
       +(agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;hscore&quot;&gt;&lt;div&gt;&lt;div class=&quot;ring&quot;&gt;'+(p.h?p.h.H:'—')+'&lt;/div&gt;&lt;div class=&quot;band&quot;&gt;'+b.t+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;hscore&quot;&gt;&lt;div&gt;&lt;div class=&quot;ring&quot;&gt;'+(p.h?p.h.H:'—')+'&lt;/div&gt;&lt;div class=&quot;band&quot;&gt;'+b.t+'&lt;/div&gt;'
+      +(p.readiness?'&lt;div class=&quot;bl&quot; style=&quot;color:var(--faint)&quot;&gt;readiness '+p.readiness.t+'&lt;/div&gt;':'')+'&lt;/div&gt;'+
       '&lt;div class=&quot;nums&quot;&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.leadsMTD+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LEADS MTD&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.lastLead+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LAST LEAD&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(p.h?p.h.F:'—')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;FINANCE&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
@@ -4054,6 +4056,31 @@ function paintPartners(){
   });
   paintKPIs();
 }
+
+let scoringId=null;
+function paintScoreMode(){
+  const box=$('#scoreMode'), btn=$('#qsAdd');
+  if(!box||!btn)return;
+  if(scoringId){
+    const p=partners.find(x=&gt;x.id===scoringId);
+    box.style.display='block';
+    box.innerHTML='Scoring &lt;b style=&quot;color:var(--txt)&quot;&gt;'+(p?p.biz:'a partner')+'&lt;/b&gt;, who is already in your book.'
+      +(p&amp;&amp;p.readiness?' Last scored '+p.readiness.t+'/100 on '+fmtD(p.readiness.d)+'.':'')
+      +' &lt;a href=&quot;#&quot; onclick=&quot;clearScoreMode();return false&quot; style=&quot;color:var(--teal)&quot;&gt;Score someone new instead&lt;/a&gt;';
+    btn.textContent='Save score to '+(p?p.biz:'partner');
+  }else{
+    box.style.display='none';
+    btn.textContent='Add to partner book';
+  }
+}
+function clearScoreMode(){
+  scoringId=null;
+  ['n_name','n_biz','n_ind'].forEach(id=&gt;{const el=$('#'+id); if(el)el.value=''});
+  let qi=0; QS.forEach(sec=&gt;sec.qs.forEach(()=&gt;{const el=$('#qs'+(qi++)); if(el)el.value=''}));
+  ['cm1','cm2','cm3'].forEach(id=&gt;{const el=$('#'+id); if(el)el.checked=false});
+  qsCalc(); paintScoreMode();
+}
+window.clearScoreMode=clearScoreMode;
 
 /* ── add a partner without the scorecard (HQ-onboarded) ── */
 (function(){
@@ -4145,6 +4172,10 @@ function openDrawer(id){
     '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+p.name+' · '+p.phone+(p.pipe&amp;&amp;p.pipe.email?' · '+p.pipe.email:'')+' · '+p.ind+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;button class=&quot;d-close&quot; onclick=&quot;closeDrawer()&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;'+
     onbBlock(p)+
+    (p.readiness?'&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:11px 14px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap&quot;&gt;'
+      +'&lt;div&gt;&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Readiness&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);margin-top:3px&quot;&gt;'+p.readiness.band+' · scored '+fmtD(p.readiness.d)+'&lt;/div&gt;&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:22px;font-weight:700;font-family:var(--mono);color:var(--txt)&quot;&gt;'+p.readiness.t+'&lt;span style=&quot;font-size:12px;color:var(--faint)&quot;&gt;/100&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;':'')+
     '&lt;div class=&quot;chips&quot; style=&quot;justify-content:flex-start;margin-top:9px&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'+
     '&lt;span class=&quot;chip&quot; style=&quot;color:'+b.c+';border-color:'+b.c+'&quot;&gt;'+(p.h?p.h.H+' · ':'')+b.t.toUpperCase()+'&lt;/span&gt;'+
     (agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
@@ -4168,6 +4199,7 @@ function openDrawer(id){
     '&lt;div class=&quot;d-actions&quot;&gt;'+
       '&lt;button class=&quot;btn pri&quot; onclick=&quot;goCheckin('+p.id+')&quot;&gt;Monthly check-in&lt;/button&gt;'+
       '&lt;button class=&quot;btn&quot; onclick=&quot;goQuarterly('+p.id+')&quot;&gt;Quarterly review&lt;/button&gt;'+
+      '&lt;button class=&quot;btn&quot; onclick=&quot;goScore('+p.id+')&quot;&gt;'+(p.readiness?'Re-score readiness':'Score readiness')+'&lt;/button&gt;'+
       '&lt;button class=&quot;btn&quot; onclick=&quot;copyPrep()&quot;&gt;Copy call prep&lt;/button&gt;'+
       (agencyReady(p)?'&lt;button class=&quot;btn&quot; style=&quot;color:var(--violet);border-color:rgba(139,124,246,.45)&quot; onclick=&quot;pitchAgency()&quot;&gt;Queue Agency pitch&lt;/button&gt;':'')+
     '&lt;/div&gt;&lt;/div&gt;';
@@ -4184,6 +4216,24 @@ function prepText(p){
 function copyPrep(){navigator.clipboard&amp;&amp;navigator.clipboard.writeText(prepText(curP)).then(()=&gt;toast('Prep copied','Paste into Dialpad notes before you ring.')).catch(()=&gt;toast('Prep','Clipboard blocked — copy manually.'))}
 function goCheckin(id){closeDrawer();switchTab('checkin');$('#ciPartner').value=id;renderCheckin()}
 function goQuarterly(id){closeDrawer();switchTab('quarterly');$('#qPartner').value=id;renderQuarterly()}
+function goScore(id){
+  const p=partners.find(x=&gt;x.id===id); if(!p)return;
+  closeDrawer(); switchTab('qualify');
+  scoringId=id;
+  $('#n_name').value=p.name==='—'?'':p.name;
+  $('#n_biz').value=p.biz;
+  $('#n_ind').value=p.ind==='—'?'':p.ind;
+  $('#n_type').value=p.type;
+  /* if they were scored before, put the old answers back so you can adjust rather than redo */
+  if(p.readiness&amp;&amp;p.readiness.answers){
+    p.readiness.answers.forEach((v,i)=&gt;{const el=$('#qs'+i); if(el&amp;&amp;v)el.value=v});
+  }else{
+    let qi=0; QS.forEach(sec=&gt;sec.qs.forEach(()=&gt;{const el=$('#qs'+(qi++)); if(el)el.value=''}));
+  }
+  ['cm1','cm2','cm3'].forEach(id2=&gt;{const el=$('#'+id2); if(el)el.checked=!!(p.readiness&amp;&amp;p.readiness.committed)});
+  qsCalc(); paintScoreMode();
+}
+window.goScore=goScore;
 
 /* ================= FIELD FACTORY ================= */
 const fInp=(id,l,t,v,ph)=&gt;'&lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;'+l+'&lt;/label&gt;&lt;input id=&quot;'+id+'&quot; type=&quot;'+(t||'text')+'&quot; value=&quot;'+(v!=null?v:'')+'&quot;'+(ph?' placeholder=&quot;'+ph+'&quot;':'')+'&gt;&lt;/div&gt;';
@@ -4560,15 +4610,41 @@ function qsCalc(){
   renderPacks(t,full);
   window._qsres={t,full,out};
 }
+function grabAnswers(){
+  const a=[]; let qi=0;
+  QS.forEach(sec=&gt;sec.qs.forEach(()=&gt;{const el=$('#qs'+(qi++)); a.push(el?el.value:'')}));
+  return a;
+}
 $('#qsAdd').onclick=()=&gt;{
   const r=window._qsres||{};
-  if(!r.full){toast('Finish the scorecard','All 12 questions need an answer before adding.');return}
-  if(!($('#cm1').checked&amp;&amp;$('#cm2').checked&amp;&amp;$('#cm3').checked)){toast('Commitment gate','Deck slide 19: all three minimum commitments must be a yes — otherwise walk away politely.');return}
+  if(!r.full){toast('Finish the scorecard','All 12 questions need an answer before saving.');return}
+  const committed=$('#cm1').checked&amp;&amp;$('#cm2').checked&amp;&amp;$('#cm3').checked;
+
+  /* scoring someone already in the book */
+  if(scoringId){
+    const p=partners.find(x=&gt;x.id===scoringId);
+    if(!p){scoringId=null;paintScoreMode();return}
+    const prev=p.readiness?p.readiness.t:null;
+    p.readiness={t:r.t,band:r.out.t,d:Date.now(),answers:grabAnswers(),committed:committed};
+    p.hist=p.hist||[];
+    p.hist.unshift({d:Date.now(),t:prev==null
+      ? 'Readiness scored '+r.t+'/100 — '+r.out.t+'.'
+      : 'Readiness re-scored '+prev+' → '+r.t+'/100 — '+r.out.t+'.'});
+    pSave();paintPartners();paintKPIs();
+    toast('Score saved',p.biz+' — '+r.t+'/100, '+r.out.t+(prev!=null?'. Was '+prev+'.':'.'));
+    const id=scoringId; scoringId=null; clearScoreMode();
+    switchTab('partners'); openDrawer(id);
+    return;
+  }
+
+  /* brand new prospect */
+  if(!committed){toast('Commitment gate','Deck slide 19: all three minimum commitments must be a yes — otherwise walk away politely.');return}
   const name=val('n_name')||'New contact',biz=val('n_biz')||'New Partner';
   const p={id:Date.now(),name,biz,type:val('n_type')||'Referral',ind:val('n_ind')||'—',phone:'—',leadsMTD:0,lastLead:0,nextCI:now+7*day,
     q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
     eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
     pipe:pipeDefaults({}),
+    readiness:{t:r.t,band:r.out.t,d:Date.now(),answers:grabAnswers(),committed:true},
     hist:[{d:now,t:'Qualified '+r.t+'/100 — '+r.out.t+'. Kick-off call to book within 24h of HQ handover.'}]};
   p.h=null;partners.push(p);pSave();paintPartners();fillPickers();fillAddPickers();paintKPIs();
   toast('Added to book',''+biz+' — '+r.out.t+'. First target: 3–5 leads in 30 days. Run their first quarterly to score health.');

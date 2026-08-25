@@ -3358,6 +3358,22 @@ input,select,textarea{font-family:inherit}
 .hs .t{font-size:12.5px;font-weight:600;color:var(--txt);margin-bottom:3px}
 .hs .d{font-size:11.5px;color:var(--faint);line-height:1.5}
 .hs.when{border-style:dashed}
+.pk{border:1px solid var(--bdr);border-radius:11px;background:var(--panel);padding:13px 15px;margin-bottom:10px;opacity:.62;transition:all .18s}
+.pk.on{opacity:1;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal) inset}
+.pk .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.pk .pn{font-size:14px;font-weight:700;color:var(--txt)}
+.pk .pfit{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.pk.on .pfit{color:var(--teal)}
+.pk .pwho{font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:8px}
+.pk ul{margin:0;padding-left:16px}
+.pk li{font-size:11.5px;color:var(--dim);line-height:1.6;margin-bottom:1px}
+.pk .pask{margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr);font-size:11.5px;color:var(--dim);line-height:1.5}
+.pk .pask b{color:var(--txt)}
+.pk .badge{background:var(--teal);color:#06251f;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em}
+.nx{background:var(--panel);border:1px solid var(--bdr);border-radius:11px;padding:13px 15px;margin-top:12px}
+.nx h4{font-size:12.5px;margin:0 0 7px;color:var(--txt)}
+.nx ol{margin:0;padding-left:17px}
+.nx li{font-size:11.5px;color:var(--dim);line-height:1.65;margin-bottom:3px}
 .guide&gt;summary::-webkit-details-marker{display:none}
 .guide&gt;summary::after{content:'›';color:var(--faint);font-size:17px;transition:transform .18s}
 .guide[open]&gt;summary::after{transform:rotate(90deg)}
@@ -3733,6 +3749,7 @@ function partnersJson(){
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;button class=&quot;btn pri&quot; id=&quot;qsAdd&quot;&gt;Add to partner book&lt;/button&gt;
+      &lt;div id=&quot;qsPacks&quot; style=&quot;margin-top:14px&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/section&gt;
@@ -4192,6 +4209,90 @@ $('#qCopy').onclick=()=&gt;{
 };
 
 /* ================= QUALIFY (official 12-Q Partner Scorecard) ================= */
+
+/* What you actually say on the phone. The official Ausloans wording stays underneath
+   so the score and the paperwork still line up. 'read' = your judgement, don't ask it. */
+const ASK={
+ 'How many staff are involved in sales/customer service?':
+   {say:&quot;Besides yourself, who else deals with customers day to day?&quot;,why:&quot;More people talking to customers means more chances to mention finance.&quot;},
+ &quot;What's their average transaction value?&quot;:
+   {say:&quot;Roughly what's a typical sale worth for you?&quot;,why:&quot;Bigger tickets are where finance actually helps them close.&quot;},
+ 'How comfortable are they with technology?':
+   {say:&quot;How does your team usually go when you bring in new software?&quot;,why:&quot;Decides whether they can run their own soft checks or you do it for them.&quot;},
+ &quot;What's their current finance lead volume or enquiries?&quot;:
+   {say:&quot;How many customers a month ask you about payments or finance?&quot;,why:&quot;This is your realistic lead expectation from day one.&quot;},
+ 'Do they currently offer any finance options?':
+   {say:&quot;At the moment, do you offer finance, or do people go sort it themselves?&quot;,why:&quot;Tells you if you're replacing someone or starting from scratch.&quot;},
+ 'How do they handle customer affordability concerns?':
+   {say:&quot;When a customer says it's a bit more than I wanted to spend, what happens next?&quot;,why:&quot;The single best predictor of whether they'll send you deals.&quot;},
+ 'Are they interested in learning about finance as a sales tool?':
+   {say:&quot;How keen would you be to learn how to use finance to close more sales?&quot;,why:&quot;Willing to learn beats already knowing.&quot;},
+ 'Do they have competitors offering finance?':
+   {say:&quot;Do the businesses you compete against offer finance?&quot;,why:&quot;If nobody local does, that's your pitch right there.&quot;},
+ 'How responsive are they to communication?':
+   {say:&quot;If I message you about one of your customers, how fast do you usually get back?&quot;,why:&quot;You need them reachable when a deal needs a document.&quot;},
+ 'Do they follow through on commitments?':
+   {say:&quot;Your read, don't ask this one.&quot;,read:true,why:&quot;Based on how they've handled the process so far. Did they turn up, reply, send what they said they would?&quot;},
+ 'Are they open to new ideas and suggestions?':
+   {say:&quot;If I came to you with an idea to get more finance customers, how would that land?&quot;,why:&quot;Separates partners you can grow from ones you just service.&quot;},
+ 'Do they see finance as valuable to their business?':
+   {say:&quot;What do you reckon finance actually does for a business like yours?&quot;,why:&quot;Their own words here tell you more than the score does.&quot;}
+};
+
+/* ── What you put in front of them once you know the score.
+      Built only from things Ausloans actually provides · no invented pricing. ── */
+const PACKS=[
+ {k:'fresh',n:'Starter pack',fit:'under 67 · or brand new to finance',
+  who:&quot;They've never sold with finance, or they're small and unproven. Keep it light until they show they'll refer.&quot;,
+  items:['Referral model · you do all the finance work, they just introduce the customer',
+         'Their own partner page · a link their customers apply through',
+         'QR code for the counter or a poster',
+         'Launch pack · email templates and a repayment calculator',
+         'Finance 101 session for their staff',
+         'Monthly catch-up call'],
+  ask:'3+ referrals a month, they mention finance to every customer, and they turn up to the monthly call.'},
+ {k:'valued',n:'Most Valued pack',fit:'67 to 79 · the sweet spot',
+  who:'Good business, decent volume, willing to learn. This is where most partners should sit and where you should spend your time.',
+  items:['Everything in Starter, plus:',
+         'Weekly pricing sheets so their ads can say &quot;from $X/week&quot;',
+         'Social media tiles made for their stock',
+         'Staff scripts · what to say when someone flinches at the price',
+         'Marketplace and website finance wording',
+         'In-store signage',
+         'Training: selling with weekly repayments',
+         'Quarterly review with a health score'],
+  ask:'5+ referrals a month, finance messaging live on at least two channels, and a named person on their side who owns it.'},
+ {k:'prem',n:'Premium pack',fit:'80+ · agency ready',
+  who:'High volume, tech confident, finance already part of how they sell. They can run their own soft checks.',
+  items:['Everything in Most Valued, plus:',
+         'Agent model · they run soft credit checks themselves in Zink ($12.90 per check, no setup or platform fees)',
+         'Cobranded application widget on their website',
+         'Their own deal tracking dashboard',
+         'Zink platform training and a refresher when staff change',
+         'Seasonal campaign packs · EOFY, stock run-out, service promos',
+         'Co-funded marketing where the numbers justify it',
+         'Priority on your time · same-day turnaround'],
+  ask:'10+ referrals a month, soft checks run before they hand over, and a quarterly strategy session with the owner.'}
+];
+function packFor(t){ return t&gt;=80?'prem':t&gt;=67?'valued':'fresh'; }
+function renderPacks(t,full){
+  const host=document.getElementById('qsPacks'); if(!host) return;
+  const pick=full?packFor(t):null;
+  host.innerHTML='&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:0 0 9px&quot;&gt;What to put in front of them'+(pick?'':' · finish the questions and one lights up')+'&lt;/div&gt;'
+   +PACKS.map(P=&gt;'&lt;div class=&quot;pk'+(P.k===pick?' on':'')+'&quot;&gt;'
+     +'&lt;div class=&quot;ph&quot;&gt;&lt;span class=&quot;pn&quot;&gt;'+P.n+(P.k===pick?' &lt;span class=&quot;badge&quot;&gt;RECOMMENDED&lt;/span&gt;':'')+'&lt;/span&gt;&lt;span class=&quot;pfit&quot;&gt;'+P.fit+'&lt;/span&gt;&lt;/div&gt;'
+     +'&lt;div class=&quot;pwho&quot;&gt;'+P.who+'&lt;/div&gt;'
+     +'&lt;ul&gt;'+P.items.map(x=&gt;'&lt;li&gt;'+x+'&lt;/li&gt;').join('')+'&lt;/ul&gt;'
+     +'&lt;div class=&quot;pask&quot;&gt;&lt;b&gt;What you ask back:&lt;/b&gt; '+P.ask+'&lt;/div&gt;'
+   +'&lt;/div&gt;').join('')
+   +(pick?'&lt;div class=&quot;nx&quot;&gt;&lt;h4&gt;Next steps · say this before you hang up&lt;/h4&gt;&lt;ol&gt;'
+     +'&lt;li&gt;&quot;I\'ll get the agreement over to you today — it comes from DocuSign. If there\'s more than one director, they all need to sign.&quot;&lt;/li&gt;'
+     +'&lt;li&gt;&quot;Once that\'s back, head office sets up your Zink account and your partner page goes live.&quot;&lt;/li&gt;'
+     +'&lt;li&gt;&quot;I\'ll send your launch pack — templates, calculator, QR code.&quot;&lt;/li&gt;'
+     +'&lt;li&gt;&quot;Then we book a 15 minute call to walk your team through it.&quot;&lt;/li&gt;'
+     +'&lt;li&gt;&quot;After that I\'ll check in monthly. First target is 3 to 5 referrals in the first 30 days.&quot;&lt;/li&gt;'
+     +'&lt;/ol&gt;&lt;div style=&quot;font-size:11px;color:var(--faint);margin-top:7px;line-height:1.5&quot;&gt;Then tick the three commitments above and hit &lt;b&gt;Add to partner book&lt;/b&gt;. Their first monthly catch-up gets scheduled automatically.&lt;/div&gt;&lt;/div&gt;':'');
+}
 const QS=[
  {s:'Business characteristics',w:2,qs:[
   {q:'How many staff are involved in sales/customer service?',a:{'4+ staff members actively involved':5,'2-3 staff members actively involved':4,'1-2 staff members actively involved':3,'Only owner/manager involved':2,'Inconsistent staff involvement':1}},
@@ -4221,7 +4322,13 @@ function renderQualify(){
    card('Prospect details','',
     '&lt;div class=&quot;grid2&quot;&gt;'+fInp('n_name','Contact name','text','')+fInp('n_biz','Business name','text','')+fInp('n_ind','Industry','text','')+fSel('n_type','Recommended model',['Referral','Agent'],'Referral')+'&lt;/div&gt;')+
    QS.map((sec,si)=&gt;card((si+1)+' · '+sec.s,'×'+sec.w+' weight',
-     sec.qs.map(qq=&gt;{const id='qs'+(qi++);return fSel(id,qq.q,Object.keys(qq.a),'')}).join('')
+     sec.qs.map(qq=&gt;{const id='qs'+(qi++);const a=ASK[qq.q]||{};const esc=x=&gt;String(x==null?'':x).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;');
+       const head=a.read
+         ? '&lt;span style=&quot;display:block;font-size:13px;font-weight:600;color:var(--amber);line-height:1.45;text-transform:none;letter-spacing:0&quot;&gt;'+esc(a.say)+'&lt;/span&gt;'
+         : '&lt;span style=&quot;display:block;font-size:13px;font-weight:600;color:var(--txt);line-height:1.45;text-transform:none;letter-spacing:0&quot;&gt;&amp;ldquo;'+esc(a.say||qq.q)+'&amp;rdquo;&lt;/span&gt;';
+       const sub='&lt;span style=&quot;display:block;font-size:11px;color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0;margin-top:3px&quot;&gt;'+esc(a.why||'')+'&lt;/span&gt;'
+                +'&lt;span style=&quot;display:block;font-size:10px;color:var(--bdr2);font-weight:400;text-transform:none;letter-spacing:0;margin-top:2px&quot;&gt;Ausloans wording: '+esc(qq.q)+'&lt;/span&gt;';
+       return fSel(id,head+sub,Object.keys(qq.a),'')}).join('')
    )).join('')+
    '&lt;div id=&quot;qsOutcome&quot;&gt;&lt;/div&gt;';
   $('#qsForm').onchange=qsCalc;qsCalc();
@@ -4268,6 +4375,7 @@ function qsCalc(){
       pe.innerHTML=v+(weak.length?'&lt;div style=&quot;margin-top:7px&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Their weak spots ('+weak.length+'):&lt;/b&gt; '+weak.map(x=&gt;x.replace(/\?$/,'')).join(' · ')+'. These are what your check-ins should chip away at.&lt;/div&gt;':'&lt;div style=&quot;margin-top:7px;color:var(--teal)&quot;&gt;No weak answers — nothing scored 2 or below.&lt;/div&gt;');
     }
   }
+  renderPacks(t,full);
   window._qsres={t,full,out};
 }
 $('#qsAdd').onclick=()=&gt;{

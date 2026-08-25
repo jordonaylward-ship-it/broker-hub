@@ -88,6 +88,7 @@ body.locked .shell{display:none}
 .nav-tab[data-tool=settings].on{background:#2fd6a5;border-color:#2fd6a5;color:#0b0d12}
 .nav-tab[data-tool=warranty].on{background:#e8b4f8;border-color:#e8b4f8;color:#0b0d12}
 .nav-tab[data-tool=drive].on{background:#ff9e80;border-color:#ff9e80;color:#0b0d12}
+.nav-tab[data-tool=partners].on{background:#14b8a6;border-color:#14b8a6;color:#0b0d12}
 .nav-tab[data-tool=replydeck].on{background:#c8e86b;border-color:#c8e86b;color:#0b0d12}
 .nav-tab[data-tool=crm].on{background:#67e8f9;border-color:#67e8f9;color:#0b0d12}
 .nav-tab:hover{border-color:#3a4160}
@@ -163,6 +164,7 @@ body.locked .shell{display:none}
       <button class="nav-tab" data-tool="serviceability"><span class="ico">📐</span> Serviceability</button>
       <button class="nav-tab" data-tool="warranty"><span class="ico">🛡️</span> Warranty</button>
       <button class="nav-tab" data-tool="drive"><span class="ico">🚗</span> Drive Tracker</button>
+      <button class="nav-tab" data-tool="partners"><span class="ico">🤝</span> Partners</button>
       <button class="nav-tab" data-tool="replydeck"><span class="ico">⚡</span> ReplyDeck</button>
       <button class="nav-tab" data-tool="crm"><span class="ico">✍️</span> CRM Note</button>
       <button class="nav-tab" data-tool="finance"><span class="ico">💰</span> Finances</button>
@@ -3307,6 +3309,1167 @@ document.getElementById('btnImport').addEventListener('click', function(){
 });
 
 load(); render();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></template>
+    <template id="tpl-partners"><iframe id="frame-partners" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;&gt;
+&lt;title&gt;FundOne — Partner Manager v2&lt;/title&gt;
+&lt;link href=&quot;https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;style&gt;
+:root{
+  --ink:#0c0e14; --panel:#10131b; --panel2:#151821; --bdr:#252a38; --bdr2:#2e3445;
+  --txt:#e8eaf0; --dim:#8a90a5; --faint:#5c6170;
+  --teal:#14b8a6; --green:#4cc38a; --amber:#f5b249; --coral:#f47067; --red2:#e0443a; --violet:#8b7cf6;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--ink);color:var(--txt);font-family:'DM Sans',system-ui,sans-serif}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+
+.topnav{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--bdr);flex-wrap:wrap;position:sticky;top:0;z-index:40}
+.brand{font-size:15px;font-weight:700;letter-spacing:.3px}
+.brand span{color:var(--teal)}
+.nav-tabs{display:flex;gap:4px;flex-wrap:wrap}
+.nav-tab{padding:8px 13px;border:1px solid var(--bdr);background:transparent;color:var(--dim);font-size:12.5px;font-weight:600;border-radius:8px;transition:all .2s}
+.nav-tab:hover{background:var(--panel2);color:var(--txt)}
+.nav-tab.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.proto{margin-left:auto;font-size:10.5px;color:var(--faint);border:1px dashed var(--bdr2);border-radius:6px;padding:5px 10px}
+.proto b{color:var(--amber);font-weight:600}
+
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px 20px 4px;max-width:1280px;margin:0 auto;width:100%}
+.kpi{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px}
+.kpi .v{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.5px}
+.kpi .l{font-size:11px;color:var(--dim);margin-top:3px}
+.kpi.warn .v{color:var(--amber)} .kpi.bad .v{color:var(--coral)} .kpi.good .v{color:var(--teal)}
+
+.wrap{max-width:1280px;margin:0 auto;padding:14px 20px 90px;width:100%}
+.pane{display:none}.pane.on{display:block}
+.sect-h{display:flex;align-items:baseline;gap:10px;margin:14px 0 10px;flex-wrap:wrap}
+.sect-h h2{font-size:15px;font-weight:700}
+.sect-h .sub{font-size:12px;color:var(--faint)}
+
+/* partner cards */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.pcard{position:relative;background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px 14px 20px;text-align:left;color:var(--txt);transition:border-color .2s,transform .15s;overflow:hidden}
+.pcard:hover{border-color:var(--bdr2);transform:translateY(-1px)}
+.pcard::before{content:&quot;&quot;;position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--hc,var(--faint))}
+.pcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pcard .biz{font-size:14.5px;font-weight:700;line-height:1.25}
+.pcard .ind{font-size:11px;color:var(--dim);margin-top:2px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font-size:10px;font-weight:700;letter-spacing:.4px;padding:3px 8px;border-radius:999px;border:1px solid;white-space:nowrap}
+.chip.type{color:var(--dim);border-color:var(--bdr2);background:var(--panel2)}
+.chip.agency{color:var(--violet);border-color:rgba(139,124,246,.5);background:rgba(139,124,246,.1)}
+.hscore{display:flex;align-items:center;gap:12px;margin-top:12px}
+.hscore .ring{font-family:var(--mono);font-size:30px;font-weight:700;letter-spacing:-1px;color:var(--hc,var(--faint))}
+.hscore .band{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--hc,var(--faint))}
+.hscore .bl{font-size:10px;color:var(--faint)}
+.pcard .nums{display:flex;gap:16px;margin-left:auto}
+.pcard .num{text-align:right}
+.pcard .num .v{font-family:var(--mono);font-size:16px;font-weight:700}
+.pcard .num .l{font-size:9.5px;color:var(--faint);letter-spacing:.3px}
+.pcard .foot{display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:10px;border-top:1px solid var(--bdr);font-size:11px;color:var(--dim)}
+.pcard .foot .due-warn{color:var(--amber);font-weight:600}
+.pcard .foot .due-over{color:var(--coral);font-weight:700}
+.linkish{background:none;border:none;color:var(--teal);font-size:11.5px;font-weight:600;padding:0}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(5,6,10,.62);backdrop-filter:blur(2px);z-index:60;display:none}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(490px,100%);background:var(--panel);border-left:1px solid var(--bdr);z-index:70;transform:translateX(102%);transition:transform .25s ease;overflow-y:auto}
+.drawer.on{transform:none}
+.d-head{position:sticky;top:0;background:var(--panel);padding:16px 20px 12px;border-bottom:1px solid var(--bdr);z-index:2}
+.d-head .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.d-head h3{font-size:17px;font-weight:700}
+.d-head .ind{font-size:12px;color:var(--dim);margin-top:2px}
+.d-close{background:var(--panel2);border:1px solid var(--bdr);color:var(--dim);width:30px;height:30px;border-radius:8px;font-size:15px;line-height:1}
+.d-body{padding:16px 20px 40px}
+.d-sec{margin-bottom:20px}
+.d-sec h4{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--faint);text-transform:uppercase;margin-bottom:9px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--panel2);border:1px solid var(--bdr);border-radius:9px;padding:9px 11px}
+.stat .v{font-family:var(--mono);font-size:15px;font-weight:700}
+.stat .l{font-size:10px;color:var(--faint);margin-top:2px}
+.subsc{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.subsc .ss{display:flex;justify-content:space-between;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:7px 10px;font-size:11.5px}
+.subsc .ss b{font-family:var(--mono)}
+.alert-red{background:rgba(244,112,103,.08);border:1px solid rgba(244,112,103,.4);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.5}
+.alert-red b{color:var(--coral)}
+.hist{border-left:2px solid var(--bdr2);padding-left:12px}
+.hist .h-item{margin-bottom:11px;font-size:12px}
+.hist .h-item .hd{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+.hist .h-item .ht{color:var(--dim);margin-top:2px;line-height:1.45}
+.d-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn{padding:9px 15px;border-radius:8px;border:1px solid var(--bdr);background:var(--panel2);color:var(--txt);font-size:12.5px;font-weight:600;transition:all .18s}
+.btn:hover{border-color:var(--bdr2)}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.warn{color:var(--coral);border-color:rgba(244,112,103,.4);background:rgba(244,112,103,.07)}
+.btn.sm{padding:6px 11px;font-size:11.5px}
+
+/* SLA */
+.sla-list{display:flex;flex-direction:column;gap:10px}
+.sla{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:118px 1fr auto;gap:16px;align-items:center}
+.sla.crit{border-color:rgba(244,112,103,.55)}
+.sla.done{opacity:.82}
+.timer .t{font-family:var(--mono);font-size:23px;font-weight:700;letter-spacing:-.5px}
+.timer .cap{font-size:9.5px;letter-spacing:.7px;color:var(--faint);text-transform:uppercase;margin-top:1px}
+.timer.ok .t{color:var(--teal)} .timer.mid .t{color:var(--amber)} .timer.crit .t{color:var(--coral)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.timer.crit .t{animation:pulse 1.1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.timer.crit .t{animation:none}}
+.tbar{height:4px;background:var(--panel2);border-radius:3px;margin-top:7px;overflow:hidden;width:100px}
+.tbar i{display:block;height:100%;border-radius:3px;background:var(--teal);transition:width 1s linear}
+.timer.mid .tbar i{background:var(--amber)} .timer.crit .tbar i{background:var(--coral)}
+.sla .who .cl{font-size:14px;font-weight:700}
+.sla .who .meta{font-size:11.5px;color:var(--dim);margin-top:2px}
+.sla .who .meta b{color:var(--txt);font-weight:600}
+.pips{display:flex;gap:4px;margin-top:9px;flex-wrap:wrap}
+.pip{font-size:9.5px;font-weight:700;letter-spacing:.4px;padding:3px 8px;border-radius:999px;background:var(--panel2);border:1px solid var(--bdr);color:var(--faint)}
+.pip.done{color:var(--teal);border-color:rgba(20,184,166,.4);background:rgba(20,184,166,.07)}
+.pip.now{color:#fff;background:var(--teal);border-color:var(--teal)}
+.pip.out-ok{color:#fff;background:var(--teal);border-color:var(--teal)}
+.pip.out-no{color:#fff;background:var(--coral);border-color:var(--coral)}
+.sla .act{display:flex;flex-direction:column;gap:6px;align-items:flex-end;min-width:150px}
+.att{font-size:10.5px;color:var(--faint);font-family:var(--mono)}
+.log-line{display:flex;gap:10px;font-size:11.5px;color:var(--dim);padding:7px 2px;border-bottom:1px solid var(--bdr);font-family:var(--mono)}
+.log-line .bad{color:var(--coral);font-weight:700}
+.log-line .ok{color:var(--teal)}
+
+/* forms (check-in / quarterly / qualify / scorecard) */
+.fwrap{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+.fmain{display:flex;flex-direction:column;gap:12px}
+.fcard{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
+.fcard&gt;h3{font-size:13px;font-weight:700;padding:12px 16px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center}
+.fcard&gt;h3 .tag{font-size:9.5px;font-weight:700;letter-spacing:.5px;color:var(--faint);border:1px solid var(--bdr2);border-radius:999px;padding:2px 8px}
+.fbody{padding:13px 16px;display:grid;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.f-row{display:grid;gap:5px}
+.f-row label{font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--faint);text-transform:uppercase}
+.f-row input,.f-row select,.f-row textarea{background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:12.5px;width:100%}
+.f-row input:focus,.f-row select:focus,.f-row textarea:focus{border-color:var(--teal);outline:none}
+.f-row .auto{font-family:var(--mono);color:var(--teal);background:transparent;border-style:dashed}
+.tog{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim)}
+.tog input{accent-color:var(--teal);width:15px;height:15px}
+.togs{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.side{position:sticky;top:70px;display:flex;flex-direction:column;gap:12px}
+.scorebox{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:16px;text-align:center}
+.scorebox .big{font-family:var(--mono);font-size:46px;font-weight:700;letter-spacing:-2px;line-height:1}
+.scorebox .band{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.scorebox .cap{font-size:10px;color:var(--faint);margin-top:6px}
+.ss-list{display:flex;flex-direction:column;gap:6px;margin-top:12px;text-align:left}
+.ss-line{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);border-bottom:1px solid var(--bdr);padding-bottom:5px}
+.ss-line b{font-family:var(--mono);color:var(--txt)}
+.mkrow{display:grid;grid-template-columns:1fr 150px;gap:8px;align-items:center;font-size:12px}
+.opprow{display:grid;grid-template-columns:1fr 110px 90px;gap:8px;align-items:center;font-size:12px}
+.actrow{display:grid;grid-template-columns:2fr 100px 110px 120px;gap:8px}
+.riskrow{display:grid;grid-template-columns:1.4fr 110px 1.6fr;gap:8px}
+.rowhead{font-size:9.5px;font-weight:700;letter-spacing:.5px;color:var(--faint);text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px 16px;border-bottom:1px solid var(--bdr);font-weight:700}
+td{padding:8px 16px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td.mono,th.r{font-family:var(--mono);font-size:11.5px}
+th.r,td.r{text-align:right}
+tr.star td{background:rgba(20,184,166,.05)}
+.margin-pos{color:var(--teal);font-weight:700}
+.paid-y{color:var(--teal)} .paid-n{color:var(--coral);font-weight:700}
+.pass{color:var(--teal);font-weight:700} .fail{color:var(--coral);font-weight:700}
+.rule-note{font-size:11.5px;color:var(--dim);padding:11px 16px;border-top:1px solid var(--bdr);line-height:1.5}
+.rule-note b{color:var(--coral)}
+.outcard{border-radius:10px;border:1px solid var(--bdr2);padding:13px 15px;font-size:12px;line-height:1.55}
+.outcard .ot{font-size:13.5px;font-weight:700;margin-bottom:6px}
+.outcard ul{margin:6px 0 0 16px;color:var(--dim)}
+.commit .tog{padding:6px 0}
+.hold-chip{font-size:10.5px;color:var(--amber);border:1px dashed rgba(245,178,73,.5);border-radius:7px;padding:6px 10px;line-height:1.4}
+
+/* tiles */
+.tile-wrap{display:grid;grid-template-columns:400px 1fr;gap:16px;align-items:start}
+.canvas-box{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+#tileCanvas{width:100%;max-width:460px;border-radius:10px;border:1px solid var(--bdr)}
+.swatches{display:flex;gap:8px}
+.sw{width:26px;height:26px;border-radius:8px;border:2px solid transparent;padding:0}
+.sw.on{border-color:#fff}
+.phr{display:flex;flex-direction:column;gap:6px;padding:2px 0}
+.phr .tog{font-size:11.5px}
+.phr .locked{color:var(--faint)}
+.two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:start}
+
+/* toasts */
+.toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;width:min(430px,92%)}
+.toast{background:var(--panel2);border:1px solid rgba(20,184,166,.5);border-radius:10px;padding:11px 14px;font-size:12px;line-height:1.5;box-shadow:0 8px 28px rgba(0,0,0,.5);animation:tin .25s ease}
+.toast .tt{font-size:10px;font-weight:700;letter-spacing:.7px;color:var(--teal);text-transform:uppercase;margin-bottom:3px}
+.toast.sms{border-color:rgba(139,124,246,.55)} .toast.sms .tt{color:var(--violet)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.toast{animation:none}}
+
+@media(max-width:960px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .fwrap,.two-col,.tile-wrap{grid-template-columns:1fr}
+  .side{position:static}
+  .grid3{grid-template-columns:1fr 1fr}
+  .sla{grid-template-columns:96px 1fr;gap:12px}
+  .sla .act{grid-column:1/-1;flex-direction:row;justify-content:flex-end;align-items:center}
+  .timer .t{font-size:19px}
+  .proto{display:none}
+  .actrow{grid-template-columns:1fr 1fr}
+  .opprow{grid-template-columns:1fr 100px 80px}
+}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;nav class=&quot;topnav&quot;&gt;
+  &lt;div class=&quot;brand&quot;&gt;FundOne&lt;span&gt;·&lt;/span&gt;Partner Manager&lt;/div&gt;
+  &lt;div class=&quot;nav-tabs&quot;&gt;
+    &lt;button class=&quot;nav-tab on&quot; data-tab=&quot;partners&quot;&gt;Partners&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;sla&quot;&gt;Live SLA &lt;span id=&quot;nSla&quot;&gt;&lt;/span&gt;&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;checkin&quot;&gt;Monthly Check-In&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;quarterly&quot;&gt;Quarterly Review&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;qualify&quot;&gt;Qualify New&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;myscore&quot;&gt;My Scorecard&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;marketing&quot;&gt;Marketing $&lt;/button&gt;
+    &lt;button class=&quot;nav-tab&quot; data-tab=&quot;tiles&quot;&gt;Tile Maker&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;proto&quot;&gt;Saves in this browser · &lt;b&gt;sheet sync via CSV in the Partners pane&lt;/b&gt;&lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;div class=&quot;kpis&quot;&gt;
+  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kActive&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partners healthy (Good+)&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kLeads&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partner leads MTD&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot;&gt;38m&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Avg first contact&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi warn&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kDue&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Check-ins due / overdue&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi bad&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kRcti&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;RCTI marketing exposure&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;main class=&quot;wrap&quot;&gt;
+
+&lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partner book&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;pgrid&quot; id=&quot;pgrid&quot;&gt;&lt;/div&gt;
+  &lt;div style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin-top:14px&quot;&gt;
+    &lt;div style=&quot;font-weight:700;font-size:13px;margin-bottom:8px&quot;&gt;Sheet sync · your performance workbook&lt;/div&gt;
+    &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.55;margin-bottom:10px&quot;&gt;Make two tabs in the workbook: &lt;b style=&quot;color:var(--txt)&quot;&gt;Partners&lt;/b&gt; and &lt;b style=&quot;color:var(--txt)&quot;&gt;PartnerLeads&lt;/b&gt;. Copy out to fill them, paste back to load. Names are matched either way round, nothing is deleted on import.&lt;/div&gt;
+    &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px&quot;&gt;
+      &lt;button id=&quot;pxCopyP&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Copy Partners CSV&lt;/button&gt;
+      &lt;button id=&quot;pxCopyL&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Copy Leads CSV&lt;/button&gt;
+      &lt;button id=&quot;pxPaste&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Paste from sheet&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;pxBox&quot; style=&quot;display:none&quot;&gt;
+      &lt;textarea id=&quot;pxArea&quot; rows=&quot;5&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:12px&quot; placeholder=&quot;paste rows straight from either tab · header row optional&quot;&gt;&lt;/textarea&gt;
+      &lt;div style=&quot;display:flex;gap:8px;margin-top:8px&quot;&gt;
+        &lt;button id=&quot;pxImport&quot; style=&quot;background:var(--teal);border:none;color:#fff;font-weight:700;font-size:12px;border-radius:8px;padding:8px 14px&quot;&gt;Import&lt;/button&gt;
+        &lt;button id=&quot;pxCancel&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;border-radius:8px;padding:8px 14px&quot;&gt;Cancel&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;details style=&quot;margin-top:10px&quot;&gt;&lt;summary style=&quot;cursor:pointer;font-size:12px;color:var(--faint)&quot;&gt;Later · live auto-sync from the same workbook (Apps Script snippet)&lt;/summary&gt;
+      &lt;div style=&quot;font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:8px&quot;&gt;Your dashboard already pulls from an Apps Script /exec URL. Add this to that script, redeploy, and next session we wire this tab to pull live:&lt;/div&gt;
+      &lt;pre style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:10px;font-size:10.5px;overflow:auto;margin-top:6px;color:var(--dim)&quot;&gt;function partnersJson(){
+  const ss=SpreadsheetApp.getActive();
+  const grab=n=&gt;{const sh=ss.getSheetByName(n);return sh?sh.getDataRange().getValues():[];};
+  return ContentService.createTextOutput(JSON.stringify({
+    partners:grab('Partners'), leads:grab('PartnerLeads')
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+// in doGet(e): if(e.parameter.fn==='partners') return partnersJson();&lt;/pre&gt;
+    &lt;/details&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-sla&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Live partner leads — 60-minute SLA&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;scorecard KPIs: 90% contacted &amp;lt;60m · 3 attempts · stage updates within 2h&lt;/div&gt;&lt;/div&gt;
+  &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:12px&quot;&gt;
+    &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nlPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+    &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;CLIENT NAME&lt;/label&gt;&lt;input id=&quot;nlClient&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;who they sent&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;flex:2;min-width:190px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;ASSET · PRICE&lt;/label&gt;&lt;input id=&quot;nlAsset&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;Ranger XLT · $54,990&quot;&gt;&lt;/div&gt;
+    &lt;button id=&quot;nlAdd&quot; style=&quot;background:var(--teal);border:none;color:#fff;font-weight:700;font-size:12.5px;border-radius:8px;padding:9px 16px&quot;&gt;Log lead · clock starts&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;sla-list&quot; id=&quot;slaList&quot;&gt;&lt;/div&gt;
+  &lt;div style=&quot;margin-top:22px&quot;&gt;
+    &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Recent SLA log&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;evidence for your quarterly broker scorecard&lt;/div&gt;&lt;/div&gt;
+    &lt;div id=&quot;slaLog&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-checkin&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Monthly Check-In&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;AUSLOANS – Partner Monthly Check-In Worksheet v3 · agency sections show only for Agent partners&lt;/div&gt;
+    &lt;select id=&quot;ciPartner&quot; style=&quot;margin-left:auto;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:12.5px&quot;&gt;&lt;/select&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;fwrap&quot;&gt;
+    &lt;div class=&quot;fmain&quot; id=&quot;ciForm&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;side&quot;&gt;
+      &lt;div class=&quot;scorebox&quot;&gt;&lt;div style=&quot;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--faint);text-transform:uppercase&quot;&gt;Monthly KPI Summary&lt;/div&gt;
+        &lt;div class=&quot;ss-list&quot; id=&quot;ciKpis&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;btn pri&quot; id=&quot;ciSave&quot;&gt;Save check-in&lt;/button&gt;
+      &lt;button class=&quot;btn&quot; id=&quot;ciCopy&quot;&gt;Copy worksheet summary&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-quarterly&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Quarterly Strategy Review&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;AUSLOANS – Partner Strategy Review Worksheet · scores compute live with the exact sheet formulas&lt;/div&gt;
+    &lt;select id=&quot;qPartner&quot; style=&quot;margin-left:auto;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:12.5px&quot;&gt;&lt;/select&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;fwrap&quot;&gt;
+    &lt;div class=&quot;fmain&quot; id=&quot;qForm&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;side&quot;&gt;
+      &lt;div class=&quot;scorebox&quot;&gt;
+        &lt;div style=&quot;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--faint);text-transform:uppercase&quot;&gt;Partner Health Score&lt;/div&gt;
+        &lt;div class=&quot;big&quot; id=&quot;qBig&quot;&gt;—&lt;/div&gt;
+        &lt;div class=&quot;band&quot; id=&quot;qBand&quot;&gt;enter data&lt;/div&gt;
+        &lt;div class=&quot;cap&quot;&gt;Finance ×0.4 + Engagement ×0.3 + Marketing ×0.2 + Risk ×0.1&lt;/div&gt;
+        &lt;div class=&quot;ss-list&quot; id=&quot;qSubs&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;btn pri&quot; id=&quot;qSave&quot;&gt;Save review — rescore partner&lt;/button&gt;
+      &lt;button class=&quot;btn&quot; id=&quot;qCopy&quot;&gt;Copy worksheet summary&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-qualify&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Qualify a new partner&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;official 12-question Partner Scorecard · run it live on the qualification call (pitch deck slide 18)&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;fwrap&quot;&gt;
+    &lt;div class=&quot;fmain&quot; id=&quot;qsForm&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;side&quot;&gt;
+      &lt;div class=&quot;scorebox&quot;&gt;
+        &lt;div style=&quot;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--faint);text-transform:uppercase&quot;&gt;Partner Readiness&lt;/div&gt;
+        &lt;div class=&quot;big&quot; id=&quot;qsBig&quot;&gt;—&lt;/div&gt;
+        &lt;div class=&quot;band&quot; id=&quot;qsBandT&quot;&gt;/100 weighted&lt;/div&gt;
+        &lt;div class=&quot;ss-list&quot; id=&quot;qsSubs&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;Minimum commitment &lt;span class=&quot;tag&quot;&gt;DECK S19&lt;/span&gt;&lt;/h3&gt;
+        &lt;div class=&quot;fbody commit&quot;&gt;
+          &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;cm1&quot;&gt; Commits to actively offering finance&lt;/label&gt;
+          &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;cm2&quot;&gt; Commits to 3+ referrals / month baseline&lt;/label&gt;
+          &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;cm3&quot;&gt; Commits to the engagement system&lt;/label&gt;
+          &lt;div style=&quot;font-size:10.5px;color:var(--faint)&quot;&gt;Agent model: $12.90 per soft credit check · no setup or platform fees either model.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;btn pri&quot; id=&quot;qsAdd&quot;&gt;Add to partner book&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-myscore&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My quarterly broker scorecard&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;how Ausloans marks you — enter your quarter, statuses and auto-scores use the exact sheet thresholds&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;fwrap&quot;&gt;
+    &lt;div class=&quot;fmain&quot;&gt;
+      &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;KPI inputs (quarterly)&lt;/h3&gt;
+        &lt;div class=&quot;fbody&quot;&gt;&lt;div id=&quot;bsInputs&quot; style=&quot;display:grid;gap:8px&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;SLA &amp;amp; performance categories&lt;/h3&gt;
+        &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Category&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Weight&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Auto score&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Weighted&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody id=&quot;bsCats&quot;&gt;&lt;/tbody&gt;&lt;/table&gt;
+        &lt;div class=&quot;rule-note&quot;&gt;Auto score is the sheet's suggested score from KPI thresholds. Manager can override on the real form — this shows where you'd land untouched.&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;side&quot;&gt;
+      &lt;div class=&quot;scorebox&quot;&gt;
+        &lt;div style=&quot;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--faint);text-transform:uppercase&quot;&gt;Overall (weighted /5)&lt;/div&gt;
+        &lt;div class=&quot;big&quot; id=&quot;bsBig&quot;&gt;—&lt;/div&gt;
+        &lt;div class=&quot;band&quot; id=&quot;bsStatus&quot;&gt;—&lt;/div&gt;
+        &lt;div class=&quot;cap&quot; id=&quot;bsComp&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-marketing&quot;&gt;
+  &lt;div class=&quot;two-col&quot;&gt;
+    &lt;div&gt;
+      &lt;div class=&quot;fcard&quot;&gt;
+        &lt;h3&gt;Catalogue &lt;span class=&quot;tag&quot;&gt;cost hits your RCTI&lt;/span&gt;&lt;/h3&gt;
+        &lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;RCTI cost&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Sell&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Margin&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody id=&quot;catBody&quot;&gt;&lt;/tbody&gt;
+        &lt;/table&gt;
+        &lt;div class=&quot;rule-note&quot;&gt;&lt;b&gt;Upfront payment only — never on terms.&lt;/b&gt; Every sale adds its cost to an already-negative RCTI balance. Bank first, order second.&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;fcard&quot; style=&quot;margin-top:14px&quot;&gt;
+        &lt;h3&gt;Sales ledger&lt;/h3&gt;
+        &lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Partner&lt;/th&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Cost&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Invoiced&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Paid&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody id=&quot;ledgerBody&quot;&gt;&lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;fcard&quot;&gt;
+      &lt;h3&gt;Record a sale&lt;/h3&gt;
+      &lt;div class=&quot;fbody&quot;&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Partner&lt;/label&gt;&lt;select id=&quot;saleP&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Item&lt;/label&gt;&lt;select id=&quot;saleI&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+        &lt;div class=&quot;grid2&quot;&gt;
+          &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Invoice #&lt;/label&gt;&lt;input id=&quot;saleInv&quot; placeholder=&quot;FO-0031&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Invoice amount $&lt;/label&gt;&lt;input id=&quot;saleAmt&quot; type=&quot;number&quot; placeholder=&quot;auto&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;salePaid&quot; checked&gt; Paid upfront (required)&lt;/label&gt;
+        &lt;button class=&quot;btn pri&quot; id=&quot;saleGo&quot;&gt;Add to ledger&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;pane&quot; id=&quot;pane-tiles&quot;&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Weekly pricing tile&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;the free version of the $200 ad set · compliant lines baked in · 1080×1080 PNG&lt;/div&gt;
+  &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin:0 0 12px&quot;&gt;
+    &lt;div style=&quot;flex:1;min-width:150px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;PARTNER&lt;/label&gt;&lt;select id=&quot;nmPartner&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+    &lt;div style=&quot;flex:2;min-width:190px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;WHAT&lt;/label&gt;&lt;input id=&quot;nmItem&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot; placeholder=&quot;FB ad set · pricing tiles&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;width:100px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;MY COST $&lt;/label&gt;&lt;input id=&quot;nmCost&quot; type=&quot;number&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;width:100px&quot;&gt;&lt;label style=&quot;font-size:10.5px;color:var(--faint);display:block;margin-bottom:4px&quot;&gt;INVOICED $&lt;/label&gt;&lt;input id=&quot;nmInv&quot; type=&quot;number&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:8px 10px;font-size:12.5px&quot;&gt;&lt;/div&gt;
+    &lt;label style=&quot;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);padding-bottom:9px&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;nmPaid&quot;&gt; paid&lt;/label&gt;
+    &lt;button id=&quot;nmAdd&quot; style=&quot;background:var(--teal);border:none;color:#fff;font-weight:700;font-size:12.5px;border-radius:8px;padding:9px 16px&quot;&gt;Add spend&lt;/button&gt;
+  &lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;tile-wrap&quot;&gt;
+    &lt;div class=&quot;fcard&quot;&gt;
+      &lt;div class=&quot;fbody&quot;&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Partner / business name&lt;/label&gt;&lt;input id=&quot;tBiz&quot; value=&quot;Bayside Marine Sales&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Asset title&lt;/label&gt;&lt;input id=&quot;tAsset&quot; value=&quot;2024 Quintrex 481 Fishabout&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;grid2&quot;&gt;
+          &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Price $&lt;/label&gt;&lt;input id=&quot;tPrice&quot; type=&quot;number&quot; value=&quot;52990&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Was $ (optional)&lt;/label&gt;&lt;input id=&quot;tWas&quot; type=&quot;number&quot; placeholder=&quot;&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Finance from $/week (you calc this)&lt;/label&gt;&lt;input id=&quot;tWeek&quot; type=&quot;number&quot; value=&quot;129&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Accent&lt;/label&gt;
+          &lt;div class=&quot;swatches&quot; id=&quot;swatches&quot;&gt;
+            &lt;button class=&quot;sw on&quot; data-c=&quot;#14b8a6&quot; style=&quot;background:#14b8a6&quot; aria-label=&quot;teal&quot;&gt;&lt;/button&gt;
+            &lt;button class=&quot;sw&quot; data-c=&quot;#3b82c4&quot; style=&quot;background:#3b82c4&quot; aria-label=&quot;blue&quot;&gt;&lt;/button&gt;
+            &lt;button class=&quot;sw&quot; data-c=&quot;#e8927c&quot; style=&quot;background:#e8927c&quot; aria-label=&quot;coral&quot;&gt;&lt;/button&gt;
+            &lt;button class=&quot;sw&quot; data-c=&quot;#8b7cf6&quot; style=&quot;background:#8b7cf6&quot; aria-label=&quot;violet&quot;&gt;&lt;/button&gt;
+            &lt;button class=&quot;sw&quot; data-c=&quot;#2d2a26&quot; style=&quot;background:#2d2a26&quot; aria-label=&quot;charcoal&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Safe phrases (Ausloans library)&lt;/label&gt;
+          &lt;div class=&quot;phr&quot; id=&quot;phr&quot;&gt;
+            &lt;label class=&quot;tog locked&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; Eligibility criteria apply. &lt;em style=&quot;font-size:10px&quot;&gt;(always on)&lt;/em&gt;&lt;/label&gt;
+            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;No impact to your credit score to check.&quot; checked&gt; No impact to your credit score to check.&lt;/label&gt;
+            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;Compare 70+ lenders.&quot;&gt; Compare 70+ lenders.&lt;/label&gt;
+            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;Fast pre-qualification.&quot;&gt; Fast pre-qualification.&lt;/label&gt;
+            &lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; data-p=&quot;Subject to lender approval.&quot; checked&gt; Subject to lender approval.&lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;hold-chip&quot;&gt;⚠ Blocked: &quot;guaranteed approval&quot;, rate quoting. &lt;b&gt;Finance-only offers: ON HOLD&lt;/b&gt; pending Ausloans ruling (Chris, Module 4).&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;canvas-box&quot;&gt;
+      &lt;canvas id=&quot;tileCanvas&quot; width=&quot;1080&quot; height=&quot;1080&quot;&gt;&lt;/canvas&gt;
+      &lt;button class=&quot;btn pri&quot; id=&quot;tileDl&quot;&gt;Download PNG&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;/main&gt;
+
+&lt;div class=&quot;scrim&quot; id=&quot;scrim&quot;&gt;&lt;/div&gt;
+&lt;aside class=&quot;drawer&quot; id=&quot;drawer&quot; aria-label=&quot;Partner detail&quot;&gt;&lt;/aside&gt;
+&lt;div class=&quot;toasts&quot; id=&quot;toasts&quot;&gt;&lt;/div&gt;
+
+&lt;script&gt;
+/* ================= CORE ================= */
+const now=Date.now(),day=864e5;
+const fmtD=ts=&gt;new Date(ts).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+const money=n=&gt;'$'+(+n||0).toLocaleString('en-AU');
+const pct=n=&gt;n===''||n==null||isNaN(n)?'—':Math.round(n*100)+'%';
+const $=q=&gt;document.querySelector(q);
+const el=(t,c,h)=&gt;{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+function toast(title,msg,cls){const t=el('div','toast '+(cls||''),'&lt;div class=&quot;tt&quot;&gt;'+title+'&lt;/div&gt;'+msg);$('#toasts').append(t);setTimeout(()=&gt;t.remove(),5600)}
+const smsToast=(p,msg)=&gt;toast('Partner update queued → SMS to '+p.biz,'“'+msg+'”','sms');
+
+/* ============ OFFICIAL AUSLOANS SCORING (Strategy Review worksheet) ============ */
+const ZINK={'Confident user':100,'Moderate user':80,'Needs more support':50,'Not using key features':20};
+const REFB={'Refers consistently':100,'Refers sporadically':70,'Refers only when asked':40,'High staff turnover affecting referrals':40,'Prefers pre-qualifying before referrals':80};
+const COMMS={'Excellent':100,'Good':80,'Adequate':60,'Needs improvement':30,'Poor':10};
+const MKTS={'Using regularly':100,'Using occasionally':70,'Not using':20};
+const RISKPEN={'Low':0,'Medium':10,'High':20};
+const MKT_TOOLS=['Weekly pricing sheets','Social media templates','QR posters / in-store signage','Website finance CTA','Marketplace listings (from $/week)','In-store finance signage','Staff finance scripts','Soft check promotion'];
+const OPPS=['Increase staff finance training','Improve lead qualification / completeness','Increase soft-check usage','Introduce weekly repayment pricing in ads','Add finance messaging to website','Add finance messaging to marketplace listings','Upgrade to Agency Program (if not already)','Improve customer handover speed','Add in-store signage / QR finance posters','Run seasonal / stock-based finance campaign'];
+const TRAIN_Q=['Finance 101 for staff','Selling with weekly repayments','Zink platform refresher','Soft credit check process','Document gathering best practice','Social media &amp; finance marketing'];
+const sAppr=r=&gt;r&gt;=.7?100:r&gt;=.6?80:r&gt;=.5?60:r&gt;=.4?40:20;
+const sSettle=r=&gt;r&gt;=.8?100:r&gt;=.7?80:r&gt;=.6?60:r&gt;=.5?40:20;
+const sContact=h=&gt;h&lt;=1?100:h&lt;=4?80:h&lt;=24?50:20;
+const sTouch=n=&gt;n&gt;=8?100:n&gt;=5?80:n&gt;=3?60:n&gt;=1?40:20;
+function bandOf(s){return s==null?{t:'UNSCORED',c:'var(--faint)'}:s&gt;=90?{t:'Excellent',c:'var(--teal)'}:s&gt;=75?{t:'Good',c:'var(--green)'}:s&gt;=60?{t:'Fair',c:'var(--amber)'}:s&gt;=40?{t:'At Risk',c:'var(--coral)'}:{t:'Critical',c:'var(--red2)'}}
+function calcHealth(p){
+  const q=p.q;if(!q||!q.leads)return null;
+  const apprRate=(q.app+q.dec)?q.app/(q.app+q.dec):null;
+  const settleRate=q.app?q.set/q.app:null;
+  if(apprRate==null||settleRate==null||q.cHrs==null)return null;
+  const F=Math.round(sAppr(apprRate)*.4+sSettle(settleRate)*.3+sContact(q.cHrs)*.3);
+  const zink=p.type==='Referral'?80:(ZINK[p.eng.zink]||0);
+  const E=Math.round((zink+(REFB[p.eng.ref]||0)+(COMMS[p.eng.comms]||0)+sTouch(p.eng.touch))/4);
+  const M=Math.round(p.mkt.reduce((a,s)=&gt;a+(MKTS[s]||0),0)/8);
+  const R=Math.max(0,100-p.risks.reduce((a,r)=&gt;a+(RISKPEN[r]||0),0));
+  return{F,E,M,R,H:Math.round(F*.4+E*.3+M*.2+R*.1),apprRate,settleRate};
+}
+
+/* ================= SEED DATA (session only) ================= */
+const PKEY='hub_partners_v1';
+let partners=[],leads=[],ledger=[];
+(function(){
+  try{
+    const o=JSON.parse(localStorage.getItem(PKEY))||{};
+    partners=Array.isArray(o.partners)?o.partners:[];
+    leads=Array.isArray(o.leads)?o.leads:[];
+    ledger=Array.isArray(o.ledger)?o.ledger:[];
+  }catch(e){}
+})();
+function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger})); }catch(e){} }
+
+partners.forEach(p=&gt;p.h=calcHealth(p));
+
+const STAGES=[&quot;Received&quot;,&quot;Contacted&quot;,&quot;Docs&quot;,&quot;Submitted&quot;,&quot;Outcome&quot;];
+
+let slaLogRows=[
+ {t:&quot;Yesterday 4:12p&quot;,p:&quot;Bayside Marine&quot;,c:&quot;M. Torres&quot;,r:&quot;Contacted 29m ✓&quot;,ok:true},
+ {t:&quot;Yesterday 11:03a&quot;,p:&quot;Southside Prestige&quot;,c:&quot;K. Abdi&quot;,r:&quot;Contacted 74m ✗ BREACH&quot;,ok:false},
+ {t:&quot;Fri 2:41p&quot;,p:&quot;Moreton Motorcycles&quot;,c:&quot;L. Nguyen&quot;,r:&quot;Contacted 12m ✓&quot;,ok:true}
+];
+const CATALOGUE=[
+ {n:&quot;Seasonal Campaign Pack (EOFY / stock run-out)&quot;,c:500,s:1000,star:true},
+ {n:&quot;AI Product &amp; Finance Video Ad (15–30s)&quot;,c:300,s:350},
+ {n:&quot;FB/IG Ad Set — 4× weekly pricing tiles&quot;,c:200,s:250},
+ {n:&quot;Full Website Promo Kit (hero + 2 banners)&quot;,c:200,s:250},
+ {n:&quot;Custom Pull-up Banner&quot;,c:200,s:250},
+ {n:&quot;Finance Email Campaign ×4&quot;,c:150,s:200},
+ {n:&quot;Offline Print Ad (300dpi + bleed)&quot;,c:150,s:200},
+ {n:&quot;Website Finance Banner / CTA&quot;,c:100,s:140},
+ {n:&quot;Marketplace Listing Finance Copy&quot;,c:100,s:125},
+ {n:&quot;Staff Finance Scripts Pack&quot;,c:100,s:120},
+ {n:&quot;In-store Offer Poster A1&quot;,c:100,s:120}
+];
+
+
+/* ================= KPI STRIP ================= */
+function paintKPIs(){
+  $('#kActive').textContent=partners.filter(p=&gt;p.h&amp;&amp;p.h.H&gt;=75).length+' / '+partners.length;
+  $('#kLeads').textContent=partners.reduce((a,p)=&gt;a+p.leadsMTD,0);
+  $('#kDue').textContent=partners.filter(p=&gt;(p.nextCI-now)/day&lt;=7).length;
+  $('#kRcti').textContent=money(ledger.reduce((a,l)=&gt;a+l.cost,0));
+  $('#nSla').textContent='('+leads.filter(l=&gt;l.stage===0).length+')';
+}
+
+/* ================= PARTNER BOOK ================= */
+function ciStatus(p){
+  const d=Math.round((p.nextCI-now)/day);
+  if(d&lt;0)return{cls:'due-over',t:'Check-in overdue '+(-d)+'d'};
+  if(d&lt;=7)return{cls:'due-warn',t:'Check-in in '+d+'d'};
+  return{cls:'',t:'Check-in '+fmtD(p.nextCI)};
+}
+const agencyReady=p=&gt;p.type==='Referral'&amp;&amp;(p.leadsMTD&gt;=8||(p.h&amp;&amp;p.h.H&gt;=90));
+function paintPartners(){
+  const g=$('#pgrid');g.innerHTML='';
+  if(!partners.length){
+    g.innerHTML='&lt;div style=&quot;grid-column:1/-1;border:1px dashed var(--bdr2);border-radius:12px;padding:26px;text-align:center;color:var(--dim);font-size:13px;line-height:1.6&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;No partners in the book yet.&lt;/b&gt;&lt;br&gt;Run a new contact through &lt;b&gt;Qualify New&lt;/b&gt; and they land here — or paste your list in from the sheet (sync card below the grid).&lt;/div&gt;';
+  }
+  partners.forEach(p=&gt;{
+    const b=bandOf(p.h?p.h.H:null),ci=ciStatus(p);
+    const card=el('button','pcard');
+    card.style.setProperty('--hc',b.c);
+    card.innerHTML=
+      '&lt;div class=&quot;top&quot;&gt;&lt;div&gt;&lt;div class=&quot;biz&quot;&gt;'+p.biz+((p.h&amp;&amp;p.h.H&lt;40)?' ⚠':'')+'&lt;/div&gt;&lt;div class=&quot;ind&quot;&gt;'+p.ind+' · '+p.name+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'+(agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;hscore&quot;&gt;&lt;div&gt;&lt;div class=&quot;ring&quot;&gt;'+(p.h?p.h.H:'—')+'&lt;/div&gt;&lt;div class=&quot;band&quot;&gt;'+b.t+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;nums&quot;&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.leadsMTD+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LEADS MTD&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.lastLead+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LAST LEAD&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(p.h?p.h.F:'—')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;FINANCE&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;foot&quot;&gt;&lt;span class=&quot;'+ci.cls+'&quot;&gt;'+ci.t+'&lt;/span&gt;&lt;span class=&quot;linkish&quot;&gt;Open →&lt;/span&gt;&lt;/div&gt;';
+    card.onclick=()=&gt;openDrawer(p.id);
+    g.append(card);
+  });
+  paintKPIs();
+}
+
+/* ================= DRAWER ================= */
+let curP=null;
+function openDrawer(id){
+  curP=partners.find(p=&gt;p.id===id);
+  const p=curP,b=bandOf(p.h?p.h.H:null);
+  const mk=ledger.filter(l=&gt;l.pid===p.id);
+  const q=p.q||{};
+  $('#drawer').innerHTML=
+    '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+p.name+' · '+p.phone+' · '+p.ind+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;button class=&quot;d-close&quot; onclick=&quot;closeDrawer()&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;chips&quot; style=&quot;justify-content:flex-start;margin-top:9px&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'+
+    '&lt;span class=&quot;chip&quot; style=&quot;color:'+b.c+';border-color:'+b.c+'&quot;&gt;'+(p.h?p.h.H+' · ':'')+b.t.toUpperCase()+'&lt;/span&gt;'+
+    (agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;d-body&quot;&gt;'+
+    ((p.h&amp;&amp;p.h.H&lt;40)?'&lt;div class=&quot;d-sec&quot;&gt;&lt;div class=&quot;alert-red&quot;&gt;&lt;b&gt;Playbook §13 + Critical band — re-engage today.&lt;/b&gt; Immediate relationship audit, identify challenges, intensive support period. Call now, offer a strategy session, send a fresh asset.&lt;div style=&quot;margin-top:9px&quot;&gt;&lt;button class=&quot;btn warn sm&quot; onclick=&quot;reEngage()&quot;&gt;Start re-engagement&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;':'')+
+    '&lt;div class=&quot;d-sec&quot;&gt;&lt;h4&gt;Health sub-scores (official model)&lt;/h4&gt;&lt;div class=&quot;subsc&quot;&gt;'+
+      '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Finance ×0.4&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.F:'—')+'&lt;/b&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Engagement ×0.3&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.E:'—')+'&lt;/b&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Marketing ×0.2&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.M:'—')+'&lt;/b&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Risk ×0.1&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.R:'—')+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;d-sec&quot;&gt;&lt;h4&gt;Last 90 days&lt;/h4&gt;&lt;div class=&quot;stat-grid&quot;&gt;'+
+      '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(q.leads||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Leads&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(q.app||0)+' / '+(q.dec||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Appr / Dec&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(q.set||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Settled&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+pct(p.h?p.h.apprRate:null)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Approval rate&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+pct(p.h?p.h.settleRate:null)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Settlement rate&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+money(q.vol||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Volume&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;d-sec&quot;&gt;&lt;h4&gt;Marketing bought&lt;/h4&gt;'+
+      (mk.length?mk.map(l=&gt;'&lt;div style=&quot;display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid var(--bdr)&quot;&gt;&lt;span&gt;'+l.item+'&lt;/span&gt;&lt;span style=&quot;font-family:var(--mono);font-size:11.5px&quot;&gt;inv '+money(l.inv)+' · &lt;span class=&quot;'+(l.paid?'paid-y':'paid-n')+'&quot;&gt;'+(l.paid?'PAID':'UNPAID')+'&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;').join(''):'&lt;div style=&quot;font-size:12px;color:var(--faint)&quot;&gt;Nothing yet — the free weekly tile is the door-opener.&lt;/div&gt;')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;d-sec&quot;&gt;&lt;h4&gt;History&lt;/h4&gt;&lt;div class=&quot;hist&quot;&gt;'+p.hist.map(x=&gt;'&lt;div class=&quot;h-item&quot;&gt;&lt;div class=&quot;hd&quot;&gt;'+fmtD(x.d)+'&lt;/div&gt;&lt;div class=&quot;ht&quot;&gt;'+x.t+'&lt;/div&gt;&lt;/div&gt;').join('')+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;d-actions&quot;&gt;'+
+      '&lt;button class=&quot;btn pri&quot; onclick=&quot;goCheckin('+p.id+')&quot;&gt;Monthly check-in&lt;/button&gt;'+
+      '&lt;button class=&quot;btn&quot; onclick=&quot;goQuarterly('+p.id+')&quot;&gt;Quarterly review&lt;/button&gt;'+
+      '&lt;button class=&quot;btn&quot; onclick=&quot;copyPrep()&quot;&gt;Copy call prep&lt;/button&gt;'+
+      (agencyReady(p)?'&lt;button class=&quot;btn&quot; style=&quot;color:var(--violet);border-color:rgba(139,124,246,.45)&quot; onclick=&quot;pitchAgency()&quot;&gt;Queue Agency pitch&lt;/button&gt;':'')+
+    '&lt;/div&gt;&lt;/div&gt;';
+  $('#scrim').classList.add('on');$('#drawer').classList.add('on');
+}
+function closeDrawer(){$('#scrim').classList.remove('on');$('#drawer').classList.remove('on')}
+$('#scrim').onclick=closeDrawer;
+function reEngage(){toast('Re-engagement started','Call task queued for '+curP.biz+' + strategy-session SMS drafted. Production: n8n creates the GHL task.')}
+function pitchAgency(){smsToast(curP,'Hey '+curP.name.split(' ')[0]+&quot; — you're sending serious volume. Time we upgraded you so your team can pre-qualify in Zink and get approvals faster. $12.90/soft check, nothing else. 15 min this week?&quot;)}
+function prepText(p){
+  return 'CHECK-IN PREP — '+p.biz+' ('+p.name+', '+p.phone+')\n90d: '+(p.q.leads||0)+' leads · '+(p.q.app||0)+' appr / '+(p.q.dec||0)+' dec · '+(p.q.set||0)+' settled · '+money(p.q.vol||0)+'\nHealth: '+(p.h?p.h.H+' '+bandOf(p.h.H).t:'unscored')+' · last lead '+p.lastLead+'d'+(agencyReady(p)?'\n&gt;&gt; AGENCY-READY — pitch the upgrade':'')+'\nLast note: '+(p.hist[0]?p.hist[0].t:'—');
+}
+function copyPrep(){navigator.clipboard&amp;&amp;navigator.clipboard.writeText(prepText(curP)).then(()=&gt;toast('Prep copied','Paste into Dialpad notes before you ring.')).catch(()=&gt;toast('Prep','Clipboard blocked — copy manually.'))}
+function goCheckin(id){closeDrawer();switchTab('checkin');$('#ciPartner').value=id;renderCheckin()}
+function goQuarterly(id){closeDrawer();switchTab('quarterly');$('#qPartner').value=id;renderQuarterly()}
+
+/* ================= FIELD FACTORY ================= */
+const fInp=(id,l,t,v,ph)=&gt;'&lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;'+l+'&lt;/label&gt;&lt;input id=&quot;'+id+'&quot; type=&quot;'+(t||'text')+'&quot; value=&quot;'+(v!=null?v:'')+'&quot;'+(ph?' placeholder=&quot;'+ph+'&quot;':'')+'&gt;&lt;/div&gt;';
+const fSel=(id,l,opts,v)=&gt;'&lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;'+l+'&lt;/label&gt;&lt;select id=&quot;'+id+'&quot;&gt;'+['&lt;option value=&quot;&quot;&gt;&lt;/option&gt;'].concat(opts.map(o=&gt;'&lt;option'+(o===v?' selected':'')+'&gt;'+o+'&lt;/option&gt;')).join('')+'&lt;/select&gt;&lt;/div&gt;';
+const fTa=(id,l,ph)=&gt;'&lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;'+l+'&lt;/label&gt;&lt;textarea id=&quot;'+id+'&quot; rows=&quot;2&quot; placeholder=&quot;'+(ph||'')+'&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;';
+const fAuto=(id,l)=&gt;'&lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;'+l+'&lt;/label&gt;&lt;input id=&quot;'+id+'&quot; class=&quot;auto&quot; readonly value=&quot;—&quot;&gt;&lt;/div&gt;';
+const fTog=(id,l)=&gt;'&lt;label class=&quot;tog&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;'+id+'&quot;&gt; '+l+'&lt;/label&gt;';
+function card(title,tag,body){return '&lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;'+title+(tag?'&lt;span class=&quot;tag&quot;&gt;'+tag+'&lt;/span&gt;':'')+'&lt;/h3&gt;&lt;div class=&quot;fbody&quot;&gt;'+body+'&lt;/div&gt;&lt;/div&gt;'}
+
+/* ================= MONTHLY CHECK-IN (official v3) ================= */
+const SAT=['Excellent','Good','Fair','Needs Attention'];
+const LEADH=['Very Good','Acceptable','Needs Improvement'];
+const CONF=['Very Confident','Mostly Confident','Needs More Support'];
+const MACT=['Yes','No','A Little'];
+const IMPL=['Using Regularly','Using Occasionally',&quot;Hasn't Implemented&quot;];
+const SUPPORT=['Weekly pricing content','Social media tiles','Staff scripts','Website finance CTA','Posters / QR codes','In-store finance display','Marketplace listings &quot;from $xx/week&quot;','Campaign ideas (EOFY, stock run-out, service promos)'];
+const ACTIONS=['Provided new pricing sheets','Sent updated posters','Shared social media templates','Provided video content','Delivered new QR codes'];
+const ZTRAIN=['Soft Check refresher','App entry training','Document request process','Dashboard/deal navigation','Explaining finance to customers'];
+const CTRAIN=['Finance 101','How to sell using weekly payments','Using the Zink platform','Identifying finance customers','Soft credit checks','Document gathering','Loan types &amp; lender matching'];
+
+function renderCheckin(){
+  const p=partners.find(x=&gt;x.id==+$('#ciPartner').value)||partners[0]; if(!p){toast('No partners yet','Qualify one first — the Qualify New tab walks you through it.');return;}
+  const isAgent=p.type==='Agent';
+  $('#ciForm').innerHTML=
+   card('1 · Meeting overview','',
+    '&lt;div class=&quot;grid3&quot;&gt;'+fInp('c_date','Date','date',new Date().toISOString().slice(0,10))+fInp('c_broker','Broker','text','Jordy Aylward')+fInp('c_next','Next meeting booked','date','')+'&lt;/div&gt;'+
+    '&lt;div style=&quot;font-size:11px;color:var(--faint)&quot;&gt;'+p.name+' · '+p.biz+' · '+p.type+' partner&lt;/div&gt;')+
+   card('2 · Quick relationship health check','',
+    '&lt;div class=&quot;grid2&quot;&gt;'+fSel('c_sat','Partner satisfaction',SAT,'')+fInp('c_satc','Comments','text','')+'&lt;/div&gt;')+
+   card('3 · Sales &amp; business update','',
+    fTa('c_units','1. Units sold / services delivered')+fTa('c_season','2. Seasonal trends / promotions planned')+fTa('c_staff','3. New staff or staff changes')+fTa('c_pain','4. Customer pain points / opportunities'))+
+   card('4 · Finance lead review','auto rates',
+    '&lt;div class=&quot;grid3&quot;&gt;'+fInp('c_leads','Leads sent','number',p.leadsMTD)+fInp('c_qual','Qualified leads','number','')+fInp('c_appr','Approvals','number','')+fInp('c_dec','Declines','number','')+fInp('c_nc','Unable to contact','number','')+fInp('c_fund','Deals funded','number','')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;grid3&quot;&gt;'+fAuto('c_conv','Conversion rate')+fAuto('c_qrate','Qualified rate')+fAuto('c_aq','Approval (of qualified)')+fAuto('c_al','Approval (of leads)')+fAuto('c_fr','Funding (of approvals)')+'&lt;/div&gt;'+
+    fTa('c_types','Discussion — customer types referred this month')+fTa('c_patterns','Patterns in approvals or declines')+fTa('c_missed','Customers missing calls / not responding?')+fTa('c_early','Staff identifying finance opportunities early enough?')+
+    fSel('c_handling','Partner feedback on lead handling',LEADH,''))+
+   (isAgent?card('5 · Zink usage','agency only',
+    '&lt;div class=&quot;grid2&quot;&gt;'+fInp('c_soft','Soft checks run','number','')+fInp('c_apps','Applications started','number','')+fInp('c_docs','Document requests sent','number','')+fInp('c_trans','Deals transferred to broker','number','')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;rowhead&quot; style=&quot;margin-top:4px&quot;&gt;Training needs identified&lt;/div&gt;&lt;div class=&quot;togs&quot;&gt;'+ZTRAIN.map((t,i)=&gt;fTog('c_zt'+i,t)).join('')+'&lt;/div&gt;'+
+    fSel('c_conf','Partner confidence level',CONF,'')):'')+
+   card('6 · Marketing &amp; sales enablement','',
+    fSel('c_promo','Promoting finance in store/online/ads/socials?',MACT,'')+
+    '&lt;div class=&quot;rowhead&quot;&gt;Support requested&lt;/div&gt;&lt;div class=&quot;togs&quot;&gt;'+SUPPORT.map((t,i)=&gt;fTog('c_sup'+i,t)).join('')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;rowhead&quot; style=&quot;margin-top:4px&quot;&gt;Marketing actions completed (broker provides)&lt;/div&gt;&lt;div class=&quot;togs&quot;&gt;'+ACTIONS.map((t,i)=&gt;fTog('c_act'+i,t)).join('')+'&lt;/div&gt;'+
+    fSel('c_impl','Partner implementation status',IMPL,''))+
+   card('7 · Opportunities &amp; strategy for next month','one tactic',
+    fTa('c_recs','Broker recommendations')+fTa('c_pplan','Partner action plan')+fTa('c_bplan','Broker support plan'))+
+   card('8 · Training &amp; support needs','',
+    '&lt;div class=&quot;togs&quot;&gt;'+CTRAIN.map((t,i)=&gt;fTog('c_ct'+i,t)).join('')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;grid2&quot;&gt;'+fSel('c_tbooked','Training booked',['Yes','No'],'')+fInp('c_tdate','Training date','date','')+'&lt;/div&gt;')+
+   card('9 · Issues, concerns, feedback','',fTa('c_issues','Notes'))+
+   card('10 · Summary &amp; next steps','',
+    '&lt;div class=&quot;grid3&quot;&gt;'+fInp('c_p1','Priority 1','text','')+fInp('c_p2','Priority 2','text','')+fInp('c_p3','Priority 3','text','')+
+    fInp('c_b1','Commitment 1','text','')+fInp('c_b2','Commitment 2','text','')+fInp('c_b3','Commitment 3','text','')+'&lt;/div&gt;');
+  $('#ciForm').oninput=ciCalc;$('#ciForm').onchange=ciCalc;ciCalc();
+}
+function num(id){const v=$('#'+id);return v?+v.value||0:0}
+function val(id){const v=$('#'+id);return v?v.value:''}
+function ciCalc(){
+  const L=num('c_leads'),Q=num('c_qual'),A=num('c_appr'),F=num('c_fund');
+  const set=(id,v)=&gt;{const e=$('#'+id);if(e)e.value=v};
+  set('c_conv',L?pct(F/L):'—');set('c_qrate',L?pct(Q/L):'—');set('c_aq',Q?pct(A/Q):'—');set('c_al',L?pct(A/L):'—');set('c_fr',A?pct(F/A):'—');
+  $('#ciKpis').innerHTML=
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Leads sent&lt;/span&gt;&lt;b&gt;'+(L||'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Deals funded&lt;/span&gt;&lt;b&gt;'+(F||'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Conversion&lt;/span&gt;&lt;b&gt;'+(L?pct(F/L):'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Satisfaction&lt;/span&gt;&lt;b&gt;'+(val('c_sat')||'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Lead handling&lt;/span&gt;&lt;b&gt;'+(val('c_handling')||'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Implementation&lt;/span&gt;&lt;b&gt;'+(val('c_impl')||'—')+'&lt;/b&gt;&lt;/div&gt;';
+}
+$('#ciSave').onclick=()=&gt;{
+  const p=partners.find(x=&gt;x.id==+$('#ciPartner').value);
+  const L=num('c_leads'),F=num('c_fund');
+  p.hist.unshift({d:now,t:'Monthly check-in: '+L+' leads, '+F+' funded ('+(L?Math.round(F/L*100)+'%':'—')+'). Sat: '+(val('c_sat')||'—')+'. Next tactic: '+(val('c_recs')||'—').slice(0,80)});pSave();
+  p.nextCI=val('c_next')?new Date(val('c_next')).getTime():now+30*day;
+  paintPartners();
+  toast('Check-in saved','Next meeting '+fmtD(p.nextCI)+'. Production: writes the Ausloans v3 worksheet row + Zink note reminder.');
+};
+$('#ciCopy').onclick=()=&gt;{
+  const p=partners.find(x=&gt;x.id==+$('#ciPartner').value);
+  const t='AUSLOANS MONTHLY CHECK-IN — '+p.biz+' ('+val('c_date')+')\nSatisfaction: '+val('c_sat')+'\nLeads '+num('c_leads')+' · Qualified '+num('c_qual')+' · Appr '+num('c_appr')+' · Dec '+num('c_dec')+' · Funded '+num('c_fund')+'\nLead handling: '+val('c_handling')+' · Implementation: '+val('c_impl')+'\nPriorities: '+[val('c_p1'),val('c_p2'),val('c_p3')].filter(Boolean).join(' / ')+'\nCommitments: '+[val('c_b1'),val('c_b2'),val('c_b3')].filter(Boolean).join(' / ')+'\nNext meeting: '+val('c_next');
+  navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t).then(()=&gt;toast('Copied','Paste straight into the Ausloans worksheet or your email.'));
+};
+
+/* ================= QUARTERLY STRATEGY REVIEW (official) ================= */
+function renderQuarterly(){
+  const p=partners.find(x=&gt;x.id==+$('#qPartner').value)||partners[0]; if(!p){toast('No partners yet','Qualify one first.');return;}
+  const q=p.q||{},e=p.eng||{};
+  const isAgent=p.type==='Agent';
+  $('#qForm').innerHTML=
+   card('1 · Partner &amp; review details','',
+    '&lt;div style=&quot;font-size:12px;color:var(--dim)&quot;&gt;'+p.name+' · &lt;b style=&quot;color:var(--txt)&quot;&gt;'+p.biz+'&lt;/b&gt; · '+p.type+' · '+p.ind+'&lt;/div&gt;'+
+    '&lt;div class=&quot;grid2&quot;&gt;'+fInp('q_date','Review date','date',new Date().toISOString().slice(0,10))+fInp('q_next','Next review date','date',new Date(now+90*day).toISOString().slice(0,10))+'&lt;/div&gt;')+
+   card('2 · Business snapshot','',
+    fTa('q_units','Units sold / services delivered (past 90 days)')+fTa('q_goals','Sales goals for next quarter')+fTa('q_promos','Upcoming promotions / seasonal spikes')+
+    '&lt;div class=&quot;grid2&quot;&gt;'+fInp('q_staffn','Number of staff referring leads','number','')+fInp('q_train','New staff / training needs','text','')+'&lt;/div&gt;')+
+   card('3 · Finance performance (last 90 days)','feeds scoring',
+    '&lt;div class=&quot;grid3&quot;&gt;'+fInp('q_leads','Leads submitted','number',q.leads)+fInp('q_soft','Soft checks run','number',q.soft)+fInp('q_app','Approvals','number',q.app)+fInp('q_dec','Declines','number',q.dec)+fInp('q_set','Deals settled','number',q.set)+fInp('q_vol','Total finance volume $','number',q.vol)+'&lt;/div&gt;'+
+    '&lt;div class=&quot;grid3&quot;&gt;'+fAuto('q_avg','Avg deal value')+fAuto('q_ar','Approval rate')+fAuto('q_sr','Settlement rate')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;grid3&quot;&gt;'+fInp('q_chrs','Avg time to first contact (hrs)','number',q.cHrs)+fInp('q_sub','Avg time to first submission (days)','number',q.subD)+fInp('q_apd','Avg time to approval (days)','number',q.appD)+'&lt;/div&gt;')+
+   card('4 · Analysis','',fTa('q_worked','What worked well this quarter?')+fTa('q_chal','What challenges did we encounter?'))+
+   card('5 · Partner engagement &amp; communication','feeds scoring',
+    '&lt;div class=&quot;grid2&quot;&gt;'+
+    (isAgent?fSel('q_zink','Zink usage (agency)',Object.keys(ZINK),e.zink):'&lt;div class=&quot;f-row&quot;&gt;&lt;label&gt;Zink usage&lt;/label&gt;&lt;input class=&quot;auto&quot; readonly value=&quot;Referral partner — scored 80 flat&quot;&gt;&lt;/div&gt;')+
+    fSel('q_ref','Referral behaviour',Object.keys(REFB),e.ref)+
+    fSel('q_comms','Communication satisfaction',Object.keys(COMMS),e.comms)+
+    fInp('q_touch','Partner touchpoints (last 30 days)','number',e.touch)+'&lt;/div&gt;'+
+    fTa('q_pcom','Partner comments'))+
+   card('6 · Marketing &amp; promotion review','feeds scoring — all 8 required',
+    MKT_TOOLS.map((t,i)=&gt;'&lt;div class=&quot;mkrow&quot;&gt;&lt;span&gt;'+t+'&lt;/span&gt;&lt;select id=&quot;q_mkt'+i+'&quot;&gt;'+['&lt;option value=&quot;&quot;&gt;&lt;/option&gt;'].concat(Object.keys(MKTS).map(o=&gt;'&lt;option'+(o===(p.mkt[i]||'')?' selected':'')+'&gt;'+o+'&lt;/option&gt;')).join('')+'&lt;/select&gt;&lt;/div&gt;').join(''))+
+   card('7 · Opportunity assessment','pick next initiative',
+    '&lt;div class=&quot;opprow rowhead&quot;&gt;&lt;span&gt;Opportunity&lt;/span&gt;&lt;span&gt;Priority&lt;/span&gt;&lt;span&gt;Next month?&lt;/span&gt;&lt;/div&gt;'+
+    OPPS.map((t,i)=&gt;'&lt;div class=&quot;opprow&quot;&gt;&lt;span&gt;'+t+'&lt;/span&gt;&lt;select id=&quot;q_op'+i+'&quot;&gt;&lt;option&gt;N/A&lt;/option&gt;&lt;option&gt;High&lt;/option&gt;&lt;option&gt;Medium&lt;/option&gt;&lt;option&gt;Low&lt;/option&gt;&lt;/select&gt;&lt;select id=&quot;q_on'+i+'&quot;&gt;&lt;option&gt;No&lt;/option&gt;&lt;option&gt;Yes&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;').join(''))+
+   card('8 · 90-day action plan','',
+    ['Partner','Broker','Joint'].map((g,gi)=&gt;'&lt;div class=&quot;rowhead&quot; style=&quot;margin-top:'+(gi?'6px':'0')+'&quot;&gt;'+g+' actions&lt;/div&gt;'+
+     [0,1,2].map(r=&gt;'&lt;div class=&quot;actrow&quot;&gt;'+
+      '&lt;input id=&quot;q_'+g+'a'+r+'&quot; placeholder=&quot;Action&quot;&gt;'+
+      '&lt;input id=&quot;q_'+g+'o'+r+'&quot; placeholder=&quot;Owner&quot; value=&quot;'+(g==='Broker'?'Jordy':g==='Partner'?p.name.split(' ')[0]:'')+'&quot;&gt;'+
+      '&lt;input id=&quot;q_'+g+'d'+r+'&quot; type=&quot;date&quot;&gt;'+
+      '&lt;select id=&quot;q_'+g+'s'+r+'&quot;&gt;&lt;option&gt;Not started&lt;/option&gt;&lt;option&gt;In progress&lt;/option&gt;&lt;option&gt;Done&lt;/option&gt;&lt;option&gt;On hold&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;').join('')).join(''))+
+   card('9 · Training &amp; support needs','',
+    '&lt;div class=&quot;togs&quot;&gt;'+TRAIN_Q.map((t,i)=&gt;fTog('q_tr'+i,t)).join('')+'&lt;/div&gt;'+fInp('q_trd','Scheduled date','date',''))+
+   card('10 · Risk assessment &amp; mitigation','feeds scoring — Low 0 · Med −10 · High −20',
+    '&lt;div class=&quot;riskrow rowhead&quot;&gt;&lt;span&gt;Risk&lt;/span&gt;&lt;span&gt;Level&lt;/span&gt;&lt;span&gt;Mitigation / action&lt;/span&gt;&lt;/div&gt;'+
+    [0,1,2,3,4].map(i=&gt;'&lt;div class=&quot;riskrow&quot;&gt;&lt;input id=&quot;q_rk'+i+'&quot; placeholder=&quot;Risk '+(i+1)+'&quot;&gt;&lt;select id=&quot;q_rl'+i+'&quot;&gt;'+Object.keys(RISKPEN).map(o=&gt;'&lt;option'+(o===(p.risks[i]||'Low')?' selected':'')+'&gt;'+o+'&lt;/option&gt;').join('')+'&lt;/select&gt;&lt;input id=&quot;q_rm'+i+'&quot; placeholder=&quot;Mitigation&quot;&gt;&lt;/div&gt;').join(''))+
+   card('11 · Overall health &amp; sign-off','',
+    '&lt;div class=&quot;grid2&quot;&gt;'+fSel('q_assess','Broker assessment (manual)',['Excellent','Good','Fair','At Risk','Critical'],'')+fInp('q_done','Review completed date','date',new Date().toISOString().slice(0,10))+'&lt;/div&gt;'+fTa('q_final','Partner comments / final feedback'));
+  $('#qForm').oninput=qCalc;$('#qForm').onchange=qCalc;qCalc();
+}
+function qCalc(){
+  const set=(id,v)=&gt;{const el2=$('#'+id);if(el2)el2.value=v};
+  const leads=num('q_leads'),app=num('q_app'),dec=num('q_dec'),st=num('q_set'),vol=num('q_vol'),ch=parseFloat(val('q_chrs'));
+  const ar=(app+dec)?app/(app+dec):null, sr=app?st/app:null;
+  set('q_avg',st?money(vol/st):'—');set('q_ar',pct(ar));set('q_sr',pct(sr));
+  const p=partners.find(x=&gt;x.id==+$('#qPartner').value)||partners[0]; if(!p){toast('No partners yet','Qualify one first.');return;}
+  let F=null;
+  if(ar!=null&amp;&amp;sr!=null&amp;&amp;!isNaN(ch)&amp;&amp;val('q_chrs')!=='')F=Math.round(sAppr(ar)*.4+sSettle(sr)*.3+sContact(ch)*.3);
+  const zink=p.type==='Referral'?80:(ZINK[val('q_zink')]||0);
+  const rb=REFB[val('q_ref')]||0, cm=COMMS[val('q_comms')]||0;
+  const tv=val('q_touch')===''?null:sTouch(num('q_touch'));
+  const E=(zink&amp;&amp;rb&amp;&amp;cm&amp;&amp;tv!=null)?Math.round((zink+rb+cm+tv)/4):null;
+  let mset=0,msum=0;
+  for(let i=0;i&lt;8;i++){const v=val('q_mkt'+i);if(v){mset++;msum+=MKTS[v]}}
+  const M=mset===8?Math.round(msum/8):null;
+  let pen=0;for(let i=0;i&lt;5;i++)pen+=RISKPEN[val('q_rl'+i)]||0;
+  const R=Math.max(0,100-pen);
+  const H=(F!=null&amp;&amp;E!=null&amp;&amp;M!=null)?Math.round(F*.4+E*.3+M*.2+R*.1):null;
+  const b=bandOf(H);
+  $('#qBig').textContent=H!=null?H:'—';$('#qBig').style.color=b.c;
+  $('#qBand').textContent=b.t;$('#qBand').style.color=b.c;
+  $('#qSubs').innerHTML=
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Finance outcomes&lt;/span&gt;&lt;b&gt;'+(F!=null?F:'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Engagement&lt;/span&gt;&lt;b&gt;'+(E!=null?E:'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Marketing&lt;/span&gt;&lt;b&gt;'+(M!=null?M:'—')+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Risk (100−pen)&lt;/span&gt;&lt;b&gt;'+R+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Approval / Settlement&lt;/span&gt;&lt;b&gt;'+pct(ar)+' / '+pct(sr)+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Contact speed&lt;/span&gt;&lt;b&gt;'+(val('q_chrs')!==''?val('q_chrs')+'h':'—')+'&lt;/b&gt;&lt;/div&gt;';
+  window._qres={F,E,M,R,H,ar,sr};
+}
+$('#qSave').onclick=()=&gt;{
+  const p=partners.find(x=&gt;x.id==+$('#qPartner').value);
+  const r=window._qres||{};
+  if(r.H==null){toast('Not enough data','Sections 3, 5, 6 and 10 all feed the score — fill them first (all 8 marketing tools need a status).');return}
+  p.q={leads:num('q_leads'),soft:num('q_soft'),app:num('q_app'),dec:num('q_dec'),set:num('q_set'),vol:num('q_vol'),cHrs:parseFloat(val('q_chrs')),subD:parseFloat(val('q_sub'))||0,appD:parseFloat(val('q_apd'))||0};
+  if(p.type==='Agent')p.eng.zink=val('q_zink');
+  p.eng.ref=val('q_ref');p.eng.comms=val('q_comms');p.eng.touch=num('q_touch');
+  p.mkt=MKT_TOOLS.map((t,i)=&gt;val('q_mkt'+i));
+  p.risks=[0,1,2,3,4].map(i=&gt;val('q_rl'+i));
+  p.h=calcHealth(p);
+  const nextOn=OPPS.filter((o,i)=&gt;val('q_on'+i)==='Yes');
+  p.hist.unshift({d:now,t:'Quarterly review — Health '+p.h.H+' ('+bandOf(p.h.H).t+'). Next initiative: '+(nextOn[0]||'—')});pSave();
+  paintPartners();
+  toast('Quarterly saved — partner rescored','Health '+p.h.H+' · '+bandOf(p.h.H).t+'. Card recoloured. Production: writes the full Ausloans worksheet + 90-day plan tasks to GHL.');
+};
+$('#qCopy').onclick=()=&gt;{
+  const p=partners.find(x=&gt;x.id==+$('#qPartner').value);
+  const r=window._qres||{};
+  const t='AUSLOANS QUARTERLY STRATEGY REVIEW — '+p.biz+'\nHealth: '+(r.H!=null?r.H+' ('+bandOf(r.H).t+')':'incomplete')+' · Finance '+r.F+' · Engagement '+r.E+' · Marketing '+r.M+' · Risk '+r.R+'\n90d: '+num('q_leads')+' leads · '+num('q_app')+' appr / '+num('q_dec')+' dec · '+num('q_set')+' settled · '+money(num('q_vol'))+'\nApproval '+pct(r.ar)+' · Settlement '+pct(r.sr)+' · Contact '+val('q_chrs')+'h\nWorked: '+val('q_worked')+'\nChallenges: '+val('q_chal')+'\nNext initiatives: '+OPPS.filter((o,i)=&gt;val('q_on'+i)==='Yes').join('; ');
+  navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t).then(()=&gt;toast('Copied','Paste into the Ausloans worksheet.'));
+};
+
+/* ================= QUALIFY (official 12-Q Partner Scorecard) ================= */
+const QS=[
+ {s:'Business characteristics',w:2,qs:[
+  {q:'How many staff are involved in sales/customer service?',a:{'4+ staff members actively involved':5,'2-3 staff members actively involved':4,'1-2 staff members actively involved':3,'Only owner/manager involved':2,'Inconsistent staff involvement':1}},
+  {q:&quot;What's their average transaction value?&quot;,a:{'$40,000+ average transaction':5,'$25,000 - $39,999 average transaction':4,'$15,000 - $24,999 average transaction':3,'$8,000 - $14,999 average transaction':2,'Under $8,000 average transaction':1}},
+  {q:'How comfortable are they with technology?',a:{'Very tech-savvy, uses multiple digital platforms':5,'Comfortable with tech, willing to learn new systems':4,'Basic tech use, needs some support':3,'Limited tech comfort, prefers simple solutions':2,'Technology-resistant, prefers manual processes':1}},
+  {q:&quot;What's their current finance lead volume or enquiries?&quot;,a:{'20+ leads per month':5,'10-19 leads per month':4,'5-9 leads per month':3,'2-4 leads per month':2,'0-1 lead per month':1}}]},
+ {s:'Finance readiness',w:1.5,qs:[
+  {q:'Do they currently offer any finance options?',a:{'Multiple finance providers, actively promotes finance':5,'One finance provider, regularly mentions finance':4,'Basic finance offering, occasional promotion':3,'Limited finance knowledge, rarely discusses with customers':2,'No current finance options':1}},
+  {q:'How do they handle customer affordability concerns?',a:{'Proactively presents finance as a solution to affordability':5,'Mentions finance when customers express price concerns':4,'Sometimes suggests finance for larger purchases':3,'Rarely connects affordability issues to finance solutions':2,'No systematic approach to affordability concerns':1}},
+  {q:'Are they interested in learning about finance as a sales tool?',a:{'Very eager to learn, asks strategic questions':5,'Interested and engaged in finance discussions':4,'Open to learning but needs encouragement':3,'Minimal interest, focuses on other priorities':2,'Resistant to finance education':1}},
+  {q:'Do they have competitors offering finance?',a:{'No competitors offer finance (MAJOR opportunity!)':5,'Few competitors offer finance':4,'Some competitors offer finance':3,'Most competitors offer finance':2,'All competitors offer superior finance options':1}}]},
+ {s:'Relationship potential',w:1.5,qs:[
+  {q:'How responsive are they to communication?',a:{'Always responds within 2 hours during business hours':5,'Usually responds same day':4,'Responds within 24-48 hours':3,'Takes 2-3 days to respond':2,&quot;Poor communication, often doesn't respond&quot;:1}},
+  {q:'Do they follow through on commitments?',a:{'Always delivers on promises, exceeds expectations':5,'Consistently follows through on commitments':4,'Usually follows through, occasional delays':3,'Inconsistent follow-through, needs reminders':2,'Poor follow-through, unreliable':1}},
+  {q:'Are they open to new ideas and suggestions?',a:{'Enthusiastically embraces new concepts and strategies':5,'Open to new ideas, willing to try suggestions':4,'Cautiously considers new approaches':3,'Resistant to change, prefers status quo':2,'Closed to new ideas, difficult to influence':1}},
+  {q:'Do they see finance as valuable to their business?',a:{'Understands finance as a key competitive advantage':5,'Recognises finance value, wants to improve usage':4,'Sees some value but not fully convinced':3,'Minimal understanding of finance benefits':2,&quot;Doesn't see value in finance offerings&quot;:1}}]}
+];
+const QOUT=[
+ {min:80,t:'Immediate Agency Transition Candidate',c:'var(--teal)',ch:['Strong business fundamentals with high transaction values','Excellent technology comfort and multiple staff','Finance-ready mindset with strategic understanding','Excellent relationship potential and communication'],st:['Begin Zink platform training immediately','Fast-track to agency status (30–60 days)','Advanced marketing collaboration','Strategic partnership approach','Premium support and resources']},
+ {min:67,t:'High-Potential Referral Partner',c:'var(--green)',ch:['Good business fundamentals','Developing finance understanding','Strong relationship foundation','Growth trajectory evident'],st:['Monthly strategic check-ins','Proactive marketing support','Staff training opportunities','Performance optimization','Prepare for agency transition in 6–12 months']},
+ {min:40,t:'Maintenance Mode Partner',c:'var(--amber)',ch:['Stable but limited growth potential','Basic finance understanding','Adequate relationship quality','Consistent but modest volume'],st:['Standard monthly check-ins','Basic marketing support','Maintain service quality','Monitor for improvement opportunities','Focus on relationship maintenance']},
+ {min:0,t:'At-Risk Partner',c:'var(--coral)',ch:['Limited business capacity','Poor finance readiness','Relationship challenges','Declining or minimal engagement'],st:['Immediate relationship audit','Identify specific challenges','Develop improvement plan','Intensive support period','Consider partnership viability']}
+];
+function renderQualify(){
+  let qi=0;
+  $('#qsForm').innerHTML=
+   card('Prospect details','',
+    '&lt;div class=&quot;grid2&quot;&gt;'+fInp('n_name','Contact name','text','')+fInp('n_biz','Business name','text','')+fInp('n_ind','Industry','text','')+fSel('n_type','Recommended model',['Referral','Agent'],'Referral')+'&lt;/div&gt;')+
+   QS.map((sec,si)=&gt;card((si+1)+' · '+sec.s,'×'+sec.w+' weight',
+     sec.qs.map(qq=&gt;{const id='qs'+(qi++);return fSel(id,qq.q,Object.keys(qq.a),'')}).join('')
+   )).join('')+
+   '&lt;div id=&quot;qsOutcome&quot;&gt;&lt;/div&gt;';
+  $('#qsForm').onchange=qsCalc;qsCalc();
+}
+function qsCalc(){
+  let qi=0,subs=[],total=0,answered=0;
+  QS.forEach(sec=&gt;{
+    let sub=0;
+    sec.qs.forEach(qq=&gt;{
+      const v=val('qs'+(qi++));
+      if(v){sub+=qq.a[v]*sec.w;answered++}
+    });
+    subs.push(sub);total+=sub;
+  });
+  const t=Math.round(total*10)/10;
+  const full=answered===12;
+  const out=full?QOUT.find(o=&gt;t&gt;=o.min):null;
+  $('#qsBig').textContent=full?t:answered+'/12';
+  $('#qsBig').style.color=out?out.c:'var(--faint)';
+  $('#qsBandT').textContent=full?'/100 weighted':'questions answered';
+  $('#qsSubs').innerHTML=
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Business /40&lt;/span&gt;&lt;b&gt;'+subs[0].toFixed(0)+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Finance /30&lt;/span&gt;&lt;b&gt;'+subs[1].toFixed(0)+'&lt;/b&gt;&lt;/div&gt;'+
+   '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Relationship /30&lt;/span&gt;&lt;b&gt;'+subs[2].toFixed(0)+'&lt;/b&gt;&lt;/div&gt;';
+  $('#qsOutcome').innerHTML=out?
+   '&lt;div class=&quot;outcard&quot; style=&quot;border-color:'+out.c+'&quot;&gt;&lt;div class=&quot;ot&quot; style=&quot;color:'+out.c+'&quot;&gt;'+out.t+'&lt;/div&gt;'+
+   '&lt;b style=&quot;font-size:11px;letter-spacing:.5px;color:var(--faint)&quot;&gt;CHARACTERISTICS&lt;/b&gt;&lt;ul&gt;'+out.ch.map(x=&gt;'&lt;li&gt;'+x+'&lt;/li&gt;').join('')+'&lt;/ul&gt;'+
+   '&lt;b style=&quot;font-size:11px;letter-spacing:.5px;color:var(--faint)&quot;&gt;STRATEGY&lt;/b&gt;&lt;ul&gt;'+out.st.map(x=&gt;'&lt;li&gt;'+x+'&lt;/li&gt;').join('')+'&lt;/ul&gt;&lt;/div&gt;':'';
+  window._qsres={t,full,out};
+}
+$('#qsAdd').onclick=()=&gt;{
+  const r=window._qsres||{};
+  if(!r.full){toast('Finish the scorecard','All 12 questions need an answer before adding.');return}
+  if(!($('#cm1').checked&amp;&amp;$('#cm2').checked&amp;&amp;$('#cm3').checked)){toast('Commitment gate','Deck slide 19: all three minimum commitments must be a yes — otherwise walk away politely.');return}
+  const name=val('n_name')||'New contact',biz=val('n_biz')||'New Partner';
+  const p={id:Date.now(),name,biz,type:val('n_type')||'Referral',ind:val('n_ind')||'—',phone:'—',leadsMTD:0,lastLead:0,nextCI:now+7*day,
+    q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
+    eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
+    hist:[{d:now,t:'Qualified '+r.t+'/100 — '+r.out.t+'. Kick-off call to book within 24h of HQ handover.'}]};
+  p.h=null;partners.push(p);pSave();paintPartners();fillPickers();fillAddPickers();paintKPIs();
+  toast('Added to book',''+biz+' — '+r.out.t+'. First target: 3–5 leads in 30 days. Run their first quarterly to score health.');
+  switchTab('partners');
+};
+
+/* ================= MY BROKER SCORECARD (official quarterly) ================= */
+const BKPI=[
+ {id:'b1',l:'% leads contacted &lt; 60 mins',t:'≥ 90%',v:92,pass:v=&gt;v&gt;=90},
+ {id:'b2',l:'Avg lead response time (mins)',t:'≤ 60',v:38,pass:v=&gt;v&lt;=60},
+ {id:'b3',l:'% stage updates completed',t:'≥ 95%',v:96,pass:v=&gt;v&gt;=95},
+ {id:'b4',l:'Weekly pipeline summaries delivered (%)',t:'100%',v:100,pass:v=&gt;v&gt;=100},
+ {id:'b5',l:'Monthly check-ins completed (%)',t:'100%',v:100,pass:v=&gt;v&gt;=100},
+ {id:'b6',l:'Quarterly strategy reviews completed (%)',t:'100%',v:100,pass:v=&gt;v&gt;=100},
+ {id:'b7',l:'Deals stalled &gt; 48 hrs (#)',t:'0',v:1,pass:v=&gt;v&lt;=0},
+ {id:'b8',l:'Zink / notes completeness (%)',t:'≥ 95%',v:97,pass:v=&gt;v&gt;=95},
+ {id:'b9',l:'Approval rate (%)',t:'≥ 60%',v:63,pass:v=&gt;v&gt;=60},
+ {id:'b10',l:'Settlement rate of approvals (%)',t:'≥ 70%',v:74,pass:v=&gt;v&gt;=70}
+];
+const t5=(v,a,b,c,d)=&gt;v&gt;=a?5:v&gt;=b?4:v&gt;=c?3:v&gt;=d?2:v&gt;0?1:0;
+function renderBroker(){
+  $('#bsInputs').innerHTML=BKPI.map(k=&gt;
+   '&lt;div style=&quot;display:grid;grid-template-columns:1fr 90px 70px 70px;gap:8px;align-items:center;font-size:12px&quot;&gt;'+
+   '&lt;span style=&quot;color:var(--dim)&quot;&gt;'+k.l+'&lt;/span&gt;'+
+   '&lt;input id=&quot;'+k.id+'&quot; type=&quot;number&quot; step=&quot;0.1&quot; value=&quot;'+k.v+'&quot; style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:7px 9px;color:var(--txt);font-family:var(--mono);font-size:11.5px&quot;&gt;'+
+   '&lt;span style=&quot;font-family:var(--mono);font-size:10.5px;color:var(--faint)&quot;&gt;'+k.t+'&lt;/span&gt;'+
+   '&lt;span id=&quot;'+k.id+'s&quot; class=&quot;pass&quot; style=&quot;font-size:10.5px;text-align:right&quot;&gt;—&lt;/span&gt;&lt;/div&gt;').join('');
+  $('#bsInputs').oninput=bsCalc;bsCalc();
+}
+function bsCalc(){
+  const g=id=&gt;parseFloat(val(id))||0;
+  BKPI.forEach(k=&gt;{const ok=k.pass(g(k.id));const s=$('#'+k.id+'s');s.textContent=ok?'PASS':'FAIL';s.className=ok?'pass':'fail'});
+  const c1=t5(g('b1'),95,85,70,50);
+  const c2=Math.min(t5(g('b3'),95,85,70,50),t5(g('b4'),95,85,70,50));
+  const c3=Math.min(t5(g('b9'),70,60,50,40),t5(g('b10'),80,70,60,50));
+  const c4=Math.min(t5(g('b5'),100,90,75,50),t5(g('b6'),100,90,75,50));
+  const stall=g('b7');
+  const c5=Math.min(t5(g('b8'),97,95,90,80),stall&lt;=0?5:stall&lt;=2?4:stall&lt;=5?3:stall&lt;=10?2:1);
+  const cats=[
+   ['Lead response &amp; customer contact',.25,c1],
+   ['Partner communication &amp; SLA updates',.25,c2],
+   ['Conversion performance',.20,c3],
+   ['Partner engagement &amp; relationship mgmt',.20,c4],
+   ['System use &amp; data quality (Zink hygiene)',.10,c5]];
+  $('#bsCats').innerHTML=cats.map(c=&gt;'&lt;tr&gt;&lt;td&gt;'+c[0]+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+Math.round(c[1]*100)+'%&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+c[2]+' / 5&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+(c[2]*c[1]).toFixed(2)+'&lt;/td&gt;&lt;/tr&gt;').join('');
+  const tot=cats.reduce((a,c)=&gt;a+c[2]*c[1],0);
+  const status=tot&gt;=4.5?['Outstanding','var(--teal)']:tot&gt;=4?['Strong','var(--green)']:tot&gt;=3?['Satisfactory','var(--amber)']:tot&gt;=2?['Needs Improvement','var(--coral)']:['Performance Managed','var(--red2)'];
+  $('#bsBig').textContent=tot.toFixed(2);$('#bsBig').style.color=status[1];
+  $('#bsStatus').textContent=status[0];$('#bsStatus').style.color=status[1];
+  $('#bsComp').textContent='Overall compliance '+Math.round(tot/5*100)+'%';
+}
+
+/* ================= SLA ================= */
+const SMS={
+ 1:c=&gt;&quot;Quick update — I've reached &quot;+c+&quot; and we're underway. Will keep you posted. — Jordy, FundOne&quot;,
+ 2:c=&gt;c+&quot;: docs requested today. I'll chase these so we keep momentum.&quot;,
+ 3:c=&gt;c+&quot; submitted to lender just now. Expect movement in 24–48h.&quot;,
+ app:c=&gt;&quot;Great news — &quot;+c+&quot; is APPROVED ✅ Nice referral, thank you!&quot;,
+ dec:c=&gt;c+&quot; didn't get across the line this time — I'll call you with the why and a plan B.&quot;,
+ hand:c=&gt;&quot;Tried &quot;+c+&quot; 3× (call/SMS/email) — no answer. Can your team give them a nudge? I'll jump the moment they respond.&quot;
+};
+let _now=Date.now();const now0=()=&gt;_now;
+function paintSLA(){
+  const list=$('#slaList');list.innerHTML='';
+  leads.sort((a,b)=&gt;(a.stage-b.stage)||(a.recv-b.recv));
+  leads.forEach(L=&gt;{
+    const p=partners.find(x=&gt;x.id===L.pid);
+    const elapsed=(now0()-L.recv)/60000;
+    const row=el('div','sla'+(L.stage===0&amp;&amp;elapsed&gt;50?' crit':'')+(L.stage&gt;=3?' done':''));
+    let tHTML;
+    if(L.stage===0){
+      const rem=Math.max(0,60-elapsed);
+      const over=elapsed&gt;=60;
+      const cls=over?'crit':rem&lt;10?'crit':rem&lt;25?'mid':'ok';
+      const base=over?elapsed-60:rem;
+      const mm=Math.floor(base),ss=String(Math.floor((base%1)*60)).padStart(2,'0');
+      tHTML='&lt;div class=&quot;timer '+cls+'&quot;&gt;&lt;div class=&quot;t&quot;&gt;'+(over?'+':'')+mm+':'+ss+'&lt;/div&gt;&lt;div class=&quot;cap&quot;&gt;'+(over?'over SLA':'to SLA breach')+'&lt;/div&gt;&lt;div class=&quot;tbar&quot;&gt;&lt;i style=&quot;width:'+Math.max(0,100-elapsed/60*100)+'%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;';
+    }else{
+      tHTML='&lt;div class=&quot;timer ok&quot;&gt;&lt;div class=&quot;t&quot;&gt;✓ '+L.contactAt+'m&lt;/div&gt;&lt;div class=&quot;cap&quot;&gt;first contact&lt;/div&gt;&lt;/div&gt;';
+    }
+    const pips=STAGES.map((s,i)=&gt;{
+      if(i===4&amp;&amp;L.outcome)return '&lt;span class=&quot;pip '+(L.outcome==='app'?'out-ok':'out-no')+'&quot;&gt;'+(L.outcome==='app'?'APPROVED':'DECLINED')+'&lt;/span&gt;';
+      return '&lt;span class=&quot;pip '+(i&lt;L.stage?'done':i===L.stage?'now':'')+'&quot;&gt;'+s.toUpperCase()+'&lt;/span&gt;';
+    }).join('');
+    let act='';
+    if(L.outcome){act='';}
+    else if(L.stage===0){
+      act=L.att&lt;3
+        ?'&lt;button class=&quot;btn pri sm&quot; onclick=&quot;contact('+L.id+')&quot;&gt;Contacted ✓&lt;/button&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;attempt('+L.id+')&quot;&gt;Log attempt&lt;/button&gt;&lt;span class=&quot;att&quot;&gt;'+L.att+'/3 attempts&lt;/span&gt;'
+        :'&lt;button class=&quot;btn pri sm&quot; onclick=&quot;contact('+L.id+')&quot;&gt;Contacted ✓&lt;/button&gt;&lt;button class=&quot;btn warn sm&quot; onclick=&quot;handback('+L.id+')&quot;&gt;Hand back to partner&lt;/button&gt;&lt;span class=&quot;att&quot;&gt;3/3 — no answer&lt;/span&gt;';
+    }else if(L.stage&lt;3){
+      act='&lt;button class=&quot;btn pri sm&quot; onclick=&quot;advance('+L.id+')&quot;&gt;→ '+STAGES[L.stage+1]+'&lt;/button&gt;';
+    }else{
+      act='&lt;button class=&quot;btn pri sm&quot; onclick=&quot;outcome('+L.id+',\'app\')&quot;&gt;Approved&lt;/button&gt;&lt;button class=&quot;btn warn sm&quot; onclick=&quot;outcome('+L.id+',\'dec\')&quot;&gt;Declined&lt;/button&gt;';
+    }
+    row.innerHTML=tHTML+'&lt;div class=&quot;who&quot;&gt;&lt;div class=&quot;cl&quot;&gt;'+L.client+'&lt;/div&gt;&lt;div class=&quot;meta&quot;&gt;&lt;b&gt;'+p.biz+'&lt;/b&gt; · '+L.asset+'&lt;/div&gt;&lt;div class=&quot;pips&quot;&gt;'+pips+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;act&quot;&gt;'+act+'&lt;/div&gt;';
+    list.append(row);
+  });
+  $('#slaLog').innerHTML=slaLogRows.map(r=&gt;'&lt;div class=&quot;log-line&quot;&gt;&lt;span style=&quot;width:110px&quot;&gt;'+r.t+'&lt;/span&gt;&lt;span style=&quot;flex:1&quot;&gt;'+r.p+' — '+r.c+'&lt;/span&gt;&lt;span class=&quot;'+(r.ok?'ok':'bad')+'&quot;&gt;'+r.r+'&lt;/span&gt;&lt;/div&gt;').join('');
+  paintKPIs();
+}
+setInterval(()=&gt;{_now=Date.now();if($('#pane-sla').classList.contains('on'))paintSLA()},1000);
+function findL(id){return leads.find(l=&gt;l.id===id)}
+window.attempt=id=&gt;{const L=findL(id);L.att=Math.min(3,L.att+1);pSave();toast('Attempt '+L.att+'/3 logged','Noted against the lead.');paintSLA()};
+window.contact=id=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);const m=Math.round((now0()-L.recv)/60000);L.stage=1;L.contactAt=m;pSave();
+  slaLogRows.unshift({t:'Just now',p:p.biz,c:L.client,r:'Contacted '+m+'m '+(m&lt;=60?'✓':'✗ BREACH'),ok:m&lt;=60});
+  smsToast(p,SMS[1](L.client));paintSLA()};
+window.advance=id=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);L.stage++;pSave();smsToast(p,SMS[L.stage](L.client));paintSLA()};
+window.outcome=(id,o)=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);L.outcome=o;L.stage=4;pSave();smsToast(p,SMS[o](L.client));paintSLA()};
+window.handback=id=&gt;{const L=findL(id);const p=partners.find(x=&gt;x.id===L.pid);smsToast(p,SMS.hand(L.client));toast('Handed back','Per SLA 5.1 — partner chases, your scorecard stays clean.')};
+
+/* ================= MARKETING ================= */
+function paintMarketing(){
+  $('#catBody').innerHTML=CATALOGUE.map(c=&gt;'&lt;tr'+(c.star?' class=&quot;star&quot;':'')+'&gt;&lt;td&gt;'+c.n+(c.star?' &lt;span style=&quot;color:var(--teal);font-size:10px;font-weight:700&quot;&gt;★ BEST MARGIN&lt;/span&gt;':'')+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(c.c)+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(c.s)+'&lt;/td&gt;&lt;td class=&quot;mono r margin-pos&quot;&gt;+'+money(c.s-c.c)+'&lt;/td&gt;&lt;/tr&gt;').join('');
+  $('#ledgerBody').innerHTML=ledger.map(l=&gt;{const p=partners.find(x=&gt;x.id===l.pid);return '&lt;tr&gt;&lt;td&gt;'+(p?p.biz:'—')+'&lt;/td&gt;&lt;td&gt;'+l.item+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(l.cost)+'&lt;/td&gt;&lt;td class=&quot;mono r&quot;&gt;'+money(l.inv)+'&lt;/td&gt;&lt;td class=&quot;mono r '+(l.paid?'paid-y':'paid-n')+'&quot;&gt;'+(l.paid?'PAID':'UNPAID')+'&lt;/td&gt;&lt;/tr&gt;'}).join('');
+}
+function fillPickers(){
+  const opts=partners.map(p=&gt;'&lt;option value=&quot;'+p.id+'&quot;&gt;'+p.biz+'&lt;/option&gt;').join('');
+  $('#saleP').innerHTML=opts;$('#ciPartner').innerHTML=opts;$('#qPartner').innerHTML=opts;
+  $('#saleI').innerHTML=CATALOGUE.map((c,i)=&gt;'&lt;option value=&quot;'+i+'&quot;&gt;'+c.n+' — sell '+money(c.s)+'&lt;/option&gt;').join('');
+}
+$('#saleI').addEventListener('change',e=&gt;{$('#saleAmt').value=CATALOGUE[e.target.value].s});
+$('#saleGo').onclick=()=&gt;{
+  const c=CATALOGUE[$('#saleI').value];
+  if(!$('#salePaid').checked){toast('Blocked — upfront only',&quot;Bank the partner's cash before the cost hits your RCTI. Tick paid to record.&quot;);return}
+  ledger.unshift({pid:+$('#saleP').value,item:c.n,cost:c.c,inv:+($('#saleAmt').value||c.s),paid:true});
+  paintMarketing();paintKPIs();
+  toast('Sale recorded',money(c.c)+' will land on your RCTI · margin banked '+money((+$('#saleAmt').value||c.s)-c.c)+'.');
+};
+
+/* ================= TILE MAKER ================= */
+let accent='#14b8a6';
+$('#swatches').addEventListener('click',e=&gt;{const b=e.target.closest('.sw');if(!b)return;
+  document.querySelectorAll('.sw').forEach(x=&gt;x.classList.remove('on'));b.classList.add('on');accent=b.dataset.c;drawTile()});
+['tBiz','tAsset','tPrice','tWas','tWeek'].forEach(id=&gt;$('#'+id).addEventListener('input',drawTile));
+$('#phr').addEventListener('change',drawTile);
+function drawTile(){
+  const c=$('#tileCanvas'),x=c.getContext('2d');
+  const biz=val('tBiz')||'Your Business',asset=val('tAsset')||'Asset';
+  const price=num('tPrice'),was=num('tWas'),wk=num('tWeek');
+  const phrases=['Eligibility criteria apply.'].concat([...document.querySelectorAll('#phr input[data-p]:checked')].map(i=&gt;i.dataset.p));
+  x.fillStyle='#faf8f5';x.fillRect(0,0,1080,1080);
+  x.fillStyle=accent;x.fillRect(0,0,1080,14);
+  x.fillStyle='#7a7570';x.font='600 34px &quot;DM Sans&quot;';x.textBaseline='alphabetic';
+  x.fillText(biz.toUpperCase(),72,118);
+  x.fillStyle=accent;x.fillRect(72,140,64,6);
+  x.fillStyle='#2d2a26';x.font='700 76px &quot;DM Sans&quot;';
+  wrap(x,asset,72,250,940,86,2);
+  let py=470;
+  if(was&gt;price&amp;&amp;was&gt;0){
+    x.fillStyle='#a39d94';x.font='600 46px &quot;DM Sans&quot;';
+    const wtxt='WAS '+money(was);x.fillText(wtxt,72,py);
+    const w=x.measureText(wtxt).width;x.strokeStyle='#a39d94';x.lineWidth=4;
+    x.beginPath();x.moveTo(72,py-16);x.lineTo(72+w,py-16);x.stroke();py+=30;
+  }
+  x.fillStyle='#2d2a26';x.font='700 150px &quot;DM Sans&quot;';x.fillText(money(price),66,py+150);
+  const by=py+220;
+  x.fillStyle=accent;roundRect(x,72,by,936,170,22);x.fill();
+  x.fillStyle='#fff';x.font='600 40px &quot;DM Sans&quot;';x.fillText('FINANCE FROM',110,by+68);
+  x.font='700 92px &quot;DM Sans&quot;';x.fillText('$'+wk+'/week*',110,by+148);
+  x.fillStyle='#efe9df';x.fillRect(0,960,1080,120);
+  x.fillStyle='#7a7570';x.font='500 26px &quot;DM Sans&quot;';
+  wrap(x,'*'+phrases.join(' '),72,1002,940,34,3);
+  x.fillStyle='#a39d94';x.font='600 24px &quot;DM Sans&quot;';x.textAlign='right';
+  x.fillText('Finance via FundOne × Ausloans',1008,930);x.textAlign='left';
+}
+function wrap(x,text,tx,ty,maxW,lh,maxLines){
+  const words=text.split(' ');let line='',lines=0;
+  for(const w of words){
+    const t=line?line+' '+w:w;
+    if(x.measureText(t).width&gt;maxW&amp;&amp;line){x.fillText(line,tx,ty);ty+=lh;line=w;lines++;if(lines&gt;=maxLines-1){break}}
+    else line=t;
+  }
+  if(line&amp;&amp;lines&lt;maxLines)x.fillText(line,tx,ty);
+}
+function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+$('#tileDl').onclick=()=&gt;{
+  const a=document.createElement('a');a.download='fundone-weekly-tile.png';
+  a.href=$('#tileCanvas').toDataURL('image/png');a.click();
+  toast('Tile downloaded',&quot;1080×1080 — ready for the partner's socials. That's the $250 product, free.&quot;);
+};
+
+/* ================= TABS + INIT ================= */
+function switchTab(name){
+  document.querySelectorAll('.nav-tab').forEach(x=&gt;x.classList.toggle('on',x.dataset.tab===name));
+  document.querySelectorAll('.pane').forEach(x=&gt;x.classList.remove('on'));
+  $('#pane-'+name).classList.add('on');
+  if(name==='sla')paintSLA();
+  if(name==='checkin')renderCheckin();
+  if(name==='quarterly')renderQuarterly();
+  if(name==='qualify')renderQualify();
+  if(name==='myscore')renderBroker();
+  if(name==='tiles'&amp;&amp;document.fonts&amp;&amp;document.fonts.ready)if(document.fonts&amp;&amp;document.fonts.ready)document.fonts.ready.then(drawTile);
+}
+document.querySelectorAll('.nav-tab').forEach(b=&gt;b.onclick=()=&gt;switchTab(b.dataset.tab));
+$('#ciPartner').addEventListener('change',renderCheckin);
+$('#qPartner').addEventListener('change',renderQuarterly);
+
+/* ── add a lead · the SLA clock starts at now ── */
+function fillAddPickers(){
+  const opts=partners.map(p=&gt;'&lt;option value=&quot;'+p.id+'&quot;&gt;'+p.biz+' · '+p.name+'&lt;/option&gt;').join('');
+  const a=$('#nlPartner'), b=$('#nmPartner');
+  if(a)a.innerHTML=opts||'&lt;option value=&quot;&quot;&gt;— qualify a partner first —&lt;/option&gt;';
+  if(b)b.innerHTML=opts||'&lt;option value=&quot;&quot;&gt;— qualify a partner first —&lt;/option&gt;';
+}
+$('#nlAdd').onclick=()=&gt;{
+  if(!partners.length){toast('No partners yet','Qualify one first, then log their leads here.');return;}
+  const pid=+$('#nlPartner').value, client=($('#nlClient').value||'').trim();
+  if(!client){toast('Name first','Whose deal is it?');return;}
+  const P=partners.find(x=&gt;x.id===pid);
+  leads.unshift({id:Date.now(),pid:pid,client:client,asset:($('#nlAsset').value||'—').trim(),recv:Date.now(),stage:0,att:0,outcome:null});
+  if(P){P.leadsMTD=(P.leadsMTD||0)+1;P.lastLead=0;}
+  pSave();paintSLA();paintKPIs();paintPartners();
+  $('#nlClient').value='';$('#nlAsset').value='';
+  toast('Lead logged','60-minute clock is running on '+client+'.');
+};
+/* ── add marketing spend ── */
+$('#nmAdd').onclick=()=&gt;{
+  if(!partners.length){toast('No partners yet','Qualify one first.');return;}
+  const item=($('#nmItem').value||'').trim();
+  if(!item){toast('What was it?','Describe the spend.');return;}
+  ledger.unshift({pid:+$('#nmPartner').value,item:item,cost:parseFloat($('#nmCost').value)||0,inv:parseFloat($('#nmInv').value)||0,paid:$('#nmPaid').checked});
+  pSave();paintMarketing();paintKPIs();
+  $('#nmItem').value='';$('#nmCost').value='';$('#nmInv').value='';$('#nmPaid').checked=false;
+  toast('Spend logged','On the ledger.');
+};
+/* ── CSV round trip with the workbook ── */
+function csvEsc(v){v=String(v==null?'':v);return /[&quot;,\n]/.test(v)?'&quot;'+v.replace(/&quot;/g,'&quot;&quot;')+'&quot;':v;}
+function nmKey(n){return String(n||'').toLowerCase().replace(/[^a-z ]/g,' ').split(/\s+/).filter(Boolean).sort().join(' ');}
+function copyCsv(txt,msg){
+  if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=&gt;toast('Copied',msg),()=&gt;toast('Could not copy',''));}
+  else toast('Could not copy','');
+}
+$('#pxCopyP').onclick=()=&gt;{
+  const out='Business,Contact,Type,Industry,Phone,Leads MTD\n'+partners.map(p=&gt;[p.biz,p.name,p.type,p.ind,p.phone,p.leadsMTD||0].map(csvEsc).join(',')).join('\n');
+  copyCsv(out,partners.length+' partners → paste into the Partners tab');
+};
+$('#pxCopyL').onclick=()=&gt;{
+  const st=['New','Contacted','Application','Submitted','Done'];
+  const out='Partner,Client,Asset,Received,Stage,Outcome\n'+leads.map(L=&gt;{
+    const P=partners.find(x=&gt;x.id===L.pid)||{};
+    return [P.biz||'',L.client,L.asset,new Date(L.recv).toLocaleDateString('en-AU'),st[L.stage]||L.stage,L.outcome||''].map(csvEsc).join(',');
+  }).join('\n');
+  copyCsv(out,leads.length+' leads → paste into the PartnerLeads tab');
+};
+$('#pxPaste').onclick=()=&gt;{$('#pxBox').style.display='';$('#pxArea').focus();};
+$('#pxCancel').onclick=()=&gt;{$('#pxBox').style.display='none';};
+$('#pxImport').onclick=()=&gt;{
+  const txt=($('#pxArea').value||'').trim();
+  if(!txt){toast('Nothing pasted','');return;}
+  let addedP=0,addedL=0,upd=0,mode='';
+  const phoneish=v=&gt;/\d{4}/.test(String(v||'').replace(/[\s()+-]/g,''));
+  txt.split(/\r?\n/).forEach(line=&gt;{
+    if(!line.trim())return;
+    const c=line.split(',').map(v=&gt;v.trim().replace(/^&quot;|&quot;$/g,''));
+    if(/^business$/i.test(c[0])){mode='p';return;}
+    if(/^partner$/i.test(c[0])){mode='l';return;}
+    const rowMode = mode || ((c.length&gt;=5&amp;&amp;phoneish(c[4]))?'p':'l');
+    if(rowMode==='p'){
+      const hit=partners.find(x=&gt;nmKey(x.biz)===nmKey(c[0]));
+      if(hit){ if(c[1])hit.name=c[1]; if(c[2])hit.type=c[2]; if(c[3])hit.ind=c[3]; if(c[4])hit.phone=c[4]; upd++; }
+      else{
+        partners.push({id:Date.now()+Math.floor(Math.random()*9999),name:c[1]||'—',biz:c[0],type:c[2]||'Referral',ind:c[3]||'—',phone:c[4]||'—',
+          leadsMTD:0,lastLead:0,nextCI:now+7*day,q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
+          eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
+          hist:[{d:now,t:'Imported from the sheet.'}],h:null});
+        addedP++;
+      }
+    } else {
+      const P=partners.find(x=&gt;nmKey(x.biz)===nmKey(c[0]));
+      if(P&amp;&amp;c[1]&amp;&amp;!leads.some(L=&gt;L.pid===P.id&amp;&amp;nmKey(L.client)===nmKey(c[1]))){
+        leads.push({id:Date.now()+Math.floor(Math.random()*9999),pid:P.id,client:c[1],asset:c[2]||'—',recv:Date.now(),stage:0,att:0,outcome:null});
+        addedL++;
+      }
+    }
+  });
+  pSave();fillAddPickers();paintPartners();paintSLA();paintKPIs();fillPickers();
+  $('#pxArea').value='';$('#pxBox').style.display='none';
+  toast('Imported',addedP+' partners added, '+upd+' updated, '+addedL+' leads added.');
+};
+
+fillAddPickers();fillPickers();paintPartners();paintSLA();paintMarketing();paintKPIs();
+document.fonts.ready.then(drawTile);
+window.closeDrawer=closeDrawer;window.reEngage=reEngage;window.pitchAgency=pitchAgency;window.copyPrep=copyPrep;
+window.goCheckin=goCheckin;window.goQuarterly=goQuarterly;window.openDrawer=openDrawer;
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -16299,7 +17462,7 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
   // ═══ LAZY TOOL BOOT ═══
   // Call Script / Lender / Serviceability live in inert <template> tags so their
   // CDN payloads (Babel, React, pdf.js, tesseract, xlsx) only download on first open.
-  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck",crm:"CRM Note",drive:"Drive Tracker"};
+  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",warranty:"Warranty Matcher",replydeck:"ReplyDeck",crm:"CRM Note",drive:"Drive Tracker",partners:"Partner Manager"};
   function setBoot(on,label){
     var ov=document.getElementById("bootOverlay"),bb=document.getElementById("bootbar"),lb=document.getElementById("bootLabel");
     if(lb&&label)lb.textContent="Loading "+label+"…";

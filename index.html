@@ -3633,6 +3633,7 @@ tr.star td{background:rgba(20,184,166,.05)}
 
 &lt;div id=&quot;pxMini&quot; style=&quot;display:none;font-size:11.5px;color:var(--amber);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;margin:0 0 12px;line-height:1.5&quot;&gt;&lt;/div&gt;
 &lt;div id=&quot;nextUp&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;chaseBox&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;dgrid&quot;&gt;
   &lt;div class=&quot;dcard&quot;&gt;&lt;h3&gt;Top 5 by leads&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;Who is actually sending you business.&lt;/div&gt;&lt;div id=&quot;topLeads&quot;&gt;&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;dcard&quot;&gt;&lt;h3&gt;Top 5 by marketing spend&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;What you have funded for them. Compare it against the list on the left.&lt;/div&gt;&lt;div id=&quot;topSpend&quot;&gt;&lt;/div&gt;&lt;/div&gt;
@@ -3885,6 +3886,34 @@ const PKEY='hub_partners_v1';
 const ONB=['Agreement out','Partner signed','Zink live','Assets issued','Live'];
 const ONB_C={'Agreement out':'var(--amber)','Partner signed':'var(--blue)','Zink live':'var(--blue)','Assets issued':'var(--green)','Live':'var(--teal)'};
 /* every partner gets these, old records included */
+/* a booked call, separate from the monthly check-in date.
+   Requested means the ball is in their court and you may need to chase. */
+const MEET=['Nothing booked','Requested','Confirmed','Done','Fell through'];
+const MEET_C={'Nothing booked':'var(--faint)','Requested':'var(--amber)','Confirmed':'var(--teal)','Done':'var(--dim)','Fell through':'var(--coral)'};
+function meetDefaults(o){
+  o=o||{};
+  return {date:o.date||'',time:o.time||'',status:o.status||'Nothing booked',note:o.note||'',askedAt:o.askedAt||null};
+}
+function ensureMeet(p){ p.meet=meetDefaults(p.meet); return p }
+function meetLine(p){
+  ensureMeet(p);
+  const m=p.meet;
+  if(m.status==='Nothing booked'||!m.status) return {t:'No call booked',c:'var(--faint)',chase:false};
+  if(m.status==='Requested'){
+    const d=m.askedAt?Math.floor((Date.now()-m.askedAt)/86400000):null;
+    const age=d===null?'':(d===0?', asked today':d===1?', asked yesterday':', asked '+d+' days ago');
+    return {t:'Waiting on them to confirm'+age,c:'var(--amber)',chase:(d!==null&amp;&amp;d&gt;=3)};
+  }
+  if(m.status==='Confirmed'){
+    if(!m.date) return {t:'Confirmed, no date set',c:'var(--amber)',chase:false};
+    const when=new Date(m.date+'T00:00:00').getTime();
+    const dd=Math.round((when-Date.now())/86400000);
+    const w=dd&lt;0?Math.abs(dd)+' days ago':dd===0?'today':dd===1?'tomorrow':'in '+dd+' days';
+    return {t:'Booked '+w+(m.time?' at '+m.time:''),c:dd&lt;0?'var(--coral)':'var(--teal)',chase:dd&lt;0};
+  }
+  if(m.status==='Done') return {t:'Call done',c:'var(--dim)',chase:false};
+  return {t:'Fell through, needs rebooking',c:'var(--coral)',chase:true};
+}
 function pipeDefaults(o){
   o=o||{};
   return {email:o.email||'',stage:o.stage||'Agreement out',page:o.page||'',qr:!!o.qr,zink:!!o.zink};
@@ -3894,7 +3923,7 @@ let partners=[],leads=[],ledger=[],checkins=[],reviews=[];
 (function(){
   try{
     const o=JSON.parse(localStorage.getItem(PKEY))||{};
-    partners=(Array.isArray(o.partners)?o.partners:[]).map(ensurePipe);
+    partners=(Array.isArray(o.partners)?o.partners:[]).map(ensurePipe).map(ensureMeet);
     leads=Array.isArray(o.leads)?o.leads:[];
     ledger=Array.isArray(o.ledger)?o.ledger:[];
     checkins=Array.isArray(o.checkins)?o.checkins:[];
@@ -4086,6 +4115,33 @@ function paintNextUp(){
    +'&lt;div style=&quot;margin-top:7px&quot;&gt;&lt;button class=&quot;dbtn&quot; onclick=&quot;copyDraft(\'email\')&quot;&gt;Copy the email&lt;/button&gt;&lt;/div&gt;'
    +'&lt;/div&gt;&lt;/div&gt;';
   window._draft=dr;
+  paintChase();
+}
+/* anyone you have asked who has not come back, and anything booked that has slipped */
+function paintChase(){
+  const host=$('#chaseBox'); if(!host)return;
+  const rows=partners.map(function(p){ensureMeet(p);return {p:p,ml:meetLine(p)}})
+    .filter(function(x){return x.ml.chase});
+  const booked=partners.map(function(p){ensureMeet(p);return p})
+    .filter(function(p){return p.meet.status==='Confirmed'&amp;&amp;p.meet.date&amp;&amp;new Date(p.meet.date+'T00:00:00').getTime()&gt;=Date.now()-86400000})
+    .sort(function(a,b){return new Date(a.meet.date)-new Date(b.meet.date)});
+  let h='';
+  if(booked.length){
+    h+='&lt;div class=&quot;dcard&quot; style=&quot;margin-bottom:12px&quot;&gt;&lt;h3&gt;Calls booked in&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;Locked in with a date.&lt;/div&gt;'
+      +booked.slice(0,5).map(function(p){
+        const ml=meetLine(p);
+        return '&lt;div class=&quot;lb&quot;&gt;&lt;span class=&quot;nm&quot;&gt;'+p.biz+(p.meet.note?'&lt;i&gt;'+p.meet.note+'&lt;/i&gt;':'')+'&lt;/span&gt;'
+          +'&lt;span class=&quot;vv&quot; style=&quot;font-size:12px;color:'+ml.c+'&quot;&gt;'+fmtD(new Date(p.meet.date+'T00:00:00').getTime())+(p.meet.time?' · '+p.meet.time:'')+'&lt;/span&gt;&lt;/div&gt;';
+      }).join('')+'&lt;/div&gt;';
+  }
+  if(rows.length){
+    h+='&lt;div class=&quot;dcard&quot; style=&quot;border-left:3px solid var(--amber);margin-bottom:12px&quot;&gt;&lt;h3&gt;Needs a nudge&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;You asked, they have not come back. Or a booked call has been and gone.&lt;/div&gt;'
+      +rows.slice(0,6).map(function(x){
+        return '&lt;div class=&quot;lb&quot;&gt;&lt;span class=&quot;nm&quot;&gt;'+x.p.biz+'&lt;i&gt;'+x.ml.t+'&lt;/i&gt;&lt;/span&gt;'
+          +'&lt;button class=&quot;dbtn&quot; onclick=&quot;openDrawer('+x.p.id+')&quot;&gt;Open&lt;/button&gt;&lt;/div&gt;';
+      }).join('')+'&lt;/div&gt;';
+  }
+  host.innerHTML=h;
 }
 window.toggleDraft=function(){
   const b=$('#draftBox'); if(!b)return;
@@ -4120,6 +4176,7 @@ function paintPartners(){
       '&lt;div class=&quot;top&quot;&gt;&lt;div&gt;&lt;div class=&quot;biz&quot;&gt;'+p.biz+((p.h&amp;&amp;p.h.H&lt;40)?' ⚠':'')+'&lt;/div&gt;&lt;div class=&quot;ind&quot;&gt;'+p.ind+' · '+p.name+'&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip type&quot;&gt;'+p.type.toUpperCase()+'&lt;/span&gt;'
       +((p.pipe&amp;&amp;p.pipe.stage&amp;&amp;p.pipe.stage!=='Live')?'&lt;span class=&quot;chip&quot; style=&quot;border-color:'+(ONB_C[p.pipe.stage]||'var(--bdr2)')+';color:'+(ONB_C[p.pipe.stage]||'var(--dim)')+'&quot;&gt;'+p.pipe.stage.toUpperCase()+'&lt;/span&gt;':'')
+      +((p.meet&amp;&amp;(p.meet.status==='Requested'||p.meet.status==='Confirmed'||p.meet.status==='Fell through'))?'&lt;span class=&quot;chip&quot; style=&quot;border-color:'+(MEET_C[p.meet.status])+';color:'+(MEET_C[p.meet.status])+'&quot;&gt;'+(p.meet.status==='Confirmed'?'CALL BOOKED':p.meet.status==='Requested'?'AWAITING REPLY':'REBOOK')+'&lt;/span&gt;':'')
       +(agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;hscore&quot;&gt;&lt;div&gt;&lt;div class=&quot;ring&quot;&gt;'+(p.h?p.h.H:'—')+'&lt;/div&gt;&lt;div class=&quot;band&quot;&gt;'+b.t+'&lt;/div&gt;'
       +(p.readiness?'&lt;div class=&quot;bl&quot; style=&quot;color:var(--faint)&quot;&gt;readiness '+p.readiness.t+'&lt;/div&gt;':'')+'&lt;/div&gt;'+
@@ -4127,7 +4184,7 @@ function paintPartners(){
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.lastLead+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LAST LEAD&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+spokeText(p).c+'&quot;&gt;'+(daysSince(p.lastTouch)===null?'—':daysSince(p.lastTouch)+'d')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;SPOKE&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(p.h?p.h.F:'—')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;FINANCE&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;foot&quot;&gt;&lt;span class=&quot;'+ci.cls+'&quot;&gt;'+ci.t+'&lt;/span&gt;&lt;span class=&quot;linkish&quot;&gt;Open →&lt;/span&gt;&lt;/div&gt;';
+      '&lt;div class=&quot;foot&quot;&gt;&lt;span class=&quot;'+ci.cls+'&quot;&gt;'+((p.meet&amp;&amp;p.meet.status==='Confirmed'&amp;&amp;p.meet.date)?('Call '+fmtD(new Date(p.meet.date+'T00:00:00').getTime())):ci.t)+'&lt;/span&gt;&lt;span class=&quot;linkish&quot;&gt;Open →&lt;/span&gt;&lt;/div&gt;';
     card.onclick=()=&gt;openDrawer(p.id);
     g.append(card);
   });
@@ -4175,12 +4232,78 @@ window.clearScoreMode=clearScoreMode;
       q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
       eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
       pipe:pipeDefaults({email:g('apEmail'),stage:document.getElementById('apStage').value}),
+      meet:meetDefaults({}),
       hist:[{d:now,t:'Added directly'+(g('apNotes')?' — '+g('apNotes'):'.')}]};
     p.h=null;partners.push(p);pSave();paintPartners();fillPickers();fillAddPickers();paintKPIs();
     ['apBiz','apName','apInd','apPhone','apEmail','apNotes'].forEach(id=&gt;document.getElementById(id).value='');
     toast('Added to book',biz+' — first check-in set for 30 days. Run a quarterly review when you want a health score.');
   };
 })();
+
+/* ── the next call: is it booked, or are you still waiting on them ── */
+function meetBlock(p){
+  ensureMeet(p);
+  const m=p.meet, ml=meetLine(p);
+  return '&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);'+(ml.chase?'border-left:3px solid var(--amber);':'')+'border-radius:10px;padding:11px 14px;margin:0 0 12px&quot;&gt;'
+   +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px&quot;&gt;'
+   +'&lt;div&gt;&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Next call&lt;/div&gt;'
+   +'&lt;div style=&quot;font-size:13px;font-weight:600;color:'+ml.c+';margin-top:3px&quot;&gt;'+ml.t+'&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;select id=&quot;mtStatus&quot; style=&quot;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:5px 9px;color:'+ml.c+';font-size:12px;font-weight:600;font-family:inherit&quot;&gt;'
+   + MEET.map(function(x){return '&lt;option'+(x===m.status?' selected':'')+'&gt;'+x+'&lt;/option&gt;'}).join('')+'&lt;/select&gt;&lt;/div&gt;'
+   +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px&quot;&gt;'
+   +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Date&lt;input id=&quot;mtDate&quot; type=&quot;date&quot; value=&quot;'+(m.date||'')+'&quot; '+'style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;'+'&gt;&lt;/label&gt;'
+   +'&lt;label style=&quot;font-size:11.5px;color:var(--dim)&quot;&gt;Time&lt;input id=&quot;mtTime&quot; type=&quot;time&quot; value=&quot;'+(m.time||'')+'&quot; '+'style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;'+'&gt;&lt;/label&gt;'
+   +'&lt;/div&gt;'
+   +'&lt;label style=&quot;font-size:11.5px;color:var(--dim);display:block;margin-top:9px&quot;&gt;What it is about&lt;input id=&quot;mtNote&quot; value=&quot;'+(m.note||'').replace(/&quot;/g,'&amp;quot;')+'&quot; placeholder=&quot;quarterly review, launch pack walkthrough, general catch up&quot; '+'style=&quot;width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;color:var(--txt);font-size:12px;font-family:inherit&quot;'+'&gt;&lt;/label&gt;'
+   +'&lt;div style=&quot;display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap&quot;&gt;'
+   +'&lt;button id=&quot;mtSave&quot; style=&quot;background:var(--teal);border:none;color:#06251f;font-weight:700;font-size:12.5px;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:inherit&quot;&gt;Save the call&lt;/button&gt;'
+   +'&lt;button id=&quot;mtAsked&quot; class=&quot;dbtn&quot;&gt;I have asked, waiting on them&lt;/button&gt;'
+   +'&lt;span id=&quot;mtState&quot; style=&quot;font-size:11.5px;color:var(--faint)&quot;&gt;&lt;/span&gt;'
+   +'&lt;/div&gt;'
+   +(ml.chase?'&lt;div style=&quot;font-size:11.5px;color:var(--amber);margin-top:9px;line-height:1.5&quot;&gt;'+(m.status==='Requested'?'They have not come back to you. Worth a nudge.':'This one needs sorting out.')+'&lt;/div&gt;':'')
+   +'&lt;/div&gt;';
+}
+function wireMeet(){
+  const p=curP; if(!p)return;
+  const g=id=&gt;document.getElementById(id);
+  if(!g('mtStatus'))return;
+  const flag=(msg,good)=&gt;{
+    const el=g('mtState'); if(!el)return;
+    el.textContent=msg; el.style.color=good?'var(--teal)':'var(--amber)';
+    clearTimeout(window._mtT);
+    window._mtT=setTimeout(function(){const e2=g('mtState'); if(e2)e2.textContent='';},2600);
+  };
+  const save=()=&gt;{
+    ensureMeet(p);
+    const was=p.meet.status;
+    p.meet.status=g('mtStatus').value;
+    p.meet.date=g('mtDate').value;
+    p.meet.time=g('mtTime').value;
+    p.meet.note=g('mtNote').value.trim();
+    if(p.meet.status==='Requested'&amp;&amp;!p.meet.askedAt) p.meet.askedAt=Date.now();
+    if(p.meet.status!=='Requested') p.meet.askedAt=p.meet.askedAt;
+    if(was!==p.meet.status){
+      p.hist=p.hist||[];
+      p.hist.unshift({d:Date.now(),t:'Next call '+p.meet.status.toLowerCase()
+        +(p.meet.date?' for '+p.meet.date+(p.meet.time?' at '+p.meet.time:''):'')
+        +(p.meet.note?' — '+p.meet.note:'')+'.'});
+    }
+    pSave();paintPartners();paintKPIs();
+    if(typeof pushSheet==='function')pushSheet('next call');
+  };
+  ['mtDate','mtTime','mtNote'].forEach(function(id){ g(id).oninput=function(){save();flag('Saving...',false)}; });
+  g('mtStatus').onchange=function(){ save(); openDrawer(p.id); };
+  g('mtSave').onclick=function(){ save(); flag('Saved',true); toast('Call saved',p.biz+' — '+meetLine(p).t.toLowerCase()+'.'); };
+  g('mtAsked').onclick=function(){
+    ensureMeet(p);
+    p.meet.status='Requested'; p.meet.askedAt=Date.now();
+    p.hist=p.hist||[]; p.hist.unshift({d:Date.now(),t:'Asked them for a time. Waiting on a reply.'});
+    pSave();paintPartners();paintKPIs();
+    if(typeof pushSheet==='function')pushSheet('next call');
+    openDrawer(p.id);
+  };
+  window._mtFlush=save;
+}
 
 /* ── onboarding pipeline · shown until they're Live ── */
 function onbBlock(p){
@@ -4282,6 +4405,7 @@ function openDrawer(id){
     +'&lt;/div&gt;&lt;/div&gt;'
     +'&lt;div style=&quot;font-size:11px;color:var(--faint);margin-top:8px;line-height:1.5&quot;&gt;Tap how you reached them and it stamps today against their name.&lt;/div&gt;'
     +'&lt;/div&gt;'+
+    meetBlock(p)+
     (p.readiness?'&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:11px 14px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap&quot;&gt;'
       +'&lt;div&gt;&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Readiness&lt;/div&gt;'
       +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);margin-top:3px&quot;&gt;'+p.readiness.band+' · scored '+fmtD(p.readiness.d)+'&lt;/div&gt;&lt;/div&gt;'
@@ -4317,9 +4441,12 @@ function openDrawer(id){
     '&lt;/div&gt;&lt;/div&gt;';
   $('#scrim').classList.add('on');$('#drawer').classList.add('on');
   wireOnb();
+  wireMeet();
 }
 function closeDrawer(){
   try{ if(typeof window._onbFlush==='function'&amp;&amp;document.getElementById('onbPhone')) window._onbFlush(); }catch(e){}
+  try{ if(typeof window._mtFlush==='function'&amp;&amp;document.getElementById('mtDate')) window._mtFlush(); }catch(e){}
+  window._mtFlush=null;
   window._onbFlush=null;
   $('#scrim').classList.remove('on');$('#drawer').classList.remove('on');
 }
@@ -4836,6 +4963,7 @@ $('#qsAdd').onclick=()=&gt;{
     q:{leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0},
     eng:{zink:'',ref:'',comms:'',touch:0},mkt:['','','','','','','',''],risks:['Low','Low','Low','Low','Low'],
     pipe:pipeDefaults({}),
+    meet:meetDefaults({}),
     readiness:{t:r.t,band:r.out.t,d:Date.now(),answers:grabAnswers(),committed:true},
     hist:[{d:now,t:'Qualified '+r.t+'/100 — '+r.out.t+'. Kick-off call to book within 24h of HQ handover.'}]};
   p.h=null;partners.push(p);pSave();paintPartners();fillPickers();fillAddPickers();paintKPIs();
@@ -5192,6 +5320,10 @@ function pushSheet(why){
       biz:p.biz,contact:p.name,type:p.type,ind:p.ind,phone:p.phone||'',leadsMTD:p.leadsMTD||0,
       email:p.pipe.email||'',stage:p.pipe.stage||'',page:p.pipe.page||'',
       qr:p.pipe.qr?'Yes':'No',zink:p.pipe.zink?'Yes':'No',
+      nextCall:(p.meet&amp;&amp;p.meet.date)?p.meet.date:'',
+      nextCallTime:(p.meet&amp;&amp;p.meet.time)?p.meet.time:'',
+      nextCallStatus:(p.meet&amp;&amp;p.meet.status)?p.meet.status:'',
+      nextCallNote:(p.meet&amp;&amp;p.meet.note)?p.meet.note:'',
       lastTouch:p.lastTouch?new Date(p.lastTouch).toISOString().slice(0,10):'',
       lastTouchHow:p.lastTouchHow||'',
       readiness:p.readiness?p.readiness.t:'',health:(p.h&amp;&amp;p.h.H!=null)?p.h.H:''};}),

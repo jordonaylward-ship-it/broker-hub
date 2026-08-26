@@ -142,7 +142,7 @@ body.locked .shell{display:none}
 <!-- PASSWORD GATE -->
 <div id="gate">
   <div class="gate-card">
-    <div class="gate-logo">Fund One</div>
+    <div class="gate-logo">Ausloans</div>
     <h1>Jordon's Broker Suite</h1>
     <div class="gate-sub">Restricted access. Enter your password to continue.</div>
     <label for="gpw">Password</label>
@@ -355,7 +355,7 @@ html{scrollbar-color:#2c3247 transparent}::-webkit-scrollbar{width:10px;height:1
     &lt;div class=&quot;setup-row&quot;&gt;&lt;input type=&quot;text&quot; id=&quot;urlInput&quot; placeholder=&quot;https://script.google.com/macros/s/.../exec&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;connect()&quot;&gt;Connect&lt;/button&gt;&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class=&quot;hdr&quot;&gt;
-    &lt;div&gt;&lt;h1&gt;BROKER &lt;span&gt;HUB&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;Fund One · Lead &amp; Performance Dashboard&lt;/p&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;h1&gt;BROKER &lt;span&gt;HUB&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;Ausloans · Lead &amp;amp; Performance Dashboard&lt;/p&gt;&lt;/div&gt;
     &lt;div class=&quot;hdr-r&quot;&gt;
       &lt;div class=&quot;live-dot&quot; id=&quot;liveDot&quot;&gt;&lt;/div&gt;&lt;span class=&quot;live-txt&quot; id=&quot;liveTxt&quot;&gt;&lt;/span&gt;
       &lt;button class=&quot;btn btn-s btn-sm&quot; onclick=&quot;refreshData()&quot;&gt;↻ Refresh&lt;/button&gt;
@@ -3324,7 +3324,7 @@ load(); render();
 &lt;head&gt;
 &lt;meta charset=&quot;UTF-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;&gt;
-&lt;title&gt;FundOne — Partner Manager v2&lt;/title&gt;
+&lt;title&gt;Ausloans — Partner Manager&lt;/title&gt;
 &lt;link href=&quot;https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
 &lt;style&gt;
 :root{
@@ -3415,7 +3415,8 @@ input,select,textarea{font-family:inherit}
 .gt .g{color:var(--teal);white-space:nowrap}
 .gt .b{color:var(--coral);white-space:nowrap}
 
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px 20px 4px;max-width:1280px;margin:0 auto;width:100%}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:16px 20px 4px;max-width:1280px;margin:0 auto;width:100%}
+@media(max-width:1180px){.kpis{grid-template-columns:repeat(3,1fr)}}
 .kpi{background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px}
 .kpi .v{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.5px}
 .kpi .l{font-size:12px;color:var(--dim);margin-top:4px;display:flex;align-items:center;gap:2px;line-height:1.35}
@@ -3603,7 +3604,7 @@ tr.star td{background:rgba(20,184,166,.05)}
 &lt;body&gt;
 
 &lt;nav class=&quot;topnav&quot;&gt;
-  &lt;div class=&quot;brand&quot;&gt;FundOne&lt;span&gt;·&lt;/span&gt;Partner Manager&lt;/div&gt;
+  &lt;div class=&quot;brand&quot;&gt;Ausloans&lt;span&gt;·&lt;/span&gt;Partner Manager&lt;/div&gt;
   &lt;div class=&quot;nav-tabs&quot;&gt;
     &lt;button class=&quot;nav-tab on&quot; data-tab=&quot;partners&quot;&gt;My partners&lt;/button&gt;
     &lt;button class=&quot;nav-tab&quot; data-tab=&quot;qualify&quot;&gt;1 · Score a new one&lt;/button&gt;
@@ -3624,6 +3625,12 @@ tr.star td{background:rgba(20,184,166,.05)}
   &lt;div class=&quot;kpi warn&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kDue&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Catch-ups due&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;kpi bad&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kSpend&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Marketing spent&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
+
+
+&lt;main class=&quot;wrap&quot;&gt;
+
+&lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
+
 &lt;div id=&quot;pxMini&quot; style=&quot;display:none;font-size:11.5px;color:var(--amber);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;margin:0 0 12px;line-height:1.5&quot;&gt;&lt;/div&gt;
 &lt;div id=&quot;nextUp&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;dgrid&quot;&gt;
@@ -3631,18 +3638,6 @@ tr.star td{background:rgba(20,184,166,.05)}
   &lt;div class=&quot;dcard&quot;&gt;&lt;h3&gt;Top 5 by marketing spend&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;What you have funded for them. Compare it against the list on the left.&lt;/div&gt;&lt;div id=&quot;topSpend&quot;&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 
-&lt;main class=&quot;wrap&quot;&gt;
-
-&lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partners Dashboard&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;everything at a glance · your book, what they send you, and who is next&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;howto&quot;&gt;
-    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;1&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Score a new one&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Before you sign anyone. 12 questions on the phone, tells you yes or no.&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;2&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Leads they send&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Every client they refer. Log it, ring inside 60 minutes.&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;3&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Monthly catch-up&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Once a month per partner. How'd the month go, what do they need.&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;4&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Quarterly review&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Every 3 months. Scores their health out of 100 and colours their card.&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;hs when&quot;&gt;&lt;span class=&quot;n&quot;&gt;5&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;How I'm scored&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Ausloans marking you, not them. Update it monthly.&lt;/div&gt;&lt;/div&gt;
-  &lt;/div&gt;
 
   &lt;details style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px;display:block;width:100%&quot;&gt;
       &lt;summary style=&quot;cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none&quot;&gt;+ Add a partner directly &lt;span style=&quot;font-weight:400;color:var(--faint);font-size:11.5px&quot;&gt;· for ones head office signed up, where you skip the scorecard&lt;/span&gt;&lt;/summary&gt;
@@ -4923,7 +4918,7 @@ function bsCalc(){
 
 /* ================= SLA ================= */
 const SMS={
- 1:c=&gt;&quot;Quick update — I've reached &quot;+c+&quot; and we're underway. Will keep you posted. — Jordy, FundOne&quot;,
+ 1:c=&gt;&quot;Quick update — I've reached &quot;+c+&quot; and we're underway. Will keep you posted. — Jordy, Ausloans&quot;,
  2:c=&gt;c+&quot;: docs requested today. I'll chase these so we keep momentum.&quot;,
  3:c=&gt;c+&quot; submitted to lender just now. Expect movement in 24–48h.&quot;,
  app:c=&gt;&quot;Great news — &quot;+c+&quot; is APPROVED ✅ Nice referral, thank you!&quot;,

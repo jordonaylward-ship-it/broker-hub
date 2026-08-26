@@ -3918,7 +3918,7 @@ function pipeDefaults(o){
   return {email:o.email||'',stage:o.stage||'Agreement out',page:o.page||'',qr:!!o.qr,zink:!!o.zink};
 }
 function ensurePipe(p){ p.pipe=pipeDefaults(p.pipe); return p }
-let partners=[],leads=[],ledger=[],checkins=[];
+let partners=[],leads=[],ledger=[],checkins=[],reviews=[];
 (function(){
   try{
     const o=JSON.parse(localStorage.getItem(PKEY))||{};
@@ -3926,9 +3926,10 @@ let partners=[],leads=[],ledger=[],checkins=[];
     leads=Array.isArray(o.leads)?o.leads:[];
     ledger=Array.isArray(o.ledger)?o.ledger:[];
     checkins=Array.isArray(o.checkins)?o.checkins:[];
+    reviews=Array.isArray(o.reviews)?o.reviews:[];
   }catch(e){}
 })();
-function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger,checkins:checkins,slaLog:(typeof slaLogRows!=='undefined'?slaLogRows.slice(0,60):[])})); }catch(e){} }
+function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger,checkins:checkins,reviews:reviews,slaLog:(typeof slaLogRows!=='undefined'?slaLogRows.slice(0,60):[])})); }catch(e){} }
 
 partners.forEach(p=&gt;p.h=calcHealth(p));
 
@@ -4446,6 +4447,49 @@ function qCalc(){
    '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Contact speed&lt;/span&gt;&lt;b&gt;'+(val('q_chrs')!==''?val('q_chrs')+'h':'—')+'&lt;/b&gt;&lt;/div&gt;';
   window._qres={F,E,M,R,H,ar,sr};
 }
+const Q_FIELDS=[
+ ['date','q_date'],['nextReview','q_next'],['units','q_units'],['goals','q_goals'],
+ ['promos','q_promos'],['staffReferring','q_staffn'],['training','q_train'],
+ ['leads','q_leads'],['softChecks','q_soft'],['approvals','q_app'],['declines','q_dec'],
+ ['settled','q_set'],['volume','q_vol'],['avgDeal','q_avg'],
+ ['approvalRate','q_ar'],['settlementRate','q_sr'],
+ ['contactHrs','q_chrs'],['submitDays','q_sub'],['approvalDays','q_apd'],
+ ['worked','q_worked'],['challenges','q_chal'],
+ ['zink','q_zink'],['referral','q_ref'],['comms','q_comms'],['touchpoints','q_touch'],
+ ['partnerComments','q_pcom'],
+ ['trainingDate','q_trd'],
+ ['assessment','q_assess'],['finalFeedback','q_final'],['completedDate','q_done']
+];
+function grabReview(p,r,nextOn){
+  const rec={pid:p.id,biz:p.biz,contact:p.name,savedAt:Date.now()};
+  Q_FIELDS.forEach(function(f){ const el=$('#'+f[1]); rec[f[0]]=el?String(el.value||'').trim():''; });
+  if(!rec.date) rec.date=new Date().toISOString().slice(0,10);
+  rec.health=(r.H!=null?r.H:'');
+  rec.band=(r.H!=null?bandOf(r.H).t:'');
+  rec.finance=(r.F!=null?r.F:''); rec.engagement=(r.E!=null?r.E:'');
+  rec.marketing=(r.M!=null?r.M:''); rec.risk=(r.R!=null?r.R:'');
+  rec.marketingTools=MKT_TOOLS.map(function(t,i){return t+': '+(val('q_mkt'+i)||'')}).join(' | ');
+  rec.risks=[0,1,2,3,4].map(function(i){return val('q_rl'+i)||''}).join(' | ');
+  rec.nextInitiatives=(nextOn||[]).join(' | ');
+  const acts=[];
+  ['Partner','Broker','Joint'].forEach(function(g){
+    for(var i=0;i&lt;3;i++){
+      var a=$('#q_'+g+'a'+i);
+      if(a&amp;&amp;a.value&amp;&amp;a.value.trim()){
+        var o=$('#q_'+g+'o'+i), dd=$('#q_'+g+'d'+i), st=$('#q_'+g+'s'+i);
+        acts.push(g+': '+a.value.trim()
+          +(o&amp;&amp;o.value?' (owner '+o.value+')':'')
+          +(dd&amp;&amp;dd.value?' due '+dd.value:'')
+          +(st&amp;&amp;st.value?' — '+st.value:''));
+      }
+    }
+  });
+  rec.actionPlan=acts.join(' | ');
+  var tr=[];
+  if(typeof TRAIN_Q!=='undefined'){ TRAIN_Q.forEach(function(t,i){ var el=$('#q_tr'+i); if(el&amp;&amp;el.checked) tr.push(t); }); }
+  rec.trainingNeeded=tr.join(' | ');
+  return rec;
+}
 $('#qSave').onclick=()=&gt;{
   const p=partners.find(x=&gt;x.id==+$('#qPartner').value);
   const r=window._qres||{};
@@ -4457,9 +4501,14 @@ $('#qSave').onclick=()=&gt;{
   p.risks=[0,1,2,3,4].map(i=&gt;val('q_rl'+i));
   p.h=calcHealth(p);
   const nextOn=OPPS.filter((o,i)=&gt;val('q_on'+i)==='Yes');
-  p.hist.unshift({d:now,t:'Quarterly review — Health '+p.h.H+' ('+bandOf(p.h.H).t+'). Next initiative: '+(nextOn[0]||'—')});pSave();
-  paintPartners();
-  toast('Quarterly saved — partner rescored','Health '+p.h.H+' · '+bandOf(p.h.H).t+'. Card recoloured. Production: writes the full Ausloans worksheet + 90-day plan tasks to GHL.');
+  p.hist.unshift({d:now,t:'Quarterly review — Health '+p.h.H+' ('+bandOf(p.h.H).t+'). Next initiative: '+(nextOn[0]||'—')});
+  const rec=grabReview(p,r,nextOn);
+  const at=reviews.findIndex(x=&gt;x.pid===p.id&amp;&amp;x.date===rec.date);
+  if(at&gt;=0) reviews[at]=rec; else reviews.unshift(rec);
+  if(reviews.length&gt;200) reviews.length=200;
+  pSave();paintPartners();paintKPIs();
+  pushSheet('quarterly review');
+  toast('Quarterly saved','Health '+p.h.H+' · '+bandOf(p.h.H).t+'. Saved against '+p.biz+' and queued for the sheet.');
 };
 $('#qCopy').onclick=()=&gt;{
   const p=partners.find(x=&gt;x.id==+$('#qPartner').value);
@@ -5047,7 +5096,8 @@ function pushSheet(why){
       email:p.pipe.email||'',stage:p.pipe.stage||'',page:p.pipe.page||'',
       qr:p.pipe.qr?'Yes':'No',zink:p.pipe.zink?'Yes':'No',
       readiness:p.readiness?p.readiness.t:'',health:(p.h&amp;&amp;p.h.H!=null)?p.h.H:''};}),
-    checkins:checkins.slice(0,60)};
+    checkins:checkins.slice(0,60),
+    reviews:reviews.slice(0,40)};
   let fp=null;
   try{
     fp=fetch(EXEC_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});

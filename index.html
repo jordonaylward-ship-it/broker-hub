@@ -3893,6 +3893,28 @@ const sAppr=r=&gt;r&gt;=.7?100:r&gt;=.6?80:r&gt;=.5?60:r&gt;=.4?40:20;
 const sSettle=r=&gt;r&gt;=.8?100:r&gt;=.7?80:r&gt;=.6?60:r&gt;=.5?40:20;
 const sContact=h=&gt;h&lt;=1?100:h&lt;=4?80:h&lt;=24?50:20;
 const sTouch=n=&gt;n&gt;=8?100:n&gt;=5?80:n&gt;=3?60:n&gt;=1?40:20;
+function daysSince(ts){ if(!ts)return null; return Math.floor((Date.now()-ts)/86400000); }
+function spokeText(p){
+  const d=daysSince(p.lastTouch);
+  if(d===null)return {t:'No contact logged yet',c:'var(--faint)'};
+  if(d===0)return {t:'Spoke today',c:'var(--teal)'};
+  if(d===1)return {t:'Spoke yesterday',c:'var(--teal)'};
+  if(d&lt;=14)return {t:'Spoke '+d+' days ago',c:'var(--teal)'};
+  if(d&lt;=30)return {t:'Spoke '+d+' days ago',c:'var(--dim)'};
+  if(d&lt;=60)return {t:d+' days since you spoke',c:'var(--amber)'};
+  return {t:d+' days since you spoke',c:'var(--coral)'};
+}
+function logTouch(id,how,note){
+  const p=partners.find(x=&gt;x.id===id); if(!p)return;
+  p.lastTouch=Date.now(); p.lastTouchHow=how||'Call';
+  p.hist=p.hist||[];
+  p.hist.unshift({d:Date.now(),t:'Spoke with them'+(how?' — '+how.toLowerCase():'')+(note?': '+note:'.')});
+  pSave();paintPartners();paintKPIs();
+  if(typeof pushSheet==='function')pushSheet('contact logged');
+  openDrawer(id);
+  toast('Contact logged',p.biz+' — '+spokeText(p).t.toLowerCase()+'.');
+}
+window.logTouch=logTouch;
 function bandOf(s){return s==null?{t:'NO QUARTERLY YET',c:'var(--faint)'}:s&gt;=90?{t:'Excellent',c:'var(--teal)'}:s&gt;=75?{t:'Good',c:'var(--green)'}:s&gt;=60?{t:'Fair',c:'var(--amber)'}:s&gt;=40?{t:'At Risk',c:'var(--coral)'}:{t:'Critical',c:'var(--red2)'}}
 function calcHealth(p){
   const q=p.q;if(!q||!q.leads)return null;
@@ -4052,6 +4074,7 @@ function paintPartners(){
       +(p.readiness?'&lt;div class=&quot;bl&quot; style=&quot;color:var(--faint)&quot;&gt;readiness '+p.readiness.t+'&lt;/div&gt;':'')+'&lt;/div&gt;'+
       '&lt;div class=&quot;nums&quot;&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.leadsMTD+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LEADS MTD&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+p.lastLead+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;LAST LEAD&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+spokeText(p).c+'&quot;&gt;'+(daysSince(p.lastTouch)===null?'—':daysSince(p.lastTouch)+'d')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;SPOKE&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(p.h?p.h.F:'—')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;FINANCE&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;foot&quot;&gt;&lt;span class=&quot;'+ci.cls+'&quot;&gt;'+ci.t+'&lt;/span&gt;&lt;span class=&quot;linkish&quot;&gt;Open →&lt;/span&gt;&lt;/div&gt;';
     card.onclick=()=&gt;openDrawer(p.id);
@@ -4196,6 +4219,18 @@ function openDrawer(id){
     '&lt;div class=&quot;d-head&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div&gt;&lt;h3&gt;'+p.biz+'&lt;/h3&gt;&lt;div class=&quot;ind&quot;&gt;'+[p.name,(p.phone&amp;&amp;p.phone!=='—')?p.phone:'',(p.pipe&amp;&amp;p.pipe.email)?p.pipe.email:'',p.ind].filter(function(x){return x&amp;&amp;x!=='—'}).join(' · ')+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;button class=&quot;d-close&quot; onclick=&quot;closeDrawer()&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;'+
     onbBlock(p)+
+    '&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:11px 14px;margin:0 0 12px&quot;&gt;'
+    +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap&quot;&gt;'
+    +'&lt;div&gt;&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Last contact&lt;/div&gt;'
+    +'&lt;div style=&quot;font-size:13px;font-weight:600;color:'+spokeText(p).c+';margin-top:3px&quot;&gt;'+spokeText(p).t+'&lt;/div&gt;'
+    +(p.lastTouch?'&lt;div style=&quot;font-size:11.5px;color:var(--faint);margin-top:2px&quot;&gt;'+(p.lastTouchHow||'Call')+' on '+fmtD(p.lastTouch)+'&lt;/div&gt;':'')
+    +'&lt;/div&gt;'
+    +'&lt;div style=&quot;display:flex;gap:6px;flex-wrap:wrap&quot;&gt;'
+    +['Call','Text','Email','In person'].map(function(k){
+       return '&lt;button onclick=&quot;logTouch('+p.id+',\''+k+'\')&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:11.5px;font-weight:600;border-radius:7px;padding:6px 10px;cursor:pointer;font-family:inherit&quot;&gt;'+k+'&lt;/button&gt;'}).join('')
+    +'&lt;/div&gt;&lt;/div&gt;'
+    +'&lt;div style=&quot;font-size:11px;color:var(--faint);margin-top:8px;line-height:1.5&quot;&gt;Tap how you reached them and it stamps today against their name.&lt;/div&gt;'
+    +'&lt;/div&gt;'+
     (p.readiness?'&lt;div style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:10px;padding:11px 14px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap&quot;&gt;'
       +'&lt;div&gt;&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Readiness&lt;/div&gt;'
       +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);margin-top:3px&quot;&gt;'+p.readiness.band+' · scored '+fmtD(p.readiness.d)+'&lt;/div&gt;&lt;/div&gt;'
@@ -4241,7 +4276,7 @@ $('#scrim').onclick=closeDrawer;
 function reEngage(){toast('Re-engagement started','Call task queued for '+curP.biz+' + strategy-session SMS drafted. Production: n8n creates the GHL task.')}
 function pitchAgency(){smsToast(curP,'Hey '+curP.name.split(' ')[0]+&quot; — you're sending serious volume. Time we upgraded you so your team can pre-qualify in Zink and get approvals faster. $12.90/soft check, nothing else. 15 min this week?&quot;)}
 function prepText(p){
-  return 'CHECK-IN PREP — '+p.biz+' ('+p.name+', '+p.phone+')\n90d: '+(p.q.leads||0)+' leads · '+(p.q.app||0)+' appr / '+(p.q.dec||0)+' dec · '+(p.q.set||0)+' settled · '+money(p.q.vol||0)+'\nHealth: '+(p.h?p.h.H+' '+bandOf(p.h.H).t:'unscored')+' · last lead '+p.lastLead+'d'+(agencyReady(p)?'\n&gt;&gt; AGENCY-READY — pitch the upgrade':'')+'\nLast note: '+(p.hist[0]?p.hist[0].t:'—');
+  return 'CHECK-IN PREP — '+p.biz+' ('+p.name+', '+p.phone+')\n90d: '+(p.q.leads||0)+' leads · '+(p.q.app||0)+' appr / '+(p.q.dec||0)+' dec · '+(p.q.set||0)+' settled · '+money(p.q.vol||0)+'\nHealth: '+(p.h?p.h.H+' '+bandOf(p.h.H).t:'unscored')+' · last lead '+p.lastLead+'d'+(agencyReady(p)?'\n&gt;&gt; AGENCY-READY — pitch the upgrade':'')+'\n'+spokeText(p).t+(p.lastTouchHow?' ('+p.lastTouchHow.toLowerCase()+')':'')+'\nLast note: '+(p.hist[0]?p.hist[0].t:'—');
 }
 function copyPrep(){navigator.clipboard&amp;&amp;navigator.clipboard.writeText(prepText(curP)).then(()=&gt;toast('Prep copied','Paste into Dialpad notes before you ring.')).catch(()=&gt;toast('Prep','Clipboard blocked — copy manually.'))}
 function goCheckin(id){closeDrawer();switchTab('checkin');$('#ciPartner').value=id;renderCheckin()}
@@ -4364,6 +4399,7 @@ $('#ciSave').onclick=()=&gt;{
   if(checkins.length&gt;400) checkins.length=400;
   p.hist.unshift({d:now,t:'Monthly check-in: '+L+' leads, '+F+' funded ('+(L?Math.round(F/L*100)+'%':'—')+'). Sat: '+(val('c_sat')||'—')+'. Next tactic: '+(val('c_recs')||'—').slice(0,80)});
   p.nextCI=val('c_next')?new Date(val('c_next')).getTime():now+30*day;
+  p.lastTouch=Date.now(); p.lastTouchHow='Monthly check-in';
   pSave();paintPartners();paintKPIs();
   pushSheet('check-in');
   toast('Check-in saved','Saved against '+p.biz+' and queued for the sheet. Next meeting '+fmtD(p.nextCI)+'.');
@@ -4508,6 +4544,7 @@ $('#qSave').onclick=()=&gt;{
   const at=reviews.findIndex(x=&gt;x.pid===p.id&amp;&amp;x.date===rec.date);
   if(at&gt;=0) reviews[at]=rec; else reviews.unshift(rec);
   if(reviews.length&gt;200) reviews.length=200;
+  p.lastTouch=Date.now(); p.lastTouchHow='Quarterly review';
   pSave();paintPartners();paintKPIs();
   pushSheet('quarterly review');
   toast('Quarterly saved','Health '+p.h.H+' · '+bandOf(p.h.H).t+'. Saved against '+p.biz+' and queued for the sheet.');
@@ -5097,6 +5134,8 @@ function pushSheet(why){
       biz:p.biz,contact:p.name,type:p.type,ind:p.ind,phone:p.phone||'',leadsMTD:p.leadsMTD||0,
       email:p.pipe.email||'',stage:p.pipe.stage||'',page:p.pipe.page||'',
       qr:p.pipe.qr?'Yes':'No',zink:p.pipe.zink?'Yes':'No',
+      lastTouch:p.lastTouch?new Date(p.lastTouch).toISOString().slice(0,10):'',
+      lastTouchHow:p.lastTouchHow||'',
       readiness:p.readiness?p.readiness.t:'',health:(p.h&amp;&amp;p.h.H!=null)?p.h.H:''};}),
     checkins:checkins.slice(0,60),
     reviews:reviews.slice(0,40)};

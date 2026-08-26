@@ -3793,6 +3793,7 @@ function partnersJson(){
   &lt;div class=&quot;fwrap&quot;&gt;
     &lt;div class=&quot;fmain&quot;&gt;
       &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;KPI inputs (quarterly)&lt;/h3&gt;
+        &lt;div id=&quot;bsNote&quot; style=&quot;font-size:12px;color:var(--dim);line-height:1.55;margin:0 0 11px&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;fbody&quot;&gt;&lt;div id=&quot;bsInputs&quot; style=&quot;display:grid;gap:8px&quot;&gt;&lt;/div&gt;&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;fcard&quot;&gt;&lt;h3&gt;SLA &amp;amp; performance categories&lt;/h3&gt;
@@ -3917,16 +3918,17 @@ function pipeDefaults(o){
   return {email:o.email||'',stage:o.stage||'Agreement out',page:o.page||'',qr:!!o.qr,zink:!!o.zink};
 }
 function ensurePipe(p){ p.pipe=pipeDefaults(p.pipe); return p }
-let partners=[],leads=[],ledger=[];
+let partners=[],leads=[],ledger=[],checkins=[];
 (function(){
   try{
     const o=JSON.parse(localStorage.getItem(PKEY))||{};
     partners=(Array.isArray(o.partners)?o.partners:[]).map(ensurePipe);
     leads=Array.isArray(o.leads)?o.leads:[];
     ledger=Array.isArray(o.ledger)?o.ledger:[];
+    checkins=Array.isArray(o.checkins)?o.checkins:[];
   }catch(e){}
 })();
-function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger,slaLog:(typeof slaLogRows!=='undefined'?slaLogRows.slice(0,60):[])})); }catch(e){} }
+function pSave(){ try{ localStorage.setItem(PKEY, JSON.stringify({v:1,partners:partners,leads:leads,ledger:ledger,checkins:checkins,slaLog:(typeof slaLogRows!=='undefined'?slaLogRows.slice(0,60):[])})); }catch(e){} }
 
 partners.forEach(p=&gt;p.h=calcHealth(p));
 
@@ -4127,6 +4129,10 @@ function onbBlock(p){
    +'&lt;label style=&quot;display:flex;gap:6px;align-items:center;cursor:pointer&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;onbZink&quot;'+(p.pipe.zink?' checked':'')+'&gt; Zink account live&lt;/label&gt;'
    +'&lt;/div&gt;'
    +(p.pipe.stage!=='Live'?'&lt;div style=&quot;font-size:11.5px;color:var(--faint);margin-top:9px;line-height:1.5&quot;&gt;'+onbNext(p)+'&lt;/div&gt;':'')
+   +'&lt;div style=&quot;display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid var(--bdr);flex-wrap:wrap&quot;&gt;'
+   +'&lt;button id=&quot;onbSave&quot; style=&quot;background:var(--teal);border:none;color:#06251f;font-weight:700;font-size:12.5px;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:inherit&quot;&gt;Save changes&lt;/button&gt;'
+   +'&lt;span id=&quot;onbState&quot; style=&quot;font-size:11.5px;color:var(--faint)&quot;&gt;Saves as you type. The button is here if you want to be sure.&lt;/span&gt;'
+   +'&lt;/div&gt;'
    +'&lt;/div&gt;';
 }
 function onbNext(p){
@@ -4153,14 +4159,29 @@ function wireOnb(){
     if(p.pipe.zink&amp;&amp;ONB.indexOf(p.pipe.stage)&lt;2){p.pipe.stage='Zink live';g('onbStage').value='Zink live';}
     if(p.pipe.qr&amp;&amp;ONB.indexOf(p.pipe.stage)&lt;3){p.pipe.stage='Assets issued';g('onbStage').value='Assets issued';}
     pSave();paintPartners();paintKPIs();
+    clearTimeout(window._pushT);
+    window._pushT=setTimeout(function(){pushSheet('partner details')},1200);
   };
   g('onbStage').onchange=()=&gt;{
     const was=p.pipe.stage;save();
     p.hist=p.hist||[];p.hist.unshift({d:Date.now(),t:'Onboarding moved '+was+' → '+p.pipe.stage+'.'});
     pSave();openDrawer(p.id);
   };
-  ['onbPhone','onbEmail','onbPage'].forEach(id=&gt;{g(id).onchange=save});
+  const flag=(msg,good)=&gt;{
+    const el=g('onbState'); if(!el)return;
+    el.textContent=msg; el.style.color=good?'var(--teal)':'var(--amber)';
+    clearTimeout(window._onbT);
+    window._onbT=setTimeout(()=&gt;{const e2=g('onbState'); if(e2){e2.textContent='Saves as you type. The button is here if you want to be sure.';e2.style.color='var(--faint)';}},2600);
+  };
+  /* input, not change, so it saves while you type rather than waiting for focus to leave */
+  ['onbPhone','onbEmail','onbPage'].forEach(id=&gt;{
+    g(id).oninput=()=&gt;{save();flag('Saving...',false)};
+    g(id).onchange=()=&gt;{save();flag('Saved',true)};
+  });
   ['onbQr','onbZink'].forEach(id=&gt;{g(id).onchange=()=&gt;{save();openDrawer(p.id)}});
+  g('onbSave').onclick=()=&gt;{save();pushSheet('partner details');flag('Saved',true);toast('Saved',p.biz+' updated and sent to the sheet.')};
+  /* belt and braces: whatever is on screen gets written when the card closes */
+  window._onbFlush=save;
 }
 
 /* ================= DRAWER ================= */
@@ -4208,7 +4229,11 @@ function openDrawer(id){
   $('#scrim').classList.add('on');$('#drawer').classList.add('on');
   wireOnb();
 }
-function closeDrawer(){$('#scrim').classList.remove('on');$('#drawer').classList.remove('on')}
+function closeDrawer(){
+  try{ if(typeof window._onbFlush==='function'&amp;&amp;document.getElementById('onbPhone')) window._onbFlush(); }catch(e){}
+  window._onbFlush=null;
+  $('#scrim').classList.remove('on');$('#drawer').classList.remove('on');
+}
 $('#scrim').onclick=closeDrawer;
 function reEngage(){toast('Re-engagement started','Call task queued for '+curP.biz+' + strategy-session SMS drafted. Production: n8n creates the GHL task.')}
 function pitchAgency(){smsToast(curP,'Hey '+curP.name.split(' ')[0]+&quot; — you're sending serious volume. Time we upgraded you so your team can pre-qualify in Zink and get approvals faster. $12.90/soft check, nothing else. 15 min this week?&quot;)}
@@ -4306,13 +4331,39 @@ function ciCalc(){
    '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Lead handling&lt;/span&gt;&lt;b&gt;'+(val('c_handling')||'—')+'&lt;/b&gt;&lt;/div&gt;'+
    '&lt;div class=&quot;ss-line&quot;&gt;&lt;span&gt;Implementation&lt;/span&gt;&lt;b&gt;'+(val('c_impl')||'—')+'&lt;/b&gt;&lt;/div&gt;';
 }
+const CI_FIELDS=[
+ ['date','c_date'],['broker','c_broker'],['sat','c_sat'],['satComments','c_satc'],
+ ['units','c_units'],['season','c_season'],['staff','c_staff'],['pain','c_pain'],
+ ['leads','c_leads'],['qualified','c_qual'],['approvals','c_appr'],['declines','c_dec'],
+ ['unableToContact','c_nc'],['funded','c_fund'],['conversion','c_conv'],['qualRate','c_qrate'],
+ ['apprOfQual','c_aq'],['apprOfLeads','c_al'],['fundRate','c_fr'],
+ ['clientTypes','c_types'],['patterns','c_patterns'],['missedCalls','c_missed'],['earlySpot','c_early'],
+ ['handling','c_handling'],['softChecks','c_soft'],['appsStarted','c_apps'],['docRequests','c_docs'],
+ ['transferred','c_trans'],['confidence','c_conf'],['zinkTraining','c_zt'],
+ ['promoting','c_promo'],['support','c_sup'],['implementation','c_impl'],
+ ['recs','c_recs'],['partnerPlan','c_pplan'],['brokerPlan','c_bplan'],
+ ['trainingBooked','c_tbooked'],['trainingDate','c_tdate'],['issues','c_issues'],
+ ['p1','c_p1'],['p2','c_p2'],['p3','c_p3'],['b1','c_b1'],['b2','c_b2'],['b3','c_b3'],
+ ['nextMeeting','c_next'],['actions','c_act']
+];
+function grabCheckin(p){
+  const rec={pid:p.id,biz:p.biz,contact:p.name,savedAt:Date.now()};
+  CI_FIELDS.forEach(function(f){ const el=$('#'+f[1]); rec[f[0]]=el?String(el.value||'').trim():''; });
+  if(!rec.date) rec.date=new Date().toISOString().slice(0,10);
+  return rec;
+}
 $('#ciSave').onclick=()=&gt;{
   const p=partners.find(x=&gt;x.id==+$('#ciPartner').value);
   const L=num('c_leads'),F=num('c_fund');
-  p.hist.unshift({d:now,t:'Monthly check-in: '+L+' leads, '+F+' funded ('+(L?Math.round(F/L*100)+'%':'—')+'). Sat: '+(val('c_sat')||'—')+'. Next tactic: '+(val('c_recs')||'—').slice(0,80)});pSave();
+  const rec=grabCheckin(p);
+  const at=checkins.findIndex(c=&gt;c.pid===p.id&amp;&amp;c.date===rec.date);
+  if(at&gt;=0) checkins[at]=rec; else checkins.unshift(rec);
+  if(checkins.length&gt;400) checkins.length=400;
+  p.hist.unshift({d:now,t:'Monthly check-in: '+L+' leads, '+F+' funded ('+(L?Math.round(F/L*100)+'%':'—')+'). Sat: '+(val('c_sat')||'—')+'. Next tactic: '+(val('c_recs')||'—').slice(0,80)});
   p.nextCI=val('c_next')?new Date(val('c_next')).getTime():now+30*day;
-  paintPartners();
-  toast('Check-in saved','Next meeting '+fmtD(p.nextCI)+'. Production: writes the Ausloans v3 worksheet row + Zink note reminder.');
+  pSave();paintPartners();paintKPIs();
+  pushSheet('check-in');
+  toast('Check-in saved','Saved against '+p.biz+' and queued for the sheet. Next meeting '+fmtD(p.nextCI)+'.');
 };
 $('#ciCopy').onclick=()=&gt;{
   const p=partners.find(x=&gt;x.id==+$('#ciPartner').value);
@@ -4655,17 +4706,23 @@ $('#qsAdd').onclick=()=&gt;{
 
 /* ================= MY BROKER SCORECARD (official quarterly) ================= */
 const BKPI=[
- {id:'b1',l:'% leads contacted &lt; 60 mins',t:'≥ 90%',v:92,pass:v=&gt;v&gt;=90},
- {id:'b2',l:'Avg lead response time (mins)',t:'≤ 60',v:38,pass:v=&gt;v&lt;=60},
- {id:'b3',l:'% stage updates completed',t:'≥ 95%',v:96,pass:v=&gt;v&gt;=95},
- {id:'b4',l:'Weekly pipeline summaries delivered (%)',t:'100%',v:100,pass:v=&gt;v&gt;=100},
- {id:'b5',l:'Monthly check-ins completed (%)',t:'100%',v:100,pass:v=&gt;v&gt;=100},
- {id:'b6',l:'Quarterly strategy reviews completed (%)',t:'100%',v:100,pass:v=&gt;v&gt;=100},
- {id:'b7',l:'Deals stalled &gt; 48 hrs (#)',t:'0',v:1,pass:v=&gt;v&lt;=0},
- {id:'b8',l:'Zink / notes completeness (%)',t:'≥ 95%',v:97,pass:v=&gt;v&gt;=95},
- {id:'b9',l:'Approval rate (%)',t:'≥ 60%',v:63,pass:v=&gt;v&gt;=60},
- {id:'b10',l:'Settlement rate of approvals (%)',t:'≥ 70%',v:74,pass:v=&gt;v&gt;=70}
+ {id:'b1',l:'% leads contacted &lt; 60 mins',t:'≥ 90%',v:'',pass:v=&gt;v&gt;=90},
+ {id:'b2',l:'Avg lead response time (mins)',t:'≤ 60',v:'',pass:v=&gt;v&lt;=60},
+ {id:'b3',l:'% stage updates completed',t:'≥ 95%',v:'',pass:v=&gt;v&gt;=95},
+ {id:'b4',l:'Weekly pipeline summaries delivered (%)',t:'100%',v:'',pass:v=&gt;v&gt;=100},
+ {id:'b5',l:'Monthly check-ins completed (%)',t:'100%',v:'',pass:v=&gt;v&gt;=100},
+ {id:'b6',l:'Quarterly strategy reviews completed (%)',t:'100%',v:'',pass:v=&gt;v&gt;=100},
+ {id:'b7',l:'Deals stalled &gt; 48 hrs (#)',t:'0',v:'',pass:v=&gt;v&lt;=0},
+ {id:'b8',l:'Zink / notes completeness (%)',t:'≥ 95%',v:'',pass:v=&gt;v&gt;=95},
+ {id:'b9',l:'Approval rate (%)',t:'≥ 60%',v:'',pass:v=&gt;v&gt;=60},
+ {id:'b10',l:'Settlement rate of approvals (%)',t:'≥ 70%',v:'',pass:v=&gt;v&gt;=70}
 ];
+const BKEY='hub_bscore_v1';
+function bsLoad(){ try{ return JSON.parse(localStorage.getItem(BKEY))||{}; }catch(e){ return {}; } }
+function bsStore(){
+  const o={}; BKPI.forEach(k=&gt;{const el=$('#'+k.id); if(el)o[k.id]=el.value;});
+  try{ localStorage.setItem(BKEY, JSON.stringify(o)); }catch(e){}
+}
 const t5=(v,a,b,c,d)=&gt;v&gt;=a?5:v&gt;=b?4:v&gt;=c?3:v&gt;=d?2:v&gt;0?1:0;
 function renderBroker(){
   $('#bsInputs').innerHTML=BKPI.map(k=&gt;
@@ -4674,10 +4731,31 @@ function renderBroker(){
    '&lt;input id=&quot;'+k.id+'&quot; type=&quot;number&quot; step=&quot;0.1&quot; value=&quot;'+k.v+'&quot; style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:7px 9px;color:var(--txt);font-family:var(--mono);font-size:11.5px&quot;&gt;'+
    '&lt;span style=&quot;font-family:var(--mono);font-size:10.5px;color:var(--faint)&quot;&gt;'+k.t+'&lt;/span&gt;'+
    '&lt;span id=&quot;'+k.id+'s&quot; class=&quot;pass&quot; style=&quot;font-size:10.5px;text-align:right&quot;&gt;—&lt;/span&gt;&lt;/div&gt;').join('');
-  $('#bsInputs').oninput=bsCalc;bsCalc();
+  const st=bsLoad();
+  BKPI.forEach(k=&gt;{const el=$('#'+k.id); if(el&amp;&amp;st[k.id]!=null)el.value=st[k.id];});
+  $('#bsInputs').oninput=()=&gt;{bsStore();bsCalc()};
+  bsCalc();
 }
 function bsCalc(){
   const g=id=&gt;parseFloat(val(id))||0;
+  const filled=BKPI.filter(k=&gt;{const el=$('#'+k.id); return el&amp;&amp;String(el.value).trim()!==''}).length;
+  const note=$('#bsNote');
+  if(note){
+    note.innerHTML = filled===0
+      ? 'Nothing entered yet. These are &lt;b style=&quot;color:var(--txt)&quot;&gt;your&lt;/b&gt; numbers, not your partners. Pull them from Zink and your own records at the end of each month and type them in. Nothing here is pre-filled, so the score below stays blank until you do.'
+      : (filled&lt;BKPI.length
+        ? filled+' of '+BKPI.length+' filled in. The score firms up as you complete the rest.'
+        : 'All ten in. This is what Ausloans would mark you at right now.');
+  }
+  if(filled===0){
+    BKPI.forEach(k=&gt;{const el=$('#'+k.id+'s'); if(el){el.textContent='—';el.className='';}});
+    const big=$('#bsBig'), stat=$('#bsStatus'), comp=$('#bsComp');
+    if(big)big.textContent='—';
+    if(stat)stat.textContent='not scored yet';
+    if(comp)comp.textContent='';
+    const cats=$('#bsCats'); if(cats)cats.innerHTML='';
+    return;
+  }
   BKPI.forEach(k=&gt;{const ok=k.pass(g(k.id));const s=$('#'+k.id+'s');s.textContent=ok?'PASS':'FAIL';s.className=ok?'pass':'fail'});
   const c1=t5(g('b1'),95,85,70,50);
   const c2=Math.min(t5(g('b3'),95,85,70,50),t5(g('b4'),95,85,70,50));
@@ -4958,7 +5036,34 @@ function sheetMerge(pRows,lRows){
   });
   return {addedP:addedP,upd:upd,addedL:addedL};
 }
-let _pxBusy=false;
+let _pxBusy=false,_pushBusy=false,_pushQueued=null;
+/* Dashboard to sheet. Text/plain avoids a CORS preflight that Apps Script cannot answer. */
+function pushSheet(why){
+  if(_pushBusy){ _pushQueued=why||'update'; return; }
+  _pushBusy=true;
+  const payload={type:'partners',
+    partners:partners.map(function(p){ensurePipe(p);return{
+      biz:p.biz,contact:p.name,type:p.type,ind:p.ind,phone:p.phone||'',leadsMTD:p.leadsMTD||0,
+      email:p.pipe.email||'',stage:p.pipe.stage||'',page:p.pipe.page||'',
+      qr:p.pipe.qr?'Yes':'No',zink:p.pipe.zink?'Yes':'No',
+      readiness:p.readiness?p.readiness.t:'',health:(p.h&amp;&amp;p.h.H!=null)?p.h.H:''};}),
+    checkins:checkins.slice(0,60)};
+  let fp=null;
+  try{
+    fp=fetch(EXEC_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+  }catch(e){ _pushBusy=false; pxStat('saved here, sheet not reachable',false); return; }
+  fp.then(function(r){return r.json()})
+    .then(function(j){
+      if(j&amp;&amp;j.ok){ pxStat('sheet updated · '+new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}).toLowerCase(),true); }
+      else { pxStat('saved here, sheet did not accept it',false); }
+    })
+    .catch(function(){ pxStat('saved here, sheet not reachable',false); })
+    .then(function(){
+      _pushBusy=false;
+      if(_pushQueued){ const q=_pushQueued; _pushQueued=null; pushSheet(q); }
+    });
+}
+window.pushSheet=pushSheet;
 function pullSheet(){
   if(_pxBusy)return; _pxBusy=true;
   let fp=null;

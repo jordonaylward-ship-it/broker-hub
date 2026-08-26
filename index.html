@@ -7020,7 +7020,10 @@ const FIX={&quot;ith&quot;:&quot;with&quot;,&quot;wiht&quot;:&quot;with&quot;,&q
 &quot;baloon&quot;:&quot;balloon&quot;,
 &quot;dealship&quot;:&quot;dealership&quot;,
 &quot;delaership&quot;:&quot;dealership&quot;,
-&quot;dealearship&quot;:&quot;dealership&quot;};
+&quot;dealearship&quot;:&quot;dealership&quot;,
+&quot;spilts&quot;:&quot;splits&quot;,&quot;exspenses&quot;:&quot;expenses&quot;,&quot;expences&quot;:&quot;expenses&quot;,&quot;porbation&quot;:&quot;probation&quot;,&quot;probabtion&quot;:&quot;probation&quot;,
+&quot;plenti&quot;:&quot;Plenti&quot;,&quot;azora&quot;:&quot;Azora&quot;,&quot;wisr&quot;:&quot;Wisr&quot;,&quot;firstmac&quot;:&quot;Firstmac&quot;,&quot;resimac&quot;:&quot;Resimac&quot;,&quot;prospa&quot;:&quot;Prospa&quot;,&quot;lumi&quot;:&quot;Lumi&quot;,&quot;bizcap&quot;:&quot;Bizcap&quot;,&quot;grenke&quot;:&quot;Grenke&quot;,&quot;dynamoney&quot;:&quot;Dynamoney&quot;,&quot;money3&quot;:&quot;Money3&quot;,&quot;ausloans&quot;:&quot;Ausloans&quot;,&quot;docusign&quot;:&quot;DocuSign&quot;,
+&quot;subaru&quot;:&quot;Subaru&quot;,&quot;toyota&quot;:&quot;Toyota&quot;,&quot;mazda&quot;:&quot;Mazda&quot;,&quot;hyundai&quot;:&quot;Hyundai&quot;,&quot;isuzu&quot;:&quot;Isuzu&quot;,&quot;nissan&quot;:&quot;Nissan&quot;,&quot;mitsubishi&quot;:&quot;Mitsubishi&quot;,&quot;suzuki&quot;:&quot;Suzuki&quot;,&quot;holden&quot;:&quot;Holden&quot;,&quot;kia&quot;:&quot;Kia&quot;};
 function known(w){return DICT.has(w);}
 function keepCase(src,rep){return /^[A-Z]/.test(src)?rep.charAt(0).toUpperCase()+rep.slice(1):rep;}
 let CHANGES=[];
@@ -7077,6 +7080,21 @@ function rebalance(tokens){
 }
 
 
+const PHRASES=[
+[&quot;solder ha&quot;,&quot;sold her&quot;],[&quot;solder her&quot;,&quot;sold her&quot;],[&quot;solder his&quot;,&quot;sold his&quot;],[&quot;solder their&quot;,&quot;sold their&quot;],[&quot;solder my&quot;,&quot;sold my&quot;],[&quot;solder our&quot;,&quot;sold our&quot;],[&quot;sold ha&quot;,&quot;sold her&quot;],
+[&quot;spits expenses&quot;,&quot;splits expenses&quot;],[&quot;spits bills&quot;,&quot;splits bills&quot;],[&quot;spits rent&quot;,&quot;splits rent&quot;],[&quot;spits costs&quot;,&quot;splits costs&quot;],[&quot;spits everything&quot;,&quot;splits everything&quot;],[&quot;spits all&quot;,&quot;splits all&quot;],[&quot;spit expenses&quot;,&quot;split expenses&quot;],
+[&quot;from liberty&quot;,&quot;from Liberty&quot;],[&quot;with liberty&quot;,&quot;with Liberty&quot;],[&quot;through liberty&quot;,&quot;through Liberty&quot;],[&quot;via liberty&quot;,&quot;via Liberty&quot;],[&quot;to liberty&quot;,&quot;to Liberty&quot;],[&quot;liberty loan&quot;,&quot;Liberty loan&quot;],[&quot;liberty deal&quot;,&quot;Liberty deal&quot;],[&quot;liberty rate&quot;,&quot;Liberty rate&quot;],[&quot;liberty finance&quot;,&quot;Liberty finance&quot;],
+[&quot;from pepper&quot;,&quot;from Pepper&quot;],[&quot;with pepper&quot;,&quot;with Pepper&quot;],[&quot;through pepper&quot;,&quot;through Pepper&quot;],[&quot;via pepper&quot;,&quot;via Pepper&quot;],[&quot;to pepper&quot;,&quot;to Pepper&quot;],[&quot;pepper money&quot;,&quot;Pepper Money&quot;],[&quot;pepper loan&quot;,&quot;Pepper loan&quot;],[&quot;pepper rate&quot;,&quot;Pepper rate&quot;],
+[&quot;from latitude&quot;,&quot;from Latitude&quot;],[&quot;with latitude&quot;,&quot;with Latitude&quot;],[&quot;through latitude&quot;,&quot;through Latitude&quot;],[&quot;via latitude&quot;,&quot;via Latitude&quot;],[&quot;latitude loan&quot;,&quot;Latitude loan&quot;],[&quot;latitude rate&quot;,&quot;Latitude rate&quot;]
+];
+function applyPhrases(s){
+  for(let i=0;i&lt;PHRASES.length;i++){
+    const a=PHRASES[i][0],b=PHRASES[i][1];
+    const re=new RegExp(&quot;\\b&quot;+a.replace(/[.*+?^${}()|[\]\\]/g,&quot;\\$&amp;&quot;)+&quot;\\b&quot;,&quot;gi&quot;);
+    s=s.replace(re,function(m){const r=(/^[A-Z]/.test(m))?b.charAt(0).toUpperCase()+b.slice(1):b;noteChange(m,r);return r;});
+  }
+  return s;
+}
 function tidy(raw){
   CHANGES=[];
   if(!raw)return &quot;&quot;;
@@ -7084,6 +7102,7 @@ function tidy(raw){
   t=t.split(&quot;\n&quot;).map(line=&gt;{
     let s=line.replace(/[ \t]+/g,&quot; &quot;).trim();
     if(!s)return &quot;&quot;;
+    s=applyPhrases(s);
     const toks=s.split(&quot; &quot;).filter(Boolean);
     const cores=[],pre=[],post=[];
     toks.forEach(tk=&gt;{
@@ -7100,6 +7119,7 @@ function tidy(raw){
     });
     s=sameShape?fixed.map((w,i)=&gt;pre[i]+w+post[i]).join(&quot; &quot;):fixed.join(&quot; &quot;);
     s=s.replace(/\bi\b/g,&quot;I&quot;);
+    s=s.replace(/\.\.\./g,&quot;\u0001&quot;).replace(/([.!?]),+/g,&quot;$1&quot;).replace(/,+([.!?])/g,&quot;$1&quot;).replace(/,{2,}/g,&quot;,&quot;).replace(/\.{2,}/g,&quot;.&quot;).replace(/\u0001/g,&quot;...&quot;);
     s=s.replace(/\s+([,.;:!?])/g,&quot;$1&quot;).replace(/([,;:])(?=[^\s\d])/g,&quot;$1 &quot;).replace(/(\D[,;:])(?=\d)/g,&quot;$1 &quot;).replace(/([.!?])(?=[A-Za-z])/g,&quot;$1 &quot;);
     s=s.replace(/(^|[.!?]\s+)([a-z])/g,(m,p,ch)=&gt;p+ch.toUpperCase());
     if(!/[.!?:,]$/.test(s)&amp;&amp;s.split(&quot; &quot;).length&gt;2)s+=&quot;.&quot;;

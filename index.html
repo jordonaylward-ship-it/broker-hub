@@ -6832,89 +6832,227 @@ BASE.forEach(w=&gt;{
   else {DICT.add(w+&quot;ed&quot;);DICT.add(w+&quot;ing&quot;);}
 });
 &quot;be being been am is are was were do does did done doing go going gone goes went have has had having he she it we they you i me my his her our your an as at by if in of on or so to up us no not now new one two ten all any few own too very can may might must shall should will would could each both such only same than that this these those what when where which who whom whose why how&quot;.split(&quot; &quot;).forEach(w=&gt;DICT.add(w));
-const FIX={&quot;ith&quot;:&quot;with&quot;,&quot;wiht&quot;:&quot;with&quot;,&quot;witht&quot;:&quot;with&quot;,&quot;hte&quot;:&quot;the&quot;,&quot;taht&quot;:&quot;that&quot;,&quot;fomr&quot;:&quot;from&quot;,&quot;form the&quot;:&quot;from the&quot;,&quot;recieve&quot;:&quot;receive&quot;,&quot;recieved&quot;:&quot;received&quot;,&quot;seperate&quot;:&quot;separate&quot;,&quot;definately&quot;:&quot;definitely&quot;,&quot;occured&quot;:&quot;occurred&quot;,&quot;teh&quot;:&quot;the&quot;,&quot;adn&quot;:&quot;and&quot;,&quot;alot&quot;:&quot;a lot&quot;,&quot;thier&quot;:&quot;their&quot;,&quot;becuase&quot;:&quot;because&quot;,&quot;acomodation&quot;:&quot;accommodation&quot;,&quot;doesnt&quot;:&quot;doesn't&quot;,&quot;dont&quot;:&quot;don't&quot;,&quot;wont&quot;:&quot;won't&quot;,&quot;cant&quot;:&quot;can't&quot;,&quot;isnt&quot;:&quot;isn't&quot;,&quot;wasnt&quot;:&quot;wasn't&quot;,&quot;didnt&quot;:&quot;didn't&quot;,&quot;couldnt&quot;:&quot;couldn't&quot;,&quot;shouldnt&quot;:&quot;shouldn't&quot;,&quot;wouldnt&quot;:&quot;wouldn't&quot;,&quot;havent&quot;:&quot;haven't&quot;,&quot;hasnt&quot;:&quot;hasn't&quot;,&quot;theyre&quot;:&quot;they're&quot;,&quot;youre&quot;:&quot;you're&quot;,&quot;im&quot;:&quot;I'm&quot;,&quot;ive&quot;:&quot;I've&quot;,&quot;tommorow&quot;:&quot;tomorrow&quot;,&quot;tomorow&quot;:&quot;tomorrow&quot;,&quot;untill&quot;:&quot;until&quot;,&quot;alright&quot;:&quot;all right&quot;,&quot;aswell&quot;:&quot;as well&quot;,&quot;ok&quot;:&quot;okay&quot;,&quot;theyd&quot;:&quot;they'd&quot;,&quot;youd&quot;:&quot;you'd&quot;,&quot;hed&quot;:&quot;he'd&quot;,&quot;itd&quot;:&quot;it'd&quot;,&quot;thatd&quot;:&quot;that'd&quot;,&quot;theyve&quot;:&quot;they've&quot;,&quot;youve&quot;:&quot;you've&quot;,&quot;weve&quot;:&quot;we've&quot;,&quot;wouldve&quot;:&quot;would've&quot;,&quot;couldve&quot;:&quot;could've&quot;,&quot;shouldve&quot;:&quot;should've&quot;,&quot;theyll&quot;:&quot;they'll&quot;,&quot;youll&quot;:&quot;you'll&quot;,&quot;itll&quot;:&quot;it'll&quot;,&quot;thats&quot;:&quot;that's&quot;,&quot;whats&quot;:&quot;what's&quot;,&quot;hes&quot;:&quot;he's&quot;,&quot;shes&quot;:&quot;she's&quot;,&quot;lets&quot;:&quot;let's&quot;,&quot;arent&quot;:&quot;aren't&quot;,&quot;werent&quot;:&quot;weren't&quot;,&quot;aint&quot;:&quot;isn't&quot;};
+const FIX={&quot;ith&quot;:&quot;with&quot;,&quot;wiht&quot;:&quot;with&quot;,&quot;witht&quot;:&quot;with&quot;,&quot;hte&quot;:&quot;the&quot;,&quot;taht&quot;:&quot;that&quot;,&quot;fomr&quot;:&quot;from&quot;,&quot;form the&quot;:&quot;from the&quot;,&quot;recieve&quot;:&quot;receive&quot;,&quot;recieved&quot;:&quot;received&quot;,&quot;seperate&quot;:&quot;separate&quot;,&quot;definately&quot;:&quot;definitely&quot;,&quot;occured&quot;:&quot;occurred&quot;,&quot;teh&quot;:&quot;the&quot;,&quot;adn&quot;:&quot;and&quot;,&quot;alot&quot;:&quot;a lot&quot;,&quot;thier&quot;:&quot;their&quot;,&quot;becuase&quot;:&quot;because&quot;,&quot;acomodation&quot;:&quot;accommodation&quot;,&quot;doesnt&quot;:&quot;doesn't&quot;,&quot;dont&quot;:&quot;don't&quot;,&quot;wont&quot;:&quot;won't&quot;,&quot;cant&quot;:&quot;can't&quot;,&quot;isnt&quot;:&quot;isn't&quot;,&quot;wasnt&quot;:&quot;wasn't&quot;,&quot;didnt&quot;:&quot;didn't&quot;,&quot;couldnt&quot;:&quot;couldn't&quot;,&quot;shouldnt&quot;:&quot;shouldn't&quot;,&quot;wouldnt&quot;:&quot;wouldn't&quot;,&quot;havent&quot;:&quot;haven't&quot;,&quot;hasnt&quot;:&quot;hasn't&quot;,&quot;theyre&quot;:&quot;they're&quot;,&quot;youre&quot;:&quot;you're&quot;,&quot;im&quot;:&quot;I'm&quot;,&quot;ive&quot;:&quot;I've&quot;,&quot;tommorow&quot;:&quot;tomorrow&quot;,&quot;tomorow&quot;:&quot;tomorrow&quot;,&quot;untill&quot;:&quot;until&quot;,&quot;alright&quot;:&quot;all right&quot;,&quot;aswell&quot;:&quot;as well&quot;,&quot;ok&quot;:&quot;okay&quot;,&quot;theyd&quot;:&quot;they'd&quot;,&quot;youd&quot;:&quot;you'd&quot;,&quot;hed&quot;:&quot;he'd&quot;,&quot;itd&quot;:&quot;it'd&quot;,&quot;thatd&quot;:&quot;that'd&quot;,&quot;theyve&quot;:&quot;they've&quot;,&quot;youve&quot;:&quot;you've&quot;,&quot;weve&quot;:&quot;we've&quot;,&quot;wouldve&quot;:&quot;would've&quot;,&quot;couldve&quot;:&quot;could've&quot;,&quot;shouldve&quot;:&quot;should've&quot;,&quot;theyll&quot;:&quot;they'll&quot;,&quot;youll&quot;:&quot;you'll&quot;,&quot;itll&quot;:&quot;it'll&quot;,&quot;thats&quot;:&quot;that's&quot;,&quot;whats&quot;:&quot;what's&quot;,&quot;hes&quot;:&quot;he's&quot;,&quot;shes&quot;:&quot;she's&quot;,&quot;lets&quot;:&quot;let's&quot;,&quot;arent&quot;:&quot;aren't&quot;,&quot;werent&quot;:&quot;weren't&quot;,&quot;aint&quot;:&quot;isn't&quot;,
+&quot;recieving&quot;:&quot;receiving&quot;,
+&quot;reciept&quot;:&quot;receipt&quot;,
+&quot;reciepts&quot;:&quot;receipts&quot;,
+&quot;acheive&quot;:&quot;achieve&quot;,
+&quot;acheived&quot;:&quot;achieved&quot;,
+&quot;beleive&quot;:&quot;believe&quot;,
+&quot;beleived&quot;:&quot;believed&quot;,
+&quot;belive&quot;:&quot;believe&quot;,
+&quot;occurence&quot;:&quot;occurrence&quot;,
+&quot;occassion&quot;:&quot;occasion&quot;,
+&quot;accomodate&quot;:&quot;accommodate&quot;,
+&quot;accomodation&quot;:&quot;accommodation&quot;,
+&quot;aquire&quot;:&quot;acquire&quot;,
+&quot;aquired&quot;:&quot;acquired&quot;,
+&quot;arrangment&quot;:&quot;arrangement&quot;,
+&quot;arrangments&quot;:&quot;arrangements&quot;,
+&quot;commitee&quot;:&quot;committee&quot;,
+&quot;completly&quot;:&quot;completely&quot;,
+&quot;concious&quot;:&quot;conscious&quot;,
+&quot;curently&quot;:&quot;currently&quot;,
+&quot;definitly&quot;:&quot;definitely&quot;,
+&quot;dissapointed&quot;:&quot;disappointed&quot;,
+&quot;embarassing&quot;:&quot;embarrassing&quot;,
+&quot;enviroment&quot;:&quot;environment&quot;,
+&quot;excercise&quot;:&quot;exercise&quot;,
+&quot;existance&quot;:&quot;existence&quot;,
+&quot;familar&quot;:&quot;familiar&quot;,
+&quot;finaly&quot;:&quot;finally&quot;,
+&quot;foreward&quot;:&quot;forward&quot;,
+&quot;futher&quot;:&quot;further&quot;,
+&quot;goverment&quot;:&quot;government&quot;,
+&quot;gaurantee&quot;:&quot;guarantee&quot;,
+&quot;gaurantor&quot;:&quot;guarantor&quot;,
+&quot;garantee&quot;:&quot;guarantee&quot;,
+&quot;garantor&quot;:&quot;guarantor&quot;,
+&quot;happend&quot;:&quot;happened&quot;,
+&quot;immediatly&quot;:&quot;immediately&quot;,
+&quot;independant&quot;:&quot;independent&quot;,
+&quot;intrest&quot;:&quot;interest&quot;,
+&quot;intrested&quot;:&quot;interested&quot;,
+&quot;knowlege&quot;:&quot;knowledge&quot;,
+&quot;liase&quot;:&quot;liaise&quot;,
+&quot;liason&quot;:&quot;liaison&quot;,
+&quot;maintenence&quot;:&quot;maintenance&quot;,
+&quot;neccessary&quot;:&quot;necessary&quot;,
+&quot;necessery&quot;:&quot;necessary&quot;,
+&quot;noticable&quot;:&quot;noticeable&quot;,
+&quot;occuring&quot;:&quot;occurring&quot;,
+&quot;paymnet&quot;:&quot;payment&quot;,
+&quot;paymnets&quot;:&quot;payments&quot;,
+&quot;persistant&quot;:&quot;persistent&quot;,
+&quot;posession&quot;:&quot;possession&quot;,
+&quot;prefered&quot;:&quot;preferred&quot;,
+&quot;probaly&quot;:&quot;probably&quot;,
+&quot;proccess&quot;:&quot;process&quot;,
+&quot;publically&quot;:&quot;publicly&quot;,
+&quot;realy&quot;:&quot;really&quot;,
+&quot;reccomend&quot;:&quot;recommend&quot;,
+&quot;reccommend&quot;:&quot;recommend&quot;,
+&quot;refered&quot;:&quot;referred&quot;,
+&quot;referal&quot;:&quot;referral&quot;,
+&quot;referals&quot;:&quot;referrals&quot;,
+&quot;relevent&quot;:&quot;relevant&quot;,
+&quot;rember&quot;:&quot;remember&quot;,
+&quot;remeber&quot;:&quot;remember&quot;,
+&quot;seperated&quot;:&quot;separated&quot;,
+&quot;seperately&quot;:&quot;separately&quot;,
+&quot;succesful&quot;:&quot;successful&quot;,
+&quot;sucessful&quot;:&quot;successful&quot;,
+&quot;succesfully&quot;:&quot;successfully&quot;,
+&quot;suprise&quot;:&quot;surprise&quot;,
+&quot;tommorow&quot;:&quot;tomorrow&quot;,
+&quot;tommorrow&quot;:&quot;tomorrow&quot;,
+&quot;truely&quot;:&quot;truly&quot;,
+&quot;unfortunatly&quot;:&quot;unfortunately&quot;,
+&quot;untill&quot;:&quot;until&quot;,
+&quot;wich&quot;:&quot;which&quot;,
+&quot;recieves&quot;:&quot;receives&quot;,
+&quot;alright&quot;:&quot;all right&quot;,
+&quot;alot of&quot;:&quot;a lot of&quot;,
+&quot;savvings&quot;:&quot;savings&quot;,
+&quot;savings account&quot;:&quot;savings account&quot;,
+&quot;payed&quot;:&quot;paid&quot;,
+&quot;repayed&quot;:&quot;repaid&quot;,
+&quot;aswell&quot;:&quot;as well&quot;,
+&quot;abit&quot;:&quot;a bit&quot;,
+&quot;alittle&quot;:&quot;a little&quot;,
+&quot;infact&quot;:&quot;in fact&quot;,
+&quot;incase&quot;:&quot;in case&quot;,
+&quot;aboutthe&quot;:&quot;about the&quot;,
+&quot;onthe&quot;:&quot;on the&quot;,
+&quot;inthe&quot;:&quot;in the&quot;,
+&quot;forthe&quot;:&quot;for the&quot;,
+&quot;tothe&quot;:&quot;to the&quot;,
+&quot;atthe&quot;:&quot;at the&quot;,
+&quot;andthe&quot;:&quot;and the&quot;,
+&quot;withthe&quot;:&quot;with the&quot;,
+&quot;fromthe&quot;:&quot;from the&quot;,
+&quot;isthe&quot;:&quot;is the&quot;,
+&quot;settlment&quot;:&quot;settlement&quot;,
+&quot;settlments&quot;:&quot;settlements&quot;,
+&quot;setlement&quot;:&quot;settlement&quot;,
+&quot;seetlement&quot;:&quot;settlement&quot;,
+&quot;aproval&quot;:&quot;approval&quot;,
+&quot;aprroval&quot;:&quot;approval&quot;,
+&quot;approvel&quot;:&quot;approval&quot;,
+&quot;apporval&quot;:&quot;approval&quot;,
+&quot;preaproval&quot;:&quot;pre approval&quot;,
+&quot;aplication&quot;:&quot;application&quot;,
+&quot;applcation&quot;:&quot;application&quot;,
+&quot;apllication&quot;:&quot;application&quot;,
+&quot;finence&quot;:&quot;finance&quot;,
+&quot;finace&quot;:&quot;finance&quot;,
+&quot;fianance&quot;:&quot;finance&quot;,
+&quot;fiannce&quot;:&quot;finance&quot;,
+&quot;finanace&quot;:&quot;finance&quot;,
+&quot;borower&quot;:&quot;borrower&quot;,
+&quot;borrwer&quot;:&quot;borrower&quot;,
+&quot;borrower's&quot;:&quot;borrower's&quot;,
+&quot;lendor&quot;:&quot;lender&quot;,
+&quot;lendors&quot;:&quot;lenders&quot;,
+&quot;servicability&quot;:&quot;serviceability&quot;,
+&quot;servicibility&quot;:&quot;serviceability&quot;,
+&quot;comission&quot;:&quot;commission&quot;,
+&quot;commision&quot;:&quot;commission&quot;,
+&quot;comissions&quot;:&quot;commissions&quot;,
+&quot;repayment's&quot;:&quot;repayments&quot;,
+&quot;repyament&quot;:&quot;repayment&quot;,
+&quot;repayement&quot;:&quot;repayment&quot;,
+&quot;repayments&quot;:&quot;repayments&quot;,
+&quot;insurence&quot;:&quot;insurance&quot;,
+&quot;insurnace&quot;:&quot;insurance&quot;,
+&quot;comprehesive&quot;:&quot;comprehensive&quot;,
+&quot;comprehensve&quot;:&quot;comprehensive&quot;,
+&quot;wanrranty&quot;:&quot;warranty&quot;,
+&quot;warrenty&quot;:&quot;warranty&quot;,
+&quot;warrantee&quot;:&quot;warranty&quot;,
+&quot;vehical&quot;:&quot;vehicle&quot;,
+&quot;vehcile&quot;:&quot;vehicle&quot;,
+&quot;vechile&quot;:&quot;vehicle&quot;,
+&quot;vheicle&quot;:&quot;vehicle&quot;,
+&quot;liabilty&quot;:&quot;liability&quot;,
+&quot;liabilites&quot;:&quot;liabilities&quot;,
+&quot;liablities&quot;:&quot;liabilities&quot;,
+&quot;morgage&quot;:&quot;mortgage&quot;,
+&quot;morgatge&quot;:&quot;mortgage&quot;,
+&quot;mortage&quot;:&quot;mortgage&quot;,
+&quot;centerlink&quot;:&quot;Centrelink&quot;,
+&quot;centrlink&quot;:&quot;Centrelink&quot;,
+&quot;payslps&quot;:&quot;payslips&quot;,
+&quot;payslp&quot;:&quot;payslip&quot;,
+&quot;probabtion&quot;:&quot;probation&quot;,
+&quot;probition&quot;:&quot;probation&quot;,
+&quot;probtion&quot;:&quot;probation&quot;,
+&quot;employent&quot;:&quot;employment&quot;,
+&quot;employmnet&quot;:&quot;employment&quot;,
+&quot;emplyoment&quot;:&quot;employment&quot;,
+&quot;depost&quot;:&quot;deposit&quot;,
+&quot;depsoit&quot;:&quot;deposit&quot;,
+&quot;desposit&quot;:&quot;deposit&quot;,
+&quot;statments&quot;:&quot;statements&quot;,
+&quot;statment&quot;:&quot;statement&quot;,
+&quot;bankstatements&quot;:&quot;bank statements&quot;,
+&quot;eqiuty&quot;:&quot;equity&quot;,
+&quot;eqity&quot;:&quot;equity&quot;,
+&quot;equtiy&quot;:&quot;equity&quot;,
+&quot;enquirey&quot;:&quot;enquiry&quot;,
+&quot;enquires&quot;:&quot;enquiries&quot;,
+&quot;enqiry&quot;:&quot;enquiry&quot;,
+&quot;clinet&quot;:&quot;client&quot;,
+&quot;cleint&quot;:&quot;client&quot;,
+&quot;clents&quot;:&quot;clients&quot;,
+&quot;docuemnts&quot;:&quot;documents&quot;,
+&quot;documnets&quot;:&quot;documents&quot;,
+&quot;docuemnt&quot;:&quot;document&quot;,
+&quot;purhcase&quot;:&quot;purchase&quot;,
+&quot;purchse&quot;:&quot;purchase&quot;,
+&quot;puchase&quot;:&quot;purchase&quot;,
+&quot;quaterly&quot;:&quot;quarterly&quot;,
+&quot;quartely&quot;:&quot;quarterly&quot;,
+&quot;refinace&quot;:&quot;refinance&quot;,
+&quot;refiance&quot;:&quot;refinance&quot;,
+&quot;refinnance&quot;:&quot;refinance&quot;,
+&quot;ballon&quot;:&quot;balloon&quot;,
+&quot;baloon&quot;:&quot;balloon&quot;,
+&quot;dealship&quot;:&quot;dealership&quot;,
+&quot;delaership&quot;:&quot;dealership&quot;,
+&quot;dealearship&quot;:&quot;dealership&quot;};
 function known(w){return DICT.has(w);}
 function keepCase(src,rep){return /^[A-Z]/.test(src)?rep.charAt(0).toUpperCase()+rep.slice(1):rep;}
-function lev(a,b,max){
-  if(Math.abs(a.length-b.length)&gt;max)return max+1;
-  const m=a.length,n=b.length;
-  const d=[];
-  for(let i=0;i&lt;=m;i++){d.push(new Array(n+1).fill(0));d[i][0]=i;}
-  for(let j=0;j&lt;=n;j++)d[0][j]=j;
-  for(let i=1;i&lt;=m;i++){
-    let best=Infinity;
-    for(let j=1;j&lt;=n;j++){
-      const cost=a[i-1]===b[j-1]?0:1;
-      let v=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+cost);
-      if(i&gt;1&amp;&amp;j&gt;1&amp;&amp;a[i-1]===b[j-2]&amp;&amp;a[i-2]===b[j-1])v=Math.min(v,d[i-2][j-2]+1);
-      d[i][j]=v;
-      if(v&lt;best)best=v;
-    }
-    if(best&gt;max)return max+1;
-  }
-  return d[m][n];
-}
-function bestFix(w,maxD){
-  const M=maxD||2;
-  const low=w.toLowerCase();
-  if(known(low))return {w:low,cost:0};
-  if(low.length&lt;3)return null;
-  let bd=M+1,cands=[];
-  for(const d of DICT){
-    if(Math.abs(d.length-low.length)&gt;M)continue;
-    const dist=lev(low,d,M);
-    if(dist&lt;bd){bd=dist;cands=[d];}
-    else if(dist===bd&amp;&amp;cands.indexOf(d)&lt;0)cands.push(d);
-  }
-  if(!cands.length||bd&gt;M)return null;
-  if(bd===2&amp;&amp;low.length&lt;7)return null;
-  if(bd===3&amp;&amp;low.length&lt;9)return null;
-  if(cands.length&gt;1){
-    const score=d=&gt;(d[0]===low[0]?4:0)+(d[d.length-1]===low[low.length-1]?2:0)+(d.length===low.length?1:0);
-    let bestScore=-1,winners=[];
-    cands.forEach(d=&gt;{const sc=score(d);if(sc&gt;bestScore){bestScore=sc;winners=[d];}else if(sc===bestScore)winners.push(d);});
-    if(winners.length&gt;1)return null;
-    cands=winners;
-  }
-  return {w:cands[0],cost:bd};
-}
-function splitCompound(w){
-  const low=w.toLowerCase();
-  if(low.length&lt;7||/[0-9$%@]/.test(low))return null;
-  let best=null;
-  for(let k=2;k&lt;=low.length-2;k++){
-    const la=low.slice(0,k), lb=low.slice(k);
-    const a=(la.length&lt;3)?(known(la)?{w:la,cost:0}:null):bestFix(la,la.length&gt;=9?3:2);
-    const b=(lb.length&lt;3)?(known(lb)?{w:lb,cost:0}:null):bestFix(lb,lb.length&gt;=9?3:2);
-    if(!a||!b)continue;
-    if(a.cost&gt;0&amp;&amp;b.cost&gt;0)continue;
-    const anchor=(a.cost===0)?a.w:b.w;
-    if(anchor.length&lt;3)continue;
-    const cost=a.cost+b.cost;
-    if(cost&gt;3)continue;
-    if(!best||cost&lt;best.cost)best={cost,text:a.w+&quot; &quot;+b.w,at:k};
-  }
-  return best;
-}
 let CHANGES=[];
 function noteChange(from,to){ if(from.toLowerCase()!==String(to).toLowerCase()) CHANGES.push(from+&quot; \u2192 &quot;+to); }
 function correct(w){
   const low=w.toLowerCase();
   if(FIX[low]){const r=keepCase(w,FIX[low]);noteChange(w,r);return r;}
   if(known(low))return w;
-  if(/[0-9$%@/\\]/.test(w)||w.length&lt;4)return w;
-  const single=bestFix(low,2);
-  if(single&amp;&amp;single.cost&lt;=1){const r=keepCase(w,single.w);noteChange(w,r);return r;}
-  const sp=splitCompound(low);
-  if(sp){const r=keepCase(w,sp.text);noteChange(w,r);return r;}
-  if(single){const r=keepCase(w,single.w);noteChange(w,r);return r;}
+  if(/[0-9$%@/\\']/.test(w)||w.length&lt;4)return w;
+  /* a doubled letter slip like savvings or setttle: collapse one repeat,
+     accept only if the result is a word we actually know */
+  const dedup=low.replace(/([a-z])\1\1/g,'$1$1');
+  if(dedup!==low&amp;&amp;known(dedup)){const r=keepCase(w,dedup);noteChange(w,r);return r;}
+  for(let i=1;i&lt;low.length;i++){
+    if(low[i]===low[i-1]){
+      const cand=low.slice(0,i)+low.slice(i+1);
+      if(known(cand)&amp;&amp;!known(low)){const r=keepCase(w,cand);noteChange(w,r);return r;}
+    }
+  }
+  /* a missing space between two known words: aboutthe, worklate */
+  for(let k=3;k&lt;=low.length-3;k++){
+    const a=low.slice(0,k),b=low.slice(k);
+    if(known(a)&amp;&amp;known(b)&amp;&amp;FIXABLE_JOIN.has(a)){const r=keepCase(w,a+' '+b);noteChange(w,r+' (split)');return r;}
+  }
+  /* anything else is left exactly as typed. Guessing is what mangled
+     married into marined. If it is not a known fix, it does not change. */
   return w;
 }
+const FIXABLE_JOIN=new Set(['about','with','from','into','onto','over','under','after','before','because','without']);
 function soloFixable(t){
   const l=t.toLowerCase();
-  if(FIX[l])return true;
-  if(l.length&lt;4)return false;          // correct() won't touch these on their own
-  return !!bestFix(l,1);
+  return !!FIX[l];
 }
 function rebalance(tokens){
   const out=[];
@@ -6930,7 +7068,7 @@ function rebalance(tokens){
         const l=joined.slice(0,k),r=joined.slice(k);
         if(l.length&gt;=2&amp;&amp;r.length&gt;=2&amp;&amp;known(l)&amp;&amp;known(r)){split=[l,r];break;}
       }
-      if(!split){const sc=splitCompound(joined);if(sc&amp;&amp;sc.at!==a.length)split=sc.text.split(&quot; &quot;);}
+      
       if(split){out.push(keepCase(a,split[0]));out.push(split[1]);i++;continue;}
     }
     out.push(a);
@@ -6962,7 +7100,7 @@ function tidy(raw){
     });
     s=sameShape?fixed.map((w,i)=&gt;pre[i]+w+post[i]).join(&quot; &quot;):fixed.join(&quot; &quot;);
     s=s.replace(/\bi\b/g,&quot;I&quot;);
-    s=s.replace(/\s+([,.;:!?])/g,&quot;$1&quot;).replace(/([,;:])(?=\S)/g,&quot;$1 &quot;).replace(/([.!?])(?=[A-Za-z])/g,&quot;$1 &quot;);
+    s=s.replace(/\s+([,.;:!?])/g,&quot;$1&quot;).replace(/([,;:])(?=[^\s\d])/g,&quot;$1 &quot;).replace(/(\D[,;:])(?=\d)/g,&quot;$1 &quot;).replace(/([.!?])(?=[A-Za-z])/g,&quot;$1 &quot;);
     s=s.replace(/(^|[.!?]\s+)([a-z])/g,(m,p,ch)=&gt;p+ch.toUpperCase());
     if(!/[.!?:,]$/.test(s)&amp;&amp;s.split(&quot; &quot;).length&gt;2)s+=&quot;.&quot;;
     return s;

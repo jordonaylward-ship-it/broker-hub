@@ -3367,6 +3367,23 @@ input,select,textarea{font-family:inherit}
 .hs .t{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px}
 .hs .d{font-size:12px;color:var(--dim);line-height:1.5}
 .hs.when{border-style:dashed}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}
+@media(max-width:900px){.dgrid{grid-template-columns:1fr}}
+.dcard{background:var(--panel);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px}
+.dcard h3{font-size:13px;margin:0 0 3px;color:var(--txt)}
+.dcard .cap{font-size:11.5px;color:var(--faint);margin:0 0 11px;line-height:1.5}
+.lb{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--bdr)}
+.lb:first-of-type{border-top:none}
+.lb .rk{flex:0 0 20px;height:20px;border-radius:50%;background:var(--panel2);border:1px solid var(--bdr2);color:var(--faint);font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.lb.top .rk{background:var(--teal);border-color:var(--teal);color:#06251f}
+.lb .nm{flex:1;min-width:0;font-size:12.5px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb .nm i{display:block;font-style:normal;font-size:11px;color:var(--faint);margin-top:1px}
+.lb .vv{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--txt)}
+.dempty{font-size:12.5px;color:var(--faint);line-height:1.55;padding:6px 0}
+.nxt{background:var(--panel);border:1px solid var(--bdr);border-left:3px solid var(--teal);border-radius:12px;padding:14px 16px;margin:0 0 14px}
+.draft{background:var(--panel2);border:1px solid var(--bdr);border-radius:9px;padding:10px 12px;margin-top:9px;font-size:12.5px;color:var(--dim);line-height:1.6;white-space:pre-wrap}
+.dbtn{background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:11.5px;font-weight:600;border-radius:7px;padding:6px 11px;cursor:pointer;font-family:inherit}
+.dbtn:hover{border-color:var(--teal);color:var(--teal)}
 .alab{font-size:11.5px;color:var(--dim)}
 .ainp{width:100%;box-sizing:border-box;margin-top:3px;background:var(--panel2);border:1px solid var(--bdr2);border-radius:7px;padding:8px 10px;color:var(--txt);font-size:12.5px;font-family:inherit}
 .ainp:focus{outline:none;border-color:var(--teal)}
@@ -3600,17 +3617,24 @@ tr.star td{background:rgba(20,184,166,.05)}
 &lt;/nav&gt;
 
 &lt;div class=&quot;kpis&quot;&gt;
-  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kActive&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partners healthy (Good+)&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How many partners score 75+ health, out of your whole book.&lt;/b&gt; Health comes from the quarterly review.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; most of the book. If you have 6 partners, 4+ healthy.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; under half. Means you're carrying names that don't send you deals.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kLeads&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partner leads MTD&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Leads your partners sent you this month.&lt;/b&gt; Ausloans' minimum commitment is 3+ per partner per month.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; 3 × your partner count. Six partners = 18+.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; under 2 per partner. Time for a check-in about why.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot;&gt;38m&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Avg first contact&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;How long you take to ring a partner's client.&lt;/b&gt; This is the KPI Ausloans marks you hardest on.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; under 60 minutes. Under 30 is excellent.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; over 60 minutes — the partner's customer goes cold and the partner stops referring.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi warn&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kDue&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Check-ins due / overdue&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Partners needing their monthly catch-up in the next 7 days.&lt;/b&gt;&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; 0-2 sitting here. You're on top of it.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; 3+, or any that have gone past their date. Missed check-ins are the number one reason partners go quiet.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;kpi bad&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kRcti&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;RCTI marketing exposure&lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;&lt;b&gt;Money you've spent on partner marketing that hasn't come back yet.&lt;/b&gt; Ads, tiles, posters you funded.&lt;i&gt;&lt;span class=&quot;g&quot;&gt;Good:&lt;/span&gt; small, and each spend traceable to leads that followed.&lt;/i&gt;&lt;i&gt;&lt;span class=&quot;b&quot;&gt;Bad:&lt;/span&gt; growing with no lift in that partner's lead count. You're funding someone who isn't referring.&lt;/i&gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kPartners&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Partners&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi good&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kLeadsAll&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Leads received&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kAppr&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Approval rate&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kSettle&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Settlement rate&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi warn&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kDue&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Catch-ups due&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi bad&quot;&gt;&lt;div class=&quot;v&quot; id=&quot;kSpend&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Marketing spent&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&quot;pxMini&quot; style=&quot;display:none;font-size:11.5px;color:var(--amber);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;margin:0 0 12px;line-height:1.5&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;nextUp&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;dgrid&quot;&gt;
+  &lt;div class=&quot;dcard&quot;&gt;&lt;h3&gt;Top 5 by leads&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;Who is actually sending you business.&lt;/div&gt;&lt;div id=&quot;topLeads&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;dcard&quot;&gt;&lt;h3&gt;Top 5 by marketing spend&lt;/h3&gt;&lt;div class=&quot;cap&quot;&gt;What you have funded for them. Compare it against the list on the left.&lt;/div&gt;&lt;div id=&quot;topSpend&quot;&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;main class=&quot;wrap&quot;&gt;
 
 &lt;section class=&quot;pane on&quot; id=&quot;pane-partners&quot;&gt;
-  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;My partners&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;health score = official Ausloans model: Finance 40% · Engagement 30% · Marketing 20% · Risk 10% · run a Quarterly Review to rescore&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sect-h&quot;&gt;&lt;h2&gt;Partners Dashboard&lt;/h2&gt;&lt;div class=&quot;sub&quot;&gt;everything at a glance · your book, what they send you, and who is next&lt;/div&gt;&lt;/div&gt;
 
 &lt;div class=&quot;howto&quot;&gt;
     &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;1&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Score a new one&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Before you sign anyone. 12 questions on the phone, tells you yes or no.&lt;/div&gt;&lt;/div&gt;
@@ -3619,28 +3643,7 @@ tr.star td{background:rgba(20,184,166,.05)}
     &lt;div class=&quot;hs&quot;&gt;&lt;span class=&quot;n&quot;&gt;4&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;Quarterly review&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Every 3 months. Scores their health out of 100 and colours their card.&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;hs when&quot;&gt;&lt;span class=&quot;n&quot;&gt;5&lt;/span&gt;&lt;div class=&quot;t&quot;&gt;How I'm scored&lt;/div&gt;&lt;div class=&quot;d&quot;&gt;Ausloans marking you, not them. Update it monthly.&lt;/div&gt;&lt;/div&gt;
   &lt;/div&gt;
-&lt;details class=&quot;guide&quot;&gt;
-    &lt;summary&gt;What good looks like · plain-English guide to every number here&lt;/summary&gt;
-    &lt;div class=&quot;gb&quot;&gt;
-      &lt;div style=&quot;font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:12px&quot;&gt;Every number on this tab comes from an Ausloans worksheet. Here's what each one means, what a good result looks like, and what should worry you. Hover the &lt;span class=&quot;hx&quot; tabindex=&quot;0&quot;&gt;?&lt;span class=&quot;hxb&quot;&gt;Like this. They're on every number.&lt;/span&gt;&lt;/span&gt; next to any figure for the same thing in context.&lt;/div&gt;
-      &lt;table class=&quot;gt&quot;&gt;
-        &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Number&lt;/th&gt;&lt;th&gt;What it means&lt;/th&gt;&lt;th class=&quot;g&quot;&gt;Good&lt;/th&gt;&lt;th class=&quot;b&quot;&gt;Bad&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
-        &lt;tbody&gt;
-        &lt;tr&gt;&lt;td&gt;Readiness score&lt;/td&gt;&lt;td&gt;Qualify New · how ready a prospect is to be a finance partner, out of 100&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;80+ agency&lt;br&gt;67+ referral&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 40&lt;br&gt;walk away&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Health score&lt;/td&gt;&lt;td&gt;Quarterly Review · how a partner is actually performing now&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;75+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 40&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Leads per partner&lt;/td&gt;&lt;td&gt;Referrals they send you monthly&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;3+ (the commitment)&lt;br&gt;10+ is a star&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;0-1 for two months running&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;First contact time&lt;/td&gt;&lt;td&gt;How fast you ring their customer&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;under 60 min&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;over 60 min&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Approval rate&lt;/td&gt;&lt;td&gt;Approvals ÷ decisions on their leads&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;60%+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 40% · lead quality problem&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Settlement rate&lt;/td&gt;&lt;td&gt;Settled ÷ approved&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;70%+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 50% · deals dying after approval&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Conversion (lead→funded)&lt;/td&gt;&lt;td&gt;Of everything they send, how much funds&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;25%+&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 10%&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Days since last lead&lt;/td&gt;&lt;td&gt;Silence is the earliest warning sign&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;under 14 days&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;30+ days · ring them today&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Your broker score&lt;/td&gt;&lt;td&gt;My Scorecard · how Ausloans marks you, out of 5&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;4.0+ Strong&lt;br&gt;4.5+ Outstanding&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;under 3.0&lt;br&gt;under 2.0 = performance managed&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;Marketing spend&lt;/td&gt;&lt;td&gt;What you fund for a partner&lt;/td&gt;&lt;td class=&quot;g&quot;&gt;followed by more leads&lt;/td&gt;&lt;td class=&quot;b&quot;&gt;spend with flat leads&lt;/td&gt;&lt;/tr&gt;
-        &lt;/tbody&gt;
-      &lt;/table&gt;
-      &lt;div style=&quot;font-size:11.5px;color:var(--faint);line-height:1.6;margin-top:11px&quot;&gt;&lt;b style=&quot;color:var(--dim)&quot;&gt;The one rule of thumb:&lt;/b&gt; a partner who sends 3 leads a month and answers the phone is worth more than one who promises twenty and goes quiet. Volume with silence is the pattern to kill early.&lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/details&gt;
+
   &lt;details style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;margin:0 0 14px;display:block;width:100%&quot;&gt;
       &lt;summary style=&quot;cursor:pointer;padding:12px 15px;font-size:13px;font-weight:700;list-style:none&quot;&gt;+ Add a partner directly &lt;span style=&quot;font-weight:400;color:var(--faint);font-size:11.5px&quot;&gt;· for ones head office signed up, where you skip the scorecard&lt;/span&gt;&lt;/summary&gt;
       &lt;div style=&quot;padding:13px 15px;border-top:1px solid var(--bdr)&quot;&gt;
@@ -3659,55 +3662,7 @@ tr.star td{background:rgba(20,184,166,.05)}
       &lt;/div&gt;
     &lt;/details&gt;
     &lt;div class=&quot;pgrid&quot; id=&quot;pgrid&quot;&gt;&lt;/div&gt;
-  &lt;details id=&quot;pxCard&quot; style=&quot;background:var(--panel);border:1px solid var(--bdr);border-radius:10px;padding:0;margin-top:14px&quot;&gt;
-    &lt;summary style=&quot;cursor:pointer;list-style:none;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap&quot;&gt;
-      &lt;span style=&quot;font-size:12px;color:var(--dim)&quot;&gt;Google Sheet&lt;/span&gt;
-      &lt;span id=&quot;pxStatus&quot; style=&quot;font-size:11px;color:var(--faint);border:1px solid var(--bdr2);border-radius:999px;padding:4px 10px&quot;&gt;checking…&lt;/span&gt;
-    &lt;/summary&gt;
-    &lt;div style=&quot;padding:0 14px 14px;border-top:1px solid var(--bdr)&quot;&gt;
-    &lt;div id=&quot;pxBlurb&quot; style=&quot;font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:10px&quot;&gt;Checking whether your workbook is answering.&lt;/div&gt;
-    &lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px&quot;&gt;
-      &lt;button id=&quot;pxCopyP&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Copy Partners CSV&lt;/button&gt;
-      &lt;button id=&quot;pxCopyL&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Copy Leads CSV&lt;/button&gt;
-      &lt;button id=&quot;pxPaste&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px&quot;&gt;Paste from sheet&lt;/button&gt;
-    &lt;/div&gt;
-    &lt;div id=&quot;pxBox&quot; style=&quot;display:none&quot;&gt;
-      &lt;textarea id=&quot;pxArea&quot; rows=&quot;5&quot; style=&quot;width:100%;background:var(--panel2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:12px&quot; placeholder=&quot;paste rows straight from either tab · header row optional&quot;&gt;&lt;/textarea&gt;
-      &lt;div style=&quot;display:flex;gap:8px;margin-top:8px&quot;&gt;
-        &lt;button id=&quot;pxImport&quot; style=&quot;background:var(--teal);border:none;color:#fff;font-weight:700;font-size:12px;border-radius:8px;padding:8px 14px&quot;&gt;Import&lt;/button&gt;
-        &lt;button id=&quot;pxCancel&quot; style=&quot;background:transparent;border:1px solid var(--bdr2);color:var(--dim);font-size:12px;border-radius:8px;padding:8px 14px&quot;&gt;Cancel&lt;/button&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;details id=&quot;pxSetup&quot; style=&quot;margin-top:10px&quot;&gt;&lt;summary style=&quot;cursor:pointer;font-size:12px;color:var(--faint)&quot;&gt;Not syncing? Turn on live auto-sync&lt;/summary&gt;
-      &lt;div style=&quot;font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:8px&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;This tab already polls your dashboard's script every 60 seconds.&lt;/b&gt; It just needs the script to answer. Open &lt;b&gt;Extensions → Apps Script&lt;/b&gt; in the workbook, paste this at the bottom, run &lt;b&gt;setupPartnerTabs&lt;/b&gt; once (it creates and formats the Partners + PartnerLeads tabs for you), then &lt;b&gt;Deploy → Manage deployments → Edit → New version&lt;/b&gt;:&lt;/div&gt;
-      &lt;pre style=&quot;background:var(--panel2);border:1px solid var(--bdr);border-radius:8px;padding:10px;font-size:10.5px;overflow:auto;margin-top:6px;color:var(--dim)&quot;&gt;function setupPartnerTabs(){
-  const ss=SpreadsheetApp.getActive();
-  const mk=(name,headers)=&gt;{
-    let sh=ss.getSheetByName(name);
-    if(!sh){ sh=ss.insertSheet(name); }
-    if(sh.getLastRow()===0){
-      sh.getRange(1,1,1,headers.length).setValues([headers])
-        .setFontWeight('bold').setBackground('#0d3b34').setFontColor('#ffffff');
-      sh.setFrozenRows(1);
-    }
-    return sh;
-  };
-  mk('Partners',['Business','Contact','Type','Industry','Phone','Notes']);
-  mk('PartnerLeads',['Partner','Client','Asset','Received','Stage','Outcome']);
-}
-function partnersJson(){
-  const ss=SpreadsheetApp.getActive();
-  const grab=n=&gt;{const sh=ss.getSheetByName(n);return sh?sh.getDataRange().getValues():[];};
-  return ContentService.createTextOutput(JSON.stringify({
-    ok:true, partners:grab('Partners'), leads:grab('PartnerLeads')
-  })).setMimeType(ContentService.MimeType.JSON);
-}
-// add ONE line inside your existing doGet(e), before its normal return:
-//   if(e &amp;&amp; e.parameter &amp;&amp; e.parameter.fn==='partners') return partnersJson();&lt;/pre&gt;
-      &lt;div style=&quot;font-size:11.5px;color:var(--dim);line-height:1.6;margin-top:6px&quot;&gt;Until that's done, the pill above says the script isn't answering and this tab runs on local data + CSV. The moment it's deployed, anyone you add to the sheet appears here on the next poll — no more pasting.&lt;/div&gt;
-    &lt;/details&gt;
-  &lt;/div&gt;
-  &lt;/details&gt;
+  
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-sla&quot;&gt;
@@ -4040,13 +3995,114 @@ const CATALOGUE=[
 
 
 /* ================= KPI STRIP ================= */
-function paintKPIs(){
-  $('#kActive').textContent=partners.filter(p=&gt;p.h&amp;&amp;p.h.H&gt;=75).length+' / '+partners.length;
-  $('#kLeads').textContent=partners.reduce((a,p)=&gt;a+p.leadsMTD,0);
-  $('#kDue').textContent=partners.filter(p=&gt;(p.nextCI-now)/day&lt;=7).length;
-  $('#kRcti').textContent=money(ledger.reduce((a,l)=&gt;a+l.cost,0));
-  $('#nSla').textContent='('+leads.filter(l=&gt;l.stage===0).length+')';
+/* totals come from the quarterly figures on each partner, which is where the
+   real 90 day numbers live, plus anything logged on the lead board since. */
+function bookTotals(){
+  let lds=0,app=0,dec=0,set=0;
+  partners.forEach(function(p){
+    const q=p.q||{};
+    lds+=(+q.leads||0); app+=(+q.app||0); dec+=(+q.dec||0); set+=(+q.set||0);
+  });
+  lds+=leads.length;
+  const spend=ledger.reduce(function(a,l){return a+(+l.cost||0)},0);
+  return {leads:lds,app:app,dec:dec,set:set,spend:spend,
+    apprRate:(app+dec)?Math.round(app/(app+dec)*100):null,
+    settleRate:app?Math.round(set/app*100):null};
 }
+function spendFor(pid){ return ledger.filter(l=&gt;l.pid===pid).reduce((a,l)=&gt;a+(+l.cost||0),0) }
+function leadsFor(p){ return (+(p.q&amp;&amp;p.q.leads)||0)+leads.filter(l=&gt;l.pid===p.id).length }
+
+function paintKPIs(){
+  const t=bookTotals();
+  $('#kPartners').textContent=partners.length;
+  $('#kLeadsAll').textContent=t.leads;
+  $('#kAppr').textContent=t.apprRate==null?'—':t.apprRate+'%';
+  $('#kSettle').textContent=t.settleRate==null?'—':t.settleRate+'%';
+  $('#kDue').textContent=partners.filter(p=&gt;(p.nextCI-now)/day&lt;=7).length;
+  $('#kSpend').textContent=money(t.spend);
+  const sla=$('#nSla'); if(sla)sla.textContent='('+leads.filter(l=&gt;l.stage===0).length+')';
+  paintBoards();
+  paintNextUp();
+}
+
+function board(host,rows,fmt,empty){
+  const el=$(host); if(!el)return;
+  if(!rows.length){ el.innerHTML='&lt;div class=&quot;dempty&quot;&gt;'+empty+'&lt;/div&gt;'; return; }
+  el.innerHTML=rows.map(function(r,i){
+    return '&lt;div class=&quot;lb'+(i===0?' top':'')+'&quot;&gt;&lt;span class=&quot;rk&quot;&gt;'+(i+1)+'&lt;/span&gt;'
+      +'&lt;span class=&quot;nm&quot;&gt;'+r.biz+(r.sub?'&lt;i&gt;'+r.sub+'&lt;/i&gt;':'')+'&lt;/span&gt;'
+      +'&lt;span class=&quot;vv&quot;&gt;'+fmt(r.v)+'&lt;/span&gt;&lt;/div&gt;';
+  }).join('');
+}
+function paintBoards(){
+  const byLeads=partners.map(function(p){
+    const n=leadsFor(p);
+    const d=(p.lastLead==null)?null:p.lastLead;
+    return {biz:p.biz,v:n,sub:(n?((d===0?'lead today':d===1?'last lead yesterday':'last lead '+d+' days ago')):'nothing yet')};
+  }).filter(x=&gt;x.v&gt;0).sort((a,b)=&gt;b.v-a.v).slice(0,5);
+  board('#topLeads',byLeads,function(v){return v},
+    'No leads logged yet. They will appear here as partners start referring.');
+
+  const bySpend=partners.map(function(p){
+    const v=spendFor(p.id);
+    const n=leadsFor(p);
+    return {biz:p.biz,v:v,sub:n?(n+' lead'+(n===1?'':'s')+' back'):'nothing back yet'};
+  }).filter(x=&gt;x.v&gt;0).sort((a,b)=&gt;b.v-a.v).slice(0,5);
+  board('#topSpend',bySpend,money,
+    'Nothing spent yet. Log it on the Money tab when you fund something for a partner.');
+}
+
+/* ── who is next, and something to send them ── */
+function nextPartner(){
+  if(!partners.length)return null;
+  return partners.slice().sort(function(a,b){return (a.nextCI||0)-(b.nextCI||0)})[0];
+}
+function touchDrafts(p){
+  const first=(p.name&amp;&amp;p.name!=='—')?String(p.name).split(' ')[0]:'there';
+  return {
+    sms:'Hi '+first+', Jordy from Ausloans. Just sent you an email, nothing urgent, only touching base to see how things are going and whether there is anything you need from me. Give me a call any time.',
+    subject:'Touching base',
+    email:'Hi '+first+',\n\nJust touching base to see how things are travelling at '+p.biz+'.\n\nNothing urgent from my end. I wanted to check whether there is anything you need from me at the moment, whether that is pricing, artwork, or a hand with a customer who is sitting on the fence.\n\nIf there is anyone you are unsure about, send them through and I will take a look. No obligation on them either way.\n\nAny time that suits for a quick call, let me know.\n\nThanks,\nJordy\nAusloans'
+  };
+}
+function paintNextUp(){
+  const host=$('#nextUp'); if(!host)return;
+  const p=nextPartner();
+  if(!p){ host.innerHTML=''; return; }
+  const d=Math.round((p.nextCI-now)/day);
+  const when=d&lt;0?Math.abs(d)+' days overdue':d===0?'today':d===1?'tomorrow':'in '+d+' days';
+  const col=d&lt;0?'var(--coral)':d&lt;=3?'var(--amber)':'var(--teal)';
+  const dr=touchDrafts(p);
+  host.innerHTML='&lt;div class=&quot;nxt&quot;&gt;'
+   +'&lt;div style=&quot;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap&quot;&gt;'
+   +'&lt;div&gt;&lt;div style=&quot;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)&quot;&gt;Next catch-up&lt;/div&gt;'
+   +'&lt;div style=&quot;font-size:15px;font-weight:700;color:var(--txt);margin-top:3px&quot;&gt;'+p.biz+'&lt;/div&gt;'
+   +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);margin-top:2px&quot;&gt;'+(p.name&amp;&amp;p.name!=='—'?p.name+' · ':'')+fmtD(p.nextCI)+'&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div style=&quot;font-size:13px;font-weight:700;color:'+col+'&quot;&gt;'+when+'&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div style=&quot;display:flex;gap:7px;flex-wrap:wrap;margin-top:11px&quot;&gt;'
+   +'&lt;button class=&quot;dbtn&quot; onclick=&quot;goCheckin('+p.id+')&quot;&gt;Do the check-in&lt;/button&gt;'
+   +'&lt;button class=&quot;dbtn&quot; onclick=&quot;toggleDraft()&quot;&gt;Touch base message&lt;/button&gt;'
+   +'&lt;button class=&quot;dbtn&quot; onclick=&quot;logTouch('+p.id+',\'Call\')&quot;&gt;Log a call&lt;/button&gt;'
+   +'&lt;/div&gt;'
+   +'&lt;div id=&quot;draftBox&quot; style=&quot;display:none&quot;&gt;'
+   +'&lt;div class=&quot;draft&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Text&lt;/b&gt;\n'+dr.sms+'&lt;/div&gt;'
+   +'&lt;div style=&quot;margin-top:7px&quot;&gt;&lt;button class=&quot;dbtn&quot; onclick=&quot;copyDraft(\'sms\')&quot;&gt;Copy the text&lt;/button&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;draft&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Email · subject: '+dr.subject+'&lt;/b&gt;\n'+dr.email+'&lt;/div&gt;'
+   +'&lt;div style=&quot;margin-top:7px&quot;&gt;&lt;button class=&quot;dbtn&quot; onclick=&quot;copyDraft(\'email\')&quot;&gt;Copy the email&lt;/button&gt;&lt;/div&gt;'
+   +'&lt;/div&gt;&lt;/div&gt;';
+  window._draft=dr;
+}
+window.toggleDraft=function(){
+  const b=$('#draftBox'); if(!b)return;
+  b.style.display = b.style.display==='none' ? 'block' : 'none';
+};
+window.copyDraft=function(which){
+  const d=window._draft; if(!d)return;
+  const txt = which==='sms' ? d.sms : ('Subject: '+d.subject+'\n\n'+d.email);
+  if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){toast('Copied','Paste it wherever you send from.')},function(){toast('Could not copy','')});
+  } else toast('Could not copy','');
+};
 
 /* ================= PARTNER BOOK ================= */
 function ciStatus(p){
@@ -5019,12 +5075,12 @@ function copyCsv(txt,msg){
   if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=&gt;toast('Copied',msg),()=&gt;toast('Could not copy',''));}
   else toast('Could not copy','');
 }
-$('#pxCopyP').onclick=()=&gt;{
+if($('#pxCopyP'))$('#pxCopyP').onclick=()=&gt;{
   const out='Business,Contact,Type,Industry,Phone,Leads MTD,Email,Stage,Partner page,QR issued,Zink live\n'+partners.map(p=&gt;{const q=(ensurePipe(p),p.pipe);
     return [p.biz,p.name,p.type,p.ind,p.phone,p.leadsMTD||0,q.email,q.stage,q.page,q.qr?'Yes':'No',q.zink?'Yes':'No'].map(csvEsc).join(',')}).join('\n');
   copyCsv(out,partners.length+' partners → paste into the Partners tab');
 };
-$('#pxCopyL').onclick=()=&gt;{
+if($('#pxCopyL'))$('#pxCopyL').onclick=()=&gt;{
   const st=['New','Contacted','Application','Submitted','Done'];
   const out='Partner,Client,Asset,Received,Stage,Outcome\n'+leads.map(L=&gt;{
     const P=partners.find(x=&gt;x.id===L.pid)||{};
@@ -5032,9 +5088,9 @@ $('#pxCopyL').onclick=()=&gt;{
   }).join('\n');
   copyCsv(out,leads.length+' leads → paste into the PartnerLeads tab');
 };
-$('#pxPaste').onclick=()=&gt;{$('#pxBox').style.display='';$('#pxArea').focus();};
-$('#pxCancel').onclick=()=&gt;{$('#pxBox').style.display='none';};
-$('#pxImport').onclick=()=&gt;{
+if($('#pxPaste'))$('#pxPaste').onclick=()=&gt;{$('#pxBox').style.display='';$('#pxArea').focus();};
+if($('#pxCancel'))$('#pxCancel').onclick=()=&gt;{$('#pxBox').style.display='none';};
+if($('#pxImport'))$('#pxImport').onclick=()=&gt;{
   const txt=($('#pxArea').value||'').trim();
   if(!txt){toast('Nothing pasted','');return;}
   let addedP=0,addedL=0,upd=0,mode='';
@@ -5071,6 +5127,13 @@ $('#pxImport').onclick=()=&gt;{
 /* ── live pull from the workbook · same script the dashboard reads ── */
 const EXEC_URL='https://script.google.com/macros/s/AKfycbza_HzauQ02hFJFB0ZwTqMQ3C6AlMQ9rd5y7ToLAwNXQZAxcmimv2xXizsU5J_JxDGndA/exec';
 function pxStat(msg,ok){
+  /* the sync strip is gone from the dashboard. Stay quiet when it works,
+     speak up when it does not, so a broken sheet cannot go unnoticed. */
+  const mini=$('#pxMini');
+  if(mini){
+    if(ok){ mini.style.display='none'; }
+    else { mini.style.display='block'; mini.textContent='Saved on this computer. The Google Sheet is not answering right now, so it is not up to date.'; }
+  }
   const el=$('#pxStatus');
   if(el){el.textContent=msg;el.style.color=ok?'var(--teal)':'var(--faint)';el.style.borderColor=ok?'var(--teal)':'var(--bdr2)';}
   const b=$('#pxBlurb');

@@ -3893,7 +3893,7 @@ const sAppr=r=&gt;r&gt;=.7?100:r&gt;=.6?80:r&gt;=.5?60:r&gt;=.4?40:20;
 const sSettle=r=&gt;r&gt;=.8?100:r&gt;=.7?80:r&gt;=.6?60:r&gt;=.5?40:20;
 const sContact=h=&gt;h&lt;=1?100:h&lt;=4?80:h&lt;=24?50:20;
 const sTouch=n=&gt;n&gt;=8?100:n&gt;=5?80:n&gt;=3?60:n&gt;=1?40:20;
-function bandOf(s){return s==null?{t:'UNSCORED',c:'var(--faint)'}:s&gt;=90?{t:'Excellent',c:'var(--teal)'}:s&gt;=75?{t:'Good',c:'var(--green)'}:s&gt;=60?{t:'Fair',c:'var(--amber)'}:s&gt;=40?{t:'At Risk',c:'var(--coral)'}:{t:'Critical',c:'var(--red2)'}}
+function bandOf(s){return s==null?{t:'NO QUARTERLY YET',c:'var(--faint)'}:s&gt;=90?{t:'Excellent',c:'var(--teal)'}:s&gt;=75?{t:'Good',c:'var(--green)'}:s&gt;=60?{t:'Fair',c:'var(--amber)'}:s&gt;=40?{t:'At Risk',c:'var(--coral)'}:{t:'Critical',c:'var(--red2)'}}
 function calcHealth(p){
   const q=p.q;if(!q||!q.leads)return null;
   const apprRate=(q.app+q.dec)?q.app/(q.app+q.dec):null;
@@ -4205,7 +4205,9 @@ function openDrawer(id){
     (agencyReady(p)?'&lt;span class=&quot;chip agency&quot;&gt;AGENCY-READY&lt;/span&gt;':'')+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;div class=&quot;d-body&quot;&gt;'+
     ((p.h&amp;&amp;p.h.H&lt;40)?'&lt;div class=&quot;d-sec&quot;&gt;&lt;div class=&quot;alert-red&quot;&gt;&lt;b&gt;Playbook §13 + Critical band — re-engage today.&lt;/b&gt; Immediate relationship audit, identify challenges, intensive support period. Call now, offer a strategy session, send a fresh asset.&lt;div style=&quot;margin-top:9px&quot;&gt;&lt;button class=&quot;btn warn sm&quot; onclick=&quot;reEngage()&quot;&gt;Start re-engagement&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;':'')+
-    '&lt;div class=&quot;d-sec&quot;&gt;&lt;h4&gt;Health sub-scores (official model)&lt;/h4&gt;&lt;div class=&quot;subsc&quot;&gt;'+
+    '&lt;div class=&quot;d-sec&quot;&gt;&lt;h4&gt;Health sub-scores · from the quarterly review&lt;/h4&gt;'+
+    (p.h?'':'&lt;div style=&quot;font-size:11.5px;color:var(--faint);line-height:1.55;margin-bottom:8px&quot;&gt;Blank until you run a quarterly review on them. Health is a different score to readiness: readiness is whether they were worth signing, health is how they are actually performing.&lt;/div&gt;')+
+    '&lt;div class=&quot;subsc&quot;&gt;'+
       '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Finance ×0.4&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.F:'—')+'&lt;/b&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Engagement ×0.3&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.E:'—')+'&lt;/b&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;ss&quot;&gt;&lt;span&gt;Marketing ×0.2&lt;/span&gt;&lt;b&gt;'+(p.h?p.h.M:'—')+'&lt;/b&gt;&lt;/div&gt;'+

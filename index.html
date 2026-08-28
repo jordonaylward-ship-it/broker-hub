@@ -1725,24 +1725,24 @@ window._clc=function(){
      ?'No costs are coming off this seat, so every settled deal is clean profit.'
      :(okAll
        ?'Profitable at the current rate. Everything is covered once conversion is '+f2(target)+'% and the rate here is '+f2(cur)+'%.'
-       :'Not there yet. Covering everything needs '+f2(target)+'% conversion, which is '+f2(settlesAt(target))+' settled deals a month. The rate here is '+f2(cur)+'% ('+f2(settlesAt(cur))+' settles). Roughly '+f2(Math.ceil((settlesAt(target)-settlesAt(cur))*10)/10)+' more a month closes it.'))
+       :'Not there yet. Covering everything needs '+f2(target)+'% conversion, which is '+f2(settlesAt(target))+' settled deals a month, about '+f2(settlesAt(target)*12/52)+' a week. The rate here is '+f2(cur)+'% ('+f2(settlesAt(cur))+' a month · '+f2(settlesAt(cur)*12/52)+' a week). Roughly '+f2(Math.ceil((settlesAt(target)-settlesAt(cur))*10)/10)+' more a month closes it.'))
    +'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
   h+='&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;'+(bkrs&gt;1?'One broker · their month in money · per broker':'Their month in money')+'&lt;/div&gt;'
-   +row('Money they keep from deals','+'+f(gross),'plus',f2(settles)+' settled deals × '+f(kept)+' kept each')
-   +(ownLeads?row('Leads','$0','','you pay the '+f(spend)+' lead bill, not them'):row('Leads','−'+f(spend),'minus',leads+' leads × $'+cpl))
+   +row('Money they keep from deals','+'+f(gross),'plus',f2(settles)+' a month · '+f2(settles*12/52)+' a week · × '+f(kept)+' kept each · '+f(gross*12/52)+' a week')
+   +(ownLeads?row('Leads','$0','','you pay the '+f(spend)+' lead bill, not them'):row('Leads','−'+f(spend),'minus',leads+' leads × $'+cpl+' · '+f(spend*12/52)+' a week'))
    +(advOn?row('Advance','−'+f(advM),'minus',f(advWk)+' a week paid to them'):'')
-   +(docsM&gt;0?row('Docs and fees','−'+f(docsM),'minus','Docusign, credit files, bank statements'):'')
-   +row(profitM&gt;=0?'Left over for them':'Short for the month',f(profitM),'tot'+(profitM&lt;0?' bad':''),profitM&lt;0?'the shortfall goes on their tab and you cover it':f(profitW)+' a week in their pocket')
+   +(docsM&gt;0?row('Docs and fees','−'+f(docsM),'minus','Docusign, credit files, bank statements · '+f(docsM*12/52)+' a week'):'')
+   +row(profitM&gt;=0?'Left over for them':'Short for the month',f(profitM),'tot'+(profitM&lt;0?' bad':''),profitM&lt;0?'the shortfall goes on their tab and you cover it · '+f(profitW)+' a week':f(profitW)+' a week in their pocket')
    +'&lt;/div&gt;';
   if(bkrs&gt;1){
    h+='&lt;div class=&quot;rc sc2-pod&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;All '+bkrs+' brokers together&lt;/div&gt;'
-    +row('Settled deals','+'+f2(settles*bkrs)+' a month','plus','writing '+f(ownGrossW)+' of commission between them')
-    +(ownLeads?'':row('Lead spend','−'+f(spend*bkrs),'minus',''))
+    +row('Settled deals','+'+f2(settles*bkrs)+' a month','plus','about '+f2(settles*bkrs*12/52)+' a week · writing '+f(ownGrossW)+' of commission between them')
+    +(ownLeads?'':row('Lead spend','−'+f(spend*bkrs),'minus',f(spend*bkrs*12/52)+' a week'))
     +(advOn?row('Advance paid out','−'+f(advM*bkrs),'minus',f(advWk)+' a week × '+bkrs+' brokers'):'')
-    +(docsM&gt;0?row('Docs and fees','−'+f(docsM*bkrs),'minus',''):'')
+    +(docsM&gt;0?row('Docs and fees','−'+f(docsM*bkrs),'minus',f(docsM*bkrs*12/52)+' a week'):'')
     +(podTab&gt;0
-      ?row('Advance not yet covered',f(podTab),'tot bad','goes on their tabs every month · your cash until their deals earn it back')
-      :row('Spare after all costs','+'+f(profitM*bkrs),'tot','the pod pays for itself'))
+      ?row('Advance not yet covered',f(podTab),'tot bad','goes on their tabs every month · '+f(podTab*12/52)+' a week of your cash until their deals earn it back')
+      :row('Spare after all costs','+'+f(profitM*bkrs),'tot','the pod pays for itself · '+f(profitM*bkrs*12/52)+' a week spare'))
     +'&lt;/div&gt;';
   }
   if(brokerCosts&gt;0){
@@ -1765,9 +1765,9 @@ window._clc=function(){
     +'&lt;/div&gt;';
   }
   h+='&lt;div class=&quot;rc&quot; style=&quot;border-color:rgba(61,220,151,.4)&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;You · what you end up with&lt;/div&gt;'
-   +row('Your cut of what they write','+'+f(ownInc),'plus',f2(ownPct)+'% × '+f(ownGrossW)+' written'+(bkrs&gt;1?' across '+bkrs+' brokers':''))
+   +row('Your cut of what they write','+'+f(ownInc),'plus',f2(ownPct)+'% × '+f(ownGrossW)+' written'+(bkrs&gt;1?' across '+bkrs+' brokers':'')+' · '+f(ownInc*12/52)+' a week')
    +(ownLeads?row('Their leads, paid by you','−'+f(spend*bkrs),'minus','owner pays the leads'+(bkrs&gt;1?' · all '+bkrs+' brokers':'')):'')
-   +(podTab&gt;0?row('Tabs you cover','−'+f(podTab),'minus','the advance money their earnings did not pay back this month'):'')
+   +(podTab&gt;0?row('Tabs you cover','−'+f(podTab),'minus','the advance money their earnings did not pay back this month · '+f(podTab*12/52)+' a week'):'')
    +row(podTab&gt;0?'After covering their tabs':'Yours for the month',f(trueNet),'tot'+(trueNet&lt;0?' bad':''),f(trueNet*12/52)+' a week')
    +(function(){var rem=100-num('c_split')-ownPct;var remCol=rem&lt;0?'#ff6b81':'var(--mut)';
      return '&lt;div style=&quot;font-size:11.5px;color:'+remCol+';margin-top:9px;line-height:1.5&quot;&gt;The lender commission splits three ways: broker &lt;b&gt;'+f2(num('c_split'))+'%&lt;/b&gt;, owner &lt;b&gt;'+f2(ownPct)+'%&lt;/b&gt;, leaving &lt;b&gt;'+f2(rem)+'%&lt;/b&gt; to Ausloans.'+(rem&lt;0?' &lt;b&gt;That\'s over 100% · check the two percentages.&lt;/b&gt;':'')+'&lt;/div&gt;';})()

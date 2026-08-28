@@ -278,6 +278,31 @@ body.light .hist-chart{background:rgba(0,0,0,0.02)}
 .sc-chk{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--dim);cursor:pointer;line-height:1.45}
 .sc-chk input{accent-color:var(--teal);width:16px;height:16px;flex-shrink:0;margin-top:1px}
 .sc-wf{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin:0 0 14px}
+/* ── scale calc v2 skin ── */
+.sc2-panel{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:16px 18px 14px;margin-bottom:14px}
+.sc2-cap{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.sc2-cap::before{content:&quot;&quot;;width:7px;height:7px;border-radius:3px;background:var(--teal)}
+.sc2-cap.amber{color:#ffb454}.sc2-cap.amber::before{background:#ffb454}
+.sc2-panel .sc-grid{background:none;border:none;padding:0;margin-bottom:0}
+.sc2-panel .sc-chk{border:1px solid var(--bdr2);border-radius:12px;padding:11px 13px;background:var(--card2);transition:border-color .15s,background .15s}
+.sc2-panel .sc-chk:has(input[type=checkbox]:checked){border-color:var(--teal);background:rgba(61,220,151,.08)}
+.sc2-panel .sc-chk:hover{border-color:var(--teal)}
+.sc-f input[type=number]:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(61,220,151,.14)}
+.sc2-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:1px solid rgba(61,220,151,.4);background:linear-gradient(135deg,rgba(61,220,151,.13),rgba(61,220,151,.02) 60%),var(--card)}
+.sc2-hero.bad{border-color:rgba(255,107,129,.45);background:linear-gradient(135deg,rgba(255,107,129,.14),rgba(255,107,129,.02) 60%),var(--card)}
+.sc2-big{font-size:46px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.sc2-heroL .lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px}
+.sc2-heroL .sub{font-size:13px;color:var(--dim);margin-top:8px}
+.sc2-chips{display:flex;gap:10px;flex-wrap:wrap}
+.sc2-chip{background:var(--card2);border:1px solid var(--bdr2);border-radius:11px;padding:9px 14px;text-align:center;min-width:96px}
+.sc2-chip .v{font-size:17px;font-weight:700;color:var(--txt)}
+.sc2-chip .k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-top:2px}
+.sc2-t{background:var(--card);border:1px solid var(--bdr);border-left:3px solid var(--teal);border-radius:12px;padding:13px 15px}
+.sc2-t.cost{border-left-color:#ffb454}
+.sc2-t.neg{border-left-color:#ff6b81}
+.sc2-pod{background:linear-gradient(135deg,rgba(120,140,255,.1),rgba(120,140,255,.02) 60%),var(--card);border:1px solid rgba(120,140,255,.4);border-radius:14px;padding:15px 18px;margin-bottom:14px}
+.sc2-pod .sc2-cap{color:#9aa8ff}.sc2-pod .sc2-cap::before{background:#9aa8ff}
+
 .sc-wr{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
 .sc-wl{width:150px;color:var(--dim);flex-shrink:0}
 .sc-wb{flex:1;height:20px;background:rgba(255,255,255,.04);border-radius:6px;overflow:hidden}
@@ -385,6 +410,14 @@ function ingestRaw(raw){
   /* sync monthly advances from the Lead Performance sheet into the ledger so getAdvance + the Ausloans forecast both read one live source */
   if(D){if(D.perfTracker){Object.keys(D.perfTracker).forEach(function(k){if(D.perfTracker[k].advance&gt;0){if(!ADVANCE_LEDGER.months[k])ADVANCE_LEDGER.months[k]={};ADVANCE_LEDGER.months[k].received=D.perfTracker[k].advance;}});}}
   rebuildAusloansLedger();
+  try{
+    var _aAll=computeSettlementStats(D.leads,null);
+    var _aYm=nowYm();
+    var _aMo=computeSettlementStats(D.leads,_aYm);
+    localStorage.setItem('hub_attach_v1',JSON.stringify({t:Date.now(),ym:_aYm,
+      all:{settled:_aAll.settledCount,warr:_aAll.warrCount,drive:_aAll.driveCount,ins:_aAll.insCount,warrD:_aAll.warrDollars,driveD:_aAll.driveDollars},
+      month:{settled:_aMo.settledCount,warr:_aMo.warrCount,drive:_aMo.driveCount,ins:_aMo.insCount,warrD:_aMo.warrDollars,driveD:_aMo.driveDollars}}));
+  }catch(e){}
   const lm=document.getElementById('loadMsg');if(lm)lm.remove();
   render();
 }
@@ -741,7 +774,7 @@ function parseAll(raw){
       product:r[hm[&quot;Product Type&quot;]]||&quot;&quot;,requestedAmt:num(r[hm[&quot;Requested Amount&quot;]]),
       qualStatus:r[hm[&quot;Qualification Status&quot;]]||&quot;&quot;,outcome:r[hm[&quot;Application Outcome&quot;]]||&quot;&quot;,
       settleDate:r[hm[&quot;Settlement Date&quot;]]||&quot;&quot;,settledAmt:num(r[hm[&quot;Settled Amount&quot;]]),
-      commTotal:num(r[hm[&quot;Commission Total&quot;]]),finalStatus:r[hm[&quot;Final Status&quot;]]||&quot;&quot;,
+      commTotal:num(r[hm[&quot;Commission Total&quot;]]),warrAmt:num(r[hm[&quot;Warranty Amount&quot;]]),driveAmt:num(r[hm[&quot;Drive Referral&quot;]]),insSold:String(r[hm[&quot;Insurance Sold&quot;]]===undefined?&quot;&quot;:r[hm[&quot;Insurance Sold&quot;]]).trim(),finalStatus:r[hm[&quot;Final Status&quot;]]||&quot;&quot;,
       lostReason:r[hm[&quot;Lost Reason&quot;]]||&quot;&quot;,currentStage:r[hm[&quot;Current Stage&quot;]]||&quot;&quot;,
       month:parseMonth(r[hm[&quot;Lead Received Date&quot;]]),
       settlementMonth:parseMonth(r[hm[&quot;Settlement Date&quot;]]),
@@ -898,7 +931,15 @@ function computeSettlementStats(leads,targetMonth){
     afterSplitTotal=_applyMo(commSettled,targetMonth);
   }
   const effectiveSplitRate=commSettled&gt;0?afterSplitTotal/commSettled:0.70;
-  return{settledCount,commLocked,commSettled,totalSettledAmt,avgLoanAmt,avgCommPerDeal,approvedCount,declinedCount,approvalRate,declineRate,decidedCount,afterSplitTotal,effectiveSplitRate};
+  const warrCount=settled.filter(function(l){return (l.warrAmt||0)&gt;0;}).length;
+  const driveCount=settled.filter(function(l){return (l.driveAmt||0)&gt;0;}).length;
+  const insCount=settled.filter(function(l){return /^y/i.test(l.insSold||&quot;&quot;);}).length;
+  const warrDollars=settled.reduce(function(s2,l){return s2+(l.warrAmt||0);},0);
+  const driveDollars=settled.reduce(function(s2,l){return s2+(l.driveAmt||0);},0);
+  const warrRate=settledCount&gt;0?warrCount/settledCount:0;
+  const driveRate=settledCount&gt;0?driveCount/settledCount:0;
+  const insRate=settledCount&gt;0?insCount/settledCount:0;
+  return{settledCount,commLocked,commSettled,totalSettledAmt,avgLoanAmt,avgCommPerDeal,approvedCount,declinedCount,approvalRate,declineRate,decidedCount,afterSplitTotal,effectiveSplitRate,warrCount,driveCount,insCount,warrDollars,driveDollars,warrRate,driveRate,insRate};
 }
 
 // Advance helpers · return {received, repaid, rctiCashOut, balance} for a single month or all time
@@ -1256,7 +1297,13 @@ function statsCards(s,label){
     '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Commission / Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(s.settledCount&gt;0?s.commSettled/s.settledCount:0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Full comm · per settled deal&lt;/div&gt;&lt;/div&gt;'+
     '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Comm / Deal · after split&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.settledCount&gt;0?(s.afterSplitTotal||0)/s.settledCount:0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Your cut ('+(s.effectiveSplitRate*100).toFixed(0)+'%) · per settled deal&lt;/div&gt;&lt;/div&gt;'+
     '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Net / Settled Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.settledCount&gt;0&amp;&amp;((s.afterSplitTotal||0)-s.totalSpend)&gt;=0?&quot;c-pos&quot;:&quot;c-neg&quot;)+'&quot;&gt;'+fmtFull(s.settledCount&gt;0?((s.afterSplitTotal||0)-s.totalSpend)/s.settledCount:0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;After split − lead $ per settle&lt;/div&gt;&lt;/div&gt;'+
-  '&lt;/div&gt;';
+  '&lt;/div&gt;'+
+  (s.warrRate===undefined?'':(
+  '&lt;div class=&quot;mg mg5&quot; style=&quot;margin-top:11px&quot;&gt;'+
+    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Warranty Attach&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.warrRate&gt;=0.25?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.warrRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+s.warrCount+' of '+s._atSettled+' settled · '+fmtFull(s.warrDollars)+' earned&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Drive Attach&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.driveRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.driveRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+s.driveCount+' of '+s._atSettled+' settled · '+fmtFull(s.driveDollars)+' earned&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Insurance Attach&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.insRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.insRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+s.insCount+' of '+s._atSettled+' settled · feeds the MVI trail&lt;/div&gt;&lt;/div&gt;'+
+  '&lt;/div&gt;'));
 }
 
 window._leadTypeFilter=window._leadTypeFilter||&quot;All&quot;;
@@ -1592,22 +1639,22 @@ function rCalc(){
   const ck=k=&gt;S[k]?'checked':'';
   host.innerHTML=
    '&lt;div class=&quot;sh&quot; style=&quot;margin-top:4px&quot;&gt;&lt;h2&gt;Scale Calc · the whole picture on one page&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;SAVES AS YOU TYPE&lt;/span&gt;&lt;/div&gt;'
-  +'&lt;div class=&quot;sc-grid&quot;&gt;'
+  +'&lt;div class=&quot;sc2-panel&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;The deal numbers · per broker&lt;/div&gt;&lt;div class=&quot;sc-grid&quot;&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Avg commission / deal&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_avg&quot; value=&quot;'+v('avg','2560')+'&quot; step=&quot;10&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;gross, before the split&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Your split %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_split&quot; value=&quot;'+v('split','80')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;80 floor on digital leads from Aug 26&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Broker split %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_split&quot; value=&quot;'+v('split','80')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;80 floor on digital leads from Aug 26&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Cost per lead&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_cpl&quot; value=&quot;'+v('cpl','75')+'&quot; step=&quot;5&quot;&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Conversion %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_conv&quot; value=&quot;'+v('conv','28.4')+'&quot; step=&quot;0.1&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;leads that settle · your live rate is ~28.4&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Conversion %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_conv&quot; value=&quot;'+v('conv','28.4')+'&quot; step=&quot;0.1&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;leads that settle · live book rate is ~28.4&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Leads per month&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_leads&quot; value=&quot;'+v('leads','20')+'&quot; step=&quot;1&quot;&gt;&lt;span id=&quot;c_lpw&quot; style=&quot;color:var(--mut);font-size:11px&quot;&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Brokers&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_bkrs&quot; value=&quot;'+v('bkrs','1')+'&quot; step=&quot;1&quot; min=&quot;1&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;in the pod · same numbers each, everything scales&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;/div&gt;'
-  +'&lt;div class=&quot;sc-grid&quot; style=&quot;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))&quot;&gt;'
-  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_car&quot; '+ck('car')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $500 car finding&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;Drive referral · all his, you take no cut&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_warr&quot; '+ck('warr')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $250 warranty&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;per settled deal · your override applies to this too&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_ownLeads&quot; '+ck('ownLeads')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Leads paid by me (owner)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;lead spend comes off my earnings, not his cut&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;My override&lt;/b&gt;&lt;br&gt;&lt;input type=&quot;number&quot; id=&quot;c_ownPct&quot; value=&quot;'+v('ownPct','20')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot; style=&quot;width:64px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt; % of lender + warranty + insurance commission · never his car referrals&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_advOn&quot; '+ck('advOn')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− advance paid out&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_advAmt&quot; value=&quot;'+v('advAmt','1000')+'&quot; step=&quot;50&quot; style=&quot;width:80px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/wk · their wage while they build&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− docs &amp;amp; fees&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_docs&quot; value=&quot;'+v('docs','250')+'&quot; step=&quot;10&quot; min=&quot;0&quot; style=&quot;width:70px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/mo per broker · Docusign, credit files, bank statements · comes off his cut&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;/div&gt;'
+  +'&lt;/div&gt;&lt;/div&gt;'
+  +'&lt;div class=&quot;sc2-panel&quot;&gt;&lt;div class=&quot;sc2-cap amber&quot;&gt;Extras · what each deal and each broker carries&lt;/div&gt;&lt;div class=&quot;sc-grid&quot; style=&quot;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))&quot;&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_car&quot; '+ck('car')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $500 car finding&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;Drive referral · broker keeps all of it, owner takes no percentage&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_warr&quot; '+ck('warr')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;+ $250 warranty&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;per settled deal · owner override applies to this too&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_ownLeads&quot; '+ck('ownLeads')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Leads paid by owner&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;lead spend comes off the owner, not the broker&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Owner override&lt;/b&gt;&lt;br&gt;&lt;input type=&quot;number&quot; id=&quot;c_ownPct&quot; value=&quot;'+v('ownPct','20')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot; style=&quot;width:64px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt; % of lender + warranty + insurance commission · Drive referrals excluded&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;c_advOn&quot; '+ck('advOn')+'&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− advance paid out&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_advAmt&quot; value=&quot;'+v('advAmt','1000')+'&quot; step=&quot;50&quot; style=&quot;width:80px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/wk · weekly broker pay while they build&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− docs &amp;amp; fees&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_docs&quot; value=&quot;'+v('docs','250')+'&quot; step=&quot;10&quot; min=&quot;0&quot; style=&quot;width:70px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/mo per broker · Docusign, credit files, bank statements · comes off the broker share&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;/div&gt;&lt;/div&gt;'
   +'&lt;div id=&quot;c_out&quot;&gt;&lt;/div&gt;';
   ['c_avg','c_split','c_cpl','c_conv','c_leads','c_car','c_warr','c_advOn','c_advAmt','c_ownLeads','c_ownPct','c_bkrs','c_docs'].forEach(id=&gt;{
     const el=document.getElementById(id);
@@ -1645,17 +1692,36 @@ window._clc=function(){
   const f=n=&gt;(n&lt;0?'−$':'$')+Math.round(Math.abs(n)).toLocaleString();
   const f2=n=&gt;n==null?'·':r1(n).toLocaleString();
   const col=n=&gt;n&gt;=0?'var(--teal)':'#ff6b81';
-  const tile=(k,val,sub,c)=&gt;'&lt;div style=&quot;background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:12px 14px&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600&quot;&gt;'+k+'&lt;/div&gt;&lt;div style=&quot;font-size:21px;font-weight:700;margin-top:3px;color:'+(c||'var(--txt)')+'&quot;&gt;'+val+'&lt;/div&gt;'+(sub?'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;'+sub+'&lt;/div&gt;':'')+'&lt;/div&gt;';
-  let h='&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-bottom:13px&quot;&gt;';
-  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'keep '+f(kept)+'/deal'+(carAdd?' incl $500 car':'')+(warrGross?' + '+f(warrBroker)+' warranty after your cut':'')+(ownLeads?' · leads on the owner':' · leads '+(conv&gt;0?f(cpl/conv):'·')+'/settle'),profitDeal!=null?col(profitDeal):null);
+  const tile=(k,val,sub,c,cls)=&gt;'&lt;div class=&quot;sc2-t '+(cls||'')+'&quot;&gt;&lt;div style=&quot;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600&quot;&gt;'+k+'&lt;/div&gt;&lt;div style=&quot;font-size:22px;font-weight:750;margin-top:3px;color:'+(c||'var(--txt)')+'&quot;&gt;'+val+'&lt;/div&gt;'+(sub?'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;'+sub+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+  let h='&lt;div class=&quot;sc2-hero'+(profitM&lt;0?' bad':'')+'&quot;&gt;'
+   +'&lt;div class=&quot;sc2-heroL&quot;&gt;&lt;div class=&quot;lbl&quot;&gt;'+(bkrs&gt;1?'Each broker · profit a week':'Profit a week')+'&lt;/div&gt;'
+   +'&lt;div class=&quot;sc2-big&quot; style=&quot;color:'+col(profitW)+'&quot;&gt;'+f(profitW)+'&lt;/div&gt;'
+   +'&lt;div class=&quot;sub&quot;&gt;'+f(profitM)+' a month'+(advOn?' · after the '+f(advWk)+'/wk advance':'')+(docsM&gt;0?' + '+f(docsM)+'/mo docs':'')+(ownLeads?' · leads on the owner':' · after leads')+'&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;sc2-chips&quot;&gt;'
+   +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+f2(settles*12/52)+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;settles / wk&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(profitDeal==null?'\u00b7':f(profitDeal))+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;profit / deal&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+f(kept)+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;kept / deal&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;/div&gt;&lt;/div&gt;';
+h+='&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-bottom:13px&quot;&gt;';
+  h+=tile('Profit per deal',profitDeal==null?'·':f(profitDeal),'broker keeps '+f(kept)+'/deal'+(carAdd?' incl $500 car':'')+(warrGross?' + '+f(warrBroker)+' warranty after owner override':'')+(ownLeads?' · leads on the owner':' · leads '+(conv&gt;0?f(cpl/conv):'·')+'/settle'),profitDeal!=null?col(profitDeal):null);
   h+=tile('Settlements',f2(settles)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;','≈ '+f2(settles*12/52)+' a week · '+leads+' leads × '+f2(conv*100)+'%');
-  h+=tile('Lead spend'+(ownLeads?' · owner pays':''),f(spend)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(spend*12/52)+' a week · '+leads+' × $'+cpl+(ownLeads?' · not off his cut':''));
-  h+=tile('Profit / month',f(profitM),((ownLeads?'leads on the owner':'after leads')+(advOn?' + advance':'')+(docsM&gt;0?' + '+f(docsM)+' docs':'')+(bkrs&gt;1?' · per broker':'')),col(profitM));
-  h+=tile('Profit / week',f(profitW),advOn?'advance costs '+f(advWk)+'/wk':null,col(profitW));
+  h+=tile('Lead spend'+(ownLeads?' · owner pays':''),f(spend)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(spend*12/52)+' a week · '+leads+' × $'+cpl+(ownLeads?' · not off the broker':''),null,'cost');
+  h+=tile('Profit / month',f(profitM),((ownLeads?'leads on the owner':'after leads')+(advOn?' + advance':'')+(docsM&gt;0?' + '+f(docsM)+' docs':'')+(bkrs&gt;1?' · per broker':'')),col(profitM),profitM&lt;0?'neg':'');
   h+='&lt;/div&gt;';
-  if(bkrs&gt;1){h+='&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin:-6px 0 13px&quot;&gt;The five tiles above are &lt;b style=&quot;color:var(--txt)&quot;&gt;per broker&lt;/b&gt; · the owner box at the bottom is the whole pod of '+bkrs+'.&lt;/div&gt;';}
+  if(bkrs&gt;1){
+    const podTab=profitM&lt;0?-profitM*bkrs:0;
+    const podOvr=(avg+warrGross)*settles*bkrs*ownPct/100;
+    h+='&lt;div class=&quot;sc2-pod&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;Whole pod · '+bkrs+' brokers · the tiles above are one broker each&lt;/div&gt;'
+     +'&lt;div class=&quot;sc2-chips&quot;&gt;'
+     +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+f2(settles*bkrs)+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;settles / mo&lt;/div&gt;&lt;/div&gt;'
+     +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+f(spend*bkrs)+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;lead spend / mo&lt;/div&gt;&lt;/div&gt;'
+     +(advOn?'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+f(advM*bkrs)+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;advance fronted / mo&lt;/div&gt;&lt;/div&gt;':'')
+     +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+(podTab&gt;0?'#ff6b81':'var(--teal)')+'&quot;&gt;'+(podTab&gt;0?f(podTab):f(profitM*bkrs))+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;'+(podTab&gt;0?'onto tabs / mo':'broker surplus / mo')+'&lt;/div&gt;&lt;/div&gt;'
+     +'&lt;div class=&quot;sc2-chip&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:var(--teal)&quot;&gt;'+f(podOvr)+'&lt;/div&gt;&lt;div class=&quot;k&quot;&gt;owner override / mo&lt;/div&gt;&lt;/div&gt;'
+     +'&lt;/div&gt;&lt;/div&gt;';
+  }
   if(advOn&amp;&amp;profitM&lt;0){
-    h+='&lt;div style=&quot;background:rgba(255,107,129,.09);border:1px solid #ff6b81;border-radius:11px;padding:11px 14px;margin-bottom:13px;font-size:12.5px;line-height:1.5;color:var(--dim)&quot;&gt;&lt;b style=&quot;color:#ff6b81&quot;&gt;Deficit · '+f(-profitM)+' a month ('+f(-profitW)+' a week).&lt;/b&gt; The deals don\'t yet cover the leads plus the '+f(advWk)+'/wk advance at this conversion.'+(docsM&gt;0?' Docs and fees of '+f(docsM)+'/mo are counted too.':'')+(bkrs&gt;1?' &lt;b&gt;Across '+bkrs+' brokers that is '+f(-profitM*bkrs)+' a month going on tabs.&lt;/b&gt;':'')+'&lt;/div&gt;';
+    h+='&lt;div style=&quot;background:rgba(255,107,129,.09);border:1px solid #ff6b81;border-radius:11px;padding:11px 14px;margin-bottom:13px;font-size:12.5px;line-height:1.5;color:var(--dim)&quot;&gt;&lt;b style=&quot;color:#ff6b81&quot;&gt;Deficit · '+f(-profitM)+' a month ('+f(-profitW)+' a week).&lt;/b&gt; The deals don\'t yet cover the leads plus the '+f(advWk)+'/wk advance at this conversion.'+(docsM&gt;0?' Docs and fees of '+f(docsM)+'/mo are counted too.':'')+(bkrs&gt;1?' &lt;b&gt;Across '+bkrs+' brokers that is '+f(-profitM*bkrs)+' a month of advance not yet covered.&lt;/b&gt;':'')+'&lt;/div&gt;';
   }
   // ── break-even · one gauge, plain words, and in settles as well as % ──
   const beL=(kept&gt;0&amp;&amp;!ownLeads)?cpl/kept*100:0;                        // % where his lead share is paid (0 when the owner carries them)
@@ -1663,7 +1729,7 @@ window._clc=function(){
   const cur=conv*100;
   const brokerCosts=hisSpend+advM+docsM;
   if(brokerCosts&lt;=0){
-    h+='&lt;div class=&quot;sc-wf&quot;&gt;&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.5&quot;&gt;&lt;b style=&quot;color:var(--teal)&quot;&gt;Nothing comes out of his cut.&lt;/b&gt; You\'re carrying the leads and there\'s no advance ticked, so every settle is clean profit to him. Break-even doesn\'t apply.&lt;/div&gt;&lt;/div&gt;';
+    h+='&lt;div class=&quot;sc-wf&quot;&gt;&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.5&quot;&gt;&lt;b style=&quot;color:var(--teal)&quot;&gt;Nothing comes out of the broker share.&lt;/b&gt; The owner is carrying the leads and there\'s no advance ticked, so every settle is clean profit to the broker. Break-even doesn\'t apply.&lt;/div&gt;&lt;/div&gt;';
   } else if(beL!=null){
     const top=Math.max(cur,advOn&amp;&amp;beA!=null?beA:beL)*1.35;
     const pos=x=&gt;Math.min(98,Math.max(1,x/top*100));
@@ -1673,23 +1739,23 @@ window._clc=function(){
     let verdict;
     if(okAll){
       const spare=cur-target;
-      verdict='&lt;b style=&quot;color:var(--teal)&quot;&gt;You\'re profitable at your current rate.&lt;/b&gt; Everything'+(advOn?' — leads and the advance —':'')+' is paid once you convert '+f2(target)+'% ('+f2(settlesAt(target))+' settles a month). You\'re at '+f2(cur)+'%, so about '+f2(settlesAt(spare))+' settle'+(r1(settlesAt(spare))===1?'':'s')+' a month is pure profit margin.';
+      verdict='&lt;b style=&quot;color:var(--teal)&quot;&gt;Profitable at the current rate.&lt;/b&gt; Everything'+(advOn?' — leads and the advance —':'')+' is paid once conversion hits '+f2(target)+'% ('+f2(settlesAt(target))+' settles a month). The current rate is '+f2(cur)+'%, so about '+f2(settlesAt(spare))+' settle'+(r1(settlesAt(spare))===1?'':'s')+' a month is pure profit margin.';
     } else {
       const need=settlesAt(target)-settlesAt(cur);
-      verdict='&lt;b style=&quot;color:#ff6b81&quot;&gt;Not there yet.&lt;/b&gt; To pay for everything'+(advOn?' — leads and the advance —':'')+' you need '+f2(target)+'% conversion, which is '+f2(settlesAt(target))+' settles a month. You\'re at '+f2(cur)+'% ('+f2(settlesAt(cur))+' settles). &lt;b style=&quot;color:var(--txt)&quot;&gt;Roughly '+f2(Math.ceil(need*10)/10)+' more settle'+(need&gt;1.05?'s':'')+' a month closes it.&lt;/b&gt;';
+      verdict='&lt;b style=&quot;color:#ff6b81&quot;&gt;Not there yet.&lt;/b&gt; To pay for everything'+(advOn?' — leads and the advance —':'')+' it needs '+f2(target)+'% conversion, which is '+f2(settlesAt(target))+' settles a month. The current rate is '+f2(cur)+'% ('+f2(settlesAt(cur))+' settles). &lt;b style=&quot;color:var(--txt)&quot;&gt;Roughly '+f2(Math.ceil(need*10)/10)+' more settle'+(need&gt;1.05?'s':'')+' a month closes it.&lt;/b&gt;';
     }
     h+='&lt;div class=&quot;sc-wf&quot;&gt;'
-     +'&lt;div style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:10px&quot;&gt;Where you sit&lt;/div&gt;'
+     +'&lt;div style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:10px&quot;&gt;Where this sits&lt;/div&gt;'
      +'&lt;div style=&quot;position:relative;height:14px;border-radius:7px;overflow:hidden;background:rgba(255,107,129,.25)&quot;&gt;'
      +(advOn&amp;&amp;beA!=null&amp;&amp;!ownLeads?'&lt;div style=&quot;position:absolute;left:'+pos(beL)+'%;right:'+(100-pos(beA))+'%;top:0;bottom:0;background:rgba(255,180,84,.35)&quot;&gt;&lt;/div&gt;':'')
      +'&lt;div style=&quot;position:absolute;left:'+pos(target)+'%;right:0;top:0;bottom:0;background:rgba(61,220,151,.3)&quot;&gt;&lt;/div&gt;'
-     +'&lt;div style=&quot;position:absolute;left:'+pos(cur)+'%;top:-1px;bottom:-1px;width:4px;background:var(--txt);border-radius:2px&quot; title=&quot;you · '+f2(cur)+'%&quot;&gt;&lt;/div&gt;'
+     +'&lt;div style=&quot;position:absolute;left:'+pos(cur)+'%;top:-1px;bottom:-1px;width:4px;background:var(--txt);border-radius:2px&quot; title=&quot;current · '+f2(cur)+'%&quot;&gt;&lt;/div&gt;'
      +'&lt;/div&gt;'
      +'&lt;div style=&quot;display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:6px;flex-wrap:wrap;gap:4px&quot;&gt;'
      +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,107,129,.6);vertical-align:-1px&quot;&gt;&lt;/span&gt; losing money&lt;/span&gt;'
      +(advOn&amp;&amp;beA!=null&amp;&amp;!ownLeads?'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,180,84,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; leads paid, advance isn\'t · from '+f2(beL)+'%&lt;/span&gt;':'')
      +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(61,220,151,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; everything paid · from '+f2(target)+'%&lt;/span&gt;'
-     +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:4px;border-radius:2px;background:var(--txt);vertical-align:2px&quot;&gt;&lt;/span&gt; you · '+f2(cur)+'%&lt;/span&gt;'
+     +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:4px;border-radius:2px;background:var(--txt);vertical-align:2px&quot;&gt;&lt;/span&gt; current · '+f2(cur)+'%&lt;/span&gt;'
      +'&lt;/div&gt;'
      +'&lt;div style=&quot;font-size:12.5px;line-height:1.6;color:var(--dim);margin-top:10px&quot;&gt;'+verdict+'&lt;/div&gt;'
      +'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:6px&quot;&gt;Each extra point of conversion ≈ '+(kept&gt;0?f(leads*kept/100):'·')+' a month.&lt;/div&gt;'
@@ -1706,13 +1772,13 @@ window._clc=function(){
    +'&lt;span style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+f2(ownPct)+'% of lender'+(warrGross?' + warranty':'')+' commission'+(carAdd?' · car money is all his':'')+'&lt;/span&gt;'
    +'&lt;/div&gt;'
    +'&lt;div style=&quot;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px&quot;&gt;'
-   +tile('Your override',f(ownInc)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownInc*12/52)+' a week · '+f2(ownPct)+'% × '+f(ownGrossW)+' lender'+(warrGross?' + warranty':'')+' written'+(bkrs&gt;1?' across '+bkrs+' brokers':''))
-   +(ownLeads?tile('Less their leads',f(-spend*bkrs),'you ticked owner pays'+(bkrs&gt;1?' · all '+bkrs+' brokers':''),'#ff6b81'):'')
-   +tile('Your net',f(ownNet)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownNet*12/52)+' a week',col(ownNet))
+   +tile('Owner override',f(ownInc)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownInc*12/52)+' a week · '+f2(ownPct)+'% × '+f(ownGrossW)+' lender'+(warrGross?' + warranty':'')+' written'+(bkrs&gt;1?' across '+bkrs+' brokers':''))
+   +(ownLeads?tile('Less their leads',f(-spend*bkrs),'owner pays the leads'+(bkrs&gt;1?' · all '+bkrs+' brokers':''),'#ff6b81'):'')
+   +tile('Owner net',f(ownNet)+'&lt;small style=&quot;font-size:12px;color:var(--mut)&quot;&gt;/mo&lt;/small&gt;',f(ownNet*12/52)+' a week',col(ownNet))
    +'&lt;/div&gt;'
    +(()=&gt;{const rem=100-num('c_split')-ownPct; const remCol=rem&lt;0?'#ff6b81':'var(--mut)';
-      return '&lt;div style=&quot;font-size:11.5px;color:'+remCol+';margin-top:9px;line-height:1.5&quot;&gt;The lender commission three ways: he keeps &lt;b&gt;'+f2(num('c_split'))+'%&lt;/b&gt;, you take &lt;b&gt;'+f2(ownPct)+'%&lt;/b&gt;, leaving &lt;b&gt;'+f2(rem)+'%&lt;/b&gt; to Ausloans.'+(rem&lt;0?' &lt;b&gt;That\'s over 100% · check the two percentages.&lt;/b&gt;':'')+'&lt;/div&gt;';})()
-   +(advOn?'&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5&quot;&gt;Plus you front the '+f(advWk)+'/wk advance'+(bkrs&gt;1?' per broker · '+f(advM*bkrs)+'/mo across the pod':' ('+f(advM)+'/mo)')+' · that\'s cashflow, not a cost — it\'s recouped from their commissions, which is exactly why it\'s deducted on their side above.&lt;/div&gt;':'')
+      return '&lt;div style=&quot;font-size:11.5px;color:'+remCol+';margin-top:9px;line-height:1.5&quot;&gt;The lender commission splits three ways: broker &lt;b&gt;'+f2(num('c_split'))+'%&lt;/b&gt;, owner &lt;b&gt;'+f2(ownPct)+'%&lt;/b&gt;, leaving &lt;b&gt;'+f2(rem)+'%&lt;/b&gt; to Ausloans.'+(rem&lt;0?' &lt;b&gt;That\'s over 100% · check the two percentages.&lt;/b&gt;':'')+'&lt;/div&gt;';})()
+   +(advOn?'&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5&quot;&gt;The owner fronts the '+f(advWk)+'/wk advance'+(bkrs&gt;1?' per broker · '+f(advM*bkrs)+'/mo across the pod':' ('+f(advM)+'/mo)')+' · that\'s cashflow, not a cost — it\'s recouped from broker commissions, which is exactly why it\'s deducted on the broker side above.&lt;/div&gt;':'')
    +'&lt;/div&gt;';
   host.innerHTML=h;
 };
@@ -1846,6 +1912,10 @@ window._tierAvgReset=function(){try{localStorage.removeItem(&quot;ja_tier_avg_v1
 function rAllTime(){
   const filtered=filterLeadsByType(D.leads,window._leadTypeFilter);
   const s=computeStats(filtered);
+  const _at=computeSettlementStats(filtered,null);
+  s.warrRate=_at.warrRate;s.warrCount=_at.warrCount;s.warrDollars=_at.warrDollars;
+  s.driveRate=_at.driveRate;s.driveCount=_at.driveCount;s.driveDollars=_at.driveDollars;
+  s.insRate=_at.insRate;s.insCount=_at.insCount;s._atSettled=_at.settledCount;
   const lbl=window._leadTypeFilter===&quot;All&quot;?&quot;All Time Performance&quot;:&quot;All Time · &quot;+window._leadTypeFilter+&quot; Leads&quot;;
   document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+statsCards(s,lbl)+netPerWeekBlock()+tierBlock()+velocityCards(filtered)+budgetBlock()+bidCalculatorBlock(filtered)+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
 }
@@ -1908,6 +1978,9 @@ function rMonthly(){
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Commission Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(sd.commSettled)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Full commission&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;After Split ('+(sd.effectiveSplitRate*100).toFixed(0)+'%)&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.afterSplitTotal||0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Your take-home&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Commission / Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(sd.avgCommPerDeal)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Per settled deal&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Warranty Attach&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.warrRate&gt;=0.25?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.warrRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+sd.warrCount+' of '+sd.settledCount+' · '+fmtFull(sd.warrDollars)+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Drive Attach&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.driveRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.driveRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+sd.driveCount+' of '+sd.settledCount+' · '+fmtFull(sd.driveDollars)+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Insurance Attach&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.insRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.insRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+sd.insCount+' of '+sd.settledCount+' settled&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.totalSettledAmt)+'&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(sd.avgLoanAmt)+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;/div&gt;'+
@@ -2378,7 +2451,7 @@ function exportXLSX(){
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.leads.map(l=&gt;({ID:l.id,Date:l.date,Business:l.business,Source:l.source,Product:l.product,Requested:l.requestedAmt,&quot;Lead Cost&quot;:l.cost,Outcome:l.outcome,Stage:l.currentStage,&quot;Settled Amt&quot;:l.settledAmt,Commission:l.commTotal,&quot;Lost Reason&quot;:l.lostReason}))),&quot;Leads&quot;);
   // Monthly stats
   const months={};D.leads.forEach(l=&gt;{const m=l.month;if(!m)return;if(!months[m])months[m]=[];months[m].push(l);});
-  const mStats=Object.keys(months).sort().map(ym=&gt;{const s=computeStats(months[ym]);const sd=computeSettlementStats(D.leads,ym);return{Month:monthLabel(ym),Leads:s.total,Spend:s.totalSpend,&quot;Avg/Lead&quot;:s.avgSpendPerLead,Settled:sd.settledCount,Approved:sd.approvedCount,Declined:sd.declinedCount,&quot;Success%&quot;:s.successRate,&quot;Approval%&quot;:s.approvalRate,&quot;Decline%&quot;:s.declineRate,&quot;Comm Settled&quot;:sd.commSettled,&quot;After Split&quot;:sd.afterSplitTotal||0,&quot;Avg Comm&quot;:sd.avgCommPerDeal,&quot;Avg Loan&quot;:sd.avgLoanAmt};});
+  const mStats=Object.keys(months).sort().map(ym=&gt;{const s=computeStats(months[ym]);const sd=computeSettlementStats(D.leads,ym);return{Month:monthLabel(ym),Leads:s.total,Spend:s.totalSpend,&quot;Avg/Lead&quot;:s.avgSpendPerLead,Settled:sd.settledCount,Approved:sd.approvedCount,Declined:sd.declinedCount,&quot;Success%&quot;:s.successRate,&quot;Approval%&quot;:s.approvalRate,&quot;Decline%&quot;:s.declineRate,&quot;Comm Settled&quot;:sd.commSettled,&quot;After Split&quot;:sd.afterSplitTotal||0,&quot;Avg Comm&quot;:sd.avgCommPerDeal,&quot;Avg Loan&quot;:sd.avgLoanAmt,&quot;Warr %&quot;:Math.round((sd.warrRate||0)*100),&quot;Drive %&quot;:Math.round((sd.driveRate||0)*100),&quot;Ins %&quot;:Math.round((sd.insRate||0)*100),&quot;Warr $&quot;:sd.warrDollars||0,&quot;Drive $&quot;:sd.driveDollars||0};});
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(mStats),&quot;Monthly&quot;);
   XLSX.writeFile(wb,&quot;Broker_HUB_Export.xlsx&quot;);
 }
@@ -2562,6 +2635,7 @@ input,select,textarea{color-scheme:dark}
     &lt;p&gt;Integrity Endurance and Absolute. Drop the invoice, set the budget, pick an option, send it.&lt;/p&gt;
   &lt;/div&gt;
 &lt;/header&gt;
+&lt;div id=&quot;attachCard&quot; style=&quot;display:none;background:rgba(61,220,151,.07);border:1px solid rgba(61,220,151,.35);border-radius:12px;padding:13px 16px;margin:0 0 16px&quot;&gt;&lt;/div&gt;
 
 &lt;div class=&quot;grid&quot;&gt;
   &lt;div&gt;
@@ -3009,6 +3083,25 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
   if(picked)buildOutputs();
 });
 &lt;/script&gt;
+&lt;script&gt;
+(function(){
+  function paintAttach(){
+    try{
+      var a=JSON.parse(localStorage.getItem('hub_attach_v1')||'null');
+      var el=document.getElementById('attachCard');
+      if(!el)return;
+      if(!a||!a.all){el.style.display='none';return;}
+      var f=function(n){return '$'+Math.round(n||0).toLocaleString();};
+      var p=function(c,t){return t&gt;0?Math.round(c/t*100)+'%':'\u00b7';};
+      el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:5px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:13.5px;line-height:1.7&quot;&gt;'+'&lt;b&gt;Warranty attach all time: '+p(a.all.warr,a.all.settled)+'&lt;/b&gt; \u00b7 '+a.all.warr+' of '+a.all.settled+' settled deals \u00b7 '+f(a.all.warrD)+' earned.'+'&lt;br&gt;This month: '+a.month.warr+' of '+a.month.settled+' settled ('+p(a.month.warr,a.month.settled)+').'+(a.all.settled&gt;0&amp;&amp;(a.all.warr/a.all.settled)&lt;(a.all.ins/a.all.settled)?'&lt;br&gt;&lt;b&gt;The gap:&lt;/b&gt; insurance is attaching at '+p(a.all.ins,a.all.settled)+' \u00b7 warranty is the same conversation, so every settle without a warranty quote is money left behind.':'')+'&lt;/div&gt;';
+      el.style.display='block';
+    }catch(e){}
+  }
+  paintAttach();
+  window.addEventListener('storage',function(e){if(e&amp;&amp;e.key==='hub_attach_v1')paintAttach();});
+})();
+&lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 "></iframe></template>
@@ -3080,6 +3173,7 @@ details.io summary{cursor:pointer;font-size:12px;color:var(--mut);padding:4px 0;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;h1&gt;Drive Tracker&lt;/h1&gt;
+&lt;div id=&quot;attachCard&quot; style=&quot;display:none;background:rgba(61,220,151,.07);border:1px solid rgba(61,220,151,.35);border-radius:12px;padding:13px 16px;margin:0 0 16px&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;sub&quot;&gt;Referral fees owed by Drive (Aust) Pty Ltd on settled vehicle deals. Add a deal when it settles, tick it off when the money lands. Everything you type is saved in this browser · nothing here needs code changes.&lt;/div&gt;
 
 &lt;div class=&quot;stats&quot; id=&quot;stats&quot;&gt;&lt;/div&gt;
@@ -3321,6 +3415,25 @@ document.getElementById('btnImport').addEventListener('click', function(){
 });
 
 load(); render();
+&lt;/script&gt;
+&lt;script&gt;
+(function(){
+  function paintAttach(){
+    try{
+      var a=JSON.parse(localStorage.getItem('hub_attach_v1')||'null');
+      var el=document.getElementById('attachCard');
+      if(!el)return;
+      if(!a||!a.all){el.style.display='none';return;}
+      var f=function(n){return '$'+Math.round(n||0).toLocaleString();};
+      var p=function(c,t){return t&gt;0?Math.round(c/t*100)+'%':'\u00b7';};
+      el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:5px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard&lt;/div&gt;'
+      +'&lt;div style=&quot;font-size:13.5px;line-height:1.7&quot;&gt;'+'&lt;b&gt;Drive attach all time: '+p(a.all.drive,a.all.settled)+'&lt;/b&gt; \u00b7 '+a.all.drive+' of '+a.all.settled+' settled deals \u00b7 '+f(a.all.driveD)+' earned.'+'&lt;br&gt;This month: '+a.month.drive+' of '+a.month.settled+' settled ('+p(a.month.drive,a.month.settled)+') \u00b7 last read '+new Date(a.t).toLocaleTimeString()+'.'+'&lt;/div&gt;';
+      el.style.display='block';
+    }catch(e){}
+  }
+  paintAttach();
+  window.addEventListener('storage',function(e){if(e&amp;&amp;e.key==='hub_attach_v1')paintAttach();});
+})();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;

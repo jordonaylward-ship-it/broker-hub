@@ -2817,7 +2817,8 @@ const drvVal=()=&gt;$(&quot;drv&quot;).querySelector(&quot;.on&quot;).dataset.v;
 const fuelVal=()=&gt;$(&quot;fuel&quot;).querySelector(&quot;.on&quot;).dataset.v;
 
 // ===== invoice parsing =====
-const NOT_MODEL=/^(MODEL|MAKE|VIN|NVIC|YEAR|BUILD|COMPLIANCE|SERIES|BADGE|VARIANT|COLOUR|COLOR|ENGINE|BODY|STOCK|REGO|REGISTRATION|DATE|INVOICE|PRICE|SALE|DEALER|ABN|ACN|DRIVE|TRANS|TRANSMISSION|AUTO|AUTOMATIC|MANUAL|ODOMETER|ODO|KM|KMS|NEW|USED|DEMO|GST|TOTAL|DEPOSIT|BALANCE|CUSTOMER|CLIENT|NAME|ADDRESS|PHONE|EMAIL|WAGON|SEDAN|UTE|VAN|SUV|HATCH|CAB|CHASSIS)$/;
+const NOT_MODEL=/^(MODEL|MAKE|VIN|NVIC|YEAR|BUILD|COMPLIANCE|SERIES|BADGE|VARIANT|COLOUR|COLOR|ENGINE|BODY|STOCK|REGO|REGISTRATION|DATE|INVOICE|PRICE|SALE|DEALER|ABN|ACN|DRIVE|TRANS|TRANSMISSION|AUTO|AUTOMATIC|MANUAL|ODOMETER|ODO|KM|KMS|NEW|USED|DEMO|GST|TOTAL|DEPOSIT|BALANCE|CUSTOMER|CLIENT|NAME|ADDRESS|PHONE|EMAIL|WAGON|SEDAN|UTE|VAN|SUV|HATCH|CAB|CHASSIS|CERTIFIED|MOTORS|FINANCE|PTY|LTD|GROUP|DEALERSHIP|ROADSIDE|ASSISTANCE|WARRANTY)$/;
+const DEALER_CTX=/^(USED|NEW|DEMO|CERTIFIED|MOTORS|FINANCE|PTY|DEALERS?|GROUP)$/;
 function cleanCase(w){return w.charAt(0)+w.slice(1).toLowerCase();}
 function parseText(t){
   const up=t.toUpperCase();
@@ -2830,18 +2831,39 @@ function parseText(t){
   if(makeHit){$(&quot;make&quot;).value=cleanCase(makeHit);found.push(&quot;make&quot;);}
   // model · labelled first, then the word after the make, skipping field labels
   let model=null;
-  const mLab=up.match(/MODEL[\s:#-]{1,4}([A-Z0-9][A-Z0-9\-]{1,18})/);
-  if(mLab&amp;&amp;!NOT_MODEL.test(mLab[1]))model=mLab[1];
-  if(!model&amp;&amp;makeHit){
-    const toks=up.slice(up.indexOf(makeHit)+makeHit.length).trim().split(/[\s\n,]+/).slice(0,4);
-    for(const tk of toks){
+  const mLine=up.match(/\bMODEL\b[\s.:#-]{1,6}([A-Z0-9][^\n]{1,60})/);
+  if(mLine){
+    const parts=mLine[1].split(/\s+/);
+    const keep=[];
+    for(const tk of parts){
       if(!tk)continue;
-      if(/^\d{4}$/.test(tk))continue;
-      if(NOT_MODEL.test(tk))continue;
-      if(/^[A-Z0-9\-]{2,18}$/i.test(tk)){model=tk;break;}
+      if(/[:：]$/.test(tk))break;
+      if(/^(BODY|TRANSM|TRANS|ENGINE|CHASSIS|BUILD|COMPL|STOCK|REGO|COLOUR|COLOR|TRIM|KEY|VIN|NVIC|ODOMETER|TYPE|NOTES)\.?$/.test(tk))break;
+      if(!/^[A-Z0-9][A-Z0-9\-\.]{0,19}$/i.test(tk))break;
+      keep.push(tk);
+      if(keep.length&gt;=4)break;
+    }
+    if(keep.length&amp;&amp;!NOT_MODEL.test(keep[0]))model=keep.join(&quot; &quot;);
+  }
+  if(!model&amp;&amp;makeHit){
+    let from=0;
+    while(!model){
+      const at=up.indexOf(makeHit,from);
+      if(at&lt;0)break;
+      from=at+makeHit.length;
+      const toks=up.slice(from).trim().split(/[\s\n,]+/).slice(0,4);
+      if(toks[0]&amp;&amp;DEALER_CTX.test(toks[0]))continue;
+      for(const tk of toks){
+        if(!tk)continue;
+        if(/^\d{4}$/.test(tk))continue;
+        if(tk===makeHit)continue;
+        if(DEALER_CTX.test(tk))break;
+        if(NOT_MODEL.test(tk))continue;
+        if(/^[A-Z0-9\-]{2,18}$/i.test(tk)){model=tk;break;}
+      }
     }
   }
-  if(model){$(&quot;model&quot;).value=cleanCase(model);found.push(&quot;model&quot;);}
+  if(model){$(&quot;model&quot;).value=model.split(/\s+/).map(cleanCase).join(&quot; &quot;);found.push(&quot;model&quot;);}
   // year · labelled first, then oldest plausible vehicle year
   const yNow=new Date().getFullYear();
   const yLab=up.match(/(?:BUILD|COMPLIANCE|MANUFACTURE|MODEL YEAR|\bMY(?=\s*(?:19|20)\d{2})|\bYEAR\b)[^0-9]{0,14}((?:19|20)\d{2})/);
@@ -2851,10 +2873,11 @@ function parseText(t){
     if(anyYear.length){$(&quot;year&quot;).value=Math.min(...anyYear);found.push(&quot;year (guessed · check it)&quot;);}
   }
   // kms · number-then-unit, unit-then-number, or the odometer label
-  const km=up.match(/\b(?:KMS?|KILOMETRES|ODOMETER|ODO)\s*[:#]\s*([\d,\.]{3,9})/)
+  let km=up.match(/\b(?:KMS?|KILOMETRES|ODOMETER|ODO)\s*[:#]\s*([\d,\.]{3,9})/)
         ||up.match(/([\d,\.]{3,9})\s*(?:KMS?|KILOMETRES)\b(?!\s*[:#])/)
-        ||up.match(/\b(?:ODOMETER|ODO)[^0-9]{0,12}([\d,\.]{3,9})/)
+        ||up.match(/\b(?:ODOMETER|ODO)\b[^0-9\n]{0,25}([\d,\.]{3,9})/)
         ||up.match(/\bODOMETER\b[^0-9]{0,60}?(\d[\d,\.]{3,8})\b/);
+  if(km&amp;&amp;/^(19|20)\d{2}$/.test(km[1].replace(/[,\.]/g,&quot;&quot;)))km=null;
   if(km){$(&quot;kms&quot;).value=km[1].replace(/[,\.]/g,&quot;&quot;);found.push(&quot;kms&quot;);}
   if(/4X4|4WD|AWD/.test(up)&amp;&amp;!/4X2/.test(up)){$(&quot;drv&quot;).querySelectorAll(&quot;.chip&quot;).forEach(c=&gt;c.classList.toggle(&quot;on&quot;,c.dataset.v===&quot;4WD&quot;));found.push(&quot;4WD&quot;);}
   let fu=null;
@@ -2871,6 +2894,17 @@ drop.addEventListener(&quot;dragover&quot;,e=&gt;{e.preventDefault();drop.classL
 drop.addEventListener(&quot;dragleave&quot;,()=&gt;drop.classList.remove(&quot;on&quot;));
 drop.addEventListener(&quot;drop&quot;,e=&gt;{e.preventDefault();drop.classList.remove(&quot;on&quot;);if(e.dataTransfer.files[0])readFile(e.dataTransfer.files[0])});
 $(&quot;file&quot;).addEventListener(&quot;change&quot;,e=&gt;{if(e.target.files[0])readFile(e.target.files[0])});
+function lineify(items){
+  const rows={};
+  items.forEach(function(it){
+    if(!it.str||!it.str.trim()||!it.transform)return;
+    const y=Math.round(it.transform[5]/3)*3;
+    (rows[y]=rows[y]||[]).push({x:it.transform[4],s:it.str});
+  });
+  return Object.keys(rows).map(Number).sort(function(a,b){return b-a;})
+    .map(function(y){return rows[y].sort(function(a,b){return a.x-b.x;}).map(function(o){return o.s;}).join(&quot; &quot;);})
+    .join(&quot;\n&quot;);
+}
 async function readFile(f){
   $(&quot;filetag&quot;).style.display=&quot;inline-block&quot;;$(&quot;filetag&quot;).textContent=f.name;
   try{
@@ -2880,7 +2914,7 @@ async function readFile(f){
       let text=&quot;&quot;;
       for(let i=1;i&lt;=Math.min(pdf.numPages,4);i++){
         const pg=await pdf.getPage(i);const tc=await pg.getTextContent();
-        text+=tc.items.map(it=&gt;it.str).join(&quot; &quot;)+&quot;\n&quot;;
+        text+=lineify(tc.items)+&quot;\n&quot;;
       }
       parseText(text);
     }else{const t=await f.text();parseText(t);}

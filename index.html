@@ -312,6 +312,16 @@ body.light .hist-chart{background:rgba(0,0,0,0.02)}
 .rc-r.tot{border-bottom:none;border-top:2px solid var(--bdr);margin-top:4px;padding-top:12px}
 .rc-r.tot b{font-size:21px;font-weight:800}
 .rc-r.tot.bad b{color:#ff6b81}
+.wf-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.wf-lbl{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600;margin:8px 0 5px}
+.wf-bar{height:24px;border-radius:7px;overflow:hidden;display:flex;background:var(--card2);border:1px solid var(--bdr2)}
+.wf-seg{height:100%;min-width:2px}
+.wf-leg{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:8px}
+.wf-leg span i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px;font-style:normal}
+.pod-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.pod-flow b{background:var(--card2);border:1px solid var(--bdr2);border-radius:10px;padding:8px 12px;font-size:11.5px;color:var(--txt);font-weight:600}
+.pod-flow i{color:var(--teal);font-style:normal;font-weight:700}
+
 
 
 .sc-wr{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
@@ -1727,6 +1737,23 @@ window._clc=function(){
        ?'Profitable at the current rate. Everything is covered once conversion is '+f2(target)+'% and the rate here is '+f2(cur)+'%.'
        :'Not there yet. Covering everything needs '+f2(target)+'% conversion, which is '+f2(settlesAt(target))+' settled deals a month, about '+f2(settlesAt(target)*12/52)+' a week. The rate here is '+f2(cur)+'% ('+f2(settlesAt(cur))+' a month · '+f2(settlesAt(cur)*12/52)+' a week). Roughly '+f2(Math.ceil((settlesAt(target)-settlesAt(cur))*10)/10)+' more a month closes it.'))
    +'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+  const mx=Math.max(gross,hisSpend+advM+docsM,1);
+  const segW=function(a){return Math.max(1,a/mx*100).toFixed(1);};
+  h+='&lt;div class=&quot;wf-wrap&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;The money as a picture'+(bkrs&gt;1?' · per broker':'')+'&lt;/div&gt;'
+   +'&lt;div class=&quot;wf-lbl&quot;&gt;&lt;span&gt;Money in from deals&lt;/span&gt;&lt;b style=&quot;color:var(--teal)&quot;&gt;'+f(gross)+'&lt;/b&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;wf-bar&quot;&gt;&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(gross)+'%;background:rgba(61,220,151,.75)&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;wf-lbl&quot;&gt;&lt;span&gt;Money out&lt;/span&gt;&lt;b style=&quot;color:'+((hisSpend+advM+docsM)&gt;gross?'#ff6b81':'var(--txt)')+'&quot;&gt;'+f(hisSpend+advM+docsM)+'&lt;/b&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;wf-bar&quot;&gt;'
+   +(hisSpend&gt;0?'&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(hisSpend)+'%;background:rgba(255,180,84,.8)&quot;&gt;&lt;/div&gt;':'')
+   +(advM&gt;0?'&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(advM)+'%;background:rgba(154,168,255,.8)&quot;&gt;&lt;/div&gt;':'')
+   +(docsM&gt;0?'&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(docsM)+'%;background:rgba(255,143,107,.8)&quot;&gt;&lt;/div&gt;':'')
+   +'&lt;/div&gt;'
+   +'&lt;div class=&quot;wf-leg&quot;&gt;'
+   +(hisSpend&gt;0?'&lt;span&gt;&lt;i style=&quot;background:rgba(255,180,84,.9)&quot;&gt;&lt;/i&gt;Leads '+f(hisSpend)+'&lt;/span&gt;':'')
+   +(advOn?'&lt;span&gt;&lt;i style=&quot;background:rgba(154,168,255,.9)&quot;&gt;&lt;/i&gt;Advance '+f(advM)+'&lt;/span&gt;':'')
+   +(docsM&gt;0?'&lt;span&gt;&lt;i style=&quot;background:rgba(255,143,107,.9)&quot;&gt;&lt;/i&gt;Docs '+f(docsM)+'&lt;/span&gt;':'')
+   +'&lt;span style=&quot;margin-left:auto;font-weight:700;color:'+col(profitM)+'&quot;&gt;'+(profitM&gt;=0?'Left over '+f(profitM):'Short by '+f(-profitM))+'&lt;/span&gt;'
+   +'&lt;/div&gt;&lt;/div&gt;';
   h+='&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;'+(bkrs&gt;1?'One broker · their month in money · per broker':'Their month in money')+'&lt;/div&gt;'
    +row('Money they keep from deals','+'+f(gross),'plus',f2(settles)+' a month · '+f2(settles*12/52)+' a week · × '+f(kept)+' kept each · '+f(gross*12/52)+' a week')
    +(ownLeads?row('Leads','$0','','you pay the '+f(spend)+' lead bill, not them'):row('Leads','−'+f(spend),'minus',leads+' leads × $'+cpl+' · '+f(spend*12/52)+' a week'))
@@ -1775,6 +1802,7 @@ window._clc=function(){
    +'&lt;/div&gt;';
   h+='&lt;details class=&quot;io&quot; style=&quot;margin-top:2px&quot;&gt;&lt;summary&gt;How the pod actually works · confirmed with Neil, 31 Aug&lt;/summary&gt;'
   +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.8;margin-top:9px&quot;&gt;'
+  +'&lt;div class=&quot;pod-flow&quot;&gt;&lt;b&gt;Their deals settle&lt;/b&gt;&lt;i&gt;→&lt;/i&gt;&lt;b&gt;One pod RCTI · paid to you&lt;/b&gt;&lt;i&gt;→&lt;/i&gt;&lt;b&gt;You take your cut&lt;/b&gt;&lt;i&gt;→&lt;/i&gt;&lt;b&gt;You pay them their share, minus the advance already fronted&lt;/b&gt;&lt;/div&gt;'
   +'One RCTI for the whole pod and it comes to you as pod manager. You get paid, then you pay the broker their share. No separate RCTI for them.&lt;br&gt;'
   +'The advance is your personal cash from your own bank. It never shows on the RCTI.&lt;br&gt;'
   +'You can change or stop an advance whenever you like.&lt;br&gt;'

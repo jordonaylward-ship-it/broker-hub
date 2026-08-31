@@ -3214,7 +3214,7 @@ details.io summary{cursor:pointer;font-size:12px;color:var(--mut);padding:4px 0;
       &lt;div&gt;&lt;label for=&quot;fFee&quot;&gt;Fee expected&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;fFee&quot; inputmode=&quot;decimal&quot; placeholder=&quot;500&quot;&gt;&lt;/div&gt;
       &lt;div&gt;&lt;button class=&quot;btn&quot; id=&quot;btnAdd&quot;&gt;Add&lt;/button&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;hint&quot;&gt;Leave the fee blank if you don't know it yet · fill it in when the remittance arrives. Source of truth is Leads_Log column Y · blank there means it isn't a Drive deal.&lt;/div&gt;
+    &lt;div class=&quot;hint&quot;&gt;Fee is $500, or $250 when the deal is under $11k (like Cheryl Power). Source of truth is Leads_Log column Y · blank there means it isn't a Drive deal.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
@@ -3247,7 +3247,7 @@ details.io summary{cursor:pointer;font-size:12px;color:var(--mut);padding:4px 0;
 &lt;div class=&quot;card&quot;&gt;
   &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Chasing Drive&lt;/h2&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
-    &lt;div class=&quot;contact&quot;&gt;&lt;b&gt;Jai Clarke&lt;/b&gt; · Vehicle Broker, Drive Approved&lt;br&gt;Jai.Clarke@DriveApproved.com.au · 0448 288 282&lt;br&gt;&lt;br&gt;Remittance advice arrives before the cash does, and payments now land mid-month around the 14th to 15th after their accounts restructure. Anything sitting over 14 days past settlement gets flagged red above.&lt;/div&gt;
+    &lt;div class=&quot;contact&quot;&gt;&lt;b&gt;Jai Clarke&lt;/b&gt; · Vehicle Broker, Drive Approved&lt;br&gt;Jai.Clarke@DriveApproved.com.au · 0448 288 282&lt;br&gt;&lt;br&gt;Drive restructured accounts in early August. Payments were meant to move to mid-month around the 14th to 15th, but recent runs landed 18/08 and 27/08, so the schedule is still settling. The bank description now shows the settlement window, like 15/08 to 21/08 Rcti, which makes matching payments to deals easy. Anything sitting over 14 days past settlement gets flagged red above.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
@@ -3255,7 +3255,7 @@ details.io summary{cursor:pointer;font-size:12px;color:var(--mut);padding:4px 0;
 &lt;/div&gt;
 &lt;script&gt;
 var KEY='hub_drive_v1';
-var SEED_V=2;   /* bump when the seeded list below changes */
+var SEED_V=3;   /* bump when the seeded list below changes */
 var SEED=[
  {id:'d01', name:&quot;Cheryl Power&quot;, settled:&quot;2026-03-16&quot;, fee:250, paidDate:&quot;2026-03-26&quot;, paidAmt:250, note:&quot;&quot;},
  {id:'d02', name:&quot;Hazim Huskic&quot;, settled:&quot;2026-04-07&quot;, fee:500, paidDate:&quot;2026-04-16&quot;, paidAmt:500, note:&quot;paid inside a combined $1,000&quot;},
@@ -3263,9 +3263,9 @@ var SEED=[
  {id:'d04', name:&quot;Sepelini Maae&quot;, settled:&quot;2026-04-16&quot;, fee:500, paidDate:&quot;2026-04-23&quot;, paidAmt:500, note:&quot;&quot;},
  {id:'d05', name:&quot;Petros Fisseha&quot;, settled:&quot;2026-04-21&quot;, fee:500, paidDate:&quot;2026-04-30&quot;, paidAmt:500, note:&quot;paid inside a combined $1,000&quot;},
  {id:'d06', name:&quot;Luisa Koroiqacia&quot;, settled:&quot;2026-04-23&quot;, fee:500, paidDate:&quot;2026-04-30&quot;, paidAmt:500, note:&quot;paid inside a combined $1,000&quot;},
- {id:'d07', name:&quot;Dorothy Kelly&quot;, settled:&quot;2026-05-05&quot;, fee:500, paidDate:&quot;2026-05-07&quot;, paidAmt:500, note:&quot;check date · 07/05 or 14/05&quot;},
- {id:'d08', name:&quot;Jayden Piercy&quot;, settled:&quot;2026-06-05&quot;, fee:500, paidDate:&quot;2026-06-11&quot;, paidAmt:500, note:&quot;check date · 11/06 or 18/06&quot;},
- {id:'d09', name:&quot;Joanne Richardson&quot;, settled:&quot;2026-06-04&quot;, fee:500, paidDate:&quot;2026-06-11&quot;, paidAmt:500, note:&quot;check date · 11/06 or 18/06&quot;},
+ {id:'d07', name:&quot;Dorothy Kelly&quot;, settled:&quot;2026-05-05&quot;, fee:500, paidDate:&quot;2026-05-07&quot;, paidAmt:500, note:&quot;paid May&quot;},
+ {id:'d08', name:&quot;Jayden Piercy&quot;, settled:&quot;2026-06-05&quot;, fee:500, paidDate:&quot;2026-06-11&quot;, paidAmt:500, note:&quot;paid June&quot;},
+ {id:'d09', name:&quot;Joanne Richardson&quot;, settled:&quot;2026-06-04&quot;, fee:500, paidDate:&quot;2026-06-11&quot;, paidAmt:500, note:&quot;paid June&quot;},
  {id:'d10', name:&quot;Teressa Leedie&quot;, settled:&quot;2026-06-18&quot;, fee:500, paidDate:&quot;2026-05-07&quot;, paidAmt:500, note:&quot;CHECK · paid date sits before settlement&quot;},
  {id:'d11', name:&quot;Cody Jones&quot;, settled:&quot;2026-05-22&quot;, fee:500, paidDate:&quot;2026-05-28&quot;, paidAmt:500, note:&quot;&quot;},
  {id:'d12', name:&quot;Cher Eaves&quot;, settled:&quot;2026-06-23&quot;, fee:500, paidDate:&quot;2026-06-25&quot;, paidAmt:500, note:&quot;&quot;},
@@ -3273,8 +3273,9 @@ var SEED=[
  {id:'d14', name:&quot;Venessa Johnstone&quot;, settled:&quot;2026-07-13&quot;, fee:500, paidDate:&quot;2026-07-21&quot;, paidAmt:500, note:&quot;paid inside a combined $1,000&quot;},
  {id:'d15', name:&quot;Nicola Gresham&quot;, settled:&quot;2026-07-17&quot;, fee:500, paidDate:&quot;2026-07-21&quot;, paidAmt:500, note:&quot;paid inside a combined $1,000&quot;},
  {id:'d16', name:&quot;Deacon Edwards&quot;, settled:&quot;2026-07-20&quot;, fee:500, paidDate:&quot;2026-08-10&quot;, paidAmt:500, note:&quot;Jai confirmed&quot;},
- {id:'d17', name:&quot;Saman Abbas&quot;, settled:&quot;2026-07-31&quot;, fee:500, paidDate:&quot;2026-08-19&quot;, paidAmt:500, note:&quot;&quot;},
- {id:'d18', name:&quot;Rodney Hammond&quot;, settled:&quot;2026-08-18&quot;, fee:550, paidDate:&quot;&quot;, paidAmt:null, note:&quot;&quot;}
+ {id:'d17', name:&quot;Saman Abbas&quot;, settled:&quot;2026-07-31&quot;, fee:500, paidDate:&quot;2026-08-18&quot;, paidAmt:500, note:&quot;&quot;},
+ {id:'d18', name:&quot;Rodney Hammond&quot;, settled:&quot;2026-08-18&quot;, fee:500, paidDate:&quot;2026-08-27&quot;, paidAmt:500, note:&quot;bank line shows window 15/08 to 21/08&quot;},
+ {id:'d19', name:&quot;Rochelle Dempsey&quot;, settled:&quot;2026-08-24&quot;, fee:500, paidDate:&quot;&quot;, paidAmt:null, note:&quot;in the 22/08 to 28/08 window · due on the next run&quot;}
 ];
 var deals=[], filter='owed';
 

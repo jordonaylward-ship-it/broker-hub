@@ -605,7 +605,7 @@ function netPerWeekBlock(){
     +'&lt;div style=&quot;font-size:11px;color:var(--mut);margin:-4px 0 10px&quot;&gt;Real money from your processed RCTIs · after lead costs and fees, before GST and tax. The weekly $1k advances are debt, not income, so they are not counted here.&lt;/div&gt;'
     +'&lt;div class=&quot;mg mg5&quot;&gt;'
       +'&lt;div class=&quot;mc&quot; style=&quot;border-color:var(--teal)&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Per week · after costs&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(d.all.perWeek)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;All-time avg · '+Math.round(d.all.weeks)+' wks of RCTIs&lt;/div&gt;&lt;/div&gt;'
-      +'&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total net · after costs&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(d.all.net&gt;=0?'c-pos':'c-neg')+'&quot;&gt;'+fmtFull(d.all.net)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Across your RCTIs, before GST and tax&lt;/div&gt;&lt;/div&gt;'
+      
       +curHtml
     +'&lt;/div&gt;';
 }
@@ -1073,7 +1073,7 @@ function rROI(){
     '&lt;div style=&quot;background:linear-gradient(135deg,rgba(47,214,165,.12),rgba(78,140,255,.06));border:1px solid rgba(47,214,165,.4);border-radius:14px;padding:22px 26px;margin-bottom:18px&quot;&gt;&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px&quot;&gt;&lt;div&gt;&lt;h2 style=&quot;font-size:18px;font-weight:700&quot;&gt;Lead ROI · are leads paying for themselves?&lt;/h2&gt;&lt;div style=&quot;font-size:12px;color:var(--dim);margin-top:2px&quot;&gt;Commission out (after tiered split, ~'+(r.effectiveSplit*100).toFixed(0)+'% effective) ÷ lead spend in. Does NOT factor in advance debt · see Ausloans Balance for cash to bank.&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot;&gt;&lt;div style=&quot;font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px&quot;&gt;ROI Multiple&lt;/div&gt;&lt;div class=&quot;cm '+roiCol+'&quot; style=&quot;font-family:\'JetBrains Mono\',monospace;font-size:42px;font-weight:700;line-height:1&quot;&gt;'+bigNum+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mg mg4&quot; style=&quot;margin-bottom:0&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead Spend&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(r.spend)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Money out&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Earned (After Split)&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(r.afterSplit)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Commission only&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Net on Leads&lt;/div&gt;&lt;div class=&quot;mc-v cm '+profitCol+'&quot; style=&quot;font-size:24px&quot;&gt;'+fmtFull(r.netProfit)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(r.marginPct?pct(r.marginPct)+&quot; margin&quot;:&quot;·&quot;)+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Break-even Gap&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(r.breakEvenSettlements&gt;0?&quot;c-warn&quot;:&quot;c-pos&quot;)+'&quot;&gt;'+(r.breakEvenSettlements&gt;0?r.breakEvenSettlements+&quot; deal&quot;+(r.breakEvenSettlements===1?&quot;&quot;:&quot;s&quot;):&quot;✓ Clear&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(r.breakEvenSettlements&gt;0?&quot;to break even&quot;:&quot;Leads pay for themselves&quot;)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
 
     // Card 2: Advance Balance · debt tracking
-    '&lt;div style=&quot;background:linear-gradient(135deg,rgba(247,144,9,.12),rgba(240,165,0,.05));border:1px solid rgba(247,144,9,.4);border-radius:14px;padding:22px 26px;margin-bottom:24px&quot;&gt;&lt;div style=&quot;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px&quot;&gt;&lt;div&gt;&lt;h2 style=&quot;font-size:18px;font-weight:700&quot;&gt;Ausloans Balance · what you owe&lt;/h2&gt;&lt;div style=&quot;font-size:12px;color:var(--dim);margin-top:2px&quot;&gt;Cumulative debt: $1k/wk advances + any RCTI deficits, less commission cleared.&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot;&gt;&lt;div style=&quot;font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px&quot;&gt;Outstanding Balance&lt;/div&gt;&lt;div class=&quot;cm '+balCol+'&quot; style=&quot;font-family:\'JetBrains Mono\',monospace;font-size:36px;font-weight:700;line-height:1&quot;&gt;'+fmtFull(adv.balance)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mg mg4&quot; style=&quot;margin-bottom:0&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Advances Received&lt;/div&gt;&lt;div class=&quot;mc-v cm c-warn&quot;&gt;'+fmtFull(adv.received)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Total $1k/wk paid into bank&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;RCTI Cash to Bank&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(adv.rctiCashOut)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Net commission paid out&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Outstanding Balance&lt;/div&gt;&lt;div class=&quot;mc-v cm '+balCol+'&quot; style=&quot;font-size:22px&quot;&gt;'+fmtFull(adv.balance)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Owed to Ausloans right now&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Status&lt;/div&gt;&lt;div class=&quot;mc-v cm '+balCol+'&quot; style=&quot;font-size:14px&quot;&gt;'+(adv.balance&gt;0?&quot;Debt owing&quot;:adv.balance&lt;0?&quot;Credit&quot;:&quot;Clear&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(adv.balance&gt;0?&quot;Recouped from future commissions&quot;:&quot;Nothing owed&quot;)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
+    ''+
 
     '&lt;div class=&quot;mg mg4&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Gross Commission&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(r.grossComm)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Before split (tiered)&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Cost Per Settlement&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(r.costPerSettlement&gt;0?fmtFull(r.costPerSettlement):&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Lead $ / settled deal&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Cost Per Approval&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(r.costPerApproval&gt;0?fmtFull(r.costPerApproval):&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Lead $ / approval&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Earned / Settlement&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+(r.avgCommPerSettlement&gt;0?fmtFull(r.avgCommPerSettlement):&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;After split, per deal&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
 
@@ -1772,25 +1772,6 @@ window._clc=function(){
       :row('Spare after all costs','+'+f(profitM*bkrs),'tot','the pod pays for itself · '+f(profitM*bkrs*12/52)+' a week spare'))
     +'&lt;/div&gt;';
   }
-  if(brokerCosts&gt;0){
-   const top=Math.max(cur,target)*1.35;
-   const pos=function(x){return Math.min(98,Math.max(1,x/top*100));};
-   h+='&lt;div class=&quot;sc-wf&quot;&gt;'
-    +'&lt;div style=&quot;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600;margin-bottom:10px&quot;&gt;Where this sits&lt;/div&gt;'
-    +'&lt;div style=&quot;position:relative;height:14px;border-radius:7px;overflow:hidden;background:rgba(255,107,129,.25)&quot;&gt;'
-    +(advOn&amp;&amp;beA!=null&amp;&amp;!ownLeads?'&lt;div style=&quot;position:absolute;left:'+pos(beL)+'%;right:'+(100-pos(target))+'%;top:0;bottom:0;background:rgba(255,180,84,.35)&quot;&gt;&lt;/div&gt;':'')
-    +'&lt;div style=&quot;position:absolute;left:'+pos(target)+'%;right:0;top:0;bottom:0;background:rgba(61,220,151,.3)&quot;&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;position:absolute;left:'+pos(cur)+'%;top:-1px;bottom:-1px;width:4px;background:var(--txt);border-radius:2px&quot; title=&quot;current · '+f2(cur)+'%&quot;&gt;&lt;/div&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div style=&quot;display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:6px;flex-wrap:wrap;gap:4px&quot;&gt;'
-    +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,107,129,.6);vertical-align:-1px&quot;&gt;&lt;/span&gt; losing money&lt;/span&gt;'
-    +(advOn&amp;&amp;beA!=null&amp;&amp;!ownLeads?'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(255,180,84,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; leads paid, advance isn\'t · from '+f2(beL)+'%&lt;/span&gt;':'')
-    +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:9px;border-radius:3px;background:rgba(61,220,151,.7);vertical-align:-1px&quot;&gt;&lt;/span&gt; everything paid · from '+f2(target)+'%&lt;/span&gt;'
-    +'&lt;span&gt;&lt;span style=&quot;display:inline-block;width:9px;height:4px;border-radius:2px;background:var(--txt);vertical-align:2px&quot;&gt;&lt;/span&gt; current · '+f2(cur)+'%&lt;/span&gt;'
-    +'&lt;/div&gt;'
-    +'&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:6px&quot;&gt;Each extra point of conversion ≈ '+(kept&gt;0?f(leads*kept/100):'·')+' a month'+(bkrs&gt;1?' per broker':'')+'.&lt;/div&gt;'
-    +'&lt;/div&gt;';
-  }
   h+='&lt;div class=&quot;rc&quot; style=&quot;border-color:rgba(61,220,151,.4)&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;You · what you end up with&lt;/div&gt;'
    +row('Your cut of what they write','+'+f(ownInc),'plus',f2(ownPct)+'% × '+f(ownGrossW)+' written'+(bkrs&gt;1?' across '+bkrs+' brokers':'')+' · '+f(ownInc*12/52)+' a week')
    +(ownLeads?row('Their leads, paid by you','−'+f(spend*bkrs),'minus','owner pays the leads'+(bkrs&gt;1?' · all '+bkrs+' brokers':'')):'')
@@ -1800,18 +1781,6 @@ window._clc=function(){
      return '&lt;div style=&quot;font-size:11.5px;color:'+remCol+';margin-top:9px;line-height:1.5&quot;&gt;The lender commission splits three ways: broker &lt;b&gt;'+f2(num('c_split'))+'%&lt;/b&gt;, owner &lt;b&gt;'+f2(ownPct)+'%&lt;/b&gt;, leaving &lt;b&gt;'+f2(rem)+'%&lt;/b&gt; to Ausloans. Confirmed with Neil: pod volume including theirs sets your tier, your 20 points stay flat at every tier, and the tier climb comes out of the Ausloans share.'+(rem&lt;0?' &lt;b&gt;That\'s over 100% · check the two percentages.&lt;/b&gt;':'')+'&lt;/div&gt;';})()
    +(advOn?'&lt;div style=&quot;font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5&quot;&gt;The advance is your own cash from your own bank each week. It never appears on the RCTI. The whole pod RCTI comes to you, then you pay the broker their share minus what you have already fronted, so it only costs you real money when a tab is growing, and then the line above shows exactly how much. You can change or stop the advance whenever you want.&lt;/div&gt;':'')
    +'&lt;/div&gt;';
-  h+='&lt;details class=&quot;io&quot; style=&quot;margin-top:2px&quot;&gt;&lt;summary&gt;How the pod actually works · confirmed with Neil, 31 Aug&lt;/summary&gt;'
-  +'&lt;div style=&quot;font-size:12.5px;color:var(--dim);line-height:1.8;margin-top:9px&quot;&gt;'
-  +'&lt;div class=&quot;pod-flow&quot;&gt;&lt;b&gt;Their deals settle&lt;/b&gt;&lt;i&gt;→&lt;/i&gt;&lt;b&gt;One pod RCTI · paid to you&lt;/b&gt;&lt;i&gt;→&lt;/i&gt;&lt;b&gt;You take your cut&lt;/b&gt;&lt;i&gt;→&lt;/i&gt;&lt;b&gt;You pay them their share, minus the advance already fronted&lt;/b&gt;&lt;/div&gt;'
-  +'One RCTI for the whole pod and it comes to you as pod manager. You get paid, then you pay the broker their share. No separate RCTI for them.&lt;br&gt;'
-  +'The advance is your personal cash from your own bank. It never shows on the RCTI.&lt;br&gt;'
-  +'You can change or stop an advance whenever you like.&lt;br&gt;'
-  +'Their settled volume counts toward your tier. Your 20 points stay flat at every tier · the climb comes out of the Ausloans share.&lt;br&gt;'
-  +'Lead costs, credit checks and DocuSign land on the pod RCTI · yours.&lt;br&gt;'
-  +'If a broker leaves owing advance money, you wear it. Clawbacks on their old deals are yours too · Ausloans holds back 50% as a clawback buffer.&lt;br&gt;'
-  +'No Cert IV needed to start. Ausloans holds the licence and they get authorised under it. No change to your own accreditation.&lt;br&gt;'
-  +'&lt;b style=&quot;color:#ffb454&quot;&gt;The warning that matters:&lt;/b&gt; MQL leads convert at about 4% and breakeven on $75 leads is 5%, so a broker fed MQLs goes backwards about $1,400 a month. SQL leads run about 12% and can carry a broker. &lt;b style=&quot;color:var(--txt)&quot;&gt;Get the SQL lead price from Neil before any offer goes out.&lt;/b&gt;'
-  +'&lt;/div&gt;&lt;/details&gt;';
   host.innerHTML=h;
 };
 // ── Commission tiers · RETROACTIVE (per Neil, phone Jul 2026): hit a tier and that % applies to the
@@ -1949,7 +1918,7 @@ function rAllTime(){
   s.driveRate=_at.driveRate;s.driveCount=_at.driveCount;s.driveDollars=_at.driveDollars;
   s.insRate=_at.insRate;s.insCount=_at.insCount;s._atSettled=_at.settledCount;
   const lbl=window._leadTypeFilter===&quot;All&quot;?&quot;All Time Performance&quot;:&quot;All Time · &quot;+window._leadTypeFilter+&quot; Leads&quot;;
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+bidCalculatorBlock(filtered)+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
 }
 
 function rMonthly(){

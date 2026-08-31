@@ -3218,6 +3218,14 @@ details.io summary{cursor:pointer;font-size:12px;color:var(--mut);padding:4px 0;
   &lt;/div&gt;
 &lt;/div&gt;
 
+&lt;details class=&quot;io&quot; style=&quot;margin:0 0 12px&quot;&gt;&lt;summary&gt;How to keep this updated yourself · no code needed&lt;/summary&gt;
+  &lt;div class=&quot;hint&quot; style=&quot;margin-top:9px;line-height:1.7&quot;&gt;
+  &lt;b&gt;Money lands from Drive:&lt;/b&gt; find the name under Waiting on Drive, hit Mark paid, type the date and amount off the bank line.&lt;br&gt;
+  &lt;b&gt;New deal settles:&lt;/b&gt; Add a deal up top, and make sure the fee is in column Y of Leads_Log so the dashboard percentages stay right.&lt;br&gt;
+  &lt;b&gt;Got something wrong:&lt;/b&gt; Edit fixes any field including the paid date. Delete removes a row that should never have been here.&lt;br&gt;
+  &lt;b&gt;Bulk fix:&lt;/b&gt; Copy all as CSV, sort it out in the sheet, paste it back in. Updates names already here, adds new ones, deletes nothing.&lt;br&gt;
+  Everything saves in this browser instantly. Nothing on this tab ever needs a rebuild.&lt;/div&gt;
+&lt;/details&gt;
 &lt;div class=&quot;tabs&quot; id=&quot;tabs&quot;&gt;&lt;/div&gt;
 &lt;div id=&quot;list&quot;&gt;&lt;/div&gt;
 
@@ -3405,6 +3413,17 @@ document.getElementById('list').addEventListener('click', function(e){
     var nf=prompt('Fee expected', x.fee!=null?String(x.fee):''); if(nf===null) return;
     var no=prompt('Note (optional)', x.note||''); if(no===null) return;
     x.name=String(nn).trim()||x.name; x.settled=String(ns).trim(); x.fee=String(nf).trim()===''?null:Number(nf); x.note=String(no).trim();
+    if(x.paidDate){
+      var np=prompt('Paid date (YYYY-MM-DD) · clear it to move back to waiting', x.paidDate); 
+      if(np!==null){
+        if(String(np).trim()===''){ x.paidDate=''; x.paidAmt=null; }
+        else{
+          x.paidDate=String(np).trim();
+          var na=prompt('Amount received', x.paidAmt!=null?String(x.paidAmt):(x.fee!=null?String(x.fee):''));
+          if(na!==null &amp;&amp; String(na).trim()!=='') x.paidAmt=Number(na);
+        }
+      }
+    }
     save(); render(); toast('Updated');
   }
   if(act==='del'){

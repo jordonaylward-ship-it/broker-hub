@@ -2348,11 +2348,15 @@ function rAusloans(){
         (priorCarryforward&gt;0?
           '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px&quot;&gt;&lt;span&gt;− Carryforward from prior RCTIs&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(priorCarryforward)+'&lt;/span&gt;&lt;/div&gt;'
         : '')+
-        (thisMonthAdvancesReceived&gt;0?
-          '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px&quot;&gt;&lt;span&gt;− '+esc(subjectLabel)+' advances received ($1k/wk)&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(thisMonthAdvancesReceived)+'&lt;/span&gt;&lt;/div&gt;'
-        : '')+
-        '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:4px;font-size:11.5px;color:var(--dim);padding-left:14px&quot;&gt;&lt;span&gt;Total debt to Ausloans&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;'+fmtFull(totalDebtToRepay)+'&lt;/span&gt;&lt;/div&gt;'+
-        '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:11.5px;color:var(--dim);padding-left:14px&quot;&gt;&lt;span&gt;Ausloans recoups (capped by available)&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;'+fmtFull(expectedRecoup)+'&lt;/span&gt;&lt;/div&gt;'+
+        ((thisMonthAdvancesReceived===totalDebtToRepay&amp;&amp;totalDebtToRepay===expectedRecoup&amp;&amp;priorCarryforward&lt;=0)?
+          '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px&quot;&gt;&lt;span&gt;− Paying back the advance &lt;span style=&quot;color:var(--mut)&quot;&gt;· the $1k/wk already in your bank&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(expectedRecoup)+'&lt;/span&gt;&lt;/div&gt;'
+        :
+          (thisMonthAdvancesReceived&gt;0?
+            '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px&quot;&gt;&lt;span&gt;− '+esc(subjectLabel)+' advances received ($1k/wk)&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(thisMonthAdvancesReceived)+'&lt;/span&gt;&lt;/div&gt;'
+          : '')+
+          '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:4px;font-size:11.5px;color:var(--dim);padding-left:14px&quot;&gt;&lt;span&gt;Total debt to Ausloans&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;'+fmtFull(totalDebtToRepay)+'&lt;/span&gt;&lt;/div&gt;'+
+          '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:11.5px;color:var(--dim);padding-left:14px&quot;&gt;&lt;span&gt;Ausloans recoups (capped by what you earned)&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;'+fmtFull(expectedRecoup)+'&lt;/span&gt;&lt;/div&gt;'
+        )+
         '&lt;div style=&quot;border-top:2px solid var(--bdr);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between;font-size:14px;font-weight:700&quot;&gt;&lt;span&gt;= Cash to bank on RCTI&lt;/span&gt;&lt;span class=&quot;cm '+(thisMonthNetServices?&quot;c-pos&quot;:&quot;c-neg&quot;)+'&quot;&gt;'+fmtFull(thisMonthNetEst)+'&lt;/span&gt;&lt;/div&gt;'+
       '&lt;/div&gt;'+
     '&lt;/div&gt;'+
@@ -2402,17 +2406,7 @@ function rAusloans(){
     '&lt;td class=&quot;cm '+(r.balanceOwed&gt;0?&quot;c-warn&quot;:&quot;c-dim&quot;)+'&quot; style=&quot;text-align:right;font-weight:600&quot;&gt;'+fmtFull(r.balanceOwed)+'&lt;/td&gt;'+
     '&lt;td style=&quot;font-size:11px;color:var(--dim);max-width:280px;white-space:normal&quot;&gt;'+esc(r.notes)+'&lt;/td&gt;'+
   '&lt;/tr&gt;').join(&quot;&quot;)+
-  '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;'+
-
-  // Footer explainer
-  '&lt;div style=&quot;margin-top:14px;padding:14px 18px;background:var(--card);border:1px dashed var(--bdr2);border-radius:8px;font-size:11px;color:var(--mut);line-height:1.7&quot;&gt;'+
-    '&lt;b style=&quot;color:var(--dim)&quot;&gt;How this works:&lt;/b&gt; '+
-    '&lt;b&gt;Source: RCTI&lt;/b&gt; means commission is confirmed on a processed RCTI. '+
-    '&lt;b&gt;Source: EST&lt;/b&gt; means it is estimated from settled deals in your Leads_Log · the actual figure will land when Ausloans generates the RCTI on the 15th of the following month. '+
-    '&lt;b&gt;Balance Owed&lt;/b&gt; tracks your cumulative debt to Ausloans (advances received + any negative RCTI carryforward, less amounts cleared by commission). '+
-    '&lt;b&gt;Net Position&lt;/b&gt; = pending commission income minus current balance owed. '+
-    'Update the &lt;code style=&quot;color:var(--teal);font-family:monospace&quot;&gt;ADVANCE_LEDGER&lt;/code&gt; constant when an RCTI lands · set &lt;code style=&quot;color:var(--teal)&quot;&gt;rctiProcessed:true&lt;/code&gt;, fill in &lt;code style=&quot;color:var(--teal)&quot;&gt;rctiCommEarned&lt;/code&gt;, &lt;code style=&quot;color:var(--teal)&quot;&gt;rctiBalanceToPay&lt;/code&gt;, and &lt;code style=&quot;color:var(--teal)&quot;&gt;rctiPaidOut&lt;/code&gt; (cash to bank).'+
-  '&lt;/div&gt;';
+  '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;';
 }
 
 function rLosses(){

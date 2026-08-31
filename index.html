@@ -515,7 +515,7 @@ const ADVANCE_LEDGER={
       rctiPaidOut:0,
       rctiProcessed:true,
       rctiCommEarned:10240.99,         // Total Income after 70%: Self-gen $1,270.47 + Marketing $8,685.75 + MVI $284.77
-      rctiDeductions:5921.04,          // Lead $3,973 + Docusign/Veda/BankStmts/OneScore + Adjustments $1,768.07 (Remove Insurance Income $1,243.82, Luisa overclaim $429.55, Dialpad $69.95, Docusign x5 $24.75)
+      rctiDeductions:5921.04, adjOther:524.25, mviDrips:0,          // Lead $3,973 + Docusign/Veda/BankStmts/OneScore + Adjustments $1,768.07 (Remove Insurance Income $1,243.82, Luisa overclaim $429.55, Dialpad $69.95, Docusign x5 $24.75)
       rctiGst:432.00,
       rctiAdvanceRecouped:6629.72,     // April carryforward $2,629.71 + May advances $4,000
       rctiBalanceToPay:-1877.76,
@@ -528,7 +528,7 @@ const ADVANCE_LEDGER={
       rctiPaidOut:0,
       rctiProcessed:true,
       rctiCommEarned:11284.22,         // Total Income after 70%: Sales Commission ANY $11,044.95 + MVI $239.27 (7 deals settled: Richardson, Skorupski, Piercy, Leedie, Eaves, Nomotu, Taylor)
-      rctiDeductions:7181.24,          // Live Auction $5,008 + SQL leads $788 + Docusign $74.25 + One Score $152.37 + Bank Stmts $23.84 + Veda $27.96 + Adjustments $1,106.82 (Remove Insurance Income $862.55, McCann overclaim $40.76, Dialpad $69.95, Docusign x2 $9.90, AFCA fee x2 $123.66)
+      rctiDeductions:7181.24, adjOther:244.27, mviDrips:0,          // Live Auction $5,008 + SQL leads $788 + Docusign $74.25 + One Score $152.37 + Bank Stmts $23.84 + Veda $27.96 + Adjustments $1,106.82 (Remove Insurance Income $862.55, McCann overclaim $40.76, Dialpad $69.95, Docusign x2 $9.90, AFCA fee x2 $123.66)
       rctiGst:410.30,
       rctiAdvanceRecouped:5877.76,     // May carryforward $1,877.76 + June advances $4,000
       rctiBalanceToPay:-1364.48,
@@ -541,7 +541,7 @@ const ADVANCE_LEDGER={
       rctiPaidOut:605.87,
       rctiProcessed:true,
       rctiCommEarned:13283.14,         // Total Income at 70%: Marketing $10,657.62 + MVI $288.16 + Self-gen $2,312.03 + MVI $25.33. LAST 70% month · Aug settles at the 80% floor.
-      rctiDeductions:6946.48,          // Live Auction $5,410 (15 leads · the June cohort, billed a cycle behind) + MQL Digital $750 + Docusign $108.90 + Equifax $13.98 + Bank Stmts $11.92 + Adjustments $651.68 (Remove Insurance Income $581.73 + Dialpad $69.95)
+      rctiDeductions:6946.48, adjOther:69.95, mviDrips:313,          // Live Auction $5,410 (15 leads · the June cohort, billed a cycle behind) + MQL Digital $750 + Docusign $108.90 + Equifax $13.98 + Bank Stmts $11.92 + Adjustments $651.68 (Remove Insurance Income $581.73 + Dialpad $69.95)
       rctiGst:633.67,
       rctiAdvanceRecouped:6364.45,     // June carryforward $1,364.48 + July advances $5,000
       rctiBalanceToPay:605.87,
@@ -2279,7 +2279,12 @@ function rAusloans(){
   const fixedOverheadTotal=Object.values(overheads).reduce((s,v)=&gt;s+(parseFloat(v)||0),0);
 
   // Available cash after lender split + lead costs + fixed overhead
-  const availableForDebt=thisMonthGrossAfterSplit-thisMonthLeadCost-fixedOverheadTotal;
+  const _adjHist=Object.keys(ADVANCE_LEDGER.months).sort().map(function(k){return ADVANCE_LEDGER.months[k];}).filter(function(m){return m&amp;&amp;m.adjOther!=null;}).slice(-3);
+  var _wSum=0,_aSum=0,_mviLast=0;
+  _adjHist.forEach(function(m,i){var w=i+1;_wSum+=w;_aSum+=(m.adjOther||0)*w;if(m.mviDrips)_mviLast=m.mviDrips;});
+  const expectedAdj=_wSum?Math.round(_aSum/_wSum):0;
+  const expectedMvi=Math.round(_mviLast);
+  const availableForDebt=thisMonthGrossAfterSplit-thisMonthLeadCost-fixedOverheadTotal-expectedAdj+expectedMvi;
 
   // BREAK OUT THE DEBT COMPONENTS so the user sees what they're actually paying back:
   //   1. Carryforward from prior RCTI (negative balance from previous month)
@@ -2336,6 +2341,8 @@ function rAusloans(){
         '&lt;div style=&quot;border-top:1px dashed var(--bdr2);margin:8px 0&quot;&gt;&lt;/div&gt;'+
         '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px&quot;&gt;&lt;span&gt;− Lead costs (this month)&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(thisMonthLeadCost)+'&lt;/span&gt;&lt;/div&gt;'+
         '&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px&quot;&gt;&lt;span&gt;− RCTI fees (PI, Equifax, Docusign etc, net of GST)&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(fixedOverheadTotal)+'&lt;/span&gt;&lt;/div&gt;'+
+        (expectedAdj&gt;0?'&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px&quot;&gt;&lt;span&gt;− Likely adjustments &lt;span style=&quot;color:var(--mut)&quot;&gt;· overclaims, Dialpad, AFCA type hits · averaged off your last '+_adjHist.length+' RCTIs&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;cm c-warn&quot;&gt;'+fmtFull(expectedAdj)+'&lt;/span&gt;&lt;/div&gt;':'')+
+        (expectedMvi&gt;0?'&lt;div style=&quot;display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px&quot;&gt;&lt;span&gt;+ Insurance drips &lt;span style=&quot;color:var(--mut)&quot;&gt;· MVI ran '+fmtFull(expectedMvi)+' on your last statement&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;cm c-pos&quot;&gt;'+fmtFull(expectedMvi)+'&lt;/span&gt;&lt;/div&gt;':'')+
         '&lt;div style=&quot;display:flex;justify-content:space-between;margin:6px 0;padding:5px 0;border-top:1px solid var(--bdr2);font-size:12px;font-weight:600&quot;&gt;&lt;span&gt;= Net commission earned&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;'+fmtFull(availableForDebt)+'&lt;/span&gt;&lt;/div&gt;'+
         '&lt;div style=&quot;margin-top:10px;font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1px&quot;&gt;Advance debt repayment&lt;/div&gt;'+
         (priorCarryforward&gt;0?

@@ -1949,7 +1949,7 @@ function rAllTime(){
   s.driveRate=_at.driveRate;s.driveCount=_at.driveCount;s.driveDollars=_at.driveDollars;
   s.insRate=_at.insRate;s.insCount=_at.insCount;s._atSettled=_at.settledCount;
   const lbl=window._leadTypeFilter===&quot;All&quot;?&quot;All Time Performance&quot;:&quot;All Time · &quot;+window._leadTypeFilter+&quot; Leads&quot;;
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+statsCards(s,lbl)+netPerWeekBlock()+tierBlock()+velocityCards(filtered)+budgetBlock()+bidCalculatorBlock(filtered)+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+bidCalculatorBlock(filtered)+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
 }
 
 function rMonthly(){

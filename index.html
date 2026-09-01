@@ -494,7 +494,7 @@ const ADVANCE_LEDGER={
       rctiAdvanceRecouped:4153.34,
       rctiBalanceToPay:-5735.54,
       negativeCarryforward:5735.54,
-      notes:&quot;RCTI processed 08/04. Balance -$5,735.54 (commission short of deductions+advance). Carries to April.&quot;
+      notes:&quot;Short month. $5,736 owing, carried to April.&quot;
     },
     &quot;2026-04&quot;:{
       received:5000,
@@ -507,7 +507,7 @@ const ADVANCE_LEDGER={
       rctiAdvanceRecouped:10735.54,    // March carryforward $5,735.54 + April advance $5,000
       rctiBalanceToPay:-2629.71,
       negativeCarryforward:2629.71,
-      notes:&quot;RCTI processed 06/05. Balance -$2,629.71 carries to May. PI Insurance $580 STILL charged despite dispute · chase Arianne.&quot;
+      notes:&quot;Still $2,630 owing, carried to May. PI $580 charged despite the dispute.&quot;
     },
     &quot;2026-05&quot;:{
       received:4000,                   // 4 Fridays: 07/05, 14/05, 21/05, 28/05
@@ -520,7 +520,7 @@ const ADVANCE_LEDGER={
       rctiAdvanceRecouped:6629.72,     // April carryforward $2,629.71 + May advances $4,000
       rctiBalanceToPay:-1877.76,
       negativeCarryforward:1877.76,
-      notes:&quot;RCTI processed 04/06 (landed early, not the 15th). Income $10,240.99 after split, deductions $5,921.04 (lead $3,973 + Remove Insurance Income $1,243.82 + Luisa overclaim $429.55 + small bits), plus GST $432. Recouped against $6,629.72 debt, leaving $1,877.76 still owing and $0 to bank. Worse than the ~$1,020 forecast because of the insurance-income strip and the Luisa clawback.&quot;
+      notes:&quot;All of it went on the debt. $1,878 still owing, $0 to bank. Luisa clawback stung.&quot;
     },
     &quot;2026-06&quot;:{
       received:4000,                   // Final advance month (program ended 15/06). Implied exactly by RCTI carry math: $5,877.76 thrown at June RCTI − $1,877.76 May carry = $4,000.
@@ -533,7 +533,7 @@ const ADVANCE_LEDGER={
       rctiAdvanceRecouped:5877.76,     // May carryforward $1,877.76 + June advances $4,000
       rctiBalanceToPay:-1364.48,
       negativeCarryforward:1364.48,
-      notes:&quot;RCTI created 08/07. Sub Total $4,102.98 + GST $410.30 = $4,513.28 applied against $5,877.76 debt · $1,364.48 carries to July, $0 to bank. NO PI $580 refund again (chase Arianne). AFCA fee charged twice ($61.83 x2 · check individual vs company membership). July RCTI absorbs the last $1,364.48, then every dollar lands.&quot;
+      notes:&quot;$4,513 onto the debt, $1,364 left for July, $0 to bank. AFCA fee charged twice.&quot;
     },
     &quot;2026-07&quot;:{
       received:5000,                   // 5 Fridays: 03,10,17,24,31 · the $1k/wk advance KEPT RUNNING past the assumed 15/06 end. Proven by the RCTI: $6,364.45 recouped = June carry $1,364.48 + $5,000 (3c rounding).
@@ -546,14 +546,14 @@ const ADVANCE_LEDGER={
       rctiAdvanceRecouped:6364.45,     // June carryforward $1,364.48 + July advances $5,000
       rctiBalanceToPay:605.87,
       negativeCarryforward:0,
-      notes:&quot;RCTI created 06/08. Sub $6,336.66 + GST $633.67 = $6,970.33 wiped the whole $6,364.45 advance line · BALANCE $0 · first cash payout $605.87, landing ~15 Aug. 7 deals incl. Lynda Smeelie at Money3 (the serviceability regression client, settled exactly where the tool says). Remove Insurance Income $581.73 = accrual reversal, not a cost. Suncorp pays MVI monthly as premiums are paid · July drips $313 across 10 clients. The separate PI $580 refund is still owed.&quot;
+      notes:&quot;Debt cleared, balance $0. First real payout $606, mid August. 7 deals. MVI drips $313. PI $580 refund still owed.&quot;
     },
     &quot;2026-08&quot;:{
       received:0,                      // CONFIRM WITH IVAN · if the $1k/wk is still landing, key each week here · every dollar received becomes a recoup line on the Aug RCTI.
       repaid:0,
       rctiPaidOut:0,
       rctiProcessed:false,
-      notes:&quot;Advance balance $0 after July. First month at the 80% floor. If advances are still flowing, the Aug RCTI (early Sep) will carry a fresh recoup · chase Ivan for the confirmed stop date.&quot;
+      notes:&quot;First month on the 80% floor. Advances still running, so September's RCTI recoups a fresh $4,000. Chase Ivan for the stop date.&quot;
     }
   }
 };
@@ -15029,17 +15029,28 @@ function calcAll() {
   let liabMonthly = 0;
   let ccTotal = 0;
   let mortgageExcluded = 0;
+  let mortgageBal = 0;
   liabs.forEach(l =&gt; {
     if (l.clearing) return;
     if (l.type === 'credit_card') {
       ccTotal += l.limit;
     } else if (l.type === 'mortgage' &amp;&amp; housingStatus === 'mortgage') {
       mortgageExcluded += l.monthly;
+      mortgageBal += (l.balance || 0);
     } else {
       liabMonthly += l.monthly;
     }
   });
   const ccCommit = ccTotal * 0.03227;
+
+  // A mortgage with $0 repayment entered means a home loan silently costing nothing.
+  // Floor it with an estimate from the balance (~0.6%/mo, about a 30yr P&amp;I) and flag it loudly.
+  let mortgageEstApplied = 0;
+  if (housingStatus === 'mortgage' &amp;&amp; housingPay &lt; 100 &amp;&amp; mortgageBal &gt; 0) {
+    mortgageEstApplied = Math.round(mortgageBal * 0.006);
+    housingPay = mortgageEstApplied;
+  }
+  try { window._mortEst = (housingStatus === 'mortgage') ? mortgageEstApplied : 0; } catch(e) {}
 
   // --- Other monthly commitments ---
   const hecs = val('hecs');
@@ -15078,7 +15089,7 @@ function calcAll() {
     &lt;div class=&quot;stat-row sub&quot;&gt;&lt;span class=&quot;label&quot;&gt;Stated (general + childcare)&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(statedCore)}&lt;/span&gt;&lt;/div&gt;
     &lt;div class=&quot;stat-row total&quot;&gt;&lt;span class=&quot;label&quot;&gt;NDI (net  to  living)&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(ndi)}&lt;/span&gt;&lt;/div&gt;
 
-    &lt;div class=&quot;stat-row&quot;&gt;&lt;span class=&quot;label&quot;&gt;Housing / rent / board / mortgage&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(housingPay)}&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;stat-row&quot;&gt;&lt;span class=&quot;label&quot;&gt;Housing / rent / board / mortgage&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(housingPay)}&lt;/span&gt;&lt;/div&gt;${(window._mortEst&gt;0)?'&lt;div class=&quot;stat-row&quot; style=&quot;color:#ffb454;&quot;&gt;&lt;span class=&quot;label&quot;&gt;⚠ Mortgage repay was $0 · using an estimate from the balance&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;enter the real repayment&lt;/span&gt;&lt;/div&gt;':''}
     ${mortgageExcluded &gt; 0 ? `&lt;div class=&quot;stat-row sub&quot;&gt;&lt;span class=&quot;label&quot;&gt;Mortgage liability auto-excluded (already in housing)&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(mortgageExcluded)}&lt;/span&gt;&lt;/div&gt;` : ''}
     ${liabMonthly &gt; 0 ? `&lt;div class=&quot;stat-row&quot;&gt;&lt;span class=&quot;label&quot;&gt;Other existing loans&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(liabMonthly)}&lt;/span&gt;&lt;/div&gt;` : ''}
     ${ccTotal &gt; 0 ? `&lt;div class=&quot;stat-row&quot;&gt;&lt;span class=&quot;label&quot;&gt;CC @ 3.227% of ${fmt(ccTotal)}&lt;/span&gt;&lt;span class=&quot;value&quot;&gt;${fmt(ccCommit)}&lt;/span&gt;&lt;/div&gt;` : ''}
@@ -15778,6 +15789,8 @@ function snapshotState() {
 // ---- Base commitments (lender-agnostic; handles mortgage double-count) ----
 function baseCommitments(s) {
   let liabMonthly = 0, ccTotal = 0, mortgageExcluded = 0;
+  let mortgageBalEngine = 0;
+  let mortgageEstApplied = 0;
   let revolvingUplift = 0;
   let jointSplitSavings = 0; // track how much was saved by share-percentage adjustments
   const liabDetail = [];
@@ -15791,6 +15804,7 @@ function baseCommitments(s) {
     } else if (l.type === 'mortgage' &amp;&amp; s.housingStatus === 'mortgage') {
       // Mortgage handled in housing · exclude from liabilities; share already reflected in housingPayRaw
       mortgageExcluded += l.monthly;
+      mortgageBalEngine += (l.balance || 0);
     } else {
       let monthlyAssessed = l.monthly;
       if (l.revolving &amp;&amp; l.limit &gt; 0) monthlyAssessed = Math.max(monthlyAssessed, l.limit * 0.03227);
@@ -15816,7 +15830,13 @@ function baseCommitments(s) {
     housingPay = Math.max(housingPay, isCouple ? 650 : 500);
   } else if (s.housingStatus === 'family' || s.housingStatus === 'own_outright') {
     housingPay = 0;
+  } else if (s.housingStatus === 'mortgage' &amp;&amp; housingPay &lt; 100 &amp;&amp; mortgageBalEngine &gt; 0) {
+    // A mortgage with $0 repayment entered would cost nothing in every calc. Floor it from the balance.
+    mortgageEstApplied = Math.round(mortgageBalEngine * 0.006);
+    housingPay = mortgageEstApplied;
+    try { window._mortEst = mortgageEstApplied; } catch(e) {}
   }
+  if (s.housingStatus !== 'mortgage') { try { window._mortEst = 0; } catch(e) {} }
 
   // Spouse split for housing · only when broker explicitly ticks Include Spouse + Apply 50% split.
   // Each lender's calc can still warn if their policy would refuse this split.
@@ -15826,7 +15846,7 @@ function baseCommitments(s) {
 
   return {
     housingPay, housingPayRawFull, housingSplitApplied,
-    liabMonthly, ccTotal, ccCommit, mortgageExcluded,
+    liabMonthly, ccTotal, ccCommit, mortgageExcluded, mortgageEstApplied,
     hecs: s.hecs, childSupport: s.childSupport, otherC: s.otherC,
     liabDetail, jointSplitSavings, revolvingUplift,
     exProposedTotal: housingPay + liabMonthly + ccCommit + s.hecs + s.childSupport + s.otherC
@@ -17956,7 +17976,7 @@ function renderCompare(results, s) {
       lvrCell = `&lt;div title=&quot;${lv.note}${lv.basis?' · against '+lv.basis:''}&quot;&gt;&lt;b style=&quot;color:${over?'#ff6b81':'inherit'}&quot;&gt;${lv.cap}%&lt;/b&gt;${dealBit}&lt;/div&gt;`;
     }
     const servicingMaxStr = r.servicingMax &gt; 0 ? fmt(r.servicingMax) : '·';
-    const comfortMaxStr = r.comfortableMax &gt; 0 ? fmt(r.comfortableMax) : '·';
+    const comfortMaxStr = r.comfortableMax &gt; 0 ? (r.comfortableMax === r.servicingMax ? fmt(r.comfortableMax) + ' · capped' : fmt(r.comfortableMax)) : '·';
     return `
       &lt;tr&gt;
         &lt;td&gt;&lt;div class=&quot;lender-name&quot;&gt;&lt;span class=&quot;dot&quot; style=&quot;background:${r.color}&quot;&gt;&lt;/span&gt;${r.name}&lt;/div&gt;&lt;/td&gt;
@@ -17991,13 +18011,14 @@ function renderSurplusChart(results) {
     name: r.name,
     color: r.color || '#9aa1b4',
     surplus: typeof r.surplus === 'number' ? r.surplus : 0,
+    hasS: typeof r.surplus === 'number',
     services: !!r.services,
     eligible: !!r.eligible,
     gated: !!(r.services &amp;&amp; r.sanityFlags &amp;&amp; r.sanityFlags.length &gt; 0),
     rate: r.rate,
     note: !r.eligible ? (r.knockouts[0] || 'Not eligible') :
           (r.services &amp;&amp; r.sanityFlags &amp;&amp; r.sanityFlags.length &gt; 0 ? 'Check income first' :
-          (r.services ? `Passes by ${fmt(r.surplus || 0)}/mo` :
+          (r.services ? (typeof r.surplus === 'number' ? `Passes by ${fmt(r.surplus)}/mo` : 'Passes · NDI ratio test, no $ figure') :
            `Short by ${fmt(Math.abs(r.surplus || 0))}/mo`))
   }));
 
@@ -18028,7 +18049,9 @@ function renderSurplusChart(results) {
     let fill = v.eligible ? (v.gated ? '#d97706' : (v.services ? '#059669' : '#dc2626')) : '#8b93aa';
     const align = v.surplus &gt;= 0 ? 'left' : 'right';
     // Bar half offset from centre (50% of bar area = the $0 axis)
-    const barInner = v.surplus &gt;= 0
+    const barInner = !v.hasS
+      ? `&lt;div style=&quot;position:absolute;left:50%;top:50%;transform:translate(8px,-50%);font-size:11px;color:#8b93aa;white-space:nowrap;&quot;&gt;NDI test · no $ surplus&lt;/div&gt;`
+      : v.surplus &gt;= 0
       ? `&lt;div style=&quot;position:absolute;left:50%;top:50%;transform:translateY(-50%);height:18px;width:${pct/2}%;background:${fill};border-radius:0 4px 4px 0;display:flex;align-items:center;padding-left:6px;color:#171b26;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;&quot;&gt;${pct &gt; 12 ? fmt(v.surplus) + '/mo' : ''}&lt;/div&gt;`
       : `&lt;div style=&quot;position:absolute;right:50%;top:50%;transform:translateY(-50%);height:18px;width:${pct/2}%;background:${fill};border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:#171b26;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;&quot;&gt;${pct &gt; 12 ? fmt(v.surplus) + '/mo' : ''}&lt;/div&gt;`;
 
@@ -18600,6 +18623,7 @@ function bhfApplyHandoff(){
   if(d.purchaseCost||d.loanAmount)set('vehiclePrice',d.purchaseCost||d.loanAmount);
   if(d.vehicleYear)set('vehicleYear',d.vehicleYear);
   if(d.creditScore)set('creditScore',d.creditScore);
+  if(d.oneScore||d.one_score)set('oneScore',d.oneScore||d.one_score);
   if(d.dependants!=null)set('dependents',d.dependants);
   if(d.maritalStatus){const _cp=/married|de ?facto/i.test(d.maritalStatus);const _dep=(d.dependants||0)&gt;0;set('householdType',_cp?(_dep?'couple_deps':'couple'):(_dep?'single_deps':'single'));}
   if(d.location&amp;&amp;/(SYDNEY|MELBOURNE|BRISBANE|PERTH|ADELAIDE|HOBART|DARWIN|CANBERRA)/i.test(d.location))set('locationType','capital');
@@ -18619,10 +18643,11 @@ function bhfApplyHandoff(){
     set('housingStatus', lt.indexOf('rent')&gt;-1?'rent':lt.indexOf('board')&gt;-1?'board':lt.indexOf('mortgage')&gt;-1?'mortgage':lt.indexOf('own')&gt;-1?'own_outright':lt.indexOf('family')&gt;-1?'family':'rent');
     if(d.rentAmount)set('housingPayment',bhfFreqMonthly(d.rentAmount,d.rentFrequency));
     if(lt.indexOf('mortgage')&gt;-1&amp;&amp;d.mortgageRepay)set('housingPayment',Math.round(d.mortgageRepay));
+    if(lt.indexOf('mortgage')&gt;-1&amp;&amp;!(d.mortgageRepay&gt;0))set('housingPayment','');
   }
   if(d.livingDeclaredMonthly)set('genLiving',Math.round(d.livingDeclaredMonthly));
   if(Array.isArray(d.liabilities)&amp;&amp;d.liabilities.length&amp;&amp;typeof addLiability==='function'){
-    const _tmap={'credit card':'credit_card','store card':'credit_card','personal loan':'personal_loan','car loan':'car_loan','vehicle loan':'car_loan','bnpl':'bnpl','afterpay':'bnpl','after pay':'bnpl','zip':'bnpl','zip pay':'bnpl'};
+    const _tmap={'mortgage':'mortgage','home loan':'mortgage','credit card':'credit_card','store card':'credit_card','personal loan':'personal_loan','car loan':'car_loan','vehicle loan':'car_loan','bnpl':'bnpl','afterpay':'bnpl','after pay':'bnpl','zip':'bnpl','zip pay':'bnpl'};
     d.liabilities.forEach(li=&gt;{try{addLiability({type:_tmap[String(li.type||'').toLowerCase()]||'other',creditor:li.provider||'',balance:li.outstanding||0,limit:li.limit||0,monthly_payment:li.repayMonthly||0,applicant_share:100});}catch(e){}});
   }
   const noteBits=['--- ZINK HANDOFF · '+(d.clientName||'client')+' · '+new Date(h.at).toLocaleString('en-AU')+' ---'];

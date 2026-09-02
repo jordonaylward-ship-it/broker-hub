@@ -1241,52 +1241,64 @@ function historyChartsBlock(leads){
   });
   if(!earliest)return'';
 
-  const weekStart=d=&gt;{
-    const x=new Date(d);
-    const day=x.getDay()||7;
-    x.setDate(x.getDate()-(day-1));
-    x.setHours(0,0,0,0);
-    return x;
-  };
-  const startWeek=weekStart(earliest);
-  const endWeek=weekStart(latest);
-
-  const weeks=[];
-  const cursor=new Date(startWeek);
-  while(cursor&lt;=endWeek&amp;&amp;weeks.length&lt;200){
-    weeks.push(new Date(cursor));
-    cursor.setDate(cursor.getDate()+7);
+  const mode=(window._histMode==='month')?'month':'week';
+  const weekStart=d=&gt;{const x=new Date(d);const day=x.getDay()||7;x.setDate(x.getDate()-(day-1));x.setHours(0,0,0,0);return x;};
+  const monthStart=d=&gt;new Date(d.getFullYear(),d.getMonth(),1);
+  const buckets=[];
+  if(mode==='week'){
+    const cursor=weekStart(earliest),endW=weekStart(latest);
+    while(cursor&lt;=endW&amp;&amp;buckets.length&lt;200){buckets.push(new Date(cursor));cursor.setDate(cursor.getDate()+7);}
+  }else{
+    const cursor=monthStart(earliest),endM=monthStart(latest);
+    while(cursor&lt;=endM&amp;&amp;buckets.length&lt;60){buckets.push(new Date(cursor));cursor.setMonth(cursor.getMonth()+1);}
   }
-  if(!weeks.length)return'';
-
-  const settlePerWeek=new Array(weeks.length).fill(0);
-  const commPerWeek=new Array(weeks.length).fill(0);
-  const weekIndex=dt=&gt;{
-    const wks=Math.floor((dt-startWeek)/(7*86400000));
-    return(wks&gt;=0&amp;&amp;wks&lt;weeks.length)?wks:-1;
+  if(buckets.length&gt;1){
+    const lastB=buckets[buckets.length-1];
+    const span=mode==='week'?7*86400000:(new Date(lastB.getFullYear(),lastB.getMonth()+1,1)-lastB);
+    if((latest-lastB)/span&lt;0.5)buckets.pop();
+  }
+  if(!buckets.length)return'';
+  const bucketIndex=dt=&gt;{
+    if(mode==='week'){const wks=Math.floor((dt-buckets[0])/(7*86400000));return(wks&gt;=0&amp;&amp;wks&lt;buckets.length)?wks:-1;}
+    const i=(dt.getFullYear()-buckets[0].getFullYear())*12+(dt.getMonth()-buckets[0].getMonth());
+    return(i&gt;=0&amp;&amp;i&lt;buckets.length)?i:-1;
   };
+  const settlePerWeek=new Array(buckets.length).fill(0);
+  const commPerWeek=new Array(buckets.length).fill(0);
   leads.forEach(l=&gt;{
     if((l.finalStatus==='Settled'||l.currentStage==='Settled')&amp;&amp;l.settleDate){
       const dt=parseAnyDate(l.settleDate);
-      if(dt){
-        const i=weekIndex(dt);
-        if(i&gt;=0){
-          settlePerWeek[i]+=1;
-          commPerWeek[i]+=(l.commTotal||0)*baseSplit(ymOfDate(dt));
-        }
-      }
+      if(dt){const i=bucketIndex(dt);if(i&gt;=0){settlePerWeek[i]+=1;commPerWeek[i]+=(l.commTotal||0)*baseSplit(ymOfDate(dt));}}
     }
   });
-
   const totalSettled=settlePerWeek.reduce((a,b)=&gt;a+b,0);
   const totalIncome=commPerWeek.reduce((a,b)=&gt;a+b,0);
-  const settleData=weeks.map((w,i)=&gt;({week:w,value:settlePerWeek[i]}));
-  const incomeData=weeks.map((w,i)=&gt;({week:w,value:Math.round(commPerWeek[i]*100)/100}));
-
+  const settleData=buckets.map((w,i)=&gt;({week:w,value:settlePerWeek[i]}));
+  const incomeData=buckets.map((w,i)=&gt;({week:w,value:Math.round(commPerWeek[i]*100)/100}));
   const monNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const weekLabel=d=&gt;d.getDate()+' '+monNames[d.getMonth()];
-  const weekFull=d=&gt;d.getDate()+' '+monNames[d.getMonth()]+' '+d.getFullYear();
+  const weekLabel=d=&gt;mode==='week'?(d.getDate()+' '+monNames[d.getMonth()]):(monNames[d.getMonth()]+' '+String(d.getFullYear()).slice(2));
+  const weekFull=d=&gt;mode==='week'?(d.getDate()+' '+monNames[d.getMonth()]+' '+d.getFullYear()):(monNames[d.getMonth()]+' '+d.getFullYear());
+  const unitWord=mode==='week'?'Week of ':'';
 
+  // Catmull-Rom spline · round tops like the reference chart (plot area is clipped so it can never dip under zero)
+  function cardPath(xs,ys){
+    const n=xs.length;if(n&lt;2)return'';
+    let d='M '+xs[0]+' '+ys[0];
+    for(let i=0;i&lt;n-1;i++){
+      const p0=i&gt;0?i-1:i,p1=i,p2=i+1,p3=i+2&lt;n?i+2:i+1;
+      const c1x=xs[p1]+(xs[p2]-xs[p0])/6,c1y=ys[p1]+(ys[p2]-ys[p0])/6;
+      const c2x=xs[p2]-(xs[p3]-xs[p1])/6,c2y=ys[p2]-(ys[p3]-ys[p1])/6;
+      d+=' C '+c1x.toFixed(2)+' '+c1y.toFixed(2)+', '+c2x.toFixed(2)+' '+c2y.toFixed(2)+', '+xs[p2]+' '+ys[p2];
+    }
+    return d;
+  }
+  function niceMax(v){
+    if(v&lt;=0)return 1;
+    if(v&lt;=6)return Math.ceil(v);
+    const p=Math.pow(10,Math.floor(Math.log10(v)));const f=v/p;
+    const n=[1,1.2,1.4,1.6,1.8,2,2.5,3,3.5,4,5,6,7,8,9,10].find(x=&gt;f&lt;=x);
+    return n*p;
+  }
   // Fritsch-Carlson monotone cubic · smooth like the reference, never overshoots the data
   function monoPath(xs,ys){
     const n=xs.length; if(n&lt;2)return 'M '+xs[0]+' '+ys[0];
@@ -1310,43 +1322,44 @@ function historyChartsBlock(leads){
   }
   function roll(arr,n){return arr.map((_,i)=&gt;{const a=arr.slice(Math.max(0,i-n+1),i+1);return a.reduce((x,y)=&gt;x+y,0)/a.length;});}
 
-  function lineChart(data,title,badge,color,color2,fmt,key){
+  function lineChart(data,title,badge,cA,cB,fmt,key){
     if(!data.length)return'';
-    const w=800,h=200,pL=55,pR=14,pT=14,pB=32;
+    const w=800,h=210,pL=55,pR=14,pT=16,pB=32;
     const iw=w-pL-pR,ih=h-pT-pB;
     const raw=data.map(d=&gt;d.value);
-    const smooth=roll(raw,4);
-    const max=Math.max(1,...raw);
+    const trend=mode==='week'?roll(raw,4):roll(raw,3);
+    const wave=mode==='week'?roll(raw,2):raw;
+    const max=niceMax(Math.max(...wave,...trend)*1.06);
     const xAt=i=&gt;pL+(data.length&lt;2?iw/2:i*iw/(data.length-1));
     const yAt=v=&gt;pT+ih-(v/max)*ih;
     const xs=data.map((_,i)=&gt;xAt(i));
-    const smoothPath=monoPath(xs,smooth.map(yAt));
-    const rawPath=monoPath(xs,raw.map(yAt));
     const baseY=yAt(0);
-    const areaPath=smoothPath+' L '+xAt(data.length-1)+' '+baseY+' L '+xAt(0)+' '+baseY+' Z';
-    const gid='g'+key,fid='f'+key;
-    const defs='&lt;defs&gt;'
-      +'&lt;linearGradient id=&quot;'+gid+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+color+'&quot; stop-opacity=&quot;0.55&quot;/&gt;&lt;stop offset=&quot;70%&quot; stop-color=&quot;'+color+'&quot; stop-opacity=&quot;0.12&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+color+'&quot; stop-opacity=&quot;0&quot;/&gt;&lt;/linearGradient&gt;'
-      +'&lt;filter id=&quot;'+fid+'&quot; x=&quot;-10%&quot; y=&quot;-40%&quot; width=&quot;120%&quot; height=&quot;180%&quot;&gt;&lt;feGaussianBlur stdDeviation=&quot;4&quot; result=&quot;b&quot;/&gt;&lt;feMerge&gt;&lt;feMergeNode in=&quot;b&quot;/&gt;&lt;feMergeNode in=&quot;SourceGraphic&quot;/&gt;&lt;/feMerge&gt;&lt;/filter&gt;'
-      +'&lt;/defs&gt;';
-    const baseline='&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+baseY+'&quot; y2=&quot;'+baseY+'&quot; stroke=&quot;var(--bdr2)&quot; stroke-dasharray=&quot;2 3&quot; opacity=&quot;0.5&quot;/&gt;';
-    const grid=[max/2,max].map(v=&gt;'&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+yAt(v)+'&quot; y2=&quot;'+yAt(v)+'&quot; stroke=&quot;var(--bdr)&quot; opacity=&quot;0.6&quot;/&gt;').join('');
-    const yTicks=[0,max/2,max].map(v=&gt;'&lt;text x=&quot;'+(pL-8)+'&quot; y=&quot;'+(yAt(v)+4)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--dim)&quot; text-anchor=&quot;end&quot;&gt;'+fmt(v)+'&lt;/text&gt;').join('');
+    const layer=(vals,col,id,top,stroke)=&gt;{
+      const p=cardPath(xs,vals.map(yAt));
+      const area=p+' L '+xAt(data.length-1)+' '+baseY+' L '+xAt(0)+' '+baseY+' Z';
+      return {defs:'&lt;linearGradient id=&quot;'+id+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;'+top+'&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;0.03&quot;/&gt;&lt;/linearGradient&gt;',
+              area:'&lt;path d=&quot;'+area+'&quot; fill=&quot;url(#'+id+')&quot; style=&quot;mix-blend-mode:screen&quot;/&gt;',
+              line:stroke?'&lt;path d=&quot;'+p+'&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;2.4&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;':'&lt;path d=&quot;'+p+'&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;1.2&quot; stroke-opacity=&quot;0.55&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;'};
+    };
+    const A=layer(trend,cA,'gA'+key,0.7,true), B=layer(wave,cB,'gB'+key,0.5,false);
+    const grid=[max/2,max].map(v=&gt;'&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+yAt(v)+'&quot; y2=&quot;'+yAt(v)+'&quot; stroke=&quot;rgba(148,163,255,.12)&quot;/&gt;').join('');
+    const baseline='&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+baseY+'&quot; y2=&quot;'+baseY+'&quot; stroke=&quot;rgba(148,163,255,.25)&quot;/&gt;';
+    const yTicks=[0,max/2,max].map(v=&gt;'&lt;text x=&quot;'+(pL-8)+'&quot; y=&quot;'+(yAt(v)+4)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--mut)&quot; text-anchor=&quot;end&quot;&gt;'+fmt(v)+'&lt;/text&gt;').join('');
     const step=Math.max(1,Math.ceil(data.length/8));
-    const xTicks=data.map((d,i)=&gt;i%step===0||i===data.length-1?'&lt;text x=&quot;'+xAt(i)+'&quot; y=&quot;'+(h-10)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--dim)&quot; text-anchor=&quot;middle&quot;&gt;'+weekLabel(d.week)+'&lt;/text&gt;':'').join('');
-    const hover=data.map((d,i)=&gt;'&lt;circle cx=&quot;'+xAt(i)+'&quot; cy=&quot;'+yAt(d.value)+'&quot; r=&quot;7&quot; fill=&quot;transparent&quot;&gt;&lt;title&gt;Week of '+weekFull(d.week)+': '+fmt(d.value)+' · 4 week average '+fmt(smooth[i])+'&lt;/title&gt;&lt;/circle&gt;').join('');
-    const area='&lt;path d=&quot;'+areaPath+'&quot; fill=&quot;url(#'+gid+')&quot;/&gt;';
-    const rawLine='&lt;path d=&quot;'+rawPath+'&quot; fill=&quot;none&quot; stroke=&quot;'+color2+'&quot; stroke-width=&quot;1.4&quot; opacity=&quot;0.55&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;';
-    const glow='&lt;path d=&quot;'+smoothPath+'&quot; fill=&quot;none&quot; stroke=&quot;'+color+'&quot; stroke-width=&quot;3&quot; opacity=&quot;0.6&quot; filter=&quot;url(#'+fid+')&quot;/&gt;';
-    const line='&lt;path d=&quot;'+smoothPath+'&quot; fill=&quot;none&quot; stroke=&quot;'+color+'&quot; stroke-width=&quot;2.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;';
-    const legend='&lt;div style=&quot;display:flex;gap:14px;font-size:10.5px;color:var(--mut);margin-top:4px&quot;&gt;&lt;span&gt;&lt;i style=&quot;display:inline-block;width:14px;height:3px;background:'+color+';border-radius:2px;vertical-align:middle;margin-right:5px&quot;&gt;&lt;/i&gt;4 week average · the trend&lt;/span&gt;&lt;span&gt;&lt;i style=&quot;display:inline-block;width:14px;height:2px;background:'+color2+';opacity:.7;border-radius:2px;vertical-align:middle;margin-right:5px&quot;&gt;&lt;/i&gt;each week as it happened&lt;/span&gt;&lt;/div&gt;';
-    return'&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;'+title+(badge?' &lt;span class=&quot;hist-badge&quot;&gt;'+badge+'&lt;/span&gt;':'')+'&lt;/div&gt;&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; preserveAspectRatio=&quot;none&quot; style=&quot;width:100%;height:200px&quot;&gt;'+defs+grid+baseline+yTicks+area+rawLine+glow+line+hover+xTicks+'&lt;/svg&gt;'+legend+'&lt;/div&gt;';
+    const lastI=data.length-1;
+    const xTicks=data.map((d,i)=&gt;(i%step===0&amp;&amp;(lastI-i)&gt;=step/2)||i===lastI?'&lt;text x=&quot;'+xAt(i)+'&quot; y=&quot;'+(h-10)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--mut)&quot; text-anchor=&quot;'+(i===0?'start':i===lastI?'end':'middle')+'&quot;&gt;'+weekLabel(d.week)+'&lt;/text&gt;':'').join('');
+    const hover=data.map((d,i)=&gt;'&lt;circle cx=&quot;'+xAt(i)+'&quot; cy=&quot;'+yAt(Math.max(trend[i],wave[i]))+'&quot; r=&quot;9&quot; fill=&quot;transparent&quot;&gt;&lt;title&gt;'+unitWord+weekFull(d.week)+': '+fmt(d.value)+(mode==='week'?' · 4 week average '+fmt(trend[i]):' · 3 month average '+fmt(trend[i]))+'&lt;/title&gt;&lt;/circle&gt;').join('');
+    const legA=mode==='week'?'4 week average · the trend':'3 month average · the trend';
+    const legB=mode==='week'?'week by week, softened':'each month';
+    const legend='&lt;div style=&quot;display:flex;gap:16px;font-size:10.5px;color:var(--mut);margin-top:6px&quot;&gt;&lt;span&gt;&lt;i style=&quot;display:inline-block;width:10px;height:10px;border-radius:3px;background:'+cA+';vertical-align:-1px;margin-right:6px&quot;&gt;&lt;/i&gt;'+legA+'&lt;/span&gt;&lt;span&gt;&lt;i style=&quot;display:inline-block;width:10px;height:10px;border-radius:3px;background:'+cB+';opacity:.7;vertical-align:-1px;margin-right:6px&quot;&gt;&lt;/i&gt;'+legB+'&lt;/span&gt;&lt;span style=&quot;margin-left:auto&quot;&gt;hover for the real number&lt;/span&gt;&lt;/div&gt;';
+    return'&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;'+title+(badge?' &lt;span class=&quot;hist-badge&quot;&gt;'+badge+'&lt;/span&gt;':'')+'&lt;/div&gt;&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; preserveAspectRatio=&quot;none&quot; style=&quot;width:100%;height:210px&quot;&gt;&lt;defs&gt;'+A.defs+B.defs+'&lt;clipPath id=&quot;clip'+key+'&quot;&gt;&lt;rect x=&quot;'+pL+'&quot; y=&quot;'+pT+'&quot; width=&quot;'+iw+'&quot; height=&quot;'+ih+'&quot;/&gt;&lt;/clipPath&gt;&lt;/defs&gt;'+grid+baseline+yTicks+'&lt;g clip-path=&quot;url(#clip'+key+')&quot;&gt;'+B.area+A.area+B.line+A.line+'&lt;/g&gt;'+hover+xTicks+'&lt;/svg&gt;'+legend+'&lt;/div&gt;';
   }
 
-  return'&lt;div class=&quot;sh&quot; style=&quot;margin-top:20px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;WEEKLY · FIRST LEAD TO NOW&lt;/span&gt;&lt;/div&gt;'
+  const pill=(m,l)=&gt;'&lt;button onclick=&quot;window._histMode=\''+m+'\';render()&quot; style=&quot;border:0;cursor:pointer;padding:5px 14px;border-radius:999px;font-size:11.5px;font-weight:600;font-family:inherit;'+(mode===m?'background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16':'background:transparent;color:var(--mut)')+'&quot;&gt;'+l+'&lt;/button&gt;';
+  return'&lt;div class=&quot;sh&quot; style=&quot;margin-top:20px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;&lt;span style=&quot;display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--bdr);border-radius:999px;padding:3px&quot;&gt;'+pill('week','Week')+pill('month','Month')+'&lt;/span&gt;&lt;/div&gt;'
     +'&lt;div style=&quot;display:flex;flex-direction:column;gap:16px;margin-top:8px;margin-bottom:20px&quot;&gt;'
-    +lineChart(settleData,'Settlements per week',totalSettled+' total','#8b5cf6','#38bdf8',v=&gt;(Math.round(v*10)/10).toString(),'s')
-    +lineChart(incomeData,'Take-home commission per week (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#38bdf8','#a78bfa',v=&gt;Math.abs(v)&gt;=1000?'$'+(v/1000).toFixed(1)+'k':'$'+Math.round(v),'c')
+    +lineChart(settleData,'Settlements per '+mode,totalSettled+' total','#8b5cf6','#38bdf8',v=&gt;(Math.round(v*10)/10).toString(),'s')
+    +lineChart(incomeData,'Take-home commission per '+mode+' (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#38bdf8','#a78bfa',v=&gt;Math.abs(v)&gt;=1000?'$'+(+(v/1000).toFixed(1))+'k':'$'+Math.round(v),'c')
     +'&lt;/div&gt;';
 }
 

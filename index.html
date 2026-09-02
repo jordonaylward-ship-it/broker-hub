@@ -1914,6 +1914,25 @@ window._tierSlide=function(v){
 window._tierAvgSet=function(v){var f=parseFloat(v);try{if(isFinite(f)&amp;&amp;f&gt;0)localStorage.setItem(&quot;ja_tier_avg_v1&quot;,String(f));else localStorage.removeItem(&quot;ja_tier_avg_v1&quot;);}catch(e){}render();};
 window._tierAvgReset=function(){try{localStorage.removeItem(&quot;ja_tier_avg_v1&quot;);}catch(e){}render();};
 
+
+function plainMoneyLine(paidLeads,settles,spend,takeHome,scopeLabel){
+  const bits=[];
+  if(settles&gt;0&amp;&amp;paidLeads&gt;0){
+    const per=Math.round(paidLeads/settles*10)/10;
+    bits.push('&lt;div style=&quot;font-size:15px;line-height:1.6&quot;&gt;Every &lt;b style=&quot;color:var(--teal);font-size:18px&quot;&gt;'+per+'&lt;/b&gt; leads you buy turns into &lt;b style=&quot;color:var(--teal);font-size:18px&quot;&gt;1&lt;/b&gt; settled deal.&lt;/div&gt;');
+  } else if(paidLeads&gt;0){
+    bits.push('&lt;div style=&quot;font-size:15px;line-height:1.6&quot;&gt;'+paidLeads+' leads bought, nothing settled'+(scopeLabel?' '+scopeLabel:'')+' yet.&lt;/div&gt;');
+  }
+  if(spend&gt;0){
+    const back=Math.round(takeHome/spend*100)/100;
+    const col2=back&gt;=1?'var(--teal)':'#ff6b81';
+    bits.push('&lt;div style=&quot;font-size:15px;line-height:1.6;margin-top:4px&quot;&gt;Every &lt;b style=&quot;font-size:18px&quot;&gt;$1&lt;/b&gt; you put into leads comes back as &lt;b style=&quot;color:'+col2+';font-size:18px&quot;&gt;$'+back.toFixed(2)+'&lt;/b&gt; in your pocket &lt;span style=&quot;font-size:11.5px;color:var(--mut)&quot;&gt;after the split, before GST and tax&lt;/span&gt;.&lt;/div&gt;');
+  }
+  if(!bits.length)return'';
+  return '&lt;div style=&quot;background:linear-gradient(135deg,rgba(61,220,151,.1),rgba(61,220,151,.02) 60%),var(--card);border:1px solid rgba(61,220,151,.4);border-radius:14px;padding:16px 20px;margin-bottom:14px&quot;&gt;'
+    +'&lt;div style=&quot;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px&quot;&gt;The two numbers that matter'+(scopeLabel?' · '+scopeLabel:'')+'&lt;/div&gt;'
+    +bits.join('')+'&lt;/div&gt;';
+}
 function rAllTime(){
   const filtered=filterLeadsByType(D.leads,window._leadTypeFilter);
   const s=computeStats(filtered);
@@ -1922,7 +1941,7 @@ function rAllTime(){
   s.driveRate=_at.driveRate;s.driveCount=_at.driveCount;s.driveDollars=_at.driveDollars;
   s.insRate=_at.insRate;s.insCount=_at.insCount;s._atSettled=_at.settledCount;
   const lbl=window._leadTypeFilter===&quot;All&quot;?&quot;All Time Performance&quot;:&quot;All Time · &quot;+window._leadTypeFilter+&quot; Leads&quot;;
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+plainMoneyLine(filtered.filter(l=&gt;(l.cost||0)&gt;0).length,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)+statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
 }
 
 function rMonthly(){
@@ -1989,6 +2008,7 @@ function rMonthly(){
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.totalSettledAmt)+'&lt;/div&gt;&lt;/div&gt;'+
       '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(sd.avgLoanAmt)+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;/div&gt;'+
+    plainMoneyLine((months[selM]||[]).filter(l=&gt;(l.cost||0)&gt;0).length,sd.settledCount,(selStats?selStats.totalSpend:0),(sd.afterSplitTotal||0),monthLabel(selM))+
     // ═══ MONTH PREDICTION ═══
     // Pending pipeline = this month's approvals that haven't settled yet (approved → might settle)
     // Predicted total = already-settled comm + (pending * rolling avg commission per deal from all time)

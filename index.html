@@ -10428,6 +10428,26 @@ const CONSUMER=[
     if(f.visa==='bridge'){warn++;w.push('??'+'Bridging visas other than A and B are declined')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
+ {name:'C1',perfect:'Proper bad credit and everyone else has said no. Current Part 9, discharged bankrupt a day ago, recent defaults, thin score. If the client can show 90 days of decent banking conduct, C1 will look at it.',src:'Introducer Product Guide V5.2 · March 2026',
+  range:'Car loans $10,000 to $35,000',
+  rates:['By tier','Premium 24.99% to $35,000 · Standard 27.99% to $30,000 · Lite 29.99% to $20,000','Fees: establishment $995, $28 a month, funded DOF $1,195 to $1,595 capped at 10%','Referral fee 3.5% of principal · no clawbacks'],
+  more:['No credit score used · defaults, CCR conduct and repayment history decide the tier','Income is a 90 day banking average with HEMS · Centrelink accepted uncapped, but never Centrelink only','Current Part 9 accepted · 6 months in for Premium, 3 for Standard and Lite, clean conduct','Discharged bankrupts from 1 day, capped at $20,000','Terms: Premium 36 to 60 months, Standard 36 to 48, Lite 24 to 36','Cars to 11 years, luxury marques to 8 · LVR 140% · dealer and private sale, and C1 does the private sale paperwork','Bikes and caravans to $20,000 single or $30,000 dual security, not on Lite','Secured debt consolidation of personal loans, auto loans and balloons · not BNPL or credit cards','Credit file: 2 years for Premium and Standard, 1 year for Lite'],
+  no:['Less than 12 months of credit history','Current bankrupts and terminated Part 9s','Current hardship RHI or informal debt agreements','Centrelink only income','Gambling over 40% of income','All of NT, far north QLD, west of Dubbo, northern WA, and 200 to 250km beyond the southern capitals · caravan parks too','Grey imports and unregistrable dirt bikes','Learner licence with hours not completed'],
+  assets:['car','bike','caravan'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    if(f.amt!=null&amp;&amp;f.amt&gt;0&amp;&amp;f.amt&lt;10000){bad++;w.push('!!'+'Below the $10,000 minimum')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;35000){bad++;w.push('!!'+'Over the $35,000 Premium cap')}
+    else if(f.amt!=null&amp;&amp;f.amt&gt;30000){warn++;w.push('??'+'Over $30,000 needs Premium, clean conduct only')}
+    else if(f.amt!=null&amp;&amp;f.amt&gt;20000){warn++;w.push('??'+'Over $20,000 rules out Lite, needs Standard conduct or better')}
+    if(f.bankrupt){warn++;w.push('??'+'Current bankrupt is declined. Discharged is fine from 1 day at a $20,000 cap')}
+    if(f.defaults){w.push('Defaults are their bread and butter. Paid sits Premium, unpaid outside a year Standard, recent goes Lite case by case')}
+    if(f.score!=null){w.push('Score is not used here. Tiering runs off defaults, CCR conduct and repayment history')}
+    if(f.age!=null&amp;&amp;f.age&gt;11){bad++;w.push('!!'+'Vehicle over 11 years at settlement')}
+    else if(f.age!=null&amp;&amp;f.age&gt;8){warn++;w.push('??'+'Luxury marques cap at 8 years. BMW, Mercedes, Audi, Lexus, Jaguar, Land and Range Rover')}
+    if(f.emp==='casual'){warn++;w.push('??'+'Casuals sit on Standard or Lite. Premium is permanent PAYG only')}
+    if(f.payday){warn++;w.push('??'+'Wage advance or BNPL activity becomes a monthly allowance unless closed and quiet for 40 days')}
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
+
  {name:'Wisr',perfect:'Strong file, decent income, buying a newer car or EV, and rate shopping. Their 350 floor is generous but the sweet spot is a 640 plus score where they will go to $150,000 with no seven year loading.',src:'Non-BID Rate Chart, document dated May 2026',
   range:'Secured vehicle loan $10,570 to $150,000 including fees. Bikes max $65,000, min $10,000.',
   rates:['7.24% to 21.74% by Equifax One Score, residential status and asset age','Homeowner 9.24% to 14.09% · renter 10.04% to 18.74% · other 10.49% to 21.74%','EV and hybrid get 0.50% off','Can dial down up to 2%'],
@@ -12727,6 +12747,7 @@ button.danger-ghost,.liability-row .remove-btn{color:var(--danger)!important}
     &lt;option value=&quot;pepper&quot;&gt;Pepper&lt;/option&gt;
     &lt;option value=&quot;wisr&quot;&gt;Wisr&lt;/option&gt;
     &lt;option value=&quot;money3&quot;&gt;Money3&lt;/option&gt;
+    &lt;option value=&quot;c1&quot;&gt;C1&lt;/option&gt;
   &lt;/select&gt;
 &lt;/div&gt;
 
@@ -13529,6 +13550,13 @@ button.danger-ghost,.liability-row .remove-btn{color:var(--danger)!important}
 &lt;!-- ============================================================ --&gt;
 &lt;!-- MONEY3 TAB                                                    --&gt;
 &lt;!-- ============================================================ --&gt;
+&lt;div class=&quot;tab-panel&quot; id=&quot;panel-c1&quot;&gt;
+  &lt;div class=&quot;lender-ref&quot; style=&quot;display:none;&quot;&gt;
+      &lt;strong id=&quot;c1-ref-name&quot;&gt;·&lt;/strong&gt;
+      &lt;span id=&quot;c1-ref-loan&quot;&gt;$0 / 0 mo&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;lender-panel&quot; id=&quot;c1-panel&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
 &lt;div class=&quot;tab-panel&quot; id=&quot;panel-money3&quot;&gt;
   &lt;div class=&quot;lender-header&quot; style=&quot;--lender-color: #be185d; --lender-color-2: #9d174d&quot;&gt;
     &lt;div&gt;
@@ -15660,7 +15688,7 @@ function pickLender(key) {
 function renderLenderStrip(results) {
   const sel = $('lenderSelect');
   if (!sel || !results) return;
-  const names = { firstmac:'Firstmac Edge', firstmacstd:'Firstmac Std', azora:'Azora', now:'NOW Finance', moneyme:'MoneyMe', liberty:'Liberty', pepper:'Pepper', wisr:'Wisr', money3:'Money3' };
+  const names = { firstmac:'Firstmac Edge', firstmacstd:'Firstmac Std', azora:'Azora', now:'NOW Finance', moneyme:'MoneyMe', liberty:'Liberty', pepper:'Pepper', wisr:'Wisr', money3:'Money3', c1:'C1' };
   Array.from(sel.options).forEach(o =&gt; {
     const r = results[o.value]; const nm = names[o.value];
     if (!r || !nm) return;
@@ -17392,6 +17420,95 @@ function calcMoney3(s, base) {
   };
 }
 
+
+// ============================================================================
+// C1 CAR LOANS · Introducer Product Guide V5.2 (v:260317)
+// Bad-credit specialist. NO credit score used · decisions run off defaults,
+// CCR conduct and demonstrated repayment history. Income method is a 90-day
+// banking average with HEMS benchmarks. Tiers: Premium 24.99% $35k · Standard
+// 27.99% $30k · Lite 29.99% $20k. Minimum lend $10k. Estab $995 + $28/mo +
+// funded DOF. Current Part 9s accepted. No clawbacks.
+// ============================================================================
+function calcC1(s, base) {
+  const inc = calcIncomeGeneric(s, { base: 1, ot: 0.8, comm: 0.8, car: 0.8, casualFactor: 1.0 });
+  let netMonthly = inc.netMonthly;
+  let incomeNote = 'payslip estimate · C1 actually assesses a 90-day banking average';
+  if (s.stmtsInFile &amp;&amp; s.bankCreditAvg &gt; 0) { netMonthly = s.bankCreditAvg; incomeNote = '90-day banking average from statements (C1 method)'; }
+  const liv = livingExpenses(s, inc.grossIncome);
+
+  const knockouts = [], warnings = [];
+
+  // Tier off conduct · the guide never looks at a score
+  let tier = 'Premium', tierDesc = 'Premium (clean conduct)', rate = 24.99, maxLoan = 35000, maxTerm = 60, dof = 1595;
+  const dropTo = (t) =&gt; {
+    if (t === 'Standard' &amp;&amp; tier === 'Premium') { tier='Standard'; rate=27.99; maxLoan=Math.min(maxLoan,30000); maxTerm=48; dof=1395; }
+    if (t === 'Lite' &amp;&amp; tier !== 'Lite') { tier='Lite'; rate=29.99; maxLoan=Math.min(maxLoan,20000); maxTerm=36; dof=1195; }
+  };
+  const a = s.adverseCredit;
+  if (a === 'paid_defaults') { tierDesc = 'Premium (defaults paid)'; }
+  else if (a === 'rhi_3plus') { dropTo('Standard'); tierDesc='Standard (recent RHI)'; warnings.push('Recent negative RHI: facility must be up to date with 3 months of consistent repayments first.'); }
+  else if (a === 'unpaid_defaults') { dropTo('Standard'); tierDesc='Standard (unpaid defaults outside 12 months)'; warnings.push('Unpaid defaults inside 12 months drop to Lite or decline · check the default dates.'); }
+  else if (a === 'bankruptcy') { dropTo('Standard'); maxLoan=Math.min(maxLoan,20000); tierDesc='Standard (discharged bankrupt)'; warnings.push('Current bankruptcy is declined. Discharged is accepted from 1 day, lend capped at $20,000.'); }
+
+  if (s.creditFileAge === 'under_12mo' || s.creditFileAge === 'no_file') {
+    knockouts.push('Less than 12 months of credit history · C1 knockout at every tier.');
+  } else if (s.creditFileAge === '12_24mo') {
+    dropTo('Lite'); tierDesc='Lite (credit file 1 to 2 years · Premium and Standard need 2)';
+  }
+
+  if (s.residency &amp;&amp; s.residency !== 'citizen') {
+    dropTo('Lite'); tierDesc='Lite (NZ citizens and visa holders are Lite only)';
+    warnings.push('Visa applicants: accepted-visa list on request · term may be limited to the visa.');
+  }
+
+  if (s.empType === 'casual' &amp;&amp; tier === 'Premium') { dropTo('Standard'); tierDesc='Standard (casual · Premium does not take casuals)'; }
+  if (s.empType === 'self_employed') warnings.push('Self-employed: 12 months trading history plus a tax return or BAS required.');
+
+  const amt = s.fundedAmount || s.loanAmt;
+  if (amt &gt; 0 &amp;&amp; amt &lt; 10000) knockouts.push('Below the C1 minimum lend of $10,000.');
+  if (amt &gt; maxLoan) knockouts.push('Over the ' + tier + ' max lend of $' + maxLoan.toLocaleString() + '.');
+  if (s.vehicleAgeStart &gt; 11) knockouts.push('Vehicle over 11 years at settlement (' + s.vehicleAgeStart + 'y).');
+  else if (s.vehicleAgeStart &gt; 8) warnings.push('Over 8 years is fine unless it is a BMW, Mercedes, Audi, Lexus, Jaguar or Land/Range Rover · luxury caps at 8 years.');
+  if (s.vehiclePrice &gt; 0 &amp;&amp; amt / s.vehiclePrice &gt; 1.40) knockouts.push('LVR ' + Math.round(amt / s.vehiclePrice * 100) + '% · C1 caps at 140%.');
+  if ((s.baseRaw || 0) === 0 &amp;&amp; (s.otherIncomeRaw || 0) &gt; 0) knockouts.push('Centrelink-only income is not accepted.');
+  if (s.stmtsInFile &amp;&amp; s.gamblingMo &gt; 0 &amp;&amp; netMonthly &gt; 0 &amp;&amp; s.gamblingMo / netMonthly &gt; 0.40) knockouts.push('Gambling over 40% of income is declined per the guide.');
+  warnings.push('Location check: all of NT, far north QLD, west of Dubbo, northern WA and 200-250km+ beyond the southern capitals are excluded. Caravan parks too.');
+
+  const termUsed = Math.min(s.loanTerm || 60, maxTerm);
+  if ((s.loanTerm || 60) &gt; maxTerm) warnings.push('Term capped at ' + maxTerm + ' months on ' + tier + '.');
+
+  // Financed = advance + $995 establishment + funded DOF · plus the $28/mo account fee
+  const financed = amt &gt; 0 ? amt + 995 + dof : 0;
+  const repayment = financed &gt; 0 ? pmtWithBalloon(financed, rate, termUsed, 0) + 28 : 0;
+  const ndi = netMonthly - liv.total;
+  const commitments = base.exProposedTotal + repayment;
+  const surplus = ndi - commitments;
+
+  return {
+    name: 'C1', color: '#f97316',
+    incomeMethod: 'C1 assesses a 90-day banking average with HEMS · ' + incomeNote + '. No credit score · defaults, CCR conduct and repayment history decide the tier. Current Part 9s accepted. No clawbacks.',
+    tier: tierDesc, rate, maxLoan, maxTerm, termUsed,
+    grossIncome: inc.grossIncome, netMonthly,
+    ndi, repayment, commitments, surplus,
+    services: knockouts.length === 0 &amp;&amp; surplus &gt; 0,
+    eligible: knockouts.length === 0,
+    knockouts, warnings,
+    metric: 'Monthly surplus',
+    metricValue: fmt(surplus),
+    inc, liv, base,
+    strengths: (() =&gt; {
+      const out = [];
+      out.push('Bad credit specialist · repayment fee $995 estab + $28/mo + funded DOF $' + dof.toLocaleString() + ' are inside the repayment shown.');
+      if (a === 'bankruptcy') out.push('Discharged bankrupts from 1 day after discharge · almost nobody else does this.');
+      if (a === 'unpaid_defaults' || a === 'paid_defaults' || a === 'rhi_3plus') out.push('Recent defaults and negative CCR workable with demonstrated repayment history.');
+      out.push('Current Part 9 debt agreements accepted (6 months in for Premium, 3 for Standard and Lite, clean conduct).');
+      out.push('Secured debt consolidation available · personal loans, auto loans and balloons, not BNPL or credit cards.');
+      out.push('Private sale: C1 creates the invoice and chases the seller documents.');
+      return out;
+    })()
+  };
+}
+
 // ============================================================================
 // DEAL TIPS · actionable, profile-specific advice per lender
 // ============================================================================
@@ -17953,7 +18070,7 @@ function renderCompare(results, s) {
   renderSurplusChart(results);
   const tbody = document.getElementById('compare-tbody');
   if (!tbody) return;
-  const order = ['firstmac','firstmacstd','azora','now','moneyme','liberty','pepper','wisr','money3'];
+  const order = ['firstmac','firstmacstd','azora','now','moneyme','liberty','pepper','wisr','money3','c1'];
   tbody.innerHTML = order.map(key =&gt; {
     const r = results[key];
     if (!r) return '';
@@ -18004,7 +18121,7 @@ function renderSurplusChart(results) {
   const host = document.getElementById('surplusChartHost');
   if (!card || !host) return;
 
-  const order = ['firstmac','firstmacstd','azora','now','moneyme','liberty','pepper','wisr','money3'];
+  const order = ['firstmac','firstmacstd','azora','now','moneyme','liberty','pepper','wisr','money3','c1'];
   const rows = order.map(k =&gt; results[k]).filter(r =&gt; r);
   if (!rows.length) { card.style.display = 'none'; return; }
   card.style.display = '';
@@ -18143,7 +18260,8 @@ function renderAllLenders() {
     liberty:  calcLiberty,
     pepper:   calcPepper,
     wisr:     calcWisr,
-    money3:   calcMoney3
+    money3:   calcMoney3,
+    c1:       calcC1
   };
   const results = {};
   for (const [key, fn] of Object.entries(lenderFns)) {
@@ -18298,7 +18416,7 @@ function renderMaxLendSummary(results, s) {
     return;
   }
 
-  const order = ['firstmac','firstmacstd','azora','now','moneyme','liberty','pepper','wisr','money3'];
+  const order = ['firstmac','firstmacstd','azora','now','moneyme','liberty','pepper','wisr','money3','c1'];
   const servicingLenders = order
     .map(k =&gt; results[k])
     .filter(r =&gt; r &amp;&amp; r.servicingMax &gt; 0)

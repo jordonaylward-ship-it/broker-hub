@@ -1658,14 +1658,16 @@ function rCalc(){
   const S=(()=&gt;{try{return JSON.parse(localStorage.getItem('hub_scalecalc_v2'))||{};}catch(e){return {};}})();
   const v=(k,d)=&gt;S[k]!==undefined&amp;&amp;S[k]!==''?S[k]:d;
   const ck=k=&gt;S[k]?'checked':'';
+  const _lw=(S.leadsWk!==undefined&amp;&amp;S.leadsWk!=='')?S.leadsWk:((S.leads!==undefined&amp;&amp;S.leads!=='')?Math.round(S.leads*12/52*10)/10:5);
+  const _sw=(S.setWk!==undefined&amp;&amp;S.setWk!=='')?S.setWk:((S.conv!==undefined&amp;&amp;S.conv!==''&amp;&amp;_lw&gt;0)?Math.round(_lw*S.conv/100*100)/100:0.5);
   host.innerHTML=
    '&lt;div class=&quot;sh&quot; style=&quot;margin-top:4px&quot;&gt;&lt;h2&gt;Scale Calc · the whole picture on one page&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;SAVES AS YOU TYPE&lt;/span&gt;&lt;/div&gt;'
   +'&lt;div class=&quot;sc2-panel&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;The deal numbers · per broker&lt;/div&gt;&lt;div class=&quot;sc-grid&quot;&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Avg commission / deal&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_avg&quot; value=&quot;'+v('avg','2560')+'&quot; step=&quot;10&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;gross, before the split&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Broker split %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_split&quot; value=&quot;'+v('split','80')+'&quot; step=&quot;1&quot; min=&quot;0&quot; max=&quot;100&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;80 floor on digital leads from Aug 26&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Cost per lead&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_cpl&quot; value=&quot;'+v('cpl','75')+'&quot; step=&quot;5&quot;&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Conversion %&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_conv&quot; value=&quot;'+v('conv','28.4')+'&quot; step=&quot;0.1&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;leads that settle · MQL runs about 4%, SQL about 12% · breakeven on $75 leads is 5%&lt;/span&gt;&lt;/label&gt;'
-  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Leads per month&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_leads&quot; value=&quot;'+v('leads','20')+'&quot; step=&quot;1&quot;&gt;&lt;span id=&quot;c_lpw&quot; style=&quot;color:var(--mut);font-size:11px&quot;&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Deals settled per week&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_setwk&quot; value=&quot;'+_sw+'&quot; step=&quot;0.1&quot; min=&quot;0&quot;&gt;&lt;span id=&quot;c_convHint&quot; style=&quot;color:var(--mut);font-size:11px&quot;&gt;&lt;/span&gt;&lt;/label&gt;'
+  +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Leads per week&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_leads&quot; value=&quot;'+_lw+'&quot; step=&quot;1&quot;&gt;&lt;span id=&quot;c_lpw&quot; style=&quot;color:var(--mut);font-size:11px&quot;&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;label class=&quot;sc-f&quot;&gt;&lt;b&gt;Brokers&lt;/b&gt;&lt;input type=&quot;number&quot; id=&quot;c_bkrs&quot; value=&quot;'+v('bkrs','1')+'&quot; step=&quot;1&quot; min=&quot;1&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;in the pod · same numbers each, everything scales · keep a new hire to the agreed lead budget cap, SQLs only&lt;/span&gt;&lt;/label&gt;'
   +'&lt;/div&gt;&lt;/div&gt;'
   +'&lt;div class=&quot;sc2-panel&quot;&gt;&lt;div class=&quot;sc2-cap amber&quot;&gt;Extras · what each deal and each broker carries&lt;/div&gt;&lt;div class=&quot;sc-grid&quot; style=&quot;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))&quot;&gt;'
@@ -1677,7 +1679,7 @@ function rCalc(){
   +'&lt;label class=&quot;sc-chk&quot; style=&quot;cursor:default&quot;&gt;&lt;span&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;− docs &amp;amp; fees&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;$&lt;/span&gt;&lt;input type=&quot;number&quot; id=&quot;c_docs&quot; value=&quot;'+v('docs','250')+'&quot; step=&quot;10&quot; min=&quot;0&quot; style=&quot;width:70px;background:var(--card2);border:1px solid var(--bdr2);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:12px&quot;&gt;&lt;span style=&quot;color:var(--mut);font-size:11px&quot;&gt;/mo per broker · Docusign, credit files, bank statements · comes off the broker share&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;'
   +'&lt;/div&gt;&lt;/div&gt;'
   +'&lt;div id=&quot;c_out&quot;&gt;&lt;/div&gt;';
-  ['c_avg','c_split','c_cpl','c_conv','c_leads','c_car','c_warr','c_advOn','c_advAmt','c_ownLeads','c_ownPct','c_bkrs','c_docs'].forEach(id=&gt;{
+  ['c_avg','c_split','c_cpl','c_setwk','c_leads','c_car','c_warr','c_advOn','c_advAmt','c_ownLeads','c_ownPct','c_bkrs','c_docs'].forEach(id=&gt;{
     const el=document.getElementById(id);
     el.addEventListener('input',window._clc); el.addEventListener('change',window._clc);
   });
@@ -1688,9 +1690,9 @@ window._clc=function(){
   const num=id=&gt;{const n=parseFloat(raw(id)); return isFinite(n)?n:0;};
   const on=id=&gt;{const e=document.getElementById(id); return !!(e&amp;&amp;e.checked);};
   // persist EXACTLY what was typed · no recomputed floats
-  try{localStorage.setItem('hub_scalecalc_v2',JSON.stringify({avg:raw('c_avg'),split:raw('c_split'),cpl:raw('c_cpl'),conv:raw('c_conv'),leads:raw('c_leads'),advAmt:raw('c_advAmt'),car:on('c_car'),warr:on('c_warr'),advOn:on('c_advOn'),ownLeads:on('c_ownLeads'),ownPct:raw('c_ownPct'),bkrs:raw('c_bkrs'),docs:raw('c_docs')}));}catch(e){}
+  try{localStorage.setItem('hub_scalecalc_v2',JSON.stringify({avg:raw('c_avg'),split:raw('c_split'),cpl:raw('c_cpl'),setWk:raw('c_setwk'),leadsWk:raw('c_leads'),advAmt:raw('c_advAmt'),car:on('c_car'),warr:on('c_warr'),advOn:on('c_advOn'),ownLeads:on('c_ownLeads'),ownPct:raw('c_ownPct'),bkrs:raw('c_bkrs'),docs:raw('c_docs')}));}catch(e){}
   const host=document.getElementById('c_out'); if(!host) return;
-  const avg=num('c_avg'), split=num('c_split')/100, cpl=num('c_cpl'), conv=num('c_conv')/100, leads=num('c_leads');
+  const avg=num('c_avg'), split=num('c_split')/100, cpl=num('c_cpl'), leadsWk=num('c_leads'), leads=leadsWk*52/12, setWk=num('c_setwk'), conv=leadsWk&gt;0?setWk/leadsWk:0;
   const carAdd=on('c_car')?500:0;
   const warrGross=on('c_warr')?250:0;
   const advOn=on('c_advOn'), advWk=num('c_advAmt');
@@ -1698,7 +1700,9 @@ window._clc=function(){
   const ownPct=(()=&gt;{const e=document.getElementById('c_ownPct');const n=e?parseFloat(e.value):NaN;return isFinite(n)?n:20;})();
   const bkrs=Math.max(1,Math.round(num('c_bkrs')||1));
   const docsM=Math.max(0,num('c_docs'));
-  const lpwEl=document.getElementById('c_lpw'); if(lpwEl)lpwEl.textContent='\u2248 '+(Math.round(leads*12/52*10)/10)+' a week';
+  const lpwEl=document.getElementById('c_lpw'); if(lpwEl)lpwEl.textContent='\u2248 '+(Math.round(leads*10)/10)+' a month';
+  const chEl=document.getElementById('c_convHint');
+  if(chEl)chEl.textContent='= '+(Math.round(conv*1000)/10)+'% conversion \u00b7 MQL runs about 4%, SQL about 12% \u00b7 breakeven on $75 leads is 5%';
   const warrBroker=warrGross*(1-ownPct/100);
   const kept=avg*split+carAdd+warrBroker;
   const settles=leads*conv;
@@ -1756,7 +1760,7 @@ window._clc=function(){
    +'&lt;/div&gt;&lt;/div&gt;';
   h+='&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;'+(bkrs&gt;1?'One broker · their month in money · per broker':'Their month in money')+'&lt;/div&gt;'
    +row('Money they keep from deals','+'+f(gross),'plus',f2(settles)+' a month · '+f2(settles*12/52)+' a week · × '+f(kept)+' kept each · '+f(gross*12/52)+' a week')
-   +(ownLeads?row('Leads','$0','','you pay the '+f(spend)+' lead bill, not them'):row('Leads','−'+f(spend),'minus',leads+' leads × $'+cpl+' · '+f(spend*12/52)+' a week'))
+   +(ownLeads?row('Leads','$0','','you pay the '+f(spend)+' lead bill, not them'):row('Leads','−'+f(spend),'minus',f2(leadsWk)+' leads a week × $'+cpl+' · '+f(spend*12/52)+' a week'))
    +(advOn?row('Advance','−'+f(advM),'minus',f(advWk)+' a week paid to them'):'')
    +(docsM&gt;0?row('Docs and fees','−'+f(docsM),'minus','Docusign, credit files, bank statements · '+f(docsM*12/52)+' a week'):'')
    +row(profitM&gt;=0?'Left over for them':'Short for the month',f(profitM),'tot'+(profitM&lt;0?' bad':''),profitM&lt;0?'goes on his tab · invoiced monthly or taken off his first deals · your cash until repaid · '+f(profitW)+' a week':f(profitW)+' a week in their pocket')

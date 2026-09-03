@@ -263,6 +263,23 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
 .ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
 
+.blk-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:stretch;margin-bottom:14px}
+.blk{position:relative;min-width:0;display:flex;flex-direction:column}
+.blk&gt;.hist-chart,.blk&gt;.ring-card,.blk&gt;.mc{flex:1}
+.blk&gt;.kpi-row{padding-top:16px}
+.blk-bar{position:absolute;top:-4px;right:6px;display:flex;align-items:center;gap:6px;z-index:5;opacity:0;transition:opacity .15s;font-size:10.5px;color:var(--mut);background:#181b28;border-radius:8px;padding:3px 6px;pointer-events:auto}
+.blk:hover&gt;.blk-bar{opacity:1}
+.blk-grip{cursor:grab;font-size:13px;letter-spacing:-2px;color:#9db1ff;padding:0 4px;user-select:none}
+.blk-grip:active{cursor:grabbing}
+.blk-name{font-weight:600;white-space:nowrap}
+.blk-ws{display:inline-flex;gap:1px;margin-left:4px}
+.blk-ws button{border:0;background:transparent;color:var(--mut);font-family:inherit;font-size:10.5px;cursor:pointer;padding:2px 5px;border-radius:6px}
+.blk-ws button.on,.blk-ws button:hover{background:rgba(79,107,255,.18);color:#eef0ff}
+.blk.dragging{display:none}
+.blk-ph{border:2px dashed rgba(79,107,255,.6);border-radius:16px;background:rgba(79,107,255,.06)}
+.blk-reset{border:0;background:rgba(148,163,255,.1);color:var(--mut);font-family:inherit;font-size:11px;padding:6px 10px;border-radius:999px;cursor:pointer;margin-left:auto}
+.blk-reset:hover{color:#eef0ff}
+@media(max-width:768px){.blk{grid-column:span 12!important}.blk-bar,.blk-reset{display:none}}
 .dash2{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,1fr);gap:14px;margin:0 0 6px}
 @media(max-width:980px){.dash2{grid-template-columns:1fr}}
 .dash2 .hist-chart{margin:0;height:100%;box-sizing:border-box}
@@ -1439,6 +1456,73 @@ function skInline(key){var h=sk(key);return h?h.replace('&lt;div class=&quot;spk
 function kpiRow(items){return '&lt;div class=&quot;kpi-row&quot;&gt;'+items.map(function(it){return '&lt;div class=&quot;kpi&quot;&gt;&lt;div&gt;&lt;div class=&quot;kl&quot;&gt;'+it.l+'&lt;/div&gt;&lt;div class=&quot;kv'+(it.c?' '+it.c:'')+'&quot;&gt;'+it.v+'&lt;/div&gt;'+(it.s?'&lt;div class=&quot;ks&quot;&gt;'+it.s+'&lt;/div&gt;':'')+'&lt;/div&gt;'+skInline(it.k)+'&lt;/div&gt;';}).join('')+'&lt;/div&gt;';}
 
 
+
+// ═══ MOVABLE BLOCKS · grab a block by its grip, drop it where you want, it snaps in ═══
+// 12 column grid. Widths: 4 = a third, 6 = half, 8 = two thirds, 12 = full. A block dropped beside another takes the leftover width.
+// A block alone on its row is drawn full width. Saved per tab in this browser (hub_layout_v1). Reset button puts it back.
+const LAYOUT_KEY='hub_layout_v1';
+function layoutGet(){try{return JSON.parse(localStorage.getItem(LAYOUT_KEY))||{};}catch(e){return {};}}
+function layoutSave(tab,arr){const all=layoutGet();all[tab]=arr;try{localStorage.setItem(LAYOUT_KEY,JSON.stringify(all));}catch(e){}}
+function layoutReset(tab){const all=layoutGet();delete all[tab];try{localStorage.setItem(LAYOUT_KEY,JSON.stringify(all));}catch(e){}render();}
+function layoutRows(items){
+  const rows=[];let cur=[],used=0;
+  items.forEach(it=&gt;{const w=it.w||12;if(used+w&gt;12&amp;&amp;cur.length){rows.push(cur);cur=[];used=0;}cur.push(it);used+=w;});
+  if(cur.length)rows.push(cur);
+  const out=[];rows.forEach(r=&gt;r.forEach(it=&gt;out.push({id:it.id,w:it.w||12,span:r.length===1?12:(it.w||12)})));
+  return out;
+}
+function snapIn(items,droppedId){
+  const i=items.findIndex(x=&gt;x.id===droppedId);if(i&lt;0)return items;
+  let used=0;for(let j=0;j&lt;i;j++){const w=items[j].w||12;used=(used+w&gt;12)?w:used+w;}
+  const room=12-used;
+  if(used&gt;0&amp;&amp;room&gt;=3)items[i].w=room;
+  return items;
+}
+const BLK_W={4:'⅓',6:'½',8:'⅔',12:'full'};
+function blocksHtml(tab,blocks){
+  const byId={};blocks.forEach(b=&gt;byId[b.id]=b);
+  const saved=(layoutGet()[tab]||[]).filter(x=&gt;byId[x.id]);
+  let items=saved.map(x=&gt;({id:x.id,w:[4,6,8,12].includes(x.w)?x.w:byId[x.id].w}));
+  blocks.forEach(b=&gt;{if(!items.some(x=&gt;x.id===b.id))items.push({id:b.id,w:b.w});});
+  return '&lt;div class=&quot;blk-grid&quot; data-tab=&quot;'+tab+'&quot;&gt;'+layoutRows(items).map(it=&gt;{const b=byId[it.id];
+    return '&lt;div class=&quot;blk&quot; data-blk=&quot;'+it.id+'&quot; data-w=&quot;'+it.w+'&quot; style=&quot;grid-column:span '+it.span+'&quot;&gt;&lt;div class=&quot;blk-bar&quot;&gt;&lt;span class=&quot;blk-grip&quot; title=&quot;Drag to move&quot;&gt;⋮⋮&lt;/span&gt;&lt;span class=&quot;blk-name&quot;&gt;'+b.label+'&lt;/span&gt;&lt;span class=&quot;blk-ws&quot;&gt;'+[4,6,8,12].map(w=&gt;'&lt;button data-setw=&quot;'+w+'&quot;'+(it.w===w?' class=&quot;on&quot;':'')+' title=&quot;Make it '+BLK_W[w]+' wide&quot;&gt;'+BLK_W[w]+'&lt;/button&gt;').join('')+'&lt;/span&gt;&lt;/div&gt;'+b.html+'&lt;/div&gt;';}).join('')+'&lt;/div&gt;';
+}
+function layoutResetBtn(tab){return '&lt;button class=&quot;blk-reset&quot; onclick=&quot;layoutReset(\''+tab+'\')&quot; title=&quot;Put the blocks back where they started&quot;&gt;Reset layout&lt;/button&gt;';}
+(function(){
+  let drag=null,ph=null;
+  document.addEventListener('mousedown',e=&gt;{const g=e.target.closest&amp;&amp;e.target.closest('.blk-grip');if(g)g.closest('.blk').setAttribute('draggable','true');});
+  document.addEventListener('dragstart',e=&gt;{
+    const b=e.target.closest&amp;&amp;e.target.closest('.blk');if(!b||b.getAttribute('draggable')!=='true')return;
+    drag=b;try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',b.dataset.blk);}catch(_){}
+    ph=document.createElement('div');ph.className='blk blk-ph';ph.style.gridColumn=b.style.gridColumn;ph.style.minHeight=Math.min(180,b.offsetHeight||120)+'px';
+    setTimeout(()=&gt;{if(drag&amp;&amp;drag.parentNode){drag.parentNode.insertBefore(ph,drag);drag.classList.add('dragging');}},0);
+  });
+  document.addEventListener('dragover',e=&gt;{
+    if(!drag)return;const grid=e.target.closest&amp;&amp;e.target.closest('.blk-grid');if(!grid||grid!==drag.parentNode)return;
+    e.preventDefault();try{e.dataTransfer.dropEffect='move';}catch(_){}
+    const over=e.target.closest('.blk');if(!over||over===ph||over===drag)return;
+    const r=over.getBoundingClientRect();const full=(parseInt((over.style.gridColumn||'').replace('span ',''))||12)&gt;=12;
+    const before=full?(e.clientY&lt;r.top+r.height/2):(e.clientX&lt;r.left+r.width/2);
+    grid.insertBefore(ph,before?over:over.nextSibling);
+  });
+  document.addEventListener('drop',e=&gt;{if(!drag)return;e.preventDefault();finish();});
+  document.addEventListener('dragend',()=&gt;{if(drag)finish();});
+  function finish(){
+    const grid=drag.parentNode,tab=grid.dataset.tab;
+    if(ph&amp;&amp;ph.parentNode===grid)grid.insertBefore(drag,ph);
+    if(ph&amp;&amp;ph.parentNode)ph.remove();
+    drag.classList.remove('dragging');drag.removeAttribute('draggable');
+    const items=[...grid.querySelectorAll('.blk')].map(b=&gt;({id:b.dataset.blk,w:parseInt(b.dataset.w)||12}));
+    snapIn(items,drag.dataset.blk);layoutSave(tab,items);drag=null;ph=null;render();
+  }
+  document.addEventListener('click',e=&gt;{
+    const bt=e.target.closest&amp;&amp;e.target.closest('button[data-setw]');if(!bt)return;
+    const b=bt.closest('.blk'),grid=b.closest('.blk-grid');
+    const items=[...grid.querySelectorAll('.blk')].map(x=&gt;({id:x.dataset.blk,w:x===b?parseInt(bt.dataset.setw):(parseInt(x.dataset.w)||12)}));
+    layoutSave(grid.dataset.tab,items);render();
+  });
+})();
+
 // ═══ SPARK TILES · little wave + change badge on the number tiles ═══
 // Week mode (All Time, ROI): last 12 weeks, badge = last 4 weeks vs the 4 before.
 // Month mode (Monthly): last 6 months ending at the month you picked, badge = that month vs the month before.
@@ -1647,11 +1731,11 @@ function statsCards(s,label){
 window._leadTypeFilter=window._leadTypeFilter||&quot;All&quot;;
 const LEAD_TYPES=[&quot;All&quot;,&quot;Live&quot;,&quot;MQL&quot;,&quot;SQL&quot;];
 function filterLeadsByType(leads,type){if(type===&quot;All&quot;)return leads;return leads.filter(l=&gt;String(l.type||&quot;&quot;).trim().toUpperCase()===type.toUpperCase());}
-function leadTypeFilter(){
+function leadTypeFilter(extra){
   const counts={};
   LEAD_TYPES.forEach(t=&gt;counts[t]=filterLeadsByType(D.leads,t).length);
   return'&lt;div class=&quot;filter-bar&quot;&gt;&lt;span class=&quot;filter-bar-label&quot;&gt;Lead Type&lt;/span&gt;'+
-    LEAD_TYPES.map(t=&gt;'&lt;button class=&quot;filter-btn'+(window._leadTypeFilter===t?&quot; on&quot;:&quot;&quot;)+'&quot; onclick=&quot;window._leadTypeFilter=\''+t+'\';render();&quot;&gt;'+t+'&lt;span class=&quot;count&quot;&gt;('+counts[t]+')&lt;/span&gt;&lt;/button&gt;').join(&quot;&quot;)+
+    LEAD_TYPES.map(t=&gt;'&lt;button class=&quot;filter-btn'+(window._leadTypeFilter===t?&quot; on&quot;:&quot;&quot;)+'&quot; onclick=&quot;window._leadTypeFilter=\''+t+'\';render();&quot;&gt;'+t+'&lt;span class=&quot;count&quot;&gt;('+counts[t]+')&lt;/span&gt;&lt;/button&gt;').join(&quot;&quot;)+(extra||'')+
   '&lt;/div&gt;';
 }
 
@@ -2265,13 +2349,21 @@ function rAllTime(){
     {l:'Approval rate',v:pct(s.approvalRate),k:'approvalRate'},
     {l:'Avg loan settled',v:fmtFull(s.avgLoanAmt),k:'avgLoan'},
     {l:'Settled value',v:fmtFull(s.totalSettledAmt),k:'value',c:'c-pos'}]);
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+topRow
-    +'&lt;div class=&quot;sh&quot; style=&quot;margin-top:2px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+hp.toggle+'&lt;/div&gt;'
-    +'&lt;div class=&quot;dash2&quot;&gt;'+hp.settle+leadOutcomeRing(filtered,'Where every lead ends up','all time')+'&lt;/div&gt;'
-    +midRow
-    +'&lt;div class=&quot;dash2&quot;&gt;'+hp.comm+incomeMixRing(_at.afterSplitTotal||s.afterSplitTotal||0,_at.warrDollars,_at.driveDollars,insuranceDollars(null),'Where the money comes from','all time')+'&lt;/div&gt;'
-    +plainMoneyLine(paidN,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)
-    +statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+insightQuoteBlock(s,QUOTES_ALLTIME);
+  const blocks=[
+    {id:'top',w:12,label:'Headline numbers',html:topRow},
+    {id:'wave1',w:8,label:'Settlements wave',html:'&lt;div class=&quot;sh&quot; style=&quot;margin:0 0 8px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+hp.toggle+'&lt;/div&gt;'+hp.settle},
+    {id:'ring1',w:4,label:'Lead outcomes',html:leadOutcomeRing(filtered,'Where every lead ends up','all time')},
+    {id:'mid',w:12,label:'More numbers',html:midRow},
+    {id:'wave2',w:8,label:'Take-home wave',html:hp.comm},
+    {id:'ring2',w:4,label:'Money mix',html:incomeMixRing(_at.afterSplitTotal||s.afterSplitTotal||0,_at.warrDollars,_at.driveDollars,insuranceDollars(null),'Where the money comes from','all time')},
+    {id:'two',w:12,label:'The two numbers',html:plainMoneyLine(paidN,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)},
+    {id:'tiles',w:12,label:'Detail tiles',html:statsCards(s,lbl)},
+    {id:'net',w:12,label:'Net per week',html:netPerWeekBlock()},
+    {id:'velocity',w:12,label:'Pace',html:velocityCards(filtered)},
+    {id:'budget',w:12,label:'Lead budget',html:budgetBlock()},
+    {id:'insight',w:12,label:'Read on the numbers',html:insightQuoteBlock(s,QUOTES_ALLTIME)}
+  ];
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter(layoutResetBtn('alltime'))+blocksHtml('alltime',blocks);
 }
 
 function rMonthly(){
@@ -2304,7 +2396,7 @@ function rMonthly(){
   const monthOpts=sorted.map(ym=&gt;'&lt;option value=&quot;'+ym+'&quot;'+(ym===selM?&quot; selected&quot;:&quot;&quot;)+'&gt;'+monthLabel(ym)+'&lt;/option&gt;').reverse().join(&quot;&quot;);
 
   // Build month cards
-  let monthCardsHTML='',monthHeader='',monthTop='';
+  let monthCardsHTML='',monthHeader='',monthBlocks=[];
   if(selStats){
     const s=selStats;
     // Settlement-date based stats for the selected month (commission, settlements, settled value, avg loan)
@@ -2315,24 +2407,25 @@ function rMonthly(){
       const hp=historyPieces(filteredLeads);
       const paidN=(months[selM]||[]).filter(l=&gt;(l.cost||0)&gt;0).length;
       const conv=s.total&gt;0?sd.settledCount/s.total:0;
-      monthTop=kpiRow([
+      monthBlocks.push({id:'top',w:12,label:'Headline numbers',html:kpiRow([
         {l:'Settled deals',v:sd.settledCount,k:'settled',c:'c-pos',s:'settled in '+monthLabel(selM)},
         {l:'Take-home',v:fmtFull(sd.afterSplitTotal||0),k:'take',c:'c-pos',s:'after split'},
         {l:'Leads received',v:s.total,k:'leads',c:'c-teal',s:paidN+' paid for'},
         {l:'Conversion',v:pct(conv),k:'successRate',s:'settled ÷ received'},
         {l:'Per settled deal',v:fmtFull(sd.settledCount?(sd.afterSplitTotal||0)/sd.settledCount:0),k:'avgTake',c:'c-teal'},
-        {l:'Cost per lead',v:paidN?fmtFull(s.totalSpend/paidN):'·',k:'cpl'}])
-      +'&lt;div class=&quot;sh&quot; style=&quot;margin-top:2px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+hp.toggle+'&lt;/div&gt;'
-      +'&lt;div class=&quot;dash2&quot;&gt;'+hp.settle+leadOutcomeRing(months[selM]||[],'Where '+monthLabel(selM)+&quot;'s leads ended up&quot;,'by lead received date')+'&lt;/div&gt;'
-      +kpiRow([
+        {l:'Cost per lead',v:paidN?fmtFull(s.totalSpend/paidN):'·',k:'cpl'}])});
+      monthBlocks.push({id:'wave1',w:8,label:'Settlements wave',html:'&lt;div class=&quot;sh&quot; style=&quot;margin:0 0 8px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+hp.toggle+'&lt;/div&gt;'+hp.settle});
+      monthBlocks.push({id:'ring1',w:4,label:'Lead outcomes',html:leadOutcomeRing(months[selM]||[],'Where '+monthLabel(selM)+&quot;'s leads ended up&quot;,'by lead received date')});
+      monthBlocks.push({id:'mid',w:12,label:'More numbers',html:kpiRow([
         {l:'Approvals',v:sd.approvedCount,k:'approved',c:'c-pos',s:'decided this month'},
         {l:'Declined by lender',v:sd.declinedCount,k:'declined',c:'c-neg'},
         {l:'Not qualified',v:s.notQualifiedCount,k:'nq',c:'c-warn'},
         {l:'Approval rate',v:pct(sd.approvalRate),k:'approvalRate'},
         {l:'Avg loan settled',v:fmtFull(sd.avgLoanAmt),k:'avgLoan'},
-        {l:'Settled value',v:fmtFull(sd.totalSettledAmt),k:'value',c:'c-pos'}])
-      +'&lt;div class=&quot;dash2&quot;&gt;'+hp.comm+incomeMixRing(sd.afterSplitTotal||0,sd.warrDollars,sd.driveDollars,insuranceDollars(selM),'Where the money came from','settled in '+monthLabel(selM))+'&lt;/div&gt;'
-      +plainMoneyLine(paidN,sd.settledCount,s.totalSpend,(sd.afterSplitTotal||0),monthLabel(selM));
+        {l:'Settled value',v:fmtFull(sd.totalSettledAmt),k:'value',c:'c-pos'}])});
+      monthBlocks.push({id:'wave2',w:8,label:'Take-home wave',html:hp.comm});
+      monthBlocks.push({id:'ring2',w:4,label:'Money mix',html:incomeMixRing(sd.afterSplitTotal||0,sd.warrDollars,sd.driveDollars,insuranceDollars(selM),'Where the money came from','settled in '+monthLabel(selM))});
+      monthBlocks.push({id:'two',w:12,label:'The two numbers',html:plainMoneyLine(paidN,sd.settledCount,s.totalSpend,(sd.afterSplitTotal||0),monthLabel(selM))});
     })();
     monthCardsHTML=
     '&lt;div style=&quot;font-size:11px;color:var(--mut);margin-bottom:12px&quot;&gt;Leads &amp; spend by &lt;b style=&quot;color:var(--dim)&quot;&gt;Lead Received Date&lt;/b&gt; · Approvals by &lt;b style=&quot;color:var(--dim)&quot;&gt;Credit Decision Date&lt;/b&gt; · Declines by &lt;b style=&quot;color:var(--dim)&quot;&gt;Lost Date&lt;/b&gt; · Commission &amp; settlements by &lt;b style=&quot;color:var(--dim)&quot;&gt;Settlement Date&lt;/b&gt;&lt;/div&gt;'+
@@ -2443,18 +2536,16 @@ function rMonthly(){
   const selSd=selM?computeSettlementStats(filteredLeads,selM):null;
   const insightStats=selStats?Object.assign({},selStats,{commSettled:selSd.commSettled,settledCount:selSd.settledCount,totalSettledAmt:selSd.totalSettledAmt}):allS;
 
-  document.getElementById(&quot;sec-monthly&quot;).innerHTML=
-  leadTypeFilter()+
-  monthHeader+
-  monthTop+
-  monthCardsHTML+
-  '&lt;div class=&quot;sh&quot; style=&quot;margin-top:24px&quot;&gt;&lt;h2&gt;Monthly Breakdown'+typeSuffix+'&lt;/h2&gt;&lt;/div&gt;'+
+  monthBlocks.push({id:'cards',w:12,label:'Month detail',html:monthCardsHTML});
+  monthBlocks.push({id:'table',w:12,label:'Monthly breakdown',html:
+  '&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;Monthly Breakdown'+typeSuffix+'&lt;/h2&gt;&lt;/div&gt;'+
   '&lt;div style=&quot;font-size:11px;color:var(--mut);margin:-6px 0 8px&quot;&gt;$/wk after costs = net after leads and fees (before GST and tax), from your RCTIs. The current month is a run-rate, still in progress; ALL TIME is the blended average of your completed RCTI months.&lt;/div&gt;'+
   '&lt;div class=&quot;tw&quot;&gt;&lt;div class=&quot;ts&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;'+
     '&lt;th&gt;Month&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Leads&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Spend&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Avg/Lead&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Settled&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Approved&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Declined&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Success %&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Approval %&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Decline %&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Comm. Settled&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;After Split&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;$/wk after costs&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Avg Comm&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Avg Loan&lt;/th&gt;'+
-  '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'+rows+totRow+'&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;'+
-  budgetBlock()+
-  insightQuoteBlock(insightStats,QUOTES_MONTHLY);
+  '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'+rows+totRow+'&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;'});
+  monthBlocks.push({id:'budget',w:12,label:'Lead budget',html:budgetBlock()});
+  monthBlocks.push({id:'insight',w:12,label:'Read on the numbers',html:insightQuoteBlock(insightStats,QUOTES_MONTHLY)});
+  document.getElementById(&quot;sec-monthly&quot;).innerHTML=leadTypeFilter(layoutResetBtn('monthly'))+monthHeader+blocksHtml('monthly',monthBlocks);
 }
 
 function rAusloans(){

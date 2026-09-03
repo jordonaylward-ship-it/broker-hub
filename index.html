@@ -101,24 +101,40 @@ body.locked .shell{display:none}
 <style id="nightglass-shell">
 body{background:#0a0c16;color:#eef0ff}
 .shell{flex-direction:row;min-height:100vh;min-height:100dvh}
-.topnav{flex-direction:column;align-items:stretch;width:100px;min-width:100px;padding:14px 8px;gap:10px;background:linear-gradient(180deg,#12152a,#0c0f1f);border-bottom:0;border-right:1px solid rgba(148,163,255,.12);position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto;flex-wrap:nowrap;box-sizing:border-box}
-.brand{font-size:9.5px;letter-spacing:.08em;text-align:center;line-height:1.35;margin:0 0 8px;color:#c4b5fd;white-space:normal}
-.brand span{display:block;color:#eef0ff;font-size:10px}
-.nav-tabs{flex-direction:column;gap:6px;width:100%;flex-wrap:nowrap}
-.nav-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:100%;padding:10px 4px;border-radius:12px;font-size:10px;line-height:1.15;text-align:center;background:transparent;border:1px solid transparent;color:#8b91b8;transition:all .15s;white-space:normal}
-.nav-tab .ico{font-size:18px}
+.topnav{flex-direction:column;align-items:stretch;width:92px;min-width:92px;padding:14px 12px 16px;gap:10px;background:linear-gradient(180deg,#0f1226,#0a0c18);border-bottom:0;border-right:1px solid rgba(148,163,255,.10);position:sticky;top:0;height:100vh;height:100dvh;overflow:visible;flex-wrap:nowrap;box-sizing:border-box;transition:width .18s ease,min-width .18s ease;z-index:20}
+.topnav.wide{width:224px;min-width:224px}
+.nav-burger{display:flex;align-items:center;justify-content:center;width:44px;height:40px;border:0;border-radius:10px;background:transparent;color:#8b91b8;cursor:pointer;margin:0 0 4px 12px;transition:background .15s,color .15s}
+.nav-burger:hover{background:rgba(139,92,246,.14);color:#eef0ff}
+.nav-burger svg{width:22px;height:22px}
+.brand{display:none;font-size:11px;letter-spacing:.08em;line-height:1.35;margin:0 0 6px 14px;color:#c4b5fd;white-space:normal;text-align:left}
+.brand span{display:block;color:#eef0ff;font-size:12px}
+.topnav.wide .brand{display:block}
+.brand-mini{width:36px;height:36px;border-radius:11px;margin:2px 0 8px 16px;background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em;box-shadow:0 8px 20px rgba(139,92,246,.35)}
+.topnav.wide .brand-mini{display:none}
+.nav-tabs{flex:1;display:flex;flex-direction:column;gap:8px;width:100%;flex-wrap:nowrap;min-height:0}
+.nav-tab{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;width:52px;height:52px;padding:0;border-radius:14px;font-size:12.5px;font-weight:600;line-height:1.15;text-align:left;background:transparent;border:1px solid transparent;color:#7f86ad;transition:background .15s,color .15s,width .18s ease,box-shadow .15s;white-space:nowrap;margin-left:8px;overflow:visible}
+.nav-tab .ico{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex:0 0 24px;font-size:0}
+.nav-tab .ico svg{width:24px;height:24px}
+.nav-tab .lbl{display:none;margin-left:12px;color:inherit}
 .nav-tab:hover{background:rgba(139,92,246,.14);color:#eef0ff}
-.nav-tab.on{background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;border-color:transparent;box-shadow:0 8px 20px rgba(139,92,246,.35)}
-.topnav>*:last-child:not(.nav-tabs){margin-top:auto}
+.topnav .nav-tabs .nav-tab.on{background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;border-color:transparent;box-shadow:0 8px 22px rgba(139,92,246,.4)}
+.nav-tab.on .ico svg{stroke-width:2.3}
+.nav-tab[data-tool=settings]{margin-top:auto}
+.topnav.wide .nav-tab{width:calc(100% - 8px);justify-content:flex-start;padding:0 14px}
+.topnav.wide .nav-tab .lbl{display:inline}
+.topnav:not(.wide) .nav-tab::after{content:attr(data-label);position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(-4px);background:#181c36;color:#eef0ff;border:1px solid rgba(148,163,255,.24);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;box-shadow:0 10px 24px rgba(0,0,0,.4);z-index:50}
+.topnav:not(.wide) .nav-tab:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
 .frame-wrap{background:#0a0c16}
 .frame-wrap iframe{background:#0a0c16}
 @media(max-width:640px){
   .shell{flex-direction:column}
-  .topnav{flex-direction:row;width:auto;min-width:0;height:auto;position:static;border-right:0;border-bottom:1px solid rgba(148,163,255,.12);padding:8px 10px;overflow-x:auto;gap:6px;align-items:center}
-  .nav-tabs{flex-direction:row;width:auto}
-  .nav-tab{flex-direction:row;width:auto;padding:6px 10px;font-size:12px;gap:6px}
-  .nav-tab .ico{font-size:14px}
-  .brand{display:none}
+  .topnav,.topnav.wide{flex-direction:row;width:auto;min-width:0;height:auto;position:static;border-right:0;border-bottom:1px solid rgba(148,163,255,.12);padding:8px 10px;overflow-x:auto;gap:6px;align-items:center}
+  .nav-burger,.brand,.brand-mini{display:none!important}
+  .nav-tabs{flex-direction:row;width:auto;flex:1;gap:6px}
+  .nav-tab,.topnav.wide .nav-tab{width:44px;height:44px;margin-left:0;padding:0;justify-content:center;flex:0 0 44px}
+  .nav-tab .lbl,.topnav.wide .nav-tab .lbl{display:none}
+  .nav-tab[data-tool=settings]{margin-top:0;margin-left:auto}
+  .topnav:not(.wide) .nav-tab::after{display:none}
 }
 </style>
 </head>
@@ -178,20 +194,19 @@ body{background:#0a0c16;color:#eef0ff}
 </div>
 
 <div class="shell" id="appShell">
-  <div class="topnav">
-    <div class="brand">JORDON'S <span>BROKER SUITE</span></div>
+  <div class="topnav" id="topnav"><button class="nav-burger" id="navBurger" aria-label="Show or hide menu names"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="brand-mini">J</div><div class="brand">JORDON'S <span>BROKER SUITE</span></div>
     <div class="nav-tabs">
-      <button class="nav-tab on" data-tool="dashboard"><span class="ico">📊</span> Dashboard</button>
-      <button class="nav-tab" data-tool="closer"><span class="ico">🎯</span> Call Script</button>
-      <button class="nav-tab" data-tool="lender"><span class="ico">🏦</span> Lender Matcher</button>
-      <button class="nav-tab" data-tool="serviceability"><span class="ico">📐</span> Serviceability</button>
-      <button class="nav-tab" data-tool="warranty"><span class="ico">🛡️</span> Warranty</button>
-      <button class="nav-tab" data-tool="drive"><span class="ico">🚗</span> Drive Tracker</button>
-      <button class="nav-tab" data-tool="partners"><span class="ico">🤝</span> Partners</button>
-      <button class="nav-tab" data-tool="replydeck"><span class="ico">⚡</span> ReplyDeck</button>
-      <button class="nav-tab" data-tool="crm"><span class="ico">✍️</span> CRM Note</button>
+      <button class="nav-tab on" data-tool="dashboard" data-label="Dashboard" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span><span class="lbl">Dashboard</span></button>
+      <button class="nav-tab" data-tool="closer" data-label="Call Script" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span><span class="lbl">Call Script</span></button>
+      <button class="nav-tab" data-tool="lender" data-label="Lender Matcher" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6"/><path d="M5 10v9M9.5 10v9M14.5 10v9M19 10v9"/><path d="M3 19h18"/></svg></span><span class="lbl">Lender Matcher</span></button>
+      <button class="nav-tab" data-tool="serviceability" data-label="Serviceability" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg></span><span class="lbl">Serviceability</span></button>
+      <button class="nav-tab" data-tool="warranty" data-label="Warranty" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="lbl">Warranty</span></button>
+      <button class="nav-tab" data-tool="drive" data-label="Drive Tracker" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.5-5A2 2 0 0 1 8.4 6.5h7.2a2 2 0 0 1 1.9 1.5L19 13"/><rect x="3" y="13" width="18" height="6" rx="2"/><path d="M6 19v1.5M18 19v1.5"/><path d="M7 16h.01M17 16h.01"/></svg></span><span class="lbl">Drive Tracker</span></button>
+      <button class="nav-tab" data-tool="partners" data-label="Partners" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 15.5a5 5 0 0 1 5.5 4.5"/></svg></span><span class="lbl">Partners</span></button>
+      <button class="nav-tab" data-tool="replydeck" data-label="ReplyDeck" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M13 7.5l-2.5 3.5H14l-2.5 3.5"/></svg></span><span class="lbl">ReplyDeck</span></button>
+      <button class="nav-tab" data-tool="crm" data-label="CRM Note" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h8"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg></span><span class="lbl">CRM Note</span></button>
       
-      <button class="nav-tab" data-tool="settings"><span class="ico">⚙️</span> Settings</button>
+      <button class="nav-tab" data-tool="settings" data-label="Settings" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><span class="lbl">Settings</span></button>
     </div>
   </div>
   <div class="frame-wrap">
@@ -234,6 +249,8 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .mc-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .mc-v{font-family:'Poppins',monospace;font-size:22px;font-weight:600}
 .mc-s{font-size:11px;color:var(--mut);margin-top:3px}
+.mc{position:relative}.mc.has-sk{padding-right:84px}.sk{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}.sk-d{font-size:10px;font-weight:700;letter-spacing:.2px;padding:1px 6px;border-radius:999px}.sk-g{color:#34d399;background:rgba(52,211,153,.12)}.sk-r{color:#fb7185;background:rgba(251,113,133,.12)}.sk-n{color:#a5b4fc;background:rgba(139,92,246,.14)}
+@media(max-width:768px){.mc.has-sk{padding-right:16px;padding-bottom:30px}.sk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
 .tw{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
 .ts{overflow-x:auto;max-height:65vh;overflow-y:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -477,7 +494,8 @@ function ingestRaw(raw){
     var _aMo=computeSettlementStats(D.leads,_aYm);
     localStorage.setItem('hub_attach_v1',JSON.stringify({t:Date.now(),ym:_aYm,
       all:{settled:_aAll.settledCount,warr:_aAll.warrCount,drive:_aAll.driveCount,ins:_aAll.insCount,warrD:_aAll.warrDollars,driveD:_aAll.driveDollars},
-      month:{settled:_aMo.settledCount,warr:_aMo.warrCount,drive:_aMo.driveCount,ins:_aMo.insCount,warrD:_aMo.warrDollars,driveD:_aMo.driveDollars}}));
+      month:{settled:_aMo.settledCount,warr:_aMo.warrCount,drive:_aMo.driveCount,ins:_aMo.insCount,warrD:_aMo.warrDollars,driveD:_aMo.driveDollars},
+      weeks:(function(){var _w=skSeries(D.leads,'week').S;return {settled:_w.settled,warr:_w.warr,drive:_w.drive,ins:_w.ins,warrD:_w.warrD,driveD:_w.driveD,warrRate:_w.warrRate,driveRate:_w.driveRate,insRate:_w.insRate,comm:_w.comm,take:_w.take,leads:_w.leads,spend:_w.spend};})()}));
   }catch(e){}
   const lm=document.getElementById('loadMsg');if(lm)lm.remove();
   render();
@@ -840,6 +858,8 @@ function parseAll(raw){
       month:parseMonth(r[hm[&quot;Lead Received Date&quot;]]),
       settlementMonth:parseMonth(r[hm[&quot;Settlement Date&quot;]]),
       creditDecisionMonth:parseMonth(r[hm[&quot;Credit Decision Date&quot;]]),
+      creditDecisionDate:r[hm[&quot;Credit Decision Date&quot;]]||&quot;&quot;,
+      lostDate:r[hm[&quot;Lost Date&quot;]]||&quot;&quot;,
       lostMonth:parseMonth(r[hm[&quot;Lost Date&quot;]])
     });
   }
@@ -1054,6 +1074,7 @@ function computeROI(spend,commSettled,settledCount,approvedCount,lifetimeAfterSp
 }
 function rROI(){
   const filtered=filterLeadsByType(D.leads,window._leadTypeFilter);
+  skSet(filtered,'week');
   const allS=computeStats(filtered);const allSd=computeSettlementStats(filtered,null);
   const adv=getAdvance(null);
 
@@ -1115,7 +1136,7 @@ function rROI(){
     // Card 2: Advance Balance · debt tracking
     ''+
 
-    '&lt;div class=&quot;mg mg4&quot;&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Gross Commission&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(r.grossComm)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Before split (tiered)&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Cost Per Settlement&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(r.costPerSettlement&gt;0?fmtFull(r.costPerSettlement):&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Lead $ / settled deal&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Cost Per Approval&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(r.costPerApproval&gt;0?fmtFull(r.costPerApproval):&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Lead $ / approval&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Earned / Settlement&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+(r.avgCommPerSettlement&gt;0?fmtFull(r.avgCommPerSettlement):&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;After split, per deal&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mg mg4&quot;&gt;&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Gross Commission&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(r.grossComm)+'&lt;/div&gt;'+sk('comm')+'&lt;div class=&quot;mc-s&quot;&gt;Before split (tiered)&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Cost Per Settlement&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(r.costPerSettlement&gt;0?fmtFull(r.costPerSettlement):&quot;·&quot;)+'&lt;/div&gt;'+sk('costPerSettle')+'&lt;div class=&quot;mc-s&quot;&gt;Lead $ / settled deal&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Cost Per Approval&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+(r.costPerApproval&gt;0?fmtFull(r.costPerApproval):&quot;·&quot;)+'&lt;/div&gt;'+sk('costPerApproval')+'&lt;div class=&quot;mc-s&quot;&gt;Lead $ / approval&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Earned / Settlement&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+(r.avgCommPerSettlement&gt;0?fmtFull(r.avgCommPerSettlement):&quot;·&quot;)+'&lt;/div&gt;'+sk('avgTake')+'&lt;div class=&quot;mc-s&quot;&gt;After split, per deal&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
 
     '&lt;div class=&quot;insight&quot;&gt;&lt;div class=&quot;insight-icon&quot;&gt;💡&lt;/div&gt;&lt;div class=&quot;insight-body&quot;&gt;&lt;div class=&quot;insight-label&quot;&gt;Read on the numbers&lt;/div&gt;&lt;div class=&quot;insight-text&quot;&gt;'+esc(insight)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+
 
@@ -1191,9 +1212,9 @@ function velocityCards(leads){
   return'&lt;div class=&quot;sh&quot; style=&quot;margin-top:8px&quot;&gt;&lt;h2&gt;Velocity · what\'s coming in&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+weeksLabel.toUpperCase()+'&lt;/span&gt;&lt;/div&gt;'+
   '&lt;div class=&quot;mg mg4&quot;&gt;'+
   '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Leads / Day&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+v.leadsPerDay.toFixed(1)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Since first lead&lt;/div&gt;&lt;/div&gt;'+
-  '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Leads / Week&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+v.leadsPerWeek.toFixed(1)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Rolling average&lt;/div&gt;&lt;/div&gt;'+
-  '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Settlements / Month&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+v.settlementsPerMonth.toFixed(1)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Running pace&lt;/div&gt;&lt;/div&gt;'+
-  '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approvals / Month&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+v.approvalsPerMonth.toFixed(1)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Running pace&lt;/div&gt;&lt;/div&gt;'+
+  '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Leads / Week&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+v.leadsPerWeek.toFixed(1)+'&lt;/div&gt;'+sk('leads')+'&lt;div class=&quot;mc-s&quot;&gt;Rolling average&lt;/div&gt;&lt;/div&gt;'+
+  '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Settlements / Month&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+v.settlementsPerMonth.toFixed(1)+'&lt;/div&gt;'+sk('settled')+'&lt;div class=&quot;mc-s&quot;&gt;Running pace&lt;/div&gt;&lt;/div&gt;'+
+  '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approvals / Month&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+v.approvalsPerMonth.toFixed(1)+'&lt;/div&gt;'+sk('approved')+'&lt;div class=&quot;mc-s&quot;&gt;Running pace&lt;/div&gt;&lt;/div&gt;'+
   '&lt;/div&gt;';
 }
 
@@ -1363,37 +1384,143 @@ function historyChartsBlock(leads){
     +'&lt;/div&gt;';
 }
 
+
+// ═══ SPARK TILES · little wave + change badge on the number tiles ═══
+// Week mode (All Time, ROI): last 12 weeks, badge = last 4 weeks vs the 4 before.
+// Month mode (Monthly): last 6 months ending at the month you picked, badge = that month vs the month before.
+// The current week or month is left off until it is at least half way through, so the wave never ends in a fake dip.
+window._skCtx=null;
+const SK_ISSET=l=&gt;l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Settled&quot;;
+const SK_ISAPP=l=&gt;l.outcome===&quot;Approved&quot;||l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Approved&quot;||l.currentStage===&quot;Settled&quot;;
+const SK_ISSUB=l=&gt;(l.outcome===&quot;Approved&quot;||l.outcome===&quot;Settled&quot;)||l.lostReason===&quot;Declined by Lender&quot;||l.currentStage===&quot;Submitted&quot;||l.currentStage===&quot;Approved&quot;||l.currentStage===&quot;Settled&quot;;
+const SK_ISLOST=l=&gt;l.finalStatus===&quot;Lost&quot;||l.currentStage===&quot;Lost&quot;;
+function skBuckets(mode,anchorYm,count){
+  const out=[];
+  if(mode==='month'){
+    const [y,m]=anchorYm.split('-').map(Number);
+    for(let i=count-1;i&gt;=0;i--){out.push(new Date(y,m-1-i,1));}
+  }else{
+    const now=new Date();const day=now.getDay()||7;
+    const wk=new Date(now.getFullYear(),now.getMonth(),now.getDate()-(day-1));
+    const half=((now-wk)/(7*86400000))&gt;=0.5;
+    const last=half?wk:new Date(wk.getFullYear(),wk.getMonth(),wk.getDate()-7);
+    for(let i=count-1;i&gt;=0;i--){out.push(new Date(last.getFullYear(),last.getMonth(),last.getDate()-7*i));}
+  }
+  return out;
+}
+function skSeries(leads,mode,anchorYm){
+  const count=mode==='month'?6:12;
+  const b=skBuckets(mode,anchorYm,count);
+  const n=b.length;
+  const idx=dt=&gt;{
+    if(!dt)return -1;
+    if(mode==='month'){const i=(dt.getFullYear()-b[0].getFullYear())*12+(dt.getMonth()-b[0].getMonth());return(i&gt;=0&amp;&amp;i&lt;n)?i:-1;}
+    const i=Math.floor((dt-b[0])/(7*86400000));return(i&gt;=0&amp;&amp;i&lt;n)?i:-1;
+  };
+  const z=()=&gt;new Array(n).fill(0);
+  const S={leads:z(),paid:z(),spend:z(),settled:z(),comm:z(),take:z(),value:z(),approved:z(),declined:z(),submitted:z(),lost:z(),nq:z(),warr:z(),drive:z(),ins:z(),warrD:z(),driveD:z()};
+  const subIds=new Set(leads.filter(SK_ISSUB).map(l=&gt;l.id));
+  leads.forEach(l=&gt;{
+    const li=idx(parseDate(l.date));
+    if(li&gt;=0){S.leads[li]++;if((l.cost||0)&gt;0){S.paid[li]++;S.spend[li]+=l.cost;}
+      if(SK_ISSUB(l))S.submitted[li]++;
+      if(SK_ISLOST(l)){S.lost[li]++;if(!subIds.has(l.id))S.nq[li]++;}}
+    if(SK_ISSET(l)){const si=idx(parseDate(l.settleDate));
+      if(si&gt;=0){S.settled[si]++;S.comm[si]+=(l.commTotal||0);S.take[si]+=(l.commTotal||0)*baseSplit(l.settlementMonth);
+        S.value[si]+=(l.settledAmt&gt;0?l.settledAmt:(l.requestedAmt&gt;0?l.requestedAmt:0));
+        if((l.warrAmt||0)&gt;0){S.warr[si]++;S.warrD[si]+=l.warrAmt;}
+        if((l.driveAmt||0)&gt;0){S.drive[si]++;S.driveD[si]+=l.driveAmt;}
+        if(/^y/i.test(l.insSold||&quot;&quot;))S.ins[si]++;}}
+    if(SK_ISAPP(l)){const ai=idx(parseDate(l.creditDecisionDate));if(ai&gt;=0)S.approved[ai]++;}
+    if(l.lostReason===&quot;Declined by Lender&quot;){const di=idx(parseDate(l.lostDate));if(di&gt;=0)S.declined[di]++;}
+  });
+  const div=(a,c)=&gt;a.map((v,i)=&gt;c[i]&gt;0?v/c[i]:0);
+  S.cpl=div(S.spend,S.paid);
+  S.avgLoan=div(S.value,S.settled);
+  S.avgComm=div(S.comm,S.settled);
+  S.avgTake=div(S.take,S.settled);
+  S.netPerDeal=S.settled.map((c,i)=&gt;c&gt;0?(S.take[i]-S.spend[i])/c:0);
+  S.successRate=div(S.settled,S.leads);
+  S.approvalRate=S.approved.map((a,i)=&gt;(a+S.declined[i])&gt;0?a/(a+S.declined[i]):0);
+  S.declineRate=S.declined.map((d,i)=&gt;(d+S.approved[i])&gt;0?d/(d+S.approved[i]):0);
+  S.nqRate=div(S.nq,S.leads);
+  S.warrRate=div(S.warr,S.settled);S.driveRate=div(S.drive,S.settled);S.insRate=div(S.ins,S.settled);
+  S.net=S.take.map((t,i)=&gt;t-S.spend[i]);
+  S.roi=S.spend.map((sp,i)=&gt;sp&gt;0?S.take[i]/sp:0);
+  S.costPerSettle=div(S.spend,S.settled);
+  S.costPerApproval=div(S.spend,S.approved);
+  return {b,S,mode};
+}
+// how to read each key: up = 'good' (green when rising), 'bad' (red when rising), 'flat' (blue either way); kind = 'sum' | 'avg' | 'rate'
+const SK_META={leads:['flat','sum'],paid:['flat','sum'],spend:['flat','sum'],cpl:['bad','avg'],settled:['good','sum'],approved:['good','sum'],declined:['bad','sum'],nq:['bad','sum'],lost:['bad','sum'],submitted:['good','sum'],
+  comm:['good','sum'],take:['good','sum'],value:['good','sum'],avgLoan:['flat','avg'],avgComm:['good','avg'],avgTake:['good','avg'],netPerDeal:['good','avg'],net:['good','sum'],roi:['good','avg'],
+  successRate:['good','rate'],approvalRate:['good','rate'],declineRate:['bad','rate'],nqRate:['bad','rate'],warrRate:['good','rate'],driveRate:['good','rate'],insRate:['good','rate'],warr:['good','sum'],drive:['good','sum'],ins:['good','sum'],warrD:['good','sum'],driveD:['good','sum'],costPerSettle:['bad','avg'],costPerApproval:['bad','avg']};
+function skWave(vals,col){
+  const w=64,h=22,n=vals.length;if(n&lt;2)return'';
+  const hi=Math.max(...vals),lo=Math.min(...vals);
+  // scale: from zero normally · when the numbers barely move but sit well above zero, zoom in so the wave is still readable · dead flat draws a level line
+  let floor=0,span=hi;
+  if(hi===lo){floor=hi-1;span=2;}
+  else if(lo&gt;0&amp;&amp;(hi-lo)&lt;0.4*hi){floor=lo-(hi-lo);span=hi-floor;}
+  const xs=vals.map((_,i)=&gt;2+i*(w-4)/(n-1)),ys=vals.map(v=&gt;h-2-((v-floor)/span)*(h-5));
+  let d='M '+xs[0].toFixed(1)+' '+ys[0].toFixed(1);
+  for(let i=0;i&lt;n-1;i++){const p0=i&gt;0?i-1:i,p3=i+2&lt;n?i+2:i+1;
+    d+=' C '+(xs[i]+(xs[i+1]-xs[p0])/6).toFixed(1)+' '+(ys[i]+(ys[i+1]-ys[p0])/6).toFixed(1)+', '+(xs[i+1]-(xs[p3]-xs[i])/6).toFixed(1)+' '+(ys[i+1]-(ys[p3]-ys[i])/6).toFixed(1)+', '+xs[i+1].toFixed(1)+' '+ys[i+1].toFixed(1);}
+  const id='skg'+Math.random().toString(36).slice(2,8);
+  return'&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; width=&quot;'+w+'&quot; height=&quot;'+h+'&quot; style=&quot;display:block;overflow:visible&quot;&gt;&lt;defs&gt;&lt;linearGradient id=&quot;'+id+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.55&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.02&quot;/&gt;&lt;/linearGradient&gt;&lt;clipPath id=&quot;'+id+'c&quot;&gt;&lt;rect x=&quot;0&quot; y=&quot;0&quot; width=&quot;'+w+'&quot; height=&quot;'+(h-2)+'&quot;/&gt;&lt;/clipPath&gt;&lt;/defs&gt;&lt;g clip-path=&quot;url(#'+id+'c)&quot;&gt;&lt;path d=&quot;'+d+' L '+xs[n-1].toFixed(1)+' '+h+' L '+xs[0].toFixed(1)+' '+h+' Z&quot; fill=&quot;url(#'+id+')&quot;/&gt;&lt;path d=&quot;'+d+'&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;1.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/g&gt;&lt;/svg&gt;';
+}
+function sk(key){
+  const c=window._skCtx;if(!c||!c.series)return'';
+  const vals=c.series.S[key];if(!vals)return'';
+  const meta=SK_META[key]||['flat','sum'];
+  const n=vals.length;
+  let now,before,label;
+  if(c.series.mode==='month'){now=vals[n-1];before=vals[n-2];label='vs the month before';}
+  else if(meta[1]==='sum'){now=vals.slice(n-4).reduce((a,b)=&gt;a+b,0);before=vals.slice(n-8,n-4).reduce((a,b)=&gt;a+b,0);label='last 4 weeks vs the 4 before';}
+  else{const avg=a=&gt;{const f=a.filter(v=&gt;v&gt;0);return f.length?f.reduce((x,y)=&gt;x+y,0)/f.length:0;};now=avg(vals.slice(n-4));before=avg(vals.slice(n-8,n-4));label='last 4 weeks vs the 4 before';}
+  let txt='',dir='flat';
+  if(meta[1]==='rate'){const d=Math.round((now-before)*100);if(d!==0){txt=(d&gt;0?'▲ ':'▼ ')+Math.abs(d)+' pts';dir=d&gt;0?'up':'dn';}}
+  else if(before&gt;0){const d=Math.round((now-before)/before*100);if(d!==0){txt=(d&gt;0?'▲ ':'▼ ')+Math.abs(d)+'%';dir=d&gt;0?'up':'dn';}}
+  else if(now&gt;0){txt='▲ new';dir='up';}
+  let tone='n';
+  if(dir!=='flat'&amp;&amp;meta[0]!=='flat')tone=((dir==='up')===(meta[0]==='good'))?'g':'r';
+  const col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  const allZero=vals.every(v=&gt;!v);
+  return'&lt;div class=&quot;sk&quot; title=&quot;'+label+'&quot;&gt;'+(txt?'&lt;span class=&quot;sk-d sk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWave(vals,col))+'&lt;/div&gt;';
+}
+function skSet(leads,mode,anchorYm){window._skCtx={series:skSeries(leads,mode,anchorYm||ymOfDate(new Date()))};}
+
 function statsCards(s,label){
   return'&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;'+label+'&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+s.total+' LEADS&lt;/span&gt;&lt;/div&gt;'+
   '&lt;div class=&quot;mg mg5&quot;&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Leads&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+s.total+'&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead Spend&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.totalSpend)+'&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Spend/Lead&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.avgSpendPerLead)+'&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Settlements&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+s.settledCount+'&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approvals&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+s.approvedCount+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Leads&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+s.total+'&lt;/div&gt;'+sk('leads')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead Spend&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.totalSpend)+'&lt;/div&gt;'+sk('spend')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Spend/Lead&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.avgSpendPerLead)+'&lt;/div&gt;'+sk('cpl')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Settlements&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+s.settledCount+'&lt;/div&gt;'+sk('settled')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approvals&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+s.approvedCount+'&lt;/div&gt;'+sk('approved')+'&lt;/div&gt;'+
   '&lt;/div&gt;'+
   '&lt;div class=&quot;mg mg5&quot;&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Declines&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+s.declinedCount+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;By lender&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Not Qualified&lt;/div&gt;&lt;div class=&quot;mc-v cm c-warn&quot;&gt;'+s.notQualifiedCount+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+pct(s.notQualifiedRate)+' · closed before submit&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Success Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.successRate&gt;=0.1?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.successRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Settled / total leads&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approval Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.approvalRate&gt;=0.5?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.approvalRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Approved / submitted&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Decline Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.declineRate&gt;0.4?&quot;c-neg&quot;:&quot;c-pos&quot;)+'&quot;&gt;'+pct(s.declineRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Declined / submitted&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lost&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+s.lostCount+'&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Declines&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+s.declinedCount+'&lt;/div&gt;'+sk('declined')+'&lt;div class=&quot;mc-s&quot;&gt;By lender&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Not Qualified&lt;/div&gt;&lt;div class=&quot;mc-v cm c-warn&quot;&gt;'+s.notQualifiedCount+'&lt;/div&gt;'+sk('nq')+'&lt;div class=&quot;mc-s&quot;&gt;'+pct(s.notQualifiedRate)+' · closed before submit&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Success Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.successRate&gt;=0.1?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.successRate)+'&lt;/div&gt;'+sk('successRate')+'&lt;div class=&quot;mc-s&quot;&gt;Settled / total leads&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approval Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.approvalRate&gt;=0.5?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.approvalRate)+'&lt;/div&gt;'+sk('approvalRate')+'&lt;div class=&quot;mc-s&quot;&gt;Approved / submitted&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Decline Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.declineRate&gt;0.4?&quot;c-neg&quot;:&quot;c-pos&quot;)+'&quot;&gt;'+pct(s.declineRate)+'&lt;/div&gt;'+sk('declineRate')+'&lt;div class=&quot;mc-s&quot;&gt;Declined / submitted&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lost&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+s.lostCount+'&lt;/div&gt;'+sk('lost')+'&lt;/div&gt;'+
   '&lt;/div&gt;'+
   '&lt;div class=&quot;mg mg5&quot;&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Commission Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(s.commSettled)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Full commission earned&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;After Split ('+(s.effectiveSplitRate*100).toFixed(0)+'%)&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.afterSplitTotal||0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Your take-home&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.totalSettledAmt)+'&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(s.avgLoanAmt)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Per settled deal&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Commission / Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(s.settledCount&gt;0?s.commSettled/s.settledCount:0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Full comm · per settled deal&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Comm / Deal · after split&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.settledCount&gt;0?(s.afterSplitTotal||0)/s.settledCount:0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Your cut ('+(s.effectiveSplitRate*100).toFixed(0)+'%) · per settled deal&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Net / Settled Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.settledCount&gt;0&amp;&amp;((s.afterSplitTotal||0)-s.totalSpend)&gt;=0?&quot;c-pos&quot;:&quot;c-neg&quot;)+'&quot;&gt;'+fmtFull(s.settledCount&gt;0?((s.afterSplitTotal||0)-s.totalSpend)/s.settledCount:0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;After split − lead $ per settle&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Commission Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(s.commSettled)+'&lt;/div&gt;'+sk('comm')+'&lt;div class=&quot;mc-s&quot;&gt;Full commission earned&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;After Split ('+(s.effectiveSplitRate*100).toFixed(0)+'%)&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.afterSplitTotal||0)+'&lt;/div&gt;'+sk('take')+'&lt;div class=&quot;mc-s&quot;&gt;Your take-home&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.totalSettledAmt)+'&lt;/div&gt;'+sk('value')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(s.avgLoanAmt)+'&lt;/div&gt;'+sk('avgLoan')+'&lt;div class=&quot;mc-s&quot;&gt;Per settled deal&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Commission / Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(s.settledCount&gt;0?s.commSettled/s.settledCount:0)+'&lt;/div&gt;'+sk('avgComm')+'&lt;div class=&quot;mc-s&quot;&gt;Full comm · per settled deal&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Comm / Deal · after split&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(s.settledCount&gt;0?(s.afterSplitTotal||0)/s.settledCount:0)+'&lt;/div&gt;'+sk('avgTake')+'&lt;div class=&quot;mc-s&quot;&gt;Your cut ('+(s.effectiveSplitRate*100).toFixed(0)+'%) · per settled deal&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Net / Settled Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.settledCount&gt;0&amp;&amp;((s.afterSplitTotal||0)-s.totalSpend)&gt;=0?&quot;c-pos&quot;:&quot;c-neg&quot;)+'&quot;&gt;'+fmtFull(s.settledCount&gt;0?((s.afterSplitTotal||0)-s.totalSpend)/s.settledCount:0)+'&lt;/div&gt;'+sk('netPerDeal')+'&lt;div class=&quot;mc-s&quot;&gt;After split − lead $ per settle&lt;/div&gt;&lt;/div&gt;'+
   '&lt;/div&gt;'+
   (s.warrRate===undefined?'':(
   '&lt;div class=&quot;mg mg5&quot; style=&quot;margin-top:11px&quot;&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a warranty&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.warrRate&gt;=0.25?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.warrRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+s.warrCount+' of '+s._atSettled+' settled · '+fmtFull(s.warrDollars)+' earned&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a Drive referral&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.driveRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.driveRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+s.driveCount+' of '+s._atSettled+' settled · '+fmtFull(s.driveDollars)+' earned&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with insurance&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.insRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.insRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+s.insCount+' of '+s._atSettled+' settled · builds the monthly insurance drips&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a warranty&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.warrRate&gt;=0.25?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.warrRate)+'&lt;/div&gt;'+sk('warrRate')+'&lt;div class=&quot;mc-s&quot;&gt;'+s.warrCount+' of '+s._atSettled+' settled · '+fmtFull(s.warrDollars)+' earned&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a Drive referral&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.driveRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.driveRate)+'&lt;/div&gt;'+sk('driveRate')+'&lt;div class=&quot;mc-s&quot;&gt;'+s.driveCount+' of '+s._atSettled+' settled · '+fmtFull(s.driveDollars)+' earned&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with insurance&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(s.insRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(s.insRate)+'&lt;/div&gt;'+sk('insRate')+'&lt;div class=&quot;mc-s&quot;&gt;'+s.insCount+' of '+s._atSettled+' settled · builds the monthly insurance drips&lt;/div&gt;&lt;/div&gt;'+
   '&lt;/div&gt;'));
 }
 
@@ -1530,9 +1657,9 @@ function bidCalculatorBlock(filtered){
       '&lt;/div&gt;'+
     '&lt;/div&gt;'+
     '&lt;div class=&quot;mg mg3&quot; style=&quot;margin-bottom:0&quot;&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Currently paying&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(headlineCpl)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Avg cost per lead&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Profit per lead&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(headlineProfit&gt;=0?&quot;c-pos&quot;:&quot;c-neg&quot;)+'&quot;&gt;'+(headlineProfit&gt;=0?&quot;+&quot;:&quot;&quot;)+fmtFull(headlineProfit)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Value minus cost&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Current ROI&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(headlineRoi&gt;=2?&quot;c-pos&quot;:headlineRoi&gt;=1?&quot;c-warn&quot;:&quot;c-neg&quot;)+'&quot; style=&quot;font-size:22px&quot;&gt;'+(headlineRoi&gt;0?headlineRoi.toFixed(2)+&quot;x&quot;:&quot;·&quot;)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+(headlineRoi&gt;=2?&quot;Healthy&quot;:headlineRoi&gt;=1?&quot;Marginal&quot;:&quot;Underwater&quot;)+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Currently paying&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(headlineCpl)+'&lt;/div&gt;'+sk('cpl')+'&lt;div class=&quot;mc-s&quot;&gt;Avg cost per lead&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Profit per lead&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(headlineProfit&gt;=0?&quot;c-pos&quot;:&quot;c-neg&quot;)+'&quot;&gt;'+(headlineProfit&gt;=0?&quot;+&quot;:&quot;&quot;)+fmtFull(headlineProfit)+'&lt;/div&gt;'+sk('net')+'&lt;div class=&quot;mc-s&quot;&gt;Value minus cost&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Current ROI&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(headlineRoi&gt;=2?&quot;c-pos&quot;:headlineRoi&gt;=1?&quot;c-warn&quot;:&quot;c-neg&quot;)+'&quot; style=&quot;font-size:22px&quot;&gt;'+(headlineRoi&gt;0?headlineRoi.toFixed(2)+&quot;x&quot;:&quot;·&quot;)+'&lt;/div&gt;'+sk('roi')+'&lt;div class=&quot;mc-s&quot;&gt;'+(headlineRoi&gt;=2?&quot;Healthy&quot;:headlineRoi&gt;=1?&quot;Marginal&quot;:&quot;Underwater&quot;)+'&lt;/div&gt;&lt;/div&gt;'+
     '&lt;/div&gt;'+
   '&lt;/div&gt;';
 
@@ -2005,6 +2132,7 @@ function plainMoneyLine(paidLeads,settles,spend,takeHome,scopeLabel){
 }
 function rAllTime(){
   const filtered=filterLeadsByType(D.leads,window._leadTypeFilter);
+  skSet(filtered,'week');
   const s=computeStats(filtered);
   const _at=computeSettlementStats(filtered,null);
   s.warrRate=_at.warrRate;s.warrCount=_at.warrCount;s.warrDollars=_at.warrDollars;
@@ -2049,34 +2177,35 @@ function rMonthly(){
     const s=selStats;
     // Settlement-date based stats for the selected month (commission, settlements, settled value, avg loan)
     const sd=computeSettlementStats(filteredLeads,selM);
+    skSet(filteredLeads,'month',selM);
     monthCardsHTML=
     '&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;'+monthLabel(selM)+' Performance'+typeSuffix+'&lt;/h2&gt;&lt;select onchange=&quot;window._selMonth=this.value;render();&quot; style=&quot;background:var(--card);color:var(--txt);border:1px solid var(--bdr2);border-radius:8px;padding:8px 14px;font-family:\'DM Sans\',sans-serif;font-size:13px;cursor:pointer&quot;&gt;'+monthOpts+'&lt;/select&gt;&lt;/div&gt;'+
     '&lt;div style=&quot;font-size:11px;color:var(--mut);margin-bottom:12px&quot;&gt;Leads &amp; spend by &lt;b style=&quot;color:var(--dim)&quot;&gt;Lead Received Date&lt;/b&gt; · Approvals by &lt;b style=&quot;color:var(--dim)&quot;&gt;Credit Decision Date&lt;/b&gt; · Declines by &lt;b style=&quot;color:var(--dim)&quot;&gt;Lost Date&lt;/b&gt; · Commission &amp; settlements by &lt;b style=&quot;color:var(--dim)&quot;&gt;Settlement Date&lt;/b&gt;&lt;/div&gt;'+
     (function(){var mm=npw.months[selM];if(!mm)return'';var src=mm.src==='RCTI'?'from your RCTI':'estimate';var pw=mm.inProgress?mm.perWeekSoFar:mm.perWeek;var sofar=mm.inProgress?' so far':'';return '&lt;div style=&quot;background:rgba(45,212,191,.08);border:1px solid var(--teal);border-radius:12px;padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px&quot;&gt;&lt;div&gt;&lt;div style=&quot;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700&quot;&gt;'+monthLabel(selM)+' · making per week after all costs&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;Net after leads and fees, before GST and tax · '+src+(mm.inProgress?' · month in progress':'')+'&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot;&gt;&lt;div class=&quot;cm '+(pw&gt;=0?'c-teal':'c-neg')+'&quot; style=&quot;font-size:30px;font-weight:700&quot;&gt;'+fmtFull(pw)+'/wk'+sofar+'&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--mut)&quot;&gt;'+fmtFull(mm.net)+' net'+(mm.inProgress?' so far':' for the month')+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';})()+
     '&lt;div class=&quot;mg mg5&quot;&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Leads&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+s.total+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Received this month&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead Spend&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.totalSpend)+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Spend/Lead&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.avgSpendPerLead)+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Settlements&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+sd.settledCount+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Settled this month&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approvals&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+sd.approvedCount+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Decided this month&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Leads&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+s.total+'&lt;/div&gt;'+sk('leads')+'&lt;div class=&quot;mc-s&quot;&gt;Received this month&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lead Spend&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.totalSpend)+'&lt;/div&gt;'+sk('spend')+'&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Spend/Lead&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmt2(s.avgSpendPerLead)+'&lt;/div&gt;'+sk('cpl')+'&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Settlements&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+sd.settledCount+'&lt;/div&gt;'+sk('settled')+'&lt;div class=&quot;mc-s&quot;&gt;Settled this month&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approvals&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+sd.approvedCount+'&lt;/div&gt;'+sk('approved')+'&lt;div class=&quot;mc-s&quot;&gt;Decided this month&lt;/div&gt;&lt;/div&gt;'+
     '&lt;/div&gt;'+
     '&lt;div class=&quot;mg mg5&quot;&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Declines&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+sd.declinedCount+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Lost this month&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Not Qualified&lt;/div&gt;&lt;div class=&quot;mc-v cm c-warn&quot;&gt;'+s.notQualifiedCount+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+pct(s.notQualifiedRate)+' · closed before submit&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Success Rate&lt;/div&gt;'+(function(){const r=s.total&gt;0?sd.settledCount/s.total:0;return'&lt;div class=&quot;mc-v cm '+(r&gt;=0.1?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(r)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Settled this month / received this month&lt;/div&gt;';})()+'&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approval Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.approvalRate&gt;=0.5?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.approvalRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Approved / decided this month&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Decline Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.declineRate&gt;0.4?&quot;c-neg&quot;:&quot;c-pos&quot;)+'&quot;&gt;'+pct(sd.declineRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Declined / decided this month&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lost&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+s.lostCount+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Declines&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+sd.declinedCount+'&lt;/div&gt;'+sk('declined')+'&lt;div class=&quot;mc-s&quot;&gt;Lost this month&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Not Qualified&lt;/div&gt;&lt;div class=&quot;mc-v cm c-warn&quot;&gt;'+s.notQualifiedCount+'&lt;/div&gt;'+sk('nq')+'&lt;div class=&quot;mc-s&quot;&gt;'+pct(s.notQualifiedRate)+' · closed before submit&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Success Rate&lt;/div&gt;'+(function(){const r=s.total&gt;0?sd.settledCount/s.total:0;return'&lt;div class=&quot;mc-v cm '+(r&gt;=0.1?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(r)+'&lt;/div&gt;'+sk('successRate')+'&lt;div class=&quot;mc-s&quot;&gt;Settled this month / received this month&lt;/div&gt;';})()+'&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Approval Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.approvalRate&gt;=0.5?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.approvalRate)+'&lt;/div&gt;'+sk('approvalRate')+'&lt;div class=&quot;mc-s&quot;&gt;Approved / decided this month&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Decline Rate&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.declineRate&gt;0.4?&quot;c-neg&quot;:&quot;c-pos&quot;)+'&quot;&gt;'+pct(sd.declineRate)+'&lt;/div&gt;'+sk('declineRate')+'&lt;div class=&quot;mc-s&quot;&gt;Declined / decided this month&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Lost&lt;/div&gt;&lt;div class=&quot;mc-v cm c-neg&quot;&gt;'+s.lostCount+'&lt;/div&gt;'+sk('lost')+'&lt;/div&gt;'+
     '&lt;/div&gt;'+
     '&lt;div class=&quot;mg mg5&quot;&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Commission Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(sd.commSettled)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Full commission&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;After Split ('+(sd.effectiveSplitRate*100).toFixed(0)+'%)&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.afterSplitTotal||0)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Your take-home&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Commission / Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(sd.avgCommPerDeal)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;Per settled deal&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a warranty&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.warrRate&gt;=0.25?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.warrRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+sd.warrCount+' of '+sd.settledCount+' · '+fmtFull(sd.warrDollars)+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a Drive referral&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.driveRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.driveRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+sd.driveCount+' of '+sd.settledCount+' · '+fmtFull(sd.driveDollars)+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with insurance&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.insRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.insRate)+'&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+sd.insCount+' of '+sd.settledCount+' settled&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.totalSettledAmt)+'&lt;/div&gt;&lt;/div&gt;'+
-      '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(sd.avgLoanAmt)+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Commission Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(sd.commSettled)+'&lt;/div&gt;'+sk('comm')+'&lt;div class=&quot;mc-s&quot;&gt;Full commission&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;After Split ('+(sd.effectiveSplitRate*100).toFixed(0)+'%)&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.afterSplitTotal||0)+'&lt;/div&gt;'+sk('take')+'&lt;div class=&quot;mc-s&quot;&gt;Your take-home&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Commission / Deal&lt;/div&gt;&lt;div class=&quot;mc-v cm c-teal&quot;&gt;'+fmtFull(sd.avgCommPerDeal)+'&lt;/div&gt;'+sk('avgComm')+'&lt;div class=&quot;mc-s&quot;&gt;Per settled deal&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a warranty&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.warrRate&gt;=0.25?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.warrRate)+'&lt;/div&gt;'+sk('warrRate')+'&lt;div class=&quot;mc-s&quot;&gt;'+sd.warrCount+' of '+sd.settledCount+' · '+fmtFull(sd.warrDollars)+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with a Drive referral&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.driveRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.driveRate)+'&lt;/div&gt;'+sk('driveRate')+'&lt;div class=&quot;mc-s&quot;&gt;'+sd.driveCount+' of '+sd.settledCount+' · '+fmtFull(sd.driveDollars)+'&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Deals with insurance&lt;/div&gt;&lt;div class=&quot;mc-v cm '+(sd.insRate&gt;=0.4?&quot;c-pos&quot;:&quot;c-warn&quot;)+'&quot;&gt;'+pct(sd.insRate)+'&lt;/div&gt;'+sk('insRate')+'&lt;div class=&quot;mc-s&quot;&gt;'+sd.insCount+' of '+sd.settledCount+' settled&lt;/div&gt;&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.totalSettledAmt)+'&lt;/div&gt;'+sk('value')+'&lt;/div&gt;'+
+      '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(sd.avgLoanAmt)+'&lt;/div&gt;'+sk('avgLoan')+'&lt;/div&gt;'+
     '&lt;/div&gt;'+
     plainMoneyLine((months[selM]||[]).filter(l=&gt;(l.cost||0)&gt;0).length,sd.settledCount,(selStats?selStats.totalSpend:0),(sd.afterSplitTotal||0),monthLabel(selM))+
     // ═══ MONTH PREDICTION ═══
@@ -3230,6 +3359,53 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
   if(picked)buildOutputs();
 });
 &lt;/script&gt;
+&lt;style&gt;.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
+.skt.has-sk{padding-right:84px}
+.skt-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.skt-v{font-size:22px;font-weight:700;color:var(--ink,var(--txt))}
+.skt-s{font-size:11px;color:var(--mut);margin-top:3px}
+.skt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 12px}
+.sk{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.sk-d{font-size:10px;font-weight:700;letter-spacing:.2px;padding:1px 6px;border-radius:999px}
+.sk-g{color:#34d399;background:rgba(52,211,153,.12)}.sk-r{color:#fb7185;background:rgba(251,113,133,.12)}.sk-n{color:#a5b4fc;background:rgba(139,92,246,.14)}
+.stat{position:relative}.stat.has-sk{padding-right:84px}
+@media(max-width:768px){.skt.has-sk,.stat.has-sk{padding-right:16px;padding-bottom:30px}.sk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
+&lt;/style&gt;
+&lt;script&gt;
+/* ═══ mini spark tiles · same look as the dashboard number tiles ═══ */
+function skWaveMini(vals,col){
+  var w=64,h=22,n=vals.length;if(n&lt;2)return'';
+  var hi=Math.max.apply(null,vals),lo=Math.min.apply(null,vals);
+  var floor=0,span=hi;
+  if(hi===lo){floor=hi-1;span=2;}else if(lo&gt;0&amp;&amp;(hi-lo)&lt;0.4*hi){floor=lo-(hi-lo);span=hi-floor;}
+  var xs=vals.map(function(_,i){return 2+i*(w-4)/(n-1);}),ys=vals.map(function(v){return h-2-((v-floor)/span)*(h-5);});
+  var d='M '+xs[0].toFixed(1)+' '+ys[0].toFixed(1);
+  for(var i=0;i&lt;n-1;i++){var p0=i&gt;0?i-1:i,p3=i+2&lt;n?i+2:i+1;
+    d+=' C '+(xs[i]+(xs[i+1]-xs[p0])/6).toFixed(1)+' '+(ys[i]+(ys[i+1]-ys[p0])/6).toFixed(1)+', '+(xs[i+1]-(xs[p3]-xs[i])/6).toFixed(1)+' '+(ys[i+1]-(ys[p3]-ys[i])/6).toFixed(1)+', '+xs[i+1].toFixed(1)+' '+ys[i+1].toFixed(1);}
+  var id='skg'+Math.random().toString(36).slice(2,8);
+  return'&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; width=&quot;'+w+'&quot; height=&quot;'+h+'&quot; style=&quot;display:block;overflow:visible&quot;&gt;&lt;defs&gt;&lt;linearGradient id=&quot;'+id+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.55&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.02&quot;/&gt;&lt;/linearGradient&gt;&lt;clipPath id=&quot;'+id+'c&quot;&gt;&lt;rect x=&quot;0&quot; y=&quot;0&quot; width=&quot;'+w+'&quot; height=&quot;'+(h-2)+'&quot;/&gt;&lt;/clipPath&gt;&lt;/defs&gt;&lt;g clip-path=&quot;url(#'+id+'c)&quot;&gt;&lt;path d=&quot;'+d+' L '+xs[n-1].toFixed(1)+' '+h+' L '+xs[0].toFixed(1)+' '+h+' Z&quot; fill=&quot;url(#'+id+')&quot;/&gt;&lt;path d=&quot;'+d+'&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;1.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/g&gt;&lt;/svg&gt;';
+}
+/* vals = weekly numbers, oldest first. kind: 'sum' | 'avg' | 'rate'. up: 'good' | 'bad' | 'flat' */
+function skMini(vals,kind,up){
+  if(!vals||vals.length&lt;2)return'';
+  var n=vals.length,now,before;
+  var sum=function(a){return a.reduce(function(x,y){return x+y;},0);};
+  var avg=function(a){var f=a.filter(function(v){return v&gt;0;});return f.length?sum(f)/f.length:0;};
+  if(kind==='sum'){now=sum(vals.slice(n-4));before=sum(vals.slice(n-8,n-4));}else{now=avg(vals.slice(n-4));before=avg(vals.slice(n-8,n-4));}
+  var txt='',dir='flat';
+  if(kind==='rate'){var d=Math.round((now-before)*100);if(d!==0){txt=(d&gt;0?'▲ ':'▼ ')+Math.abs(d)+' pts';dir=d&gt;0?'up':'dn';}}
+  else if(before&gt;0){var d2=Math.round((now-before)/before*100);if(d2!==0){txt=(d2&gt;0?'▲ ':'▼ ')+Math.abs(d2)+'%';dir=d2&gt;0?'up':'dn';}}
+  else if(now&gt;0){txt='▲ new';dir='up';}
+  var tone='n';if(dir!=='flat'&amp;&amp;up!=='flat')tone=((dir==='up')===(up==='good'))?'g':'r';
+  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  var allZero=vals.every(function(v){return !v;});
+  return'&lt;div class=&quot;sk&quot; title=&quot;last 4 weeks vs the 4 before&quot;&gt;'+(txt?'&lt;span class=&quot;sk-d sk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWaveMini(vals,col))+'&lt;/div&gt;';
+}
+function skTileMini(label,value,sub,vals,kind,up){
+  return'&lt;div class=&quot;skt'+(vals&amp;&amp;vals.length&gt;1?' has-sk':'')+'&quot;&gt;&lt;div class=&quot;skt-l&quot;&gt;'+label+'&lt;/div&gt;&lt;div class=&quot;skt-v&quot;&gt;'+value+'&lt;/div&gt;'+(sub?'&lt;div class=&quot;skt-s&quot;&gt;'+sub+'&lt;/div&gt;':'')+skMini(vals,kind,up)+'&lt;/div&gt;';
+}
+
+&lt;/script&gt;
 &lt;script&gt;
 (function(){
   function paintAttach(){
@@ -3240,8 +3416,15 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
       if(!a||!a.all){el.style.display='none';return;}
       var f=function(n){return '$'+Math.round(n||0).toLocaleString();};
       var p=function(c,t){return t&gt;0?Math.round(c/t*100)+'%':'\u00b7';};
-      el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:5px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard&lt;/div&gt;'
-      +'&lt;div style=&quot;font-size:13.5px;line-height:1.7&quot;&gt;'+'&lt;b&gt;Deals with a warranty, all time: '+p(a.all.warr,a.all.settled)+'&lt;/b&gt; \u00b7 '+a.all.warr+' of '+a.all.settled+' settled deals \u00b7 '+f(a.all.warrD)+' earned.'+'&lt;br&gt;This month: '+a.month.warr+' of '+a.month.settled+' settled ('+p(a.month.warr,a.month.settled)+').'+(a.all.settled&gt;0&amp;&amp;(a.all.warr/a.all.settled)&lt;(a.all.ins/a.all.settled)?'&lt;br&gt;&lt;b&gt;The gap:&lt;/b&gt; insurance is on '+p(a.all.ins,a.all.settled)+' \u00b7 warranty is the same conversation, so every settle without a warranty quote is money left behind.':'')+'&lt;/div&gt;';
+      var wk=a.weeks||{};
+      el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:10px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard \u00b7 waves are the last 12 weeks&lt;/div&gt;'
+      +'&lt;div class=&quot;skt-grid&quot;&gt;'
+      +skTileMini('Deals with a warranty',p(a.all.warr,a.all.settled),a.all.warr+' of '+a.all.settled+' settled, all time',wk.warrRate,'rate','good')
+      +skTileMini('Warranties sold',String(a.all.warr),'this month: '+a.month.warr+' of '+a.month.settled+' settled',wk.warr,'sum','good')
+      +skTileMini('Warranty $ earned',f(a.all.warrD),'all time',wk.warrD,'sum','good')
+      +skTileMini('Deals with insurance',p(a.all.ins,a.all.settled),'same conversation as warranty',wk.insRate,'rate','good')
+      +'&lt;/div&gt;'
+      +(a.all.settled&gt;0&amp;&amp;(a.all.warr/a.all.settled)&lt;(a.all.ins/a.all.settled)?'&lt;div style=&quot;font-size:12.5px;line-height:1.6&quot;&gt;&lt;b&gt;The gap:&lt;/b&gt; insurance is on '+p(a.all.ins,a.all.settled)+' of deals and warranty on '+p(a.all.warr,a.all.settled)+'. It is the same conversation, so every settle without a warranty quote is money left behind.&lt;/div&gt;':'');
       el.style.display='block';
     }catch(e){}
   }
@@ -3398,6 +3581,53 @@ html,body{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20
 
 &lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
+&lt;style&gt;.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
+.skt.has-sk{padding-right:84px}
+.skt-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.skt-v{font-size:22px;font-weight:700;color:var(--ink,var(--txt))}
+.skt-s{font-size:11px;color:var(--mut);margin-top:3px}
+.skt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 12px}
+.sk{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.sk-d{font-size:10px;font-weight:700;letter-spacing:.2px;padding:1px 6px;border-radius:999px}
+.sk-g{color:#34d399;background:rgba(52,211,153,.12)}.sk-r{color:#fb7185;background:rgba(251,113,133,.12)}.sk-n{color:#a5b4fc;background:rgba(139,92,246,.14)}
+.stat{position:relative}.stat.has-sk{padding-right:84px}
+@media(max-width:768px){.skt.has-sk,.stat.has-sk{padding-right:16px;padding-bottom:30px}.sk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
+&lt;/style&gt;
+&lt;script&gt;
+/* ═══ mini spark tiles · same look as the dashboard number tiles ═══ */
+function skWaveMini(vals,col){
+  var w=64,h=22,n=vals.length;if(n&lt;2)return'';
+  var hi=Math.max.apply(null,vals),lo=Math.min.apply(null,vals);
+  var floor=0,span=hi;
+  if(hi===lo){floor=hi-1;span=2;}else if(lo&gt;0&amp;&amp;(hi-lo)&lt;0.4*hi){floor=lo-(hi-lo);span=hi-floor;}
+  var xs=vals.map(function(_,i){return 2+i*(w-4)/(n-1);}),ys=vals.map(function(v){return h-2-((v-floor)/span)*(h-5);});
+  var d='M '+xs[0].toFixed(1)+' '+ys[0].toFixed(1);
+  for(var i=0;i&lt;n-1;i++){var p0=i&gt;0?i-1:i,p3=i+2&lt;n?i+2:i+1;
+    d+=' C '+(xs[i]+(xs[i+1]-xs[p0])/6).toFixed(1)+' '+(ys[i]+(ys[i+1]-ys[p0])/6).toFixed(1)+', '+(xs[i+1]-(xs[p3]-xs[i])/6).toFixed(1)+' '+(ys[i+1]-(ys[p3]-ys[i])/6).toFixed(1)+', '+xs[i+1].toFixed(1)+' '+ys[i+1].toFixed(1);}
+  var id='skg'+Math.random().toString(36).slice(2,8);
+  return'&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; width=&quot;'+w+'&quot; height=&quot;'+h+'&quot; style=&quot;display:block;overflow:visible&quot;&gt;&lt;defs&gt;&lt;linearGradient id=&quot;'+id+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.55&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.02&quot;/&gt;&lt;/linearGradient&gt;&lt;clipPath id=&quot;'+id+'c&quot;&gt;&lt;rect x=&quot;0&quot; y=&quot;0&quot; width=&quot;'+w+'&quot; height=&quot;'+(h-2)+'&quot;/&gt;&lt;/clipPath&gt;&lt;/defs&gt;&lt;g clip-path=&quot;url(#'+id+'c)&quot;&gt;&lt;path d=&quot;'+d+' L '+xs[n-1].toFixed(1)+' '+h+' L '+xs[0].toFixed(1)+' '+h+' Z&quot; fill=&quot;url(#'+id+')&quot;/&gt;&lt;path d=&quot;'+d+'&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;1.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/g&gt;&lt;/svg&gt;';
+}
+/* vals = weekly numbers, oldest first. kind: 'sum' | 'avg' | 'rate'. up: 'good' | 'bad' | 'flat' */
+function skMini(vals,kind,up){
+  if(!vals||vals.length&lt;2)return'';
+  var n=vals.length,now,before;
+  var sum=function(a){return a.reduce(function(x,y){return x+y;},0);};
+  var avg=function(a){var f=a.filter(function(v){return v&gt;0;});return f.length?sum(f)/f.length:0;};
+  if(kind==='sum'){now=sum(vals.slice(n-4));before=sum(vals.slice(n-8,n-4));}else{now=avg(vals.slice(n-4));before=avg(vals.slice(n-8,n-4));}
+  var txt='',dir='flat';
+  if(kind==='rate'){var d=Math.round((now-before)*100);if(d!==0){txt=(d&gt;0?'▲ ':'▼ ')+Math.abs(d)+' pts';dir=d&gt;0?'up':'dn';}}
+  else if(before&gt;0){var d2=Math.round((now-before)/before*100);if(d2!==0){txt=(d2&gt;0?'▲ ':'▼ ')+Math.abs(d2)+'%';dir=d2&gt;0?'up':'dn';}}
+  else if(now&gt;0){txt='▲ new';dir='up';}
+  var tone='n';if(dir!=='flat'&amp;&amp;up!=='flat')tone=((dir==='up')===(up==='good'))?'g':'r';
+  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  var allZero=vals.every(function(v){return !v;});
+  return'&lt;div class=&quot;sk&quot; title=&quot;last 4 weeks vs the 4 before&quot;&gt;'+(txt?'&lt;span class=&quot;sk-d sk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWaveMini(vals,col))+'&lt;/div&gt;';
+}
+function skTileMini(label,value,sub,vals,kind,up){
+  return'&lt;div class=&quot;skt'+(vals&amp;&amp;vals.length&gt;1?' has-sk':'')+'&quot;&gt;&lt;div class=&quot;skt-l&quot;&gt;'+label+'&lt;/div&gt;&lt;div class=&quot;skt-v&quot;&gt;'+value+'&lt;/div&gt;'+(sub?'&lt;div class=&quot;skt-s&quot;&gt;'+sub+'&lt;/div&gt;':'')+skMini(vals,kind,up)+'&lt;/div&gt;';
+}
+
+&lt;/script&gt;
 &lt;script&gt;
 var KEY='hub_drive_v1';
 var SEED_V=3;   /* bump when the seeded list below changes */
@@ -3455,6 +3685,17 @@ function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.cl
 function daysSince(d){ if(!d) return null; var p=d.split('-'); if(p.length!==3) return null; var t=new Date(+p[0],+p[1]-1,+p[2]).getTime(); if(!isFinite(t)) return null; var n=new Date(); n.setHours(0,0,0,0); return Math.round((n.getTime()-t)/86400000); }
 function fmtDate(d){ if(!d) return ''; var p=d.split('-'); if(p.length!==3) return d; return p[2]+'/'+p[1]+'/'+p[0].slice(2); }
 function isPaid(x){ return !!x.paidDate; }
+/* 12 weekly buckets ending last full week (this week counts once it is half way through) · dates are yyyy-mm-dd */
+function weeklySeries(list,dateOf,valOf2){
+  var now=new Date(),day=now.getDay()||7;
+  var wk=new Date(now.getFullYear(),now.getMonth(),now.getDate()-(day-1));
+  var half=((now-wk)/(7*86400000))&gt;=0.5;
+  var last=half?wk:new Date(wk.getFullYear(),wk.getMonth(),wk.getDate()-7);
+  var start=new Date(last.getFullYear(),last.getMonth(),last.getDate()-7*11);
+  var out=[];for(var i=0;i&lt;12;i++)out.push(0);
+  list.forEach(function(x){var d=dateOf(x);if(!d)return;var p=String(d).split('-');if(p.length!==3)return;var t=new Date(+p[0],+p[1]-1,+p[2]);var i=Math.floor((t-start)/(7*86400000));if(i&gt;=0&amp;&amp;i&lt;12)out[i]+=valOf2(x);});
+  return out;
+}
 function valOf(x){ return x.paidAmt!=null?Number(x.paidAmt):(Number(x.fee)||0); }
 
 function renderStats(){
@@ -3466,11 +3707,14 @@ function renderStats(){
   var now=new Date(), ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   var thisMonth=paid.filter(function(x){ return (x.paidDate||'').slice(0,7)===ym; });
   var monthSum=thisMonth.reduce(function(a,x){ return a+valOf(x); },0);
+  /* weekly waves from this list: referrals settled per week, and Drive money received per week */
+  var wkS=weeklySeries(deals,function(x){return x.settled;},function(x){return Number(x.fee)||0;});
+  var wkP=weeklySeries(paid,function(x){return x.paidDate;},valOf);
   document.getElementById('stats').innerHTML=
-    '&lt;div class=&quot;stat owed&quot;&gt;&lt;div class=&quot;k&quot;&gt;Owed by Drive&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(owedSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+owed.length+' deal'+(owed.length===1?'':'s')+' waiting&lt;/div&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;stat owed has-sk&quot;&gt;&lt;div class=&quot;k&quot;&gt;Owed by Drive&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(owedSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+owed.length+' deal'+(owed.length===1?'':'s')+' waiting&lt;/div&gt;'+skMini(wkS,'sum','good')+'&lt;/div&gt;'+
     '&lt;div class=&quot;stat chase&quot;&gt;&lt;div class=&quot;k&quot;&gt;Needs chasing&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+late.length+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;over 14 days since settlement&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;stat paid&quot;&gt;&lt;div class=&quot;k&quot;&gt;Paid this month&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(monthSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+thisMonth.length+' received&lt;/div&gt;&lt;/div&gt;'+
-    '&lt;div class=&quot;stat&quot;&gt;&lt;div class=&quot;k&quot;&gt;Received all time&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(paidSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+paid.length+' deal'+(paid.length===1?'':'s')+'&lt;/div&gt;&lt;/div&gt;';
+    '&lt;div class=&quot;stat paid has-sk&quot;&gt;&lt;div class=&quot;k&quot;&gt;Paid this month&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(monthSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+thisMonth.length+' received&lt;/div&gt;'+skMini(wkP,'sum','good')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;stat has-sk&quot;&gt;&lt;div class=&quot;k&quot;&gt;Received all time&lt;/div&gt;&lt;div class=&quot;v&quot;&gt;'+money(paidSum)+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+paid.length+' deal'+(paid.length===1?'':'s')+'&lt;/div&gt;'+skMini(wkP,'sum','good')+'&lt;/div&gt;';
 }
 
 function renderTabs(){
@@ -3610,8 +3854,13 @@ load(); render();
       if(!a||!a.all){el.style.display='none';return;}
       var f=function(n){return '$'+Math.round(n||0).toLocaleString();};
       var p=function(c,t){return t&gt;0?Math.round(c/t*100)+'%':'\u00b7';};
-      el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:5px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard&lt;/div&gt;'
-      +'&lt;div style=&quot;font-size:13.5px;line-height:1.7&quot;&gt;'+'&lt;b&gt;Deals with a Drive referral, all time: '+p(a.all.drive,a.all.settled)+'&lt;/b&gt; \u00b7 '+a.all.drive+' of '+a.all.settled+' settled deals \u00b7 '+f(a.all.driveD)+' earned.'+'&lt;br&gt;This month: '+a.month.drive+' of '+a.month.settled+' settled ('+p(a.month.drive,a.month.settled)+') \u00b7 last read '+new Date(a.t).toLocaleTimeString()+'.'+'&lt;/div&gt;';
+      var wk=a.weeks||{};
+      el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:10px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard \u00b7 waves are the last 12 weeks&lt;/div&gt;'
+      +'&lt;div class=&quot;skt-grid&quot;&gt;'
+      +skTileMini('Deals with a Drive referral',p(a.all.drive,a.all.settled),a.all.drive+' of '+a.all.settled+' settled, all time',wk.driveRate,'rate','good')
+      +skTileMini('Drive referrals',String(a.all.drive),'this month: '+a.month.drive+' of '+a.month.settled+' settled',wk.drive,'sum','good')
+      +skTileMini('Drive $ on settled deals',f(a.all.driveD),'from the Leads Log \u00b7 last read '+new Date(a.t).toLocaleTimeString(),wk.driveD,'sum','good')
+      +'&lt;/div&gt;';
       el.style.display='block';
     }catch(e){}
   }
@@ -4140,6 +4389,53 @@ html,body{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20
 &lt;aside class=&quot;drawer&quot; id=&quot;drawer&quot; aria-label=&quot;Partner detail&quot;&gt;&lt;/aside&gt;
 &lt;div class=&quot;toasts&quot; id=&quot;toasts&quot;&gt;&lt;/div&gt;
 
+&lt;style&gt;.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
+.skt.has-sk{padding-right:84px}
+.skt-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.skt-v{font-size:22px;font-weight:700;color:var(--ink,var(--txt))}
+.skt-s{font-size:11px;color:var(--mut);margin-top:3px}
+.skt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 12px}
+.sk{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.sk-d{font-size:10px;font-weight:700;letter-spacing:.2px;padding:1px 6px;border-radius:999px}
+.sk-g{color:#34d399;background:rgba(52,211,153,.12)}.sk-r{color:#fb7185;background:rgba(251,113,133,.12)}.sk-n{color:#a5b4fc;background:rgba(139,92,246,.14)}
+.kpi{position:relative}.kpi.has-sk{padding-right:84px}
+@media(max-width:768px){.skt.has-sk,.stat.has-sk{padding-right:16px;padding-bottom:30px}.sk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
+&lt;/style&gt;
+&lt;script&gt;
+/* ═══ mini spark tiles · same look as the dashboard number tiles ═══ */
+function skWaveMini(vals,col){
+  var w=64,h=22,n=vals.length;if(n&lt;2)return'';
+  var hi=Math.max.apply(null,vals),lo=Math.min.apply(null,vals);
+  var floor=0,span=hi;
+  if(hi===lo){floor=hi-1;span=2;}else if(lo&gt;0&amp;&amp;(hi-lo)&lt;0.4*hi){floor=lo-(hi-lo);span=hi-floor;}
+  var xs=vals.map(function(_,i){return 2+i*(w-4)/(n-1);}),ys=vals.map(function(v){return h-2-((v-floor)/span)*(h-5);});
+  var d='M '+xs[0].toFixed(1)+' '+ys[0].toFixed(1);
+  for(var i=0;i&lt;n-1;i++){var p0=i&gt;0?i-1:i,p3=i+2&lt;n?i+2:i+1;
+    d+=' C '+(xs[i]+(xs[i+1]-xs[p0])/6).toFixed(1)+' '+(ys[i]+(ys[i+1]-ys[p0])/6).toFixed(1)+', '+(xs[i+1]-(xs[p3]-xs[i])/6).toFixed(1)+' '+(ys[i+1]-(ys[p3]-ys[i])/6).toFixed(1)+', '+xs[i+1].toFixed(1)+' '+ys[i+1].toFixed(1);}
+  var id='skg'+Math.random().toString(36).slice(2,8);
+  return'&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; width=&quot;'+w+'&quot; height=&quot;'+h+'&quot; style=&quot;display:block;overflow:visible&quot;&gt;&lt;defs&gt;&lt;linearGradient id=&quot;'+id+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.55&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+col+'&quot; stop-opacity=&quot;.02&quot;/&gt;&lt;/linearGradient&gt;&lt;clipPath id=&quot;'+id+'c&quot;&gt;&lt;rect x=&quot;0&quot; y=&quot;0&quot; width=&quot;'+w+'&quot; height=&quot;'+(h-2)+'&quot;/&gt;&lt;/clipPath&gt;&lt;/defs&gt;&lt;g clip-path=&quot;url(#'+id+'c)&quot;&gt;&lt;path d=&quot;'+d+' L '+xs[n-1].toFixed(1)+' '+h+' L '+xs[0].toFixed(1)+' '+h+' Z&quot; fill=&quot;url(#'+id+')&quot;/&gt;&lt;path d=&quot;'+d+'&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;1.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/g&gt;&lt;/svg&gt;';
+}
+/* vals = weekly numbers, oldest first. kind: 'sum' | 'avg' | 'rate'. up: 'good' | 'bad' | 'flat' */
+function skMini(vals,kind,up){
+  if(!vals||vals.length&lt;2)return'';
+  var n=vals.length,now,before;
+  var sum=function(a){return a.reduce(function(x,y){return x+y;},0);};
+  var avg=function(a){var f=a.filter(function(v){return v&gt;0;});return f.length?sum(f)/f.length:0;};
+  if(kind==='sum'){now=sum(vals.slice(n-4));before=sum(vals.slice(n-8,n-4));}else{now=avg(vals.slice(n-4));before=avg(vals.slice(n-8,n-4));}
+  var txt='',dir='flat';
+  if(kind==='rate'){var d=Math.round((now-before)*100);if(d!==0){txt=(d&gt;0?'▲ ':'▼ ')+Math.abs(d)+' pts';dir=d&gt;0?'up':'dn';}}
+  else if(before&gt;0){var d2=Math.round((now-before)/before*100);if(d2!==0){txt=(d2&gt;0?'▲ ':'▼ ')+Math.abs(d2)+'%';dir=d2&gt;0?'up':'dn';}}
+  else if(now&gt;0){txt='▲ new';dir='up';}
+  var tone='n';if(dir!=='flat'&amp;&amp;up!=='flat')tone=((dir==='up')===(up==='good'))?'g':'r';
+  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  var allZero=vals.every(function(v){return !v;});
+  return'&lt;div class=&quot;sk&quot; title=&quot;last 4 weeks vs the 4 before&quot;&gt;'+(txt?'&lt;span class=&quot;sk-d sk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWaveMini(vals,col))+'&lt;/div&gt;';
+}
+function skTileMini(label,value,sub,vals,kind,up){
+  return'&lt;div class=&quot;skt'+(vals&amp;&amp;vals.length&gt;1?' has-sk':'')+'&quot;&gt;&lt;div class=&quot;skt-l&quot;&gt;'+label+'&lt;/div&gt;&lt;div class=&quot;skt-v&quot;&gt;'+value+'&lt;/div&gt;'+(sub?'&lt;div class=&quot;skt-s&quot;&gt;'+sub+'&lt;/div&gt;':'')+skMini(vals,kind,up)+'&lt;/div&gt;';
+}
+
+&lt;/script&gt;
 &lt;script&gt;
 /* ================= CORE ================= */
 const now=Date.now(),day=864e5;
@@ -4360,6 +4656,13 @@ function paintKPIs(){
   const t=bookTotals();
   $('#kPartners').textContent=partners.length;
   $('#kLeadsAll').textContent=t.leads;
+  (function(){var k=$('#kLeadsAll');if(!k)return;var tile=k.parentNode;var old=tile.querySelector('.sk');if(old)old.remove();
+    var now=new Date(),day=now.getDay()||7;var wk=new Date(now.getFullYear(),now.getMonth(),now.getDate()-(day-1));
+    var half=((now-wk)/(7*86400000))&gt;=0.5;var last=half?wk:new Date(wk.getFullYear(),wk.getMonth(),wk.getDate()-7);
+    var start=new Date(last.getFullYear(),last.getMonth(),last.getDate()-7*11);var vals=[];for(var i=0;i&lt;12;i++)vals.push(0);
+    leads.forEach(function(l){if(!l.recv)return;var i=Math.floor((new Date(l.recv)-start)/(7*86400000));if(i&gt;=0&amp;&amp;i&lt;12)vals[i]++;});
+    if(vals.some(function(v){return v&gt;0;})){tile.classList.add('has-sk');tile.insertAdjacentHTML('beforeend',skMini(vals,'sum','good'));}else{tile.classList.remove('has-sk');}
+  })();
   $('#kAppr').textContent=t.apprRate==null?'—':t.apprRate+'%';
   $('#kSettle').textContent=t.settleRate==null?'—':t.settleRate+'%';
   $('#kDue').textContent=partners.filter(p=&gt;(p.nextCI-now)/day&lt;=7).length;
@@ -19400,5 +19703,13 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
 
 })();
 </script>
-<script>(function(){var as=null,vy=0,raf=null,moved=false,t0=0;function sc(){return document.scrollingElement||document.documentElement;}function step(){if(!as)return;sc().scrollTop+=vy;raf=requestAnimationFrame(step);}function end(){if(!as)return;as=null;vy=0;moved=false;if(raf)cancelAnimationFrame(raf);raf=null;document.documentElement.style.cursor='';}document.addEventListener('mousedown',function(e){if(as&&e.button!==1){end();return;}if(e.button!==1)return;if(e.target.closest('a,input,textarea,select'))return;var s=sc();if(s.scrollHeight<=s.clientHeight+4)return;e.preventDefault();as={y:e.clientY};vy=0;moved=false;t0=Date.now();document.documentElement.style.cursor='ns-resize';raf=requestAnimationFrame(step);},true);document.addEventListener('mousemove',function(e){if(!as)return;var d=e.clientY-as.y;if(Math.abs(d)>8)moved=true;vy=Math.abs(d)<8?0:d*0.14;},true);document.addEventListener('mouseup',function(e){if(!as||e.button!==1)return;if(!moved&&Date.now()-t0<400)return;end();},true);document.addEventListener('wheel',end,{passive:true});document.addEventListener('keydown',end);window.addEventListener('blur',end);})();</script></body>
+<script>(function(){var as=null,vy=0,raf=null,moved=false,t0=0;function sc(){return document.scrollingElement||document.documentElement;}function step(){if(!as)return;sc().scrollTop+=vy;raf=requestAnimationFrame(step);}function end(){if(!as)return;as=null;vy=0;moved=false;if(raf)cancelAnimationFrame(raf);raf=null;document.documentElement.style.cursor='';}document.addEventListener('mousedown',function(e){if(as&&e.button!==1){end();return;}if(e.button!==1)return;if(e.target.closest('a,input,textarea,select'))return;var s=sc();if(s.scrollHeight<=s.clientHeight+4)return;e.preventDefault();as={y:e.clientY};vy=0;moved=false;t0=Date.now();document.documentElement.style.cursor='ns-resize';raf=requestAnimationFrame(step);},true);document.addEventListener('mousemove',function(e){if(!as)return;var d=e.clientY-as.y;if(Math.abs(d)>8)moved=true;vy=Math.abs(d)<8?0:d*0.14;},true);document.addEventListener('mouseup',function(e){if(!as||e.button!==1)return;if(!moved&&Date.now()-t0<400)return;end();},true);document.addEventListener('wheel',end,{passive:true});document.addEventListener('keydown',end);window.addEventListener('blur',end);})();</script><script>
+(function(){
+  var nav=document.getElementById('topnav'),btn=document.getElementById('navBurger');if(!nav||!btn)return;
+  var K='hub_nav_v1';
+  try{if(localStorage.getItem(K)==='wide')nav.classList.add('wide');}catch(_){}
+  btn.addEventListener('click',function(){nav.classList.toggle('wide');try{localStorage.setItem(K,nav.classList.contains('wide')?'wide':'rail');}catch(_){}});
+})();
+</script>
+</body>
 </html>

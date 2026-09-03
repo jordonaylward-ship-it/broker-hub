@@ -101,28 +101,28 @@ body.locked .shell{display:none}
 <style id="nightglass-shell">
 body{background:#0a0c16;color:#eef0ff}
 .shell{flex-direction:row;min-height:100vh;min-height:100dvh}
-.topnav{flex-direction:column;align-items:stretch;width:92px;min-width:92px;padding:14px 12px 16px;gap:10px;background:linear-gradient(180deg,#0f1226,#0a0c18);border-bottom:0;border-right:1px solid rgba(148,163,255,.10);position:sticky;top:0;height:100vh;height:100dvh;overflow:visible;flex-wrap:nowrap;box-sizing:border-box;transition:width .18s ease,min-width .18s ease;z-index:20}
-.topnav.wide{width:224px;min-width:224px}
-.nav-burger{display:flex;align-items:center;justify-content:center;width:44px;height:40px;border:0;border-radius:10px;background:transparent;color:#8b91b8;cursor:pointer;margin:0 0 4px 12px;transition:background .15s,color .15s}
+.topnav{flex-direction:column;align-items:stretch;width:74px;min-width:74px;padding:11px 10px 13px;gap:8px;background:linear-gradient(180deg,#0f1226,#0a0c18);border-bottom:0;border-right:1px solid rgba(148,163,255,.10);position:sticky;top:0;height:100vh;height:100dvh;overflow:visible;flex-wrap:nowrap;box-sizing:border-box;transition:width .18s ease,min-width .18s ease;z-index:20}
+.topnav.wide{width:180px;min-width:180px}
+.nav-burger{display:flex;align-items:center;justify-content:center;width:35px;height:32px;border:0;border-radius:10px;background:transparent;color:#8b91b8;cursor:pointer;margin:0 0 3px 9px;transition:background .15s,color .15s}
 .nav-burger:hover{background:rgba(139,92,246,.14);color:#eef0ff}
-.nav-burger svg{width:22px;height:22px}
+.nav-burger svg{width:18px;height:18px}
 .brand{display:none;font-size:11px;letter-spacing:.08em;line-height:1.35;margin:0 0 6px 14px;color:#c4b5fd;white-space:normal;text-align:left}
 .brand span{display:block;color:#eef0ff;font-size:12px}
 .topnav.wide .brand{display:block}
-.brand-mini{width:36px;height:36px;border-radius:11px;margin:2px 0 8px 16px;background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em;box-shadow:0 8px 20px rgba(139,92,246,.35)}
+.brand-mini{width:29px;height:29px;border-radius:9px;margin:2px 0 6px 12px;background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em;box-shadow:0 6px 16px rgba(139,92,246,.35)}
 .topnav.wide .brand-mini{display:none}
-.nav-tabs{flex:1;display:flex;flex-direction:column;gap:8px;width:100%;flex-wrap:nowrap;min-height:0}
-.nav-tab{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;width:52px;height:52px;padding:0;border-radius:14px;font-size:12.5px;font-weight:600;line-height:1.15;text-align:left;background:transparent;border:1px solid transparent;color:#7f86ad;transition:background .15s,color .15s,width .18s ease,box-shadow .15s;white-space:nowrap;margin-left:8px;overflow:visible}
-.nav-tab .ico{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex:0 0 24px;font-size:0}
-.nav-tab .ico svg{width:24px;height:24px}
-.nav-tab .lbl{display:none;margin-left:12px;color:inherit}
+.nav-tabs{flex:1;display:flex;flex-direction:column;gap:6px;width:100%;flex-wrap:nowrap;min-height:0}
+.nav-tab{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;width:42px;height:42px;padding:0;border-radius:11px;font-size:12px;font-weight:600;line-height:1.15;text-align:left;background:transparent;border:1px solid transparent;color:#7f86ad;transition:background .15s,color .15s,width .18s ease,box-shadow .15s;white-space:nowrap;margin-left:6px;overflow:visible}
+.nav-tab .ico{display:flex;align-items:center;justify-content:center;width:19px;height:19px;flex:0 0 19px;font-size:0}
+.nav-tab .ico svg{width:19px;height:19px}
+.nav-tab .lbl{display:none;margin-left:10px;color:inherit}
 .nav-tab:hover{background:rgba(139,92,246,.14);color:#eef0ff}
-.topnav .nav-tabs .nav-tab.on{background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;border-color:transparent;box-shadow:0 8px 22px rgba(139,92,246,.4)}
+.topnav .nav-tabs .nav-tab.on{background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16;border-color:transparent;box-shadow:0 6px 18px rgba(139,92,246,.4)}
 .nav-tab.on .ico svg{stroke-width:2.3}
 .nav-tab[data-tool=settings]{margin-top:auto}
-.topnav.wide .nav-tab{width:calc(100% - 8px);justify-content:flex-start;padding:0 14px}
+.topnav.wide .nav-tab{width:calc(100% - 6px);justify-content:flex-start;padding:0 11px}
 .topnav.wide .nav-tab .lbl{display:inline}
-.topnav:not(.wide) .nav-tab::after{content:attr(data-label);position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(-4px);background:#181c36;color:#eef0ff;border:1px solid rgba(148,163,255,.24);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;box-shadow:0 10px 24px rgba(0,0,0,.4);z-index:50}
+.topnav:not(.wide) .nav-tab::after{content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%) translateX(-4px);background:#181c36;color:#eef0ff;border:1px solid rgba(148,163,255,.24);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;box-shadow:0 10px 24px rgba(0,0,0,.4);z-index:50}
 .topnav:not(.wide) .nav-tab:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
 .frame-wrap{background:#0a0c16}
 .frame-wrap iframe{background:#0a0c16}
@@ -249,6 +249,19 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .mc-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .mc-v{font-family:'Poppins',monospace;font-size:22px;font-weight:600}
 .mc-s{font-size:11px;color:var(--mut);margin-top:3px}
+.ring-card{background:#12141f;border-radius:16px;padding:16px 18px;position:relative}
+.ring-title{font-size:13px;font-weight:700;color:#eef0ff;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ring-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.12);padding:3px 8px;border-radius:999px}
+.ring-body{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-svg{flex:0 0 150px}
+.ring-legs{display:flex;flex-direction:column;gap:7px;min-width:150px;flex:1}
+.ring-leg{display:flex;align-items:center;gap:8px;font-size:12px;color:#b4b9d9}
+.ring-leg i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+.ring-leg b{margin-left:auto;color:#eef0ff;font-weight:700;font-size:12.5px}
+.ring-note{font-size:11.5px;color:#7f86ad;margin-top:8px;line-height:1.5}
+.ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
+.ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
+
 .mc{position:relative}.mc.has-sk{padding-right:84px}.spk{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}.spk-d{font-size:10px;font-weight:700;letter-spacing:.2px;padding:1px 6px;border-radius:999px}.spk-g{color:#34d399;background:rgba(52,211,153,.12)}.spk-r{color:#fb7185;background:rgba(251,113,133,.12)}.spk-n{color:#a5b4fc;background:rgba(139,92,246,.14)}
 @media(max-width:768px){.mc.has-sk{padding-right:16px;padding-bottom:30px}.spk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
 .tw{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
@@ -429,9 +442,10 @@ html[data-theme=&quot;light&quot;] *::-webkit-scrollbar-thumb { background: #ddd
 *{font-family:'Poppins',system-ui,sans-serif!important}
 html{scrollbar-color:#2c3247 transparent}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#2c3247;border-radius:8px}::-webkit-scrollbar-thumb:hover{background:#3a4160}::-webkit-scrollbar-track{background:transparent}
 .mc-v{font-weight:700}
-.badge{background:var(--teal)!important;color:#0a0c16!important;border:none!important;font-weight:700}
-.hist-badge{background:var(--teal)!important;color:#0a0c16!important;border:none!important;font-weight:700}
-.tab.on,.filter-btn.on{color:#0a0c16!important;font-weight:700}
+.badge{background:rgba(34,211,238,.14)!important;color:#22d3ee!important;border:none!important;font-weight:700}
+.hist-badge{background:rgba(79,107,255,.18)!important;color:#9db1ff!important;border:none!important;font-weight:700}
+.tab.on,.filter-btn.on{color:#0a0c16!important;font-weight:700;background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;border-color:transparent!important}
+.tab.on{background:linear-gradient(135deg,#8b5cf6,#4f6bff)!important;border-color:transparent!important;color:#fff!important}
 &lt;/style&gt;
 &lt;style id=&quot;nightglass&quot;&gt;
 :root,[data-theme=&quot;dark&quot;],html[data-theme=&quot;dark&quot;],[data-theme=&quot;light&quot;],html[data-theme=&quot;light&quot;]{
@@ -451,8 +465,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.mc,.tw,.tier-sim,.sc-grid,.sc-wf,.sc2-panel,.rc,.wf-wrap,.scd,.hist-chart,.filter-bar{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.mc:hover,.tw:hover,.tier-sim:hover,.sc-grid:hover,.sc-wf:hover,.sc2-panel:hover,.rc:hover,.wf-wrap:hover,.scd:hover,.hist-chart:hover,.filter-bar:hover{border-color:transparent!important;background:#1a1f42!important}
+.mc,.tw,.tier-sim,.sc-grid,.sc-wf,.sc2-panel,.rc,.wf-wrap,.scd,.hist-chart,.filter-bar{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.mc:hover,.tw:hover,.tier-sim:hover,.sc-grid:hover,.sc-wf:hover,.sc2-panel:hover,.rc:hover,.wf-wrap:hover,.scd:hover,.hist-chart:hover,.filter-bar:hover{border-color:transparent!important;background:#181b28!important}
 .mc[style*=&quot;--amber&quot;]{box-shadow:inset 3px 0 0 var(--amber)!important}.mc[style*=&quot;--teal&quot;]{box-shadow:inset 3px 0 0 var(--teal)!important}.mc[style*=&quot;--green&quot;]{box-shadow:inset 3px 0 0 var(--green)!important}.mc[style*=&quot;--red&quot;]{box-shadow:inset 3px 0 0 var(--red)!important}
 &lt;/style&gt;
 &lt;/head&gt;
@@ -1384,8 +1398,8 @@ function historyChartsBlock(leads){
   const pill=(m,l)=&gt;'&lt;button onclick=&quot;window._histMode=\''+m+'\';render()&quot; style=&quot;border:0;cursor:pointer;padding:5px 14px;border-radius:999px;font-size:11.5px;font-weight:600;font-family:inherit;'+(mode===m?'background:linear-gradient(135deg,#8b5cf6,#38bdf8);color:#0a0c16':'background:transparent;color:var(--mut)')+'&quot;&gt;'+l+'&lt;/button&gt;';
   return'&lt;div class=&quot;sh&quot; style=&quot;margin-top:20px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;&lt;span style=&quot;display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--bdr);border-radius:999px;padding:3px&quot;&gt;'+pill('week','Week')+pill('month','Month')+'&lt;/span&gt;&lt;/div&gt;'
     +'&lt;div style=&quot;display:flex;flex-direction:column;gap:16px;margin-top:8px;margin-bottom:20px&quot;&gt;'
-    +lineChart(settleData,'Settlements per '+mode,totalSettled+' total','#8b5cf6','#38bdf8',v=&gt;(Math.round(v*10)/10).toString(),'s')
-    +lineChart(incomeData,'Take-home commission per '+mode+' (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#38bdf8','#a78bfa',v=&gt;Math.abs(v)&gt;=1000?'$'+(+(v/1000).toFixed(1))+'k':'$'+Math.round(v),'c')
+    +lineChart(settleData,'Settlements per '+mode,totalSettled+' total','#8b5cf6','#22d3ee',v=&gt;(Math.round(v*10)/10).toString(),'s')
+    +lineChart(incomeData,'Take-home commission per '+mode+' (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#4f6bff','#38bdf8',v=&gt;Math.abs(v)&gt;=1000?'$'+(+(v/1000).toFixed(1))+'k':'$'+Math.round(v),'c')
     +'&lt;/div&gt;';
 }
 
@@ -1489,11 +1503,60 @@ function sk(key){
   else if(now&gt;0){txt='▲ new';dir='up';}
   let tone='n';
   if(dir!=='flat'&amp;&amp;meta[0]!=='flat')tone=((dir==='up')===(meta[0]==='good'))?'g':'r';
-  const col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  const col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#4f6bff';
   const allZero=vals.every(v=&gt;!v);
   return'&lt;div class=&quot;spk&quot; title=&quot;'+label+'&quot;&gt;'+(txt?'&lt;span class=&quot;spk-d spk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWave(vals,col))+'&lt;/div&gt;';
 }
 function skSet(leads,mode,anchorYm){window._skCtx={series:skSeries(leads,mode,anchorYm||ymOfDate(new Date()))};}
+
+/* ═══ RING CHART · share-of picture like the reference · segments with gaps, % on the big ones, number in the middle ═══ */
+const RING_COLS=['#8b5cf6','#4f6bff','#22d3ee','#2dd4bf','#38bdf8','#a78bfa','#fbbf24','#fb7185'];
+function ringChart(o){
+  var segs=(o.segs||[]).filter(function(s){return s.value&gt;0;});
+  var total=segs.reduce(function(a,s){return a+s.value;},0);
+  var fmt=o.fmt||function(v){return String(Math.round(v));};
+  if(!total){return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+'&lt;/div&gt;&lt;div class=&quot;ring-empty&quot;&gt;'+(o.empty||'Nothing to show yet.')+'&lt;/div&gt;&lt;/div&gt;';}
+  var R=52,W=18,C=2*Math.PI*R,gapDeg=segs.length&gt;1?3:0,gap=C*gapDeg/360,start=0,paths='',labels='';
+  segs.forEach(function(s,i){
+    var col=s.color||RING_COLS[i%RING_COLS.length],frac=s.value/total,len=Math.max(0,C*frac-gap);
+    paths+='&lt;circle r=&quot;'+R+'&quot; cx=&quot;70&quot; cy=&quot;70&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;'+W+'&quot; stroke-dasharray=&quot;'+len.toFixed(2)+' '+(C-len).toFixed(2)+'&quot; stroke-dashoffset=&quot;'+(-(start+gap/2)).toFixed(2)+'&quot; transform=&quot;rotate(-90 70 70)&quot;&gt;&lt;title&gt;'+s.label+' · '+fmt(s.value)+' · '+Math.round(frac*100)+'%&lt;/title&gt;&lt;/circle&gt;';
+    if(frac&gt;=0.09){var mid=(start+C*frac/2)/C*2*Math.PI-Math.PI/2;var lx=70+R*Math.cos(mid),ly=70+R*Math.sin(mid);
+      labels+='&lt;text x=&quot;'+lx.toFixed(1)+'&quot; y=&quot;'+(ly+3.5).toFixed(1)+'&quot; font-size=&quot;9.5&quot; font-weight=&quot;700&quot; fill=&quot;#0a0c16&quot; text-anchor=&quot;middle&quot;&gt;'+Math.round(frac*100)+'%&lt;/text&gt;';}
+    start+=C*frac;
+  });
+  var legend=segs.map(function(s,i){var col=s.color||RING_COLS[i%RING_COLS.length];return '&lt;span class=&quot;ring-leg&quot;&gt;&lt;i style=&quot;background:'+col+'&quot;&gt;&lt;/i&gt;'+s.label+'&lt;b&gt;'+fmt(s.value)+'&lt;/b&gt;&lt;/span&gt;';}).join('');
+  return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+(o.badge?'&lt;span class=&quot;ring-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;'
+    +'&lt;div class=&quot;ring-body&quot;&gt;&lt;svg viewBox=&quot;0 0 140 140&quot; width=&quot;150&quot; height=&quot;150&quot; class=&quot;ring-svg&quot;&gt;'+paths+labels
+    +'&lt;text x=&quot;70&quot; y=&quot;'+(o.small?66:74)+'&quot; font-size=&quot;18&quot; font-weight=&quot;800&quot; fill=&quot;#eef0ff&quot; text-anchor=&quot;middle&quot;&gt;'+o.big+'&lt;/text&gt;'
+    +(o.small?'&lt;text x=&quot;70&quot; y=&quot;82&quot; font-size=&quot;8.5&quot; fill=&quot;#b4b9d9&quot; text-anchor=&quot;middle&quot;&gt;'+o.small+'&lt;/text&gt;':'')
+    +'&lt;/svg&gt;&lt;div class=&quot;ring-legs&quot;&gt;'+legend+'&lt;/div&gt;&lt;/div&gt;'
+    +(o.note?'&lt;div class=&quot;ring-note&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+
+// ── the two dashboard rings ──
+// &quot;Where every lead ends up&quot; · every lead in the pool sorted by what happened to it
+function leadOutcomeRing(leads,title,badge){
+  var settled=0,approvedOpen=0,declined=0,nq=0,lostOther=0,working=0;
+  var subIds=new Set(leads.filter(SK_ISSUB).map(function(l){return l.id;}));
+  leads.forEach(function(l){
+    if(SK_ISSET(l))settled++;
+    else if(l.lostReason===&quot;Declined by Lender&quot;)declined++;
+    else if(SK_ISLOST(l)){if(subIds.has(l.id))lostOther++;else nq++;}
+    else if(SK_ISAPP(l))approvedOpen++;
+    else working++;
+  });
+  var n=leads.length;
+  return ringChart({title:title,badge:badge,big:n?Math.round(settled/n*100)+'%':'0%',small:'settled of '+n,
+    segs:[{label:'Settled',value:settled,color:'#2dd4bf'},{label:'Approved, not settled yet',value:approvedOpen,color:'#4f6bff'},{label:'Still working',value:working,color:'#38bdf8'},{label:'Not qualified',value:nq,color:'#8b5cf6'},{label:'Declined by lender',value:declined,color:'#fb7185'},{label:'Lost after submit',value:lostOther,color:'#a78bfa'}],
+    empty:'No leads in this view yet.'});
+}
+// &quot;Where the money comes from&quot; · take-home commission, warranty, Drive
+function incomeMixRing(take,warrD,driveD,title,badge){
+  var tot=(take||0)+(warrD||0)+(driveD||0);
+  return ringChart({title:title,badge:badge,big:fmtFull(tot),small:'in your pocket',fmt:fmtFull,
+    segs:[{label:'Commission after split',value:take||0,color:'#8b5cf6'},{label:'Warranty',value:warrD||0,color:'#4f6bff'},{label:'Drive referrals',value:driveD||0,color:'#22d3ee'}],
+    empty:'Nothing settled yet.'});
+}
 
 function statsCards(s,label){
   return'&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;'+label+'&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+s.total+' LEADS&lt;/span&gt;&lt;/div&gt;'+
@@ -1945,21 +2008,11 @@ window._clc=function(){
    +'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
   const mx=Math.max(gross,hisSpend+advM+docsM,1);
   const segW=function(a){return Math.max(1,a/mx*100).toFixed(1);};
-  h+='&lt;div class=&quot;wf-wrap&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;The money as a picture'+(bkrs&gt;1?' · per broker':'')+'&lt;/div&gt;'
-   +'&lt;div class=&quot;wf-lbl&quot;&gt;&lt;span&gt;Money in from deals&lt;/span&gt;&lt;b style=&quot;color:var(--teal)&quot;&gt;'+f(gross)+'&lt;/b&gt;&lt;/div&gt;'
-   +'&lt;div class=&quot;wf-bar&quot;&gt;&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(gross)+'%;background:rgba(61,220,151,.75)&quot;&gt;&lt;/div&gt;&lt;/div&gt;'
-   +'&lt;div class=&quot;wf-lbl&quot;&gt;&lt;span&gt;Money out&lt;/span&gt;&lt;b style=&quot;color:'+((hisSpend+advM+docsM)&gt;gross?'#fb7185':'var(--txt)')+'&quot;&gt;'+f(hisSpend+advM+docsM)+'&lt;/b&gt;&lt;/div&gt;'
-   +'&lt;div class=&quot;wf-bar&quot;&gt;'
-   +(hisSpend&gt;0?'&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(hisSpend)+'%;background:rgba(255,180,84,.8)&quot;&gt;&lt;/div&gt;':'')
-   +(advM&gt;0?'&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(advM)+'%;background:rgba(154,168,255,.8)&quot;&gt;&lt;/div&gt;':'')
-   +(docsM&gt;0?'&lt;div class=&quot;wf-seg&quot; style=&quot;width:'+segW(docsM)+'%;background:rgba(255,143,107,.8)&quot;&gt;&lt;/div&gt;':'')
-   +'&lt;/div&gt;'
-   +'&lt;div class=&quot;wf-leg&quot;&gt;'
-   +(hisSpend&gt;0?'&lt;span&gt;&lt;i style=&quot;background:rgba(255,180,84,.9)&quot;&gt;&lt;/i&gt;Leads '+f(hisSpend)+'&lt;/span&gt;':'')
-   +(advOn?'&lt;span&gt;&lt;i style=&quot;background:rgba(154,168,255,.9)&quot;&gt;&lt;/i&gt;Advance '+f(advM)+'&lt;/span&gt;':'')
-   +(docsM&gt;0?'&lt;span&gt;&lt;i style=&quot;background:rgba(255,143,107,.9)&quot;&gt;&lt;/i&gt;Docs '+f(docsM)+'&lt;/span&gt;':'')
-   +'&lt;span style=&quot;margin-left:auto;font-weight:700;color:'+col(profitM)+'&quot;&gt;'+(profitM&gt;=0?'Left over '+f(profitM):'Short by '+f(-profitM))+'&lt;/span&gt;'
-   +'&lt;/div&gt;&lt;/div&gt;';
+  h+='&lt;div class=&quot;ring-grid&quot; style=&quot;margin-bottom:14px&quot;&gt;'+ringChart({title:'Where their money goes'+(bkrs&gt;1?' · per broker':''),badge:'a month',fmt:f,
+    big:profitM&gt;=0?f(profitM):f(-profitM),small:profitM&gt;=0?'left over for them':'short for the month',
+    segs:[{label:'Leads',value:hisSpend,color:'#4f6bff'},{label:'Advance',value:advM,color:'#a78bfa'},{label:'Docs and fees',value:docsM,color:'#22d3ee'},{label:'Left over for them',value:Math.max(0,profitM),color:'#2dd4bf'}],
+    note:'Money in from deals '+f(gross)+' · money out '+f(hisSpend+advM+docsM)+(profitM&lt;0?' · the ring is the costs, and they are bigger than what comes in':''),
+    empty:'Put a few numbers in above and the picture appears here.'})+'&lt;/div&gt;';
   h+='&lt;div class=&quot;rc&quot;&gt;&lt;div class=&quot;sc2-cap&quot;&gt;'+(bkrs&gt;1?'One broker · their month in money · per broker':'Their month in money')+'&lt;/div&gt;'
    +row('Money they keep from deals','+'+f(gross),'plus',f2(settles)+' a month · '+f2(settles*12/52)+' a week · × '+f(kept)+' kept each · '+f(gross*12/52)+' a week')
    +(ownLeads?row('Leads','$0','','you pay the '+f(spend)+' lead bill, not them'):row('Leads','−'+f(spend),'minus',f2(leadsWk)+' leads a week × $'+cpl+' · '+f(spend*12/52)+' a week'))
@@ -2144,7 +2197,7 @@ function rAllTime(){
   s.driveRate=_at.driveRate;s.driveCount=_at.driveCount;s.driveDollars=_at.driveDollars;
   s.insRate=_at.insRate;s.insCount=_at.insCount;s._atSettled=_at.settledCount;
   const lbl=window._leadTypeFilter===&quot;All&quot;?&quot;All Time Performance&quot;:&quot;All Time · &quot;+window._leadTypeFilter+&quot; Leads&quot;;
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+plainMoneyLine(filtered.filter(l=&gt;(l.cost||0)&gt;0).length,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)+statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+plainMoneyLine(filtered.filter(l=&gt;(l.cost||0)&gt;0).length,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)+statsCards(s,lbl)+'&lt;div class=&quot;ring-grid&quot;&gt;'+leadOutcomeRing(filtered,'Where every lead ends up','all time')+incomeMixRing(_at.afterSplitTotal||s.afterSplitTotal||0,_at.warrDollars,_at.driveDollars,'Where the money comes from','all time')+'&lt;/div&gt;'+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+historyChartsBlock(filtered)+insightQuoteBlock(s,QUOTES_ALLTIME);
 }
 
 function rMonthly(){
@@ -2212,6 +2265,7 @@ function rMonthly(){
       '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.totalSettledAmt)+'&lt;/div&gt;'+sk('value')+'&lt;/div&gt;'+
       '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(sd.avgLoanAmt)+'&lt;/div&gt;'+sk('avgLoan')+'&lt;/div&gt;'+
     '&lt;/div&gt;'+
+    '&lt;div class=&quot;ring-grid&quot;&gt;'+leadOutcomeRing(months[selM]||[],'Where '+monthLabel(selM)+&quot;'s leads ended up&quot;,'by lead received date')+incomeMixRing(sd.afterSplitTotal||0,sd.warrDollars,sd.driveDollars,'Where the money came from','settled in '+monthLabel(selM))+'&lt;/div&gt;'+
     plainMoneyLine((months[selM]||[]).filter(l=&gt;(l.cost||0)&gt;0).length,sd.settledCount,(selStats?selStats.totalSpend:0),(sd.afterSplitTotal||0),monthLabel(selM))+
     // ═══ MONTH PREDICTION ═══
     // Pending pipeline = this month's approvals that haven't settled yet (approved → might settle)
@@ -2303,6 +2357,7 @@ function rMonthly(){
     '&lt;th&gt;Month&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Leads&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Spend&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Avg/Lead&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Settled&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Approved&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Declined&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Success %&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Approval %&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Decline %&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Comm. Settled&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;After Split&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;$/wk after costs&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Avg Comm&lt;/th&gt;&lt;th style=&quot;text-align:right&quot;&gt;Avg Loan&lt;/th&gt;'+
   '&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'+rows+totRow+'&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;'+
   budgetBlock()+
+  historyChartsBlock(filteredLeads)+
   insightQuoteBlock(insightStats,QUOTES_MONTHLY);
 }
 
@@ -2873,8 +2928,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.panel,.out,.skt{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.panel:hover,.out:hover,.skt:hover{border-color:transparent!important;background:#1a1f42!important}
+.panel,.out,.skt{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.panel:hover,.out:hover,.skt:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
 &lt;/head&gt;
@@ -2887,7 +2942,7 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
     &lt;p&gt;Integrity Endurance and Absolute. Drop the invoice, set the budget, pick an option, send it.&lt;/p&gt;
   &lt;/div&gt;
 &lt;/header&gt;
-&lt;div id=&quot;attachCard&quot; style=&quot;display:none;background:rgba(61,220,151,.07);border:1px solid rgba(61,220,151,.35);border-radius:12px;padding:13px 16px;margin:0 0 16px&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;attachCard&quot; style=&quot;display:none;margin:0 0 16px&quot;&gt;&lt;/div&gt;
 
 &lt;div class=&quot;grid&quot;&gt;
   &lt;div&gt;
@@ -3369,7 +3424,20 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
   if(picked)buildOutputs();
 });
 &lt;/script&gt;
-&lt;style&gt;.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
+&lt;style&gt;.ring-card{background:#12141f;border-radius:16px;padding:16px 18px;position:relative}
+.ring-title{font-size:13px;font-weight:700;color:#eef0ff;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ring-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.12);padding:3px 8px;border-radius:999px}
+.ring-body{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-svg{flex:0 0 150px}
+.ring-legs{display:flex;flex-direction:column;gap:7px;min-width:150px;flex:1}
+.ring-leg{display:flex;align-items:center;gap:8px;font-size:12px;color:#b4b9d9}
+.ring-leg i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+.ring-leg b{margin-left:auto;color:#eef0ff;font-weight:700;font-size:12.5px}
+.ring-note{font-size:11.5px;color:#7f86ad;margin-top:8px;line-height:1.5}
+.ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
+.ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
+
+.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
 .skt.has-sk{padding-right:84px}
 .skt-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .skt-v{font-size:22px;font-weight:700;color:var(--ink,var(--txt))}
@@ -3382,6 +3450,30 @@ $(&quot;loanterm&quot;).addEventListener(&quot;input&quot;,()=&gt;{
 @media(max-width:768px){.skt.has-sk,.stat.has-sk{padding-right:16px;padding-bottom:30px}.spk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
 &lt;/style&gt;
 &lt;script&gt;
+/* ═══ RING CHART · share-of picture like the reference · segments with gaps, % on the big ones, number in the middle ═══ */
+const RING_COLS=['#8b5cf6','#4f6bff','#22d3ee','#2dd4bf','#38bdf8','#a78bfa','#fbbf24','#fb7185'];
+function ringChart(o){
+  var segs=(o.segs||[]).filter(function(s){return s.value&gt;0;});
+  var total=segs.reduce(function(a,s){return a+s.value;},0);
+  var fmt=o.fmt||function(v){return String(Math.round(v));};
+  if(!total){return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+'&lt;/div&gt;&lt;div class=&quot;ring-empty&quot;&gt;'+(o.empty||'Nothing to show yet.')+'&lt;/div&gt;&lt;/div&gt;';}
+  var R=52,W=18,C=2*Math.PI*R,gapDeg=segs.length&gt;1?3:0,gap=C*gapDeg/360,start=0,paths='',labels='';
+  segs.forEach(function(s,i){
+    var col=s.color||RING_COLS[i%RING_COLS.length],frac=s.value/total,len=Math.max(0,C*frac-gap);
+    paths+='&lt;circle r=&quot;'+R+'&quot; cx=&quot;70&quot; cy=&quot;70&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;'+W+'&quot; stroke-dasharray=&quot;'+len.toFixed(2)+' '+(C-len).toFixed(2)+'&quot; stroke-dashoffset=&quot;'+(-(start+gap/2)).toFixed(2)+'&quot; transform=&quot;rotate(-90 70 70)&quot;&gt;&lt;title&gt;'+s.label+' · '+fmt(s.value)+' · '+Math.round(frac*100)+'%&lt;/title&gt;&lt;/circle&gt;';
+    if(frac&gt;=0.09){var mid=(start+C*frac/2)/C*2*Math.PI-Math.PI/2;var lx=70+R*Math.cos(mid),ly=70+R*Math.sin(mid);
+      labels+='&lt;text x=&quot;'+lx.toFixed(1)+'&quot; y=&quot;'+(ly+3.5).toFixed(1)+'&quot; font-size=&quot;9.5&quot; font-weight=&quot;700&quot; fill=&quot;#0a0c16&quot; text-anchor=&quot;middle&quot;&gt;'+Math.round(frac*100)+'%&lt;/text&gt;';}
+    start+=C*frac;
+  });
+  var legend=segs.map(function(s,i){var col=s.color||RING_COLS[i%RING_COLS.length];return '&lt;span class=&quot;ring-leg&quot;&gt;&lt;i style=&quot;background:'+col+'&quot;&gt;&lt;/i&gt;'+s.label+'&lt;b&gt;'+fmt(s.value)+'&lt;/b&gt;&lt;/span&gt;';}).join('');
+  return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+(o.badge?'&lt;span class=&quot;ring-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;'
+    +'&lt;div class=&quot;ring-body&quot;&gt;&lt;svg viewBox=&quot;0 0 140 140&quot; width=&quot;150&quot; height=&quot;150&quot; class=&quot;ring-svg&quot;&gt;'+paths+labels
+    +'&lt;text x=&quot;70&quot; y=&quot;'+(o.small?66:74)+'&quot; font-size=&quot;18&quot; font-weight=&quot;800&quot; fill=&quot;#eef0ff&quot; text-anchor=&quot;middle&quot;&gt;'+o.big+'&lt;/text&gt;'
+    +(o.small?'&lt;text x=&quot;70&quot; y=&quot;82&quot; font-size=&quot;8.5&quot; fill=&quot;#b4b9d9&quot; text-anchor=&quot;middle&quot;&gt;'+o.small+'&lt;/text&gt;':'')
+    +'&lt;/svg&gt;&lt;div class=&quot;ring-legs&quot;&gt;'+legend+'&lt;/div&gt;&lt;/div&gt;'
+    +(o.note?'&lt;div class=&quot;ring-note&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+
 /* ═══ mini spark tiles · same look as the dashboard number tiles ═══ */
 function skWaveMini(vals,col){
   var w=64,h=22,n=vals.length;if(n&lt;2)return'';
@@ -3407,7 +3499,7 @@ function skMini(vals,kind,up){
   else if(before&gt;0){var d2=Math.round((now-before)/before*100);if(d2!==0){txt=(d2&gt;0?'▲ ':'▼ ')+Math.abs(d2)+'%';dir=d2&gt;0?'up':'dn';}}
   else if(now&gt;0){txt='▲ new';dir='up';}
   var tone='n';if(dir!=='flat'&amp;&amp;up!=='flat')tone=((dir==='up')===(up==='good'))?'g':'r';
-  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#4f6bff';
   var allZero=vals.every(function(v){return !v;});
   return'&lt;div class=&quot;spk&quot; title=&quot;last 4 weeks vs the 4 before&quot;&gt;'+(txt?'&lt;span class=&quot;spk-d spk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWaveMini(vals,col))+'&lt;/div&gt;';
 }
@@ -3434,6 +3526,10 @@ function skTileMini(label,value,sub,vals,kind,up){
       +skTileMini('Warranty $ earned',f(a.all.warrD),'all time',wk.warrD,'sum','good')
       +skTileMini('Deals with insurance',p(a.all.ins,a.all.settled),'same conversation as warranty',wk.insRate,'rate','good')
       +'&lt;/div&gt;'
+      +'&lt;div class=&quot;ring-grid&quot;&gt;'+ringChart({title:'Warranty on settled deals',badge:'all time',big:p(a.all.warr,a.all.settled),small:'have a warranty',
+          segs:[{label:'With a warranty',value:a.all.warr,color:'#2dd4bf'},{label:'No warranty',value:Math.max(0,a.all.settled-a.all.warr),color:'#4f6bff'}],empty:'No settled deals yet.'})
+        +ringChart({title:'Insurance on settled deals',badge:'all time',big:p(a.all.ins,a.all.settled),small:'have insurance',
+          segs:[{label:'With insurance',value:a.all.ins,color:'#22d3ee'},{label:'No insurance',value:Math.max(0,a.all.settled-a.all.ins),color:'#8b5cf6'}],empty:'No settled deals yet.'})+'&lt;/div&gt;'
       +(a.all.settled&gt;0&amp;&amp;(a.all.warr/a.all.settled)&lt;(a.all.ins/a.all.settled)?'&lt;div style=&quot;font-size:12.5px;line-height:1.6&quot;&gt;&lt;b&gt;The gap:&lt;/b&gt; insurance is on '+p(a.all.ins,a.all.settled)+' of deals and warranty on '+p(a.all.warr,a.all.settled)+'. It is the same conversation, so every settle without a warranty quote is money left behind.&lt;/div&gt;':'');
       el.style.display='block';
     }catch(e){}
@@ -3527,15 +3623,15 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.card,.stat,.d,.skt{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.card:hover,.stat:hover,.d:hover,.skt:hover{border-color:transparent!important;background:#1a1f42!important}
+.card,.stat,.d,.skt{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.card:hover,.stat:hover,.d:hover,.skt:hover{border-color:transparent!important;background:#181b28!important}
 .stat.owed{box-shadow:inset 3px 0 0 #fbbf24!important}.stat.chase{box-shadow:inset 3px 0 0 #fb7185!important}.stat.paid{box-shadow:inset 3px 0 0 #34d399!important}
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;h1&gt;Drive Tracker&lt;/h1&gt;
-&lt;div id=&quot;attachCard&quot; style=&quot;display:none;background:rgba(61,220,151,.07);border:1px solid rgba(61,220,151,.35);border-radius:12px;padding:13px 16px;margin:0 0 16px&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;attachCard&quot; style=&quot;display:none;margin:0 0 16px&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;sub&quot;&gt;Referral fees owed by Drive (Aust) Pty Ltd on settled vehicle deals. Add a deal when it settles, tick it off when the money lands. Everything you type is saved in this browser · nothing here needs code changes.&lt;/div&gt;
 
 &lt;div class=&quot;stats&quot; id=&quot;stats&quot;&gt;&lt;/div&gt;
@@ -3596,7 +3692,20 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 
 &lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
-&lt;style&gt;.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
+&lt;style&gt;.ring-card{background:#12141f;border-radius:16px;padding:16px 18px;position:relative}
+.ring-title{font-size:13px;font-weight:700;color:#eef0ff;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ring-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.12);padding:3px 8px;border-radius:999px}
+.ring-body{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-svg{flex:0 0 150px}
+.ring-legs{display:flex;flex-direction:column;gap:7px;min-width:150px;flex:1}
+.ring-leg{display:flex;align-items:center;gap:8px;font-size:12px;color:#b4b9d9}
+.ring-leg i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+.ring-leg b{margin-left:auto;color:#eef0ff;font-weight:700;font-size:12.5px}
+.ring-note{font-size:11.5px;color:#7f86ad;margin-top:8px;line-height:1.5}
+.ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
+.ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
+
+.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
 .skt.has-sk{padding-right:84px}
 .skt-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .skt-v{font-size:22px;font-weight:700;color:var(--ink,var(--txt))}
@@ -3609,6 +3718,30 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 @media(max-width:768px){.skt.has-sk,.stat.has-sk{padding-right:16px;padding-bottom:30px}.spk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
 &lt;/style&gt;
 &lt;script&gt;
+/* ═══ RING CHART · share-of picture like the reference · segments with gaps, % on the big ones, number in the middle ═══ */
+const RING_COLS=['#8b5cf6','#4f6bff','#22d3ee','#2dd4bf','#38bdf8','#a78bfa','#fbbf24','#fb7185'];
+function ringChart(o){
+  var segs=(o.segs||[]).filter(function(s){return s.value&gt;0;});
+  var total=segs.reduce(function(a,s){return a+s.value;},0);
+  var fmt=o.fmt||function(v){return String(Math.round(v));};
+  if(!total){return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+'&lt;/div&gt;&lt;div class=&quot;ring-empty&quot;&gt;'+(o.empty||'Nothing to show yet.')+'&lt;/div&gt;&lt;/div&gt;';}
+  var R=52,W=18,C=2*Math.PI*R,gapDeg=segs.length&gt;1?3:0,gap=C*gapDeg/360,start=0,paths='',labels='';
+  segs.forEach(function(s,i){
+    var col=s.color||RING_COLS[i%RING_COLS.length],frac=s.value/total,len=Math.max(0,C*frac-gap);
+    paths+='&lt;circle r=&quot;'+R+'&quot; cx=&quot;70&quot; cy=&quot;70&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;'+W+'&quot; stroke-dasharray=&quot;'+len.toFixed(2)+' '+(C-len).toFixed(2)+'&quot; stroke-dashoffset=&quot;'+(-(start+gap/2)).toFixed(2)+'&quot; transform=&quot;rotate(-90 70 70)&quot;&gt;&lt;title&gt;'+s.label+' · '+fmt(s.value)+' · '+Math.round(frac*100)+'%&lt;/title&gt;&lt;/circle&gt;';
+    if(frac&gt;=0.09){var mid=(start+C*frac/2)/C*2*Math.PI-Math.PI/2;var lx=70+R*Math.cos(mid),ly=70+R*Math.sin(mid);
+      labels+='&lt;text x=&quot;'+lx.toFixed(1)+'&quot; y=&quot;'+(ly+3.5).toFixed(1)+'&quot; font-size=&quot;9.5&quot; font-weight=&quot;700&quot; fill=&quot;#0a0c16&quot; text-anchor=&quot;middle&quot;&gt;'+Math.round(frac*100)+'%&lt;/text&gt;';}
+    start+=C*frac;
+  });
+  var legend=segs.map(function(s,i){var col=s.color||RING_COLS[i%RING_COLS.length];return '&lt;span class=&quot;ring-leg&quot;&gt;&lt;i style=&quot;background:'+col+'&quot;&gt;&lt;/i&gt;'+s.label+'&lt;b&gt;'+fmt(s.value)+'&lt;/b&gt;&lt;/span&gt;';}).join('');
+  return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+(o.badge?'&lt;span class=&quot;ring-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;'
+    +'&lt;div class=&quot;ring-body&quot;&gt;&lt;svg viewBox=&quot;0 0 140 140&quot; width=&quot;150&quot; height=&quot;150&quot; class=&quot;ring-svg&quot;&gt;'+paths+labels
+    +'&lt;text x=&quot;70&quot; y=&quot;'+(o.small?66:74)+'&quot; font-size=&quot;18&quot; font-weight=&quot;800&quot; fill=&quot;#eef0ff&quot; text-anchor=&quot;middle&quot;&gt;'+o.big+'&lt;/text&gt;'
+    +(o.small?'&lt;text x=&quot;70&quot; y=&quot;82&quot; font-size=&quot;8.5&quot; fill=&quot;#b4b9d9&quot; text-anchor=&quot;middle&quot;&gt;'+o.small+'&lt;/text&gt;':'')
+    +'&lt;/svg&gt;&lt;div class=&quot;ring-legs&quot;&gt;'+legend+'&lt;/div&gt;&lt;/div&gt;'
+    +(o.note?'&lt;div class=&quot;ring-note&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+
 /* ═══ mini spark tiles · same look as the dashboard number tiles ═══ */
 function skWaveMini(vals,col){
   var w=64,h=22,n=vals.length;if(n&lt;2)return'';
@@ -3634,7 +3767,7 @@ function skMini(vals,kind,up){
   else if(before&gt;0){var d2=Math.round((now-before)/before*100);if(d2!==0){txt=(d2&gt;0?'▲ ':'▼ ')+Math.abs(d2)+'%';dir=d2&gt;0?'up':'dn';}}
   else if(now&gt;0){txt='▲ new';dir='up';}
   var tone='n';if(dir!=='flat'&amp;&amp;up!=='flat')tone=((dir==='up')===(up==='good'))?'g':'r';
-  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#4f6bff';
   var allZero=vals.every(function(v){return !v;});
   return'&lt;div class=&quot;spk&quot; title=&quot;last 4 weeks vs the 4 before&quot;&gt;'+(txt?'&lt;span class=&quot;spk-d spk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWaveMini(vals,col))+'&lt;/div&gt;';
 }
@@ -3778,7 +3911,7 @@ function renderList(){
   }).join('');
 }
 
-function render(){ renderStats(); renderTabs(); renderList(); }
+function render(){ renderStats(); renderTabs(); renderList(); if(window.paintAttach)window.paintAttach(); }
 
 document.getElementById('btnAdd').addEventListener('click', function(){
   var n=document.getElementById('fName').value.trim();
@@ -3870,16 +4003,22 @@ load(); render();
       var f=function(n){return '$'+Math.round(n||0).toLocaleString();};
       var p=function(c,t){return t&gt;0?Math.round(c/t*100)+'%':'\u00b7';};
       var wk=a.weeks||{};
+      var paid=deals.filter(isPaid);
       el.innerHTML='&lt;div style=&quot;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:10px&quot;&gt;From your Leads Log \u00b7 updates with the dashboard \u00b7 waves are the last 12 weeks&lt;/div&gt;'
       +'&lt;div class=&quot;skt-grid&quot;&gt;'
       +skTileMini('Deals with a Drive referral',p(a.all.drive,a.all.settled),a.all.drive+' of '+a.all.settled+' settled, all time',wk.driveRate,'rate','good')
       +skTileMini('Drive referrals',String(a.all.drive),'this month: '+a.month.drive+' of '+a.month.settled+' settled',wk.drive,'sum','good')
       +skTileMini('Drive $ on settled deals',f(a.all.driveD),'from the Leads Log \u00b7 last read '+new Date(a.t).toLocaleTimeString(),wk.driveD,'sum','good')
-      +'&lt;/div&gt;';
+      +'&lt;/div&gt;'
+      +'&lt;div class=&quot;ring-grid&quot;&gt;'+ringChart({title:'Drive referral on settled deals',badge:'all time',big:p(a.all.drive,a.all.settled),small:'sent to Drive',
+          segs:[{label:'Sent to Drive',value:a.all.drive,color:'#22d3ee'},{label:'Not sent',value:Math.max(0,a.all.settled-a.all.drive),color:'#4f6bff'}],empty:'No settled deals yet.'})
+        +ringChart({title:'Drive money · paid vs waiting',badge:'this list',fmt:money,big:money(paid.reduce(function(s2,x){return s2+valOf(x);},0)),small:'received so far',
+          segs:[{label:'Paid by Drive',value:paid.reduce(function(s2,x){return s2+valOf(x);},0),color:'#2dd4bf'},{label:'Still owed',value:deals.filter(function(x){return !isPaid(x);}).reduce(function(s2,x){return s2+(Number(x.fee)||0);},0),color:'#fbbf24'}],empty:'No referrals logged yet.'})+'&lt;/div&gt;';
       el.style.display='block';
     }catch(e){}
   }
   paintAttach();
+  window.paintAttach=paintAttach;
   window.addEventListener('storage',function(e){if(e&amp;&amp;e.key==='hub_attach_v1')paintAttach();});
 })();
 &lt;/script&gt;
@@ -4185,8 +4324,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.guide,.hs,.dcard,.nxt,.draft,.nx,.kpi,.pcard,.stat,.sla,.skt{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.guide:hover,.hs:hover,.dcard:hover,.nxt:hover,.draft:hover,.nx:hover,.kpi:hover,.pcard:hover,.stat:hover,.sla:hover,.skt:hover{border-color:transparent!important;background:#1a1f42!important}
+.guide,.hs,.dcard,.nxt,.draft,.nx,.kpi,.pcard,.stat,.sla,.skt{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.guide:hover,.hs:hover,.dcard:hover,.nxt:hover,.draft:hover,.nx:hover,.kpi:hover,.pcard:hover,.stat:hover,.sla:hover,.skt:hover{border-color:transparent!important;background:#181b28!important}
 .kpi.good{box-shadow:inset 3px 0 0 #34d399!important}.kpi.warn{box-shadow:inset 3px 0 0 #fbbf24!important}.kpi.bad{box-shadow:inset 3px 0 0 #fb7185!important}
 &lt;/style&gt;
 &lt;/head&gt;
@@ -4409,7 +4548,20 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 &lt;aside class=&quot;drawer&quot; id=&quot;drawer&quot; aria-label=&quot;Partner detail&quot;&gt;&lt;/aside&gt;
 &lt;div class=&quot;toasts&quot; id=&quot;toasts&quot;&gt;&lt;/div&gt;
 
-&lt;style&gt;.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
+&lt;style&gt;.ring-card{background:#12141f;border-radius:16px;padding:16px 18px;position:relative}
+.ring-title{font-size:13px;font-weight:700;color:#eef0ff;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ring-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.12);padding:3px 8px;border-radius:999px}
+.ring-body{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-svg{flex:0 0 150px}
+.ring-legs{display:flex;flex-direction:column;gap:7px;min-width:150px;flex:1}
+.ring-leg{display:flex;align-items:center;gap:8px;font-size:12px;color:#b4b9d9}
+.ring-leg i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+.ring-leg b{margin-left:auto;color:#eef0ff;font-weight:700;font-size:12.5px}
+.ring-note{font-size:11.5px;color:#7f86ad;margin-top:8px;line-height:1.5}
+.ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
+.ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
+
+.skt{position:relative;background:var(--card);border:1px solid var(--line,var(--bdr));border-radius:12px;padding:14px 16px}
 .skt.has-sk{padding-right:84px}
 .skt-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
 .skt-v{font-size:22px;font-weight:700;color:var(--ink,var(--txt))}
@@ -4422,6 +4574,30 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 @media(max-width:768px){.skt.has-sk,.stat.has-sk{padding-right:16px;padding-bottom:30px}.spk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
 &lt;/style&gt;
 &lt;script&gt;
+/* ═══ RING CHART · share-of picture like the reference · segments with gaps, % on the big ones, number in the middle ═══ */
+const RING_COLS=['#8b5cf6','#4f6bff','#22d3ee','#2dd4bf','#38bdf8','#a78bfa','#fbbf24','#fb7185'];
+function ringChart(o){
+  var segs=(o.segs||[]).filter(function(s){return s.value&gt;0;});
+  var total=segs.reduce(function(a,s){return a+s.value;},0);
+  var fmt=o.fmt||function(v){return String(Math.round(v));};
+  if(!total){return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+'&lt;/div&gt;&lt;div class=&quot;ring-empty&quot;&gt;'+(o.empty||'Nothing to show yet.')+'&lt;/div&gt;&lt;/div&gt;';}
+  var R=52,W=18,C=2*Math.PI*R,gapDeg=segs.length&gt;1?3:0,gap=C*gapDeg/360,start=0,paths='',labels='';
+  segs.forEach(function(s,i){
+    var col=s.color||RING_COLS[i%RING_COLS.length],frac=s.value/total,len=Math.max(0,C*frac-gap);
+    paths+='&lt;circle r=&quot;'+R+'&quot; cx=&quot;70&quot; cy=&quot;70&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;'+W+'&quot; stroke-dasharray=&quot;'+len.toFixed(2)+' '+(C-len).toFixed(2)+'&quot; stroke-dashoffset=&quot;'+(-(start+gap/2)).toFixed(2)+'&quot; transform=&quot;rotate(-90 70 70)&quot;&gt;&lt;title&gt;'+s.label+' · '+fmt(s.value)+' · '+Math.round(frac*100)+'%&lt;/title&gt;&lt;/circle&gt;';
+    if(frac&gt;=0.09){var mid=(start+C*frac/2)/C*2*Math.PI-Math.PI/2;var lx=70+R*Math.cos(mid),ly=70+R*Math.sin(mid);
+      labels+='&lt;text x=&quot;'+lx.toFixed(1)+'&quot; y=&quot;'+(ly+3.5).toFixed(1)+'&quot; font-size=&quot;9.5&quot; font-weight=&quot;700&quot; fill=&quot;#0a0c16&quot; text-anchor=&quot;middle&quot;&gt;'+Math.round(frac*100)+'%&lt;/text&gt;';}
+    start+=C*frac;
+  });
+  var legend=segs.map(function(s,i){var col=s.color||RING_COLS[i%RING_COLS.length];return '&lt;span class=&quot;ring-leg&quot;&gt;&lt;i style=&quot;background:'+col+'&quot;&gt;&lt;/i&gt;'+s.label+'&lt;b&gt;'+fmt(s.value)+'&lt;/b&gt;&lt;/span&gt;';}).join('');
+  return '&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+(o.badge?'&lt;span class=&quot;ring-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;'
+    +'&lt;div class=&quot;ring-body&quot;&gt;&lt;svg viewBox=&quot;0 0 140 140&quot; width=&quot;150&quot; height=&quot;150&quot; class=&quot;ring-svg&quot;&gt;'+paths+labels
+    +'&lt;text x=&quot;70&quot; y=&quot;'+(o.small?66:74)+'&quot; font-size=&quot;18&quot; font-weight=&quot;800&quot; fill=&quot;#eef0ff&quot; text-anchor=&quot;middle&quot;&gt;'+o.big+'&lt;/text&gt;'
+    +(o.small?'&lt;text x=&quot;70&quot; y=&quot;82&quot; font-size=&quot;8.5&quot; fill=&quot;#b4b9d9&quot; text-anchor=&quot;middle&quot;&gt;'+o.small+'&lt;/text&gt;':'')
+    +'&lt;/svg&gt;&lt;div class=&quot;ring-legs&quot;&gt;'+legend+'&lt;/div&gt;&lt;/div&gt;'
+    +(o.note?'&lt;div class=&quot;ring-note&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+
 /* ═══ mini spark tiles · same look as the dashboard number tiles ═══ */
 function skWaveMini(vals,col){
   var w=64,h=22,n=vals.length;if(n&lt;2)return'';
@@ -4447,7 +4623,7 @@ function skMini(vals,kind,up){
   else if(before&gt;0){var d2=Math.round((now-before)/before*100);if(d2!==0){txt=(d2&gt;0?'▲ ':'▼ ')+Math.abs(d2)+'%';dir=d2&gt;0?'up':'dn';}}
   else if(now&gt;0){txt='▲ new';dir='up';}
   var tone='n';if(dir!=='flat'&amp;&amp;up!=='flat')tone=((dir==='up')===(up==='good'))?'g':'r';
-  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#8b5cf6';
+  var col=tone==='g'?'#34d399':tone==='r'?'#fb7185':'#4f6bff';
   var allZero=vals.every(function(v){return !v;});
   return'&lt;div class=&quot;spk&quot; title=&quot;last 4 weeks vs the 4 before&quot;&gt;'+(txt?'&lt;span class=&quot;spk-d spk-'+tone+'&quot;&gt;'+txt+'&lt;/span&gt;':'')+(allZero?'':skWaveMini(vals,col))+'&lt;/div&gt;';
 }
@@ -4709,6 +4885,12 @@ function paintBoards(){
   }).filter(x=&gt;x.v&gt;0).sort((a,b)=&gt;b.v-a.v).slice(0,5);
   board('#topLeads',byLeads,function(v){return v},
     'No leads logged yet. They will appear here as partners start referring.');
+  (function(){var host=$('#topLeads');if(!host)return;var old=host.querySelector('.ring-card');if(old)old.remove();
+    var all=partners.map(function(p){return {label:p.biz,value:leadsFor(p)};}).filter(function(x){return x.value&gt;0;}).sort(function(a,b){return b.value-a.value;});
+    if(!all.length)return;var top=all.slice(0,5);var rest=all.slice(5).reduce(function(a,x){return a+x.value;},0);if(rest&gt;0)top.push({label:'Everyone else',value:rest,color:'#7f86ad'});
+    var tot=all.reduce(function(a,x){return a+x.value;},0);
+    host.insertAdjacentHTML('afterbegin',ringChart({title:'Share of leads by partner',badge:tot+' leads',big:String(tot),small:'leads from partners',segs:top}));
+  })();
 
   const bySpend=partners.map(function(p){
     const v=spendFor(p.id);
@@ -6289,8 +6471,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.jrow{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.jrow:hover{border-color:transparent!important;background:#1a1f42!important}
+.jrow{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.jrow:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
 &lt;/head&gt;
@@ -7467,8 +7649,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.card{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.card:hover{border-color:transparent!important;background:#1a1f42!important}
+.card{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.card:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
 &lt;/head&gt;
@@ -9962,8 +10144,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.lender-card,.info-card,.saved-item,.extracted{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.lender-card:hover,.info-card:hover,.saved-item:hover,.extracted:hover{border-color:transparent!important;background:#1a1f42!important}
+.lender-card,.info-card,.saved-item,.extracted{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.lender-card:hover,.info-card:hover,.saved-item:hover,.extracted:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
 &lt;/head&gt;
@@ -13276,8 +13458,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.card{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.card:hover{border-color:transparent!important;background:#1a1f42!important}
+.card{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.card:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
 &lt;/head&gt;
@@ -19446,8 +19628,8 @@ html{background:radial-gradient(1100px 560px at 12% -8%,rgba(139,92,246,.20),tra
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
 &lt;style id=&quot;noedge&quot;&gt;/* no edges · lighter slab · bigger corners, like the reference */
-.card{border-color:transparent!important;background:#151936!important;border-radius:16px!important;box-shadow:none!important}
-.card:hover{border-color:transparent!important;background:#1a1f42!important}
+.card{border-color:transparent!important;background:#12141f!important;border-radius:16px!important;box-shadow:none!important}
+.card:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
 &lt;/head&gt;

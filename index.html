@@ -8282,7 +8282,7 @@ async function doAi(){
 &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js&quot;&gt;&lt;/script&gt;
 &lt;style&gt;
 @media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%;}}
-*{box-sizing:border-box;margin:0;padding:0}html,body,#root{height:100%}body{background:#0d1117}
+*{box-sizing:border-box;margin:0;padding:0}html,body,#root{height:100%}body{background:#000000}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#242a4a;border-radius:3px}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toast{0%{opacity:0;transform:translateY(10px)}15%{opacity:1;transform:translateY(0)}85%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
@@ -9834,7 +9834,7 @@ const css=`
 `;
 
 return(
-&lt;div style={{minHeight:&quot;100vh&quot;,background:&quot;#0d1117&quot;,color:&quot;#c9d1d9&quot;,fontFamily:&quot;'Poppins','SF Mono',monospace&quot;,display:&quot;flex&quot;,flexDirection:&quot;column&quot;,fontSize:14}}&gt;
+&lt;div style={{minHeight:&quot;100vh&quot;,background:&quot;#000000&quot;,color:&quot;#c9d1d9&quot;,fontFamily:&quot;'Poppins','SF Mono',monospace&quot;,display:&quot;flex&quot;,flexDirection:&quot;column&quot;,fontSize:14}}&gt;
 &lt;style&gt;{css}&lt;/style&gt;
 {toastMsg&amp;&amp;&lt;div className=&quot;toast&quot;&gt;{toastMsg}&lt;/div&gt;}
 
@@ -9945,7 +9945,7 @@ return(
 &lt;/div&gt;
 )}
 
-&lt;div style={{padding:&quot;12px 16px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,alignItems:&quot;center&quot;,justifyContent:&quot;space-between&quot;,background:&quot;#0d1117&quot;,position:&quot;sticky&quot;,top:0,zIndex:100,flexWrap:&quot;wrap&quot;,gap:6}}&gt;
+&lt;div style={{padding:&quot;12px 16px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,alignItems:&quot;center&quot;,justifyContent:&quot;space-between&quot;,background:&quot;#000000&quot;,position:&quot;sticky&quot;,top:0,zIndex:100,flexWrap:&quot;wrap&quot;,gap:6}}&gt;
 &lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:10}}&gt;
 &lt;div style={{fontSize:16,fontWeight:700,color:&quot;#eef0ff&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;CLOSER&lt;/div&gt;
 &lt;div style={{color:&quot;#4a5280&quot;,fontSize:11}}&gt;Diagnostic&lt;/div&gt;
@@ -9962,7 +9962,7 @@ return(
 
 &lt;div style={{height:2,background:&quot;#181c36&quot;}}&gt;&lt;div style={{height:&quot;100%&quot;,width:`${pct}%`,background:ac,transition:&quot;width .4s&quot;}}/&gt;&lt;/div&gt;
 
-&lt;div style={{padding:&quot;8px 16px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,gap:3,overflowX:&quot;auto&quot;,background:&quot;#0d1117&quot;}}&gt;
+&lt;div style={{padding:&quot;8px 16px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,gap:3,overflowX:&quot;auto&quot;,background:&quot;#000000&quot;}}&gt;
 {STAGES.map((s,i)=&gt;{if(skip(s))return null;const isDone=s.key&amp;&amp;res[s.key];const isQDone=s.isQuote&amp;&amp;res.loanAmount;
 return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} ${isDone||isQDone?&quot;d&quot;:&quot;&quot;}`} onClick={()=&gt;setCur(i)} title={s.title}&gt;{isDone||isQDone?&quot;✓&quot;:s.icon}&lt;/div&gt;})}
 &lt;/div&gt;
@@ -10135,7 +10135,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 &lt;/div&gt;
 
 {(showSum||showObj||showLog)&amp;&amp;(
-&lt;div style={{width:300,borderLeft:&quot;1px solid #181c36&quot;,overflow:&quot;auto&quot;,padding:14,background:&quot;#0d1117&quot;,animation:&quot;fadeUp .2s ease&quot;,fontSize:12}}&gt;
+&lt;div style={{width:300,borderLeft:&quot;1px solid #181c36&quot;,overflow:&quot;auto&quot;,padding:14,background:&quot;#000000&quot;,animation:&quot;fadeUp .2s ease&quot;,fontSize:12}}&gt;
 {showObj&amp;&amp;(&lt;div&gt;
 &lt;div className=&quot;sl&quot; style={{marginBottom:10,color:&quot;#fb7185&quot;}}&gt;Objection Handlers&lt;/div&gt;
 {OBJECTIONS.map((obj,i)=&gt;(&lt;div key={i} className=&quot;oc&quot; style={{marginBottom:8,border:&quot;1px solid #242a4a&quot;,borderRadius:8,overflow:&quot;hidden&quot;,borderLeft:obj.tier===&quot;🔥&quot;?&quot;3px solid #fb7185&quot;:obj.tier===&quot;⚡&quot;?&quot;3px solid #f0a500&quot;:obj.tier===&quot;💡&quot;?&quot;3px solid #4e8cff&quot;:&quot;3px solid #a855f7&quot;}} onClick={()=&gt;setExpObj(expObj===i?null:i)}&gt;

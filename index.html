@@ -9255,8 +9255,10 @@ followUp:&quot;Good · that gives me a number to work against.&quot;,
 followUpCue:&quot;Don't bag out their current lender. Take the number and move.&quot;},
 
 {id:&quot;barrier&quot;,phase:&quot;EMOTION FIRST&quot;,icon:&quot;🚧&quot;,title:&quot;What's been in the way&quot;,highlight:true,hideForPath:[&quot;refinance&quot;],
-script:&quot;And what's been stopping you from getting the finance · have you been trying, or is this the first time enquiring?&quot;,
-cue:&quot;PAUSE. Zero judgement.&quot;,
+script:&quot;Have you had a go at sorting finance for this already, or am I the first one you've spoken to about it?&quot;,
+cue:&quot;PAUSE. Zero judgement. Whatever the answer is, it is not a problem.&quot;,
+script2:&quot;IF THEY HAVE TRIED · No worries. What happened there · what got in the way?&quot;,
+cue2:&quot;This is the one that matters. A knock-back, a hard enquiry, or they just gave up · you need to know which before you pick a lender.&quot;,
 key:&quot;barrier&quot;,responseLabel:&quot;Barrier&quot;,
 options:[{text:&quot;Worried about my credit&quot;},{text:&quot;Didn't want a knock-back on my file&quot;},{text:&quot;Too busy · life got in the way&quot;},{text:&quot;Didn't know where to start&quot;},{text:&quot;Thought I couldn't afford it&quot;},{text:&quot;Banks made it too hard&quot;},{text:&quot;Burnt by a bad experience before&quot;}]},
 
@@ -9285,20 +9287,20 @@ options:[{text:&quot;Yeah that's it&quot;},{text:&quot;Exactly&quot;},{text:&quo
 
 // ═══ STAGE 7 · COST OF INACTION ═══
 {id:&quot;cost&quot;,phase:&quot;COST&quot;,icon:&quot;⚠️&quot;,title:&quot;Cost of Inaction&quot;,hideForPath:[&quot;refinance&quot;],
-script:&quot;And if nothing changes for the next month or two {painRecap}· what does that look like?&quot;,
-cue:&quot;Five seconds of silence. Don't rescue.&quot;,
+script:&quot;Here's one most people never stop and think about. If nothing changes {painRecap}· you're sitting in exactly the same spot in a month or two · does that actually make life harder for you, or is it no big deal?&quot;,
+cue:&quot;Five seconds of silence. Don't rescue. They have to answer this one themselves.&quot;,
 script2:&quot;IF THEY STALL · Most people tell me it's one of a few things · still bumming lifts off everyone, still holding your breath every time the car makes a noise, or just another few months of exactly the same. Which one's closest for you?&quot;,
 cue2:&quot;They have to say it out loud in their own words. Hearing themselves say it is what moves them · you saying it for them does nothing.&quot;,
 key:&quot;costInaction&quot;,responseLabel:&quot;Cost of Inaction&quot;,
 options:[{text:&quot;Same as now · stuck&quot;},{text:&quot;More stress&quot;},{text:&quot;Car finally dies on me&quot;},{text:&quot;Still bumming lifts · still on public transport&quot;},{text:&quot;Bills keep stacking&quot;},{text:&quot;Could lose work over it&quot;}],
-followUp:&quot;Yeah. Makes sense to just get it sorted then.&quot;,
-followUpCue:&quot;Move on. Don't labour the point.&quot;},
+followUp:&quot;Right, so it does matter. That's exactly why I'll push you a bit on the documents and why I ask you to run everything past me first · the sooner I've got what I need, the sooner this is off your plate for good. Fair enough?&quot;,
+followUpCue:&quot;Ties the pain to their part in it. Get the yes, then move on. Don't labour it.&quot;},
 
 // ═══ STAGE 8 · PRESCRIPTION ═══
 {id:&quot;prescription&quot;,phase:&quot;PRESCRIPTION&quot;,icon:&quot;💊&quot;,title:&quot;The Prescription&quot;,noResponse:true,hideForPath:[&quot;refinance&quot;],
 script:&quot;Right. So based on all of that · here's where I'm landing.&quot;,
 cue:&quot;Brief pause. You're about to give them the answer they've been waiting 20 minutes for.&quot;,
-followUp:&quot;I've got one lender in mind that's the right fit for you · strong on {priority1}, realistic about your situation, and I've placed a few files just like yours with them lately. Getting the lender right first time matters · the wrong one means a decline, and that's a credit hit you don't need.\n\nSo we're on heads right now · the finance side. That's your resume to the lender, built out of how you've handled money in the past, and I put it together properly before it goes anywhere.\n\nAll I ask is that you let me lead this part. Don't apply anywhere else, don't let a dealership run your credit, and if anything comes up just ring me first. Every extra enquiry chips away at the profile I'm building for you, and I can't undo it once it's on there.\n\nYou do that and I'll make the rest as easy as it gets · I chase the lender, I handle the paperwork, and I keep you in the loop the whole way. Then we flip to tails and go get the car.&quot;},
+followUp:&quot;So we're on heads right now · the finance side. That's your resume to the lender, built out of how you've handled money in the past, and I put it together properly before it goes anywhere.\n\nAll I ask is that you let me lead this part. Don't apply anywhere else, don't let a dealership run your credit, and if anything comes up just ring me first. Every extra enquiry chips away at the profile I'm building for you, and I can't undo it once it's on there.\n\nYou do that and I'll make the rest as easy as it gets · I chase the lender, I handle the paperwork, and I keep you in the loop the whole way. Then we flip to tails and go get the car.&quot;},
 
 // ═══ STAGE 9.5 · AFFORDABILITY CHECK ═══
 {id:&quot;affordability&quot;,phase:&quot;AFFORDABILITY&quot;,icon:&quot;💳&quot;,title:&quot;Affordability Check&quot;,hideForPath:[&quot;refinance&quot;],
@@ -9327,10 +9329,8 @@ cue2:&quot;Calm. Specific.&quot;,
 docs:&quot;&quot;,comms:&quot;&quot;,cred:&quot;&quot;,creditWarn:&quot;&quot;,
 confirm:&quot;Done. Stay close to your phone · I'll be back to you in 15 minutes. Anything you want to ask before I let you go?&quot;
 }},
-script:&quot;Cool. Here's what happens next. I'll review everything you've told me, match you with the right lender for your situation, and get the application submitted. One submission, one approval, clean file. Sound good?&quot;,
-cue:&quot;Wait for the yes. First micro-commitment.&quot;,
-script2:&quot;Beautiful. Give me about 15 minutes. In that time I'll send you a text and an email with my credentials so you know I'm a real person · then I'll come back and go through your terms once I've spoken to a lender or two and made sure your documents are all in order. From there it's usually 4 to 8 business hours for an answer · sometimes longer if it's a more complicated file, and I'll tell you straight up if that's the case.&quot;,
-cue2:&quot;Calm. Specific.&quot;,
+script:&quot;Give me about 15 minutes. In that time I'll send you a text and an email with my credentials so you know I'm a real person · then I'll come back and go through your terms once I've spoken to a lender or two and made sure your documents are all in order. From there it's usually 4 to 8 business hours for an answer · sometimes longer if it's a more complicated file, and I'll tell you straight up if that's the case.&quot;,
+cue:&quot;Calm. Specific.&quot;,
 docs:&quot;I'll just do a quick look over your documents in my system to make sure I've got everything I need from you · give me one sec here. → CHECK THE CRM NOW: ID, bank statements, payslips, anything still outstanding. Tell them what's missing before you let them go.&quot;,
 comms:&quot;Would you prefer call, email, or text for communication?&quot;,
 cred:&quot;For what it's worth · I've been doing finance for over 7 years and Ausloans has been at it for more than 25, so we know a thing or two · and we look after everything for you from start to finish.&quot;,
@@ -9634,6 +9634,8 @@ const [quoteRate,setQuoteRate]=useState(10);
 const [quoteTerm,setQuoteTerm]=useState(60);
 const [quoteFee,setQuoteFee]=useState(true);
 const qWeekly=(amt)=&gt;calcWeeklyAt(amt,quoteRate,quoteTerm,quoteFee);
+const [qAmtEdit,setQAmtEdit]=useState(&quot;&quot;);
+const [qWkEdit,setQWkEdit]=useState(&quot;&quot;);
 const [showZinkPaste,setShowZinkPaste]=useState(true);
 const [zinkRaw,setZinkRaw]=useState(&quot;&quot;);
 const [clientData,setClientData]=useState({});
@@ -9710,9 +9712,14 @@ const confirmSel=()=&gt;{
 };
 const submitC=()=&gt;{if(!custom.trim()&amp;&amp;sel.length===0)return;if(!stage.key)return;if(stage.pathDetect&amp;&amp;!path)setPath(&quot;purchase&quot;);const chipText=sel.map(s=&gt;s.text).join(&quot;, &quot;);const combined=[chipText,custom.trim()].filter(Boolean).join(&quot;, &quot;);if(stage.pathDetect){const p=sel.find(s=&gt;s.path);if(p)setPath(p.path)}setRes(prev=&gt;({...prev,[stage.key]:combined}));setCustom(&quot;&quot;);setSel([]);goN()};
 
-const selectQuote=(q)=&gt;{const w=qWeekly(q.amount);setQuoteSelected({amount:q.amount,weekly:w});setRes(prev=&gt;({...prev,loanAmount:`$${q.amount.toLocaleString()}`,weeklyRepayment:`$${w}/wk`,quoteTerms:`${quoteRate}% over ${quoteTerm/12} years`}))};
-const submitCustomQuote=()=&gt;{const raw=quoteCustomAmt.replace(/[^0-9.]/g,&quot;&quot;);const amt=parseFloat(raw);if(!amt||amt&lt;=0)return;const wk=qWeekly(amt);setQuoteSelected({amount:amt,weekly:wk});setRes(prev=&gt;({...prev,loanAmount:`$${amt.toLocaleString()}`,weeklyRepayment:`$${wk}/wk`,quoteTerms:`${quoteRate}% over ${quoteTerm/12} years`}));setQuoteCustomAmt(&quot;&quot;)};
-const reprice=(rate,term,fee)=&gt;{setQuoteRate(rate);setQuoteTerm(term);setQuoteFee(fee);if(quoteSelected){const w=calcWeeklyAt(quoteSelected.amount,rate,term,fee);setQuoteSelected({amount:quoteSelected.amount,weekly:w});setRes(prev=&gt;({...prev,weeklyRepayment:`$${w}/wk`,quoteTerms:`${rate}% over ${term/12} years`}));}};
+// type an amount and the weekly follows · type a weekly and the amount is worked back from it
+const applyAmount=(amt)=&gt;{if(!(amt&gt;0))return;const w=qWeekly(amt);setQuoteSelected({amount:amt,weekly:w});setRes(prev=&gt;({...prev,loanAmount:`$${amt.toLocaleString()}`,weeklyRepayment:`$${w}/wk`,quoteTerms:`${quoteRate}% over ${quoteTerm/12} years`}))};
+const amountForWeekly=(wk)=&gt;{if(!(wk&gt;0))return 0;let lo=0,hi=500000;for(let i=0;i&lt;60;i++){const mid=(lo+hi)/2;if(qWeekly(mid)&lt;wk)lo=mid;else hi=mid;}return Math.round((lo+hi)/2/50)*50;};
+const editAmount=(v)=&gt;{setQAmtEdit(v);setQWkEdit(&quot;&quot;);applyAmount(parseFloat(String(v).replace(/[^0-9.]/g,&quot;&quot;)))};
+const editWeekly=(v)=&gt;{setQWkEdit(v);setQAmtEdit(&quot;&quot;);const wk=parseFloat(String(v).replace(/[^0-9.]/g,&quot;&quot;));if(wk&gt;0)applyAmount(amountForWeekly(wk))};
+const selectQuote=(q)=&gt;{setQAmtEdit(&quot;&quot;);setQWkEdit(&quot;&quot;);const w=qWeekly(q.amount);setQuoteSelected({amount:q.amount,weekly:w});setRes(prev=&gt;({...prev,loanAmount:`$${q.amount.toLocaleString()}`,weeklyRepayment:`$${w}/wk`,quoteTerms:`${quoteRate}% over ${quoteTerm/12} years`}))};
+const submitCustomQuote=()=&gt;{setQAmtEdit(&quot;&quot;);setQWkEdit(&quot;&quot;);const raw=quoteCustomAmt.replace(/[^0-9.]/g,&quot;&quot;);const amt=parseFloat(raw);if(!amt||amt&lt;=0)return;const wk=qWeekly(amt);setQuoteSelected({amount:amt,weekly:wk});setRes(prev=&gt;({...prev,loanAmount:`$${amt.toLocaleString()}`,weeklyRepayment:`$${wk}/wk`,quoteTerms:`${quoteRate}% over ${quoteTerm/12} years`}));setQuoteCustomAmt(&quot;&quot;)};
+const reprice=(rate,term,fee)=&gt;{setQAmtEdit(&quot;&quot;);setQWkEdit(&quot;&quot;);setQuoteRate(rate);setQuoteTerm(term);setQuoteFee(fee);if(quoteSelected){const w=calcWeeklyAt(quoteSelected.amount,rate,term,fee);setQuoteSelected({amount:quoteSelected.amount,weekly:w});setRes(prev=&gt;({...prev,weeklyRepayment:`$${w}/wk`,quoteTerms:`${rate}% over ${term/12} years`}));}};
 const setTrait=(k,v)=&gt;{setRes(prev=&gt;{const cur=prev.traits||{};const next={...cur};if(next[k]===v)delete next[k];else next[k]=v;return{...prev,traits:next};});};
 const submitComfort=()=&gt;{if(!quoteComfort.trim())return;setRes(prev=&gt;({...prev,comfortableAt:quoteComfort.trim()}));setQuoteComfort(&quot;&quot;);toast(&quot;Saved ✓&quot;)};
 
@@ -9974,7 +9981,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 &lt;div className=&quot;sb&quot;&gt;{fillScript(c.script)}&lt;/div&gt;
 &lt;div className=&quot;cb&quot;&gt;⏸ {c.cue}&lt;/div&gt;
 {quoteSelected&amp;&amp;&lt;div className=&quot;sb&quot; style={{borderColor:ac+&quot;60&quot;}}&gt;{fillScript(c.scriptLow)}&lt;/div&gt;}
-{quoteSelected&amp;&amp;&lt;div className=&quot;qlock&quot;&gt;&lt;div&gt;&lt;div style={{fontSize:10,color:&quot;#4a5280&quot;,textTransform:&quot;uppercase&quot;,marginBottom:4}}&gt;Quoted&lt;/div&gt;&lt;div style={{fontSize:20,fontWeight:700,color:ac}}&gt;${quoteSelected.amount.toLocaleString()}&lt;/div&gt;&lt;/div&gt;&lt;div style={{textAlign:&quot;right&quot;}}&gt;&lt;div style={{fontSize:10,color:&quot;#4a5280&quot;,textTransform:&quot;uppercase&quot;,marginBottom:4}}&gt;Weekly&lt;/div&gt;&lt;div style={{fontSize:20,fontWeight:700,color:&quot;#eef0ff&quot;}}&gt;${quoteSelected.weekly}/wk&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;}
+{quoteSelected&amp;&amp;&lt;div className=&quot;qlock&quot;&gt;&lt;div&gt;&lt;div style={{fontSize:10,color:&quot;#4a5280&quot;,textTransform:&quot;uppercase&quot;,marginBottom:4}}&gt;Quoted · change it live&lt;/div&gt;&lt;div style={{display:&quot;flex&quot;,alignItems:&quot;baseline&quot;,gap:2}}&gt;&lt;span style={{fontSize:20,fontWeight:700,color:ac}}&gt;$&lt;/span&gt;&lt;input className=&quot;ci&quot; inputMode=&quot;decimal&quot; value={qAmtEdit!==&quot;&quot;?qAmtEdit:String(quoteSelected.amount)} onChange={e=&gt;editAmount(e.target.value)} style={{width:110,padding:&quot;2px 4px&quot;,fontSize:20,fontWeight:700,color:ac,background:&quot;transparent&quot;,border:0,borderBottom:&quot;1px solid #2a3157&quot;}}/&gt;&lt;/div&gt;&lt;/div&gt;&lt;div style={{textAlign:&quot;right&quot;}}&gt;&lt;div style={{fontSize:10,color:&quot;#4a5280&quot;,textTransform:&quot;uppercase&quot;,marginBottom:4}}&gt;Weekly · or set this&lt;/div&gt;&lt;div style={{display:&quot;flex&quot;,alignItems:&quot;baseline&quot;,gap:2,justifyContent:&quot;flex-end&quot;}}&gt;&lt;span style={{fontSize:20,fontWeight:700,color:&quot;#eef0ff&quot;}}&gt;$&lt;/span&gt;&lt;input className=&quot;ci&quot; inputMode=&quot;decimal&quot; value={qWkEdit!==&quot;&quot;?qWkEdit:String(quoteSelected.weekly)} onChange={e=&gt;editWeekly(e.target.value)} style={{width:84,padding:&quot;2px 4px&quot;,fontSize:20,fontWeight:700,color:&quot;#eef0ff&quot;,background:&quot;transparent&quot;,border:0,borderBottom:&quot;1px solid #2a3157&quot;,textAlign:&quot;right&quot;}}/&gt;&lt;span style={{fontSize:13,color:&quot;#8b949e&quot;}}&gt;/wk&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;}
 &lt;div style={{background:&quot;#161b22&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:10,padding:12}}&gt;
 &lt;div className=&quot;sl&quot; style={{marginBottom:8}}&gt;Adjust the shape&lt;/div&gt;
 &lt;div style={{display:&quot;flex&quot;,gap:14,flexWrap:&quot;wrap&quot;,alignItems:&quot;center&quot;}}&gt;
@@ -10063,7 +10070,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 
 ):(
 &lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:14}}&gt;
-{stage.autoScript?&lt;div className=&quot;sb&quot;&gt;{recapText()}&lt;/div&gt;:&lt;div className=&quot;sb&quot;&gt;{fillScript(c.confirmScript&amp;&amp;stage.key&amp;&amp;res[stage.key]?c.confirmScript:c.script)}&lt;/div&gt;}
+{stage.autoScript?&lt;div className=&quot;sb&quot;&gt;{recapText()}&lt;/div&gt;:(()=&gt;{const _t=fillScript(c.confirmScript&amp;&amp;stage.key&amp;&amp;res[stage.key]?c.confirmScript:c.script);return _t&amp;&amp;_t.trim()?&lt;div className=&quot;sb&quot;&gt;{_t}&lt;/div&gt;:null;})()}
 {c.cue&amp;&amp;&lt;div className=&quot;cb&quot;&gt;⏸ Slow down, breath.&lt;/div&gt;}
 {c.script2&amp;&amp;&lt;&gt;&lt;div className=&quot;sl&quot;&gt;Then&lt;/div&gt;&lt;div className=&quot;sb&quot;&gt;{fillScript(c.script2)}&lt;/div&gt;&lt;/&gt;}
 {c.cue2&amp;&amp;&lt;div className=&quot;cb&quot;&gt;⏸ Slow down, breath.&lt;/div&gt;}

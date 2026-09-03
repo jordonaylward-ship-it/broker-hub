@@ -119,7 +119,7 @@ body{background:#000000;color:#eef0ff}
 .nav-tab:hover{background:rgba(79,107,255,.14);color:#eef0ff}
 .topnav .nav-tabs .nav-tab.on{background:#3b82f6;color:#0a0c16;border-color:transparent;box-shadow:none}
 .nav-tab.on .ico svg{stroke-width:2.3}
-.nav-tab[data-tool=settings]{margin-top:auto}
+.nav-tab[data-tool=settings]{margin-top:10px}
 .topnav.wide .nav-tab{width:calc(100% - 6px);justify-content:flex-start;padding:0 11px}
 .topnav.wide .nav-tab .lbl{display:inline}
 .topnav:not(.wide) .nav-tab::after{content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%) translateX(-4px);background:#181c36;color:#eef0ff;border:1px solid rgba(148,163,255,.24);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;box-shadow:none;z-index:50}
@@ -19849,6 +19849,19 @@ select.deal{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)
 .maxcar .k{color:var(--dim)}
 .maxcar .n{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
 .maxcar .n small{font-size:13px;font-weight:600;color:var(--mut);margin-left:8px}
+.est{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.est .h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;font-weight:700;color:var(--mut);padding-bottom:6px}
+.freq{display:inline-flex;gap:2px;background:rgba(148,163,255,.08);border-radius:999px;padding:2px}
+.freq button{border:0;background:transparent;color:var(--mut);font-family:inherit;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:999px;cursor:pointer}
+.freq button.on{background:var(--primary);color:#fff}
+.est table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.est th{font-size:10.5px;font-weight:600;color:var(--mut);text-align:right;padding:4px 2px 6px}
+.est th:first-child{text-align:left}
+.est td{font-size:12.5px;text-align:right;padding:5px 2px;border-top:1px solid var(--line);color:var(--dim)}
+.est td:first-child{text-align:left;color:var(--txt);font-weight:600}
+.est td.now{color:#fff;font-weight:800;background:rgba(79,107,255,.16);border-radius:6px}
+.est th.now{color:#9db1ff}
+.est .n{font-size:11px;color:var(--mut);margin-top:6px;line-height:1.45}
 .checks{margin-top:14px;padding-top:6px;border-top:1px solid var(--line)}
 .chk{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--dim)}
 .chk:last-child{border-bottom:0}
@@ -19925,6 +19938,7 @@ select.deal{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)
         &lt;div class=&quot;stack&quot;&gt;&lt;div class=&quot;h&quot; id=&quot;stackH&quot;&gt;How the loan is made up&lt;/div&gt;&lt;div id=&quot;stack&quot;&gt;&lt;/div&gt;&lt;/div&gt;
         &lt;div class=&quot;chips&quot; id=&quot;chips&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;maxcar&quot;&gt;&lt;div class=&quot;k&quot;&gt;At their budget on these settings they can go to&lt;/div&gt;&lt;div class=&quot;n&quot;&gt;&lt;span id=&quot;maxCar&quot;&gt;$0&lt;/span&gt;&lt;small&gt;drive away&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;est&quot;&gt;&lt;div class=&quot;h&quot;&gt;&lt;span id=&quot;estH&quot;&gt;Repayment estimates&lt;/span&gt;&lt;span class=&quot;freq&quot; id=&quot;freq&quot;&gt;&lt;button data-f=&quot;w&quot; class=&quot;on&quot;&gt;Weekly&lt;/button&gt;&lt;button data-f=&quot;f&quot;&gt;Fortnightly&lt;/button&gt;&lt;button data-f=&quot;m&quot;&gt;Monthly&lt;/button&gt;&lt;/span&gt;&lt;/div&gt;&lt;div id=&quot;estTable&quot;&gt;&lt;/div&gt;&lt;div class=&quot;n&quot;&gt;Every term against the rate you typed and a spread either side, on the same amount financed with the account fee in. Your rate and term are the highlighted cell.&lt;/div&gt;&lt;/div&gt;
         &lt;div class=&quot;checks&quot; id=&quot;checks&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;foot&quot;&gt;Guide maths only. Price it live in the portal before quoting.&lt;/div&gt;
       &lt;/div&gt;
@@ -19947,6 +19961,7 @@ select.deal{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)
   var num=function(v){var x=parseFloat(String(v).replace(/[^0-9.\-]/g,''));return isNaN(x)?0:x;};
   var state=JSON.parse(JSON.stringify(DEFAULTS));
   var current=null; // name of the loaded saved deal
+  var freq='w';    // repayment estimates shown weekly, fortnightly or monthly
 
   function store(){try{return JSON.parse(localStorage.getItem(KEY))||{v:1,deals:{}};}catch(e){return {v:1,deals:{}};}}
   function saveStore(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
@@ -20007,6 +20022,17 @@ select.deal{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)
     var chip=function(label,delta){var good=delta&lt;=0;return '&lt;div class=&quot;chip '+(good?'good':'bad')+'&quot;&gt;&lt;span&gt;'+label+'&lt;/span&gt;&lt;b&gt;'+(good?'under by ':'over by ')+'$'+fmt(Math.abs(delta))+'&lt;/b&gt;&lt;/div&gt;';};
     $('chips').innerHTML=(v.budget&gt;0?chip('Against their $'+fmt(v.budget)+' a week',v.budgetGap):'')+(v.curWk&gt;0?chip('Against '+(state.oldLender||'the current loan')+' at $'+fmt(v.curWk)+' a week',v.curGap):'');
     $('maxCar').textContent='$'+fmt(v.maxCar);
+    // repayment estimates · rates around the one typed, every term, same amount financed
+    (function(){
+      var R=v.R||0;var rates=[R-2,R-1,R,R+1.5,R+3].map(function(x){return Math.max(3,Math.round(x*100)/100);});
+      var per=function(m){return freq==='w'?m*12/52:freq==='f'?m*12/26:m;};
+      var unit=freq==='w'?'a week':freq==='f'?'a fortnight':'a month';
+      $('estH').textContent=v.naf&gt;0?('Estimates on $'+fmt(v.naf)+' financed, '+unit):'Repayment estimates';
+      if(!(v.naf&gt;0)){$('estTable').innerHTML='&lt;div class=&quot;n&quot; style=&quot;margin-top:0&quot;&gt;Put the car price in and the table fills in.&lt;/div&gt;';return;}
+      var head='&lt;tr&gt;&lt;th&gt;Term&lt;/th&gt;'+rates.map(function(x){return '&lt;th'+(x===R?' class=&quot;now&quot;':'')+'&gt;'+x+'%&lt;/th&gt;';}).join('')+'&lt;/tr&gt;';
+      var rows=[3,4,5,6,7].map(function(t){var mo=t*12;return '&lt;tr&gt;&lt;td&gt;'+t+' yr&lt;/td&gt;'+rates.map(function(x){var rr=x/1200;var f=Math.pow(1+rr,mo);var m=v.naf*rr*f/(f-1)+v.AF;var now=(x===R&amp;&amp;t===v.term);return '&lt;td'+(now?' class=&quot;now&quot;':'')+' title=&quot;$'+fmt(m)+' a month&quot;&gt;$'+fmt(per(m))+'&lt;/td&gt;';}).join('')+'&lt;/tr&gt;';}).join('');
+      $('estTable').innerHTML='&lt;table&gt;'+head+rows+'&lt;/table&gt;';
+    })();
     var chk=function(label,val,ok){return '&lt;div class=&quot;chk&quot;&gt;&lt;span&gt;'+label+'&lt;/span&gt;&lt;span class=&quot;r&quot;&gt;&lt;b&gt;'+val+'&lt;/b&gt;&lt;span class=&quot;tag '+(ok?'ok':'no')+'&quot;&gt;'+(ok?'fits':'watch')+'&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;';};
     $('checks').innerHTML=chk('Fallback lender cap at $'+fmt(v.cap),'$'+fmt(v.naf),v.naf&lt;=v.cap)
       +chk('LVR against retail, ceiling '+fmt(v.lvrMax)+'%',fmt(v.lvr)+'%',v.lvr&lt;=v.lvrMax&amp;&amp;v.lvr&gt;0)
@@ -20032,6 +20058,7 @@ select.deal{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)
   $('terms').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;state.term=+b.dataset.t;paintTerm();render();autosave();});
   $('steps').addEventListener('click',function(e){var b=e.target.closest('.step');if(!b)return;var i=+b.dataset.i;var d=state.done||[];state.done=d.indexOf(i)&gt;=0?d.filter(function(x){return x!==i;}):d.concat([i]);render();autosave();});
   $('dealPick').addEventListener('change',function(){if(this.value)load(this.value);});
+  $('freq').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;freq=b.dataset.f;[].forEach.call($('freq').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});render();});
   $('saveBtn').addEventListener('click',function(){readForm();var name=(state.client||'').trim()||prompt('Name this deal (client name)');if(!name)return;state.client=state.client||name;$('f_client').value=state.client;var s=store();s.deals[name]=JSON.parse(JSON.stringify(state));s.last=name;saveStore(s);current=name;paintPick();$('saveMsg').textContent='Saved as '+name;});
   $('newBtn').addEventListener('click',function(){state=JSON.parse(JSON.stringify(DEFAULTS));current=null;writeForm();render();paintPick();$('saveMsg').textContent='New deal. Fill it in, then Save.';$('f_client').focus();});
   $('delBtn').addEventListener('click',function(){if(!current)return;if(!confirm('Delete the saved deal for '+current+'?'))return;var s=store();delete s.deals[current];if(s.last===current)delete s.last;saveStore(s);current=null;state=JSON.parse(JSON.stringify(DEFAULTS));writeForm();render();paintPick();$('saveMsg').textContent='Deleted';});

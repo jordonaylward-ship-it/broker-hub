@@ -498,7 +498,17 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .mc:hover,.tw:hover,.tier-sim:hover,.sc-grid:hover,.sc-wf:hover,.sc2-panel:hover,.rc:hover,.wf-wrap:hover,.scd:hover,.hist-chart:hover,.filter-bar:hover{border-color:transparent!important;background:#181b28!important}
 .mc[style*=&quot;--amber&quot;]{box-shadow:inset 3px 0 0 var(--amber)!important}.mc[style*=&quot;--teal&quot;]{box-shadow:inset 3px 0 0 var(--teal)!important}.mc[style*=&quot;--green&quot;]{box-shadow:inset 3px 0 0 var(--green)!important}.mc[style*=&quot;--red&quot;]{box-shadow:inset 3px 0 0 var(--red)!important}
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;pillfix&quot;&gt;
+/* ── filter pills · true pill, no border seam, no browser focus ring, count sits with the label ── */
+.filter-btn{border:0!important;border-radius:999px!important;padding:8px 15px!important;line-height:1!important;display:inline-flex!important;align-items:center!important;gap:5px!important;background:rgba(148,163,255,.08)!important;color:var(--dim);transition-property:background-color,background-image,color!important;transition-duration:.18s!important;transition-timing-function:ease!important;-webkit-tap-highlight-color:transparent}
+.filter-btn:hover{background:rgba(148,163,255,.16)!important;color:var(--txt)}
+.filter-btn.on{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important;font-weight:700}
+.filter-btn.on:hover{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important}
+.filter-btn .count{opacity:.62;font-weight:600;margin-left:0;font-variant-numeric:tabular-nums}
+.filter-btn.on .count{opacity:.68}
+.filter-btn:focus{outline:none!important}
+.filter-btn:focus-visible{outline:2px solid #9db1ff!important;outline-offset:2px!important}
+&lt;/style&gt;&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
   &lt;div class=&quot;setup&quot; id=&quot;setupBox&quot; style=&quot;display:none&quot;&gt;
@@ -10373,7 +10383,17 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .lender-card:hover,.info-card:hover,.saved-item:hover,.extracted:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;pillfix&quot;&gt;
+/* ── filter pills · true pill, no border seam, no browser focus ring, count sits with the label ── */
+.filter-btn{border:0!important;border-radius:999px!important;padding:8px 15px!important;line-height:1!important;display:inline-flex!important;align-items:center!important;gap:5px!important;background:rgba(148,163,255,.08)!important;color:var(--dim);transition-property:background-color,background-image,color!important;transition-duration:.18s!important;transition-timing-function:ease!important;-webkit-tap-highlight-color:transparent}
+.filter-btn:hover{background:rgba(148,163,255,.16)!important;color:var(--txt)}
+.filter-btn.on{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important;font-weight:700}
+.filter-btn.on:hover{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important}
+.filter-btn .count{opacity:.62;font-weight:600;margin-left:0;font-variant-numeric:tabular-nums}
+.filter-btn.on .count{opacity:.68}
+.filter-btn:focus{outline:none!important}
+.filter-btn:focus-visible{outline:2px solid #9db1ff!important;outline-offset:2px!important}
+&lt;/style&gt;&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;h1&gt;Lender Matcher&lt;/h1&gt;

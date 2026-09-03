@@ -109,7 +109,7 @@ body{background:#000000;color:#eef0ff}
 .brand{display:none;font-size:11px;letter-spacing:.08em;line-height:1.35;margin:0 0 6px 14px;color:#c4b5fd;white-space:normal;text-align:left}
 .brand span{display:block;color:#eef0ff;font-size:12px}
 .topnav.wide .brand{display:block}
-.brand-mini{width:29px;height:29px;border-radius:9px;margin:2px 0 6px 12px;background:linear-gradient(135deg,#4f6bff,#22d3ee);color:#0a0c16;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em;box-shadow:0 6px 16px rgba(139,92,246,.35)}
+.brand-mini{width:29px;height:29px;border-radius:9px;margin:2px 0 6px 12px;background:#3b82f6;color:#0a0c16;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em;box-shadow:none}
 .topnav.wide .brand-mini{display:none}
 .nav-tabs{flex:1;display:flex;flex-direction:column;gap:6px;width:100%;flex-wrap:nowrap;min-height:0}
 .nav-tab{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;width:42px;height:42px;padding:0;border-radius:11px;font-size:12px;font-weight:600;line-height:1.15;text-align:left;background:transparent;border:1px solid transparent;color:#7f86ad;transition:background .15s,color .15s,width .18s ease,box-shadow .15s;white-space:nowrap;margin-left:6px;overflow:visible}
@@ -117,12 +117,12 @@ body{background:#000000;color:#eef0ff}
 .nav-tab .ico svg{width:19px;height:19px}
 .nav-tab .lbl{display:none;margin-left:10px;color:inherit}
 .nav-tab:hover{background:rgba(79,107,255,.14);color:#eef0ff}
-.topnav .nav-tabs .nav-tab.on{background:linear-gradient(135deg,#4f6bff,#22d3ee);color:#0a0c16;border-color:transparent;box-shadow:0 6px 18px rgba(79,107,255,.45)}
+.topnav .nav-tabs .nav-tab.on{background:#3b82f6;color:#0a0c16;border-color:transparent;box-shadow:none}
 .nav-tab.on .ico svg{stroke-width:2.3}
 .nav-tab[data-tool=settings]{margin-top:auto}
 .topnav.wide .nav-tab{width:calc(100% - 6px);justify-content:flex-start;padding:0 11px}
 .topnav.wide .nav-tab .lbl{display:inline}
-.topnav:not(.wide) .nav-tab::after{content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%) translateX(-4px);background:#181c36;color:#eef0ff;border:1px solid rgba(148,163,255,.24);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;box-shadow:0 10px 24px rgba(0,0,0,.4);z-index:50}
+.topnav:not(.wide) .nav-tab::after{content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%) translateX(-4px);background:#181c36;color:#eef0ff;border:1px solid rgba(148,163,255,.24);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;box-shadow:none;z-index:50}
 .topnav:not(.wide) .nav-tab:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
 .frame-wrap{background:#000000}
 .frame-wrap iframe{background:#000000}
@@ -263,6 +263,16 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
 .ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
 
+.dash2{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,1fr);gap:14px;margin:0 0 6px}
+@media(max-width:980px){.dash2{grid-template-columns:1fr}}
+.dash2 .hist-chart{margin:0;height:100%;box-sizing:border-box}
+.dash2 .ring-card{height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:10px 26px;padding:10px 6px 18px}
+.kpi{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.kpi .kl{font-size:11.5px;color:var(--mut);margin-bottom:2px;white-space:nowrap}
+.kpi .kv{font-size:25px;font-weight:700;letter-spacing:-.4px;line-height:1.1;white-space:nowrap}
+.kpi .ks{font-size:10.5px;color:var(--mut);margin-top:2px;white-space:nowrap}
+.spk.spk-in{position:static;flex:0 0 auto}
 .mc{position:relative}.mc.has-sk{padding-right:84px}.spk{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}.spk-d{font-size:10px;font-weight:700;letter-spacing:.2px;padding:1px 6px;border-radius:999px}.spk-g{color:#34d399;background:rgba(52,211,153,.12)}.spk-r{color:#fb7185;background:rgba(251,113,133,.12)}.spk-n{color:#a5b4fc;background:rgba(139,92,246,.14)}
 @media(max-width:768px){.mc.has-sk{padding-right:16px;padding-bottom:30px}.spk{top:auto;bottom:8px;right:10px;flex-direction:row;align-items:center;gap:6px}}
 .tw{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
@@ -1417,13 +1427,16 @@ function historyChartsBlock(leads){
       +'&lt;/div&gt;';
   }
   const pill=(m,l)=&gt;'&lt;button onclick=&quot;window._histMode=\''+m+'\';render()&quot; style=&quot;border:0;cursor:pointer;padding:5px 14px;border-radius:999px;font-size:11.5px;font-weight:600;font-family:inherit;'+(mode===m?'background:linear-gradient(135deg,#4f6bff,#22d3ee);color:#0a0c16':'background:transparent;color:var(--mut)')+'&quot;&gt;'+l+'&lt;/button&gt;';
-  return'&lt;div class=&quot;sh&quot; style=&quot;margin-top:20px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;&lt;span style=&quot;display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--bdr);border-radius:999px;padding:3px&quot;&gt;'+pill('week','Week')+pill('month','Month')+'&lt;/span&gt;&lt;/div&gt;'
-    +'&lt;div style=&quot;display:flex;flex-direction:column;gap:16px;margin-top:8px;margin-bottom:20px&quot;&gt;'
-    +lineChart(settleData,'Settlements per '+mode,totalSettled+' total','#8b5cf6','#22d3ee',v=&gt;(Math.round(v*10)/10).toString(),'s')
-    +histStatsStrip()
-    +lineChart(incomeData,'Take-home commission per '+mode+' (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#4f6bff','#38bdf8',v=&gt;Math.abs(v)&gt;=1000?'$'+(+(v/1000).toFixed(1))+'k':'$'+Math.round(v),'c')
-    +'&lt;/div&gt;';
+  const toggle='&lt;span style=&quot;display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--bdr);border-radius:999px;padding:3px&quot;&gt;'+pill('week','Week')+pill('month','Month')+'&lt;/span&gt;';
+  const settleChart=lineChart(settleData,'Settlements per '+mode,totalSettled+' total','#8b5cf6','#22d3ee',v=&gt;(Math.round(v*10)/10).toString(),'s');
+  const commChart=lineChart(incomeData,'Take-home commission per '+mode+' (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#4f6bff','#38bdf8',v=&gt;Math.abs(v)&gt;=1000?'$'+(+(v/1000).toFixed(1))+'k':'$'+Math.round(v),'c');
+  if(window._histPieces){return {toggle:toggle,settle:settleChart,comm:commChart,strip:histStatsStrip()};}
+  return'&lt;div class=&quot;sh&quot; style=&quot;margin-top:20px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+toggle+'&lt;/div&gt;&lt;div style=&quot;display:flex;flex-direction:column;gap:16px;margin-top:8px;margin-bottom:20px&quot;&gt;'+settleChart+histStatsStrip()+commChart+'&lt;/div&gt;';
 }
+function historyPieces(leads){window._histPieces=true;try{var p=historyChartsBlock(leads);return (p&amp;&amp;typeof p==='object')?p:{toggle:'',settle:'',comm:'',strip:''};}finally{window._histPieces=false;}}
+// ── borderless number row like the reference top strip · value on the left, badge + wave on the right ──
+function skInline(key){var h=sk(key);return h?h.replace('&lt;div class=&quot;spk&quot;','&lt;div class=&quot;spk spk-in&quot;'):'';}
+function kpiRow(items){return '&lt;div class=&quot;kpi-row&quot;&gt;'+items.map(function(it){return '&lt;div class=&quot;kpi&quot;&gt;&lt;div&gt;&lt;div class=&quot;kl&quot;&gt;'+it.l+'&lt;/div&gt;&lt;div class=&quot;kv'+(it.c?' '+it.c:'')+'&quot;&gt;'+it.v+'&lt;/div&gt;'+(it.s?'&lt;div class=&quot;ks&quot;&gt;'+it.s+'&lt;/div&gt;':'')+'&lt;/div&gt;'+skInline(it.k)+'&lt;/div&gt;';}).join('')+'&lt;/div&gt;';}
 
 
 // ═══ SPARK TILES · little wave + change badge on the number tiles ═══
@@ -2236,7 +2249,29 @@ function rAllTime(){
   s.driveRate=_at.driveRate;s.driveCount=_at.driveCount;s.driveDollars=_at.driveDollars;
   s.insRate=_at.insRate;s.insCount=_at.insCount;s._atSettled=_at.settledCount;
   const lbl=window._leadTypeFilter===&quot;All&quot;?&quot;All Time Performance&quot;:&quot;All Time · &quot;+window._leadTypeFilter+&quot; Leads&quot;;
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+plainMoneyLine(filtered.filter(l=&gt;(l.cost||0)&gt;0).length,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)+historyChartsBlock(filtered)+statsCards(s,lbl)+'&lt;div class=&quot;ring-grid&quot;&gt;'+leadOutcomeRing(filtered,'Where every lead ends up','all time')+incomeMixRing(_at.afterSplitTotal||s.afterSplitTotal||0,_at.warrDollars,_at.driveDollars,insuranceDollars(null),'Where the money comes from','all time')+'&lt;/div&gt;'+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+insightQuoteBlock(s,QUOTES_ALLTIME);
+  const hp=historyPieces(filtered);
+  const paidN=filtered.filter(l=&gt;(l.cost||0)&gt;0).length;
+  const topRow=kpiRow([
+    {l:'Settled deals',v:s.settledCount,k:'settled',c:'c-pos'},
+    {l:'Take-home',v:fmtFull(s.afterSplitTotal||0),k:'take',c:'c-pos',s:'after split'},
+    {l:'Leads bought',v:paidN,k:'paid',c:'c-teal'},
+    {l:'Conversion',v:pct(s.successRate),k:'successRate',s:'settled ÷ leads'},
+    {l:'Per settled deal',v:fmtFull(s.settledCount?(s.afterSplitTotal||0)/s.settledCount:0),k:'avgTake',c:'c-teal'},
+    {l:'Cost per lead',v:paidN?fmtFull(s.totalSpend/paidN):'·',k:'cpl'}]);
+  const midRow=kpiRow([
+    {l:'Approvals',v:s.approvedCount,k:'approved',c:'c-pos'},
+    {l:'Declined by lender',v:s.declinedCount,k:'declined',c:'c-neg'},
+    {l:'Not qualified',v:s.notQualifiedCount,k:'nq',c:'c-warn'},
+    {l:'Approval rate',v:pct(s.approvalRate),k:'approvalRate'},
+    {l:'Avg loan settled',v:fmtFull(s.avgLoanAmt),k:'avgLoan'},
+    {l:'Settled value',v:fmtFull(s.totalSettledAmt),k:'value',c:'c-pos'}]);
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter()+topRow
+    +'&lt;div class=&quot;sh&quot; style=&quot;margin-top:2px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+hp.toggle+'&lt;/div&gt;'
+    +'&lt;div class=&quot;dash2&quot;&gt;'+hp.settle+leadOutcomeRing(filtered,'Where every lead ends up','all time')+'&lt;/div&gt;'
+    +midRow
+    +'&lt;div class=&quot;dash2&quot;&gt;'+hp.comm+incomeMixRing(_at.afterSplitTotal||s.afterSplitTotal||0,_at.warrDollars,_at.driveDollars,insuranceDollars(null),'Where the money comes from','all time')+'&lt;/div&gt;'
+    +plainMoneyLine(paidN,s.settledCount,s.totalSpend,(s.afterSplitTotal||0),&quot;all time&quot;)
+    +statsCards(s,lbl)+netPerWeekBlock()+velocityCards(filtered)+budgetBlock()+insightQuoteBlock(s,QUOTES_ALLTIME);
 }
 
 function rMonthly(){
@@ -2269,14 +2304,37 @@ function rMonthly(){
   const monthOpts=sorted.map(ym=&gt;'&lt;option value=&quot;'+ym+'&quot;'+(ym===selM?&quot; selected&quot;:&quot;&quot;)+'&gt;'+monthLabel(ym)+'&lt;/option&gt;').reverse().join(&quot;&quot;);
 
   // Build month cards
-  let monthCardsHTML='';
+  let monthCardsHTML='',monthHeader='',monthTop='';
   if(selStats){
     const s=selStats;
     // Settlement-date based stats for the selected month (commission, settlements, settled value, avg loan)
     const sd=computeSettlementStats(filteredLeads,selM);
     skSet(filteredLeads,'month',selM);
+    monthHeader='&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;'+monthLabel(selM)+' Performance'+typeSuffix+'&lt;/h2&gt;&lt;select onchange=&quot;window._selMonth=this.value;render();&quot; style=&quot;background:var(--card);color:var(--txt);border:1px solid var(--bdr2);border-radius:8px;padding:8px 14px;font-family:inherit;font-size:13px;cursor:pointer&quot;&gt;'+monthOpts+'&lt;/select&gt;&lt;/div&gt;';
+    (function(){
+      const hp=historyPieces(filteredLeads);
+      const paidN=(months[selM]||[]).filter(l=&gt;(l.cost||0)&gt;0).length;
+      const conv=s.total&gt;0?sd.settledCount/s.total:0;
+      monthTop=kpiRow([
+        {l:'Settled deals',v:sd.settledCount,k:'settled',c:'c-pos',s:'settled in '+monthLabel(selM)},
+        {l:'Take-home',v:fmtFull(sd.afterSplitTotal||0),k:'take',c:'c-pos',s:'after split'},
+        {l:'Leads received',v:s.total,k:'leads',c:'c-teal',s:paidN+' paid for'},
+        {l:'Conversion',v:pct(conv),k:'successRate',s:'settled ÷ received'},
+        {l:'Per settled deal',v:fmtFull(sd.settledCount?(sd.afterSplitTotal||0)/sd.settledCount:0),k:'avgTake',c:'c-teal'},
+        {l:'Cost per lead',v:paidN?fmtFull(s.totalSpend/paidN):'·',k:'cpl'}])
+      +'&lt;div class=&quot;sh&quot; style=&quot;margin-top:2px&quot;&gt;&lt;h2&gt;History&lt;/h2&gt;'+hp.toggle+'&lt;/div&gt;'
+      +'&lt;div class=&quot;dash2&quot;&gt;'+hp.settle+leadOutcomeRing(months[selM]||[],'Where '+monthLabel(selM)+&quot;'s leads ended up&quot;,'by lead received date')+'&lt;/div&gt;'
+      +kpiRow([
+        {l:'Approvals',v:sd.approvedCount,k:'approved',c:'c-pos',s:'decided this month'},
+        {l:'Declined by lender',v:sd.declinedCount,k:'declined',c:'c-neg'},
+        {l:'Not qualified',v:s.notQualifiedCount,k:'nq',c:'c-warn'},
+        {l:'Approval rate',v:pct(sd.approvalRate),k:'approvalRate'},
+        {l:'Avg loan settled',v:fmtFull(sd.avgLoanAmt),k:'avgLoan'},
+        {l:'Settled value',v:fmtFull(sd.totalSettledAmt),k:'value',c:'c-pos'}])
+      +'&lt;div class=&quot;dash2&quot;&gt;'+hp.comm+incomeMixRing(sd.afterSplitTotal||0,sd.warrDollars,sd.driveDollars,insuranceDollars(selM),'Where the money came from','settled in '+monthLabel(selM))+'&lt;/div&gt;'
+      +plainMoneyLine(paidN,sd.settledCount,s.totalSpend,(sd.afterSplitTotal||0),monthLabel(selM));
+    })();
     monthCardsHTML=
-    '&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;'+monthLabel(selM)+' Performance'+typeSuffix+'&lt;/h2&gt;&lt;select onchange=&quot;window._selMonth=this.value;render();&quot; style=&quot;background:var(--card);color:var(--txt);border:1px solid var(--bdr2);border-radius:8px;padding:8px 14px;font-family:\'DM Sans\',sans-serif;font-size:13px;cursor:pointer&quot;&gt;'+monthOpts+'&lt;/select&gt;&lt;/div&gt;'+
     '&lt;div style=&quot;font-size:11px;color:var(--mut);margin-bottom:12px&quot;&gt;Leads &amp; spend by &lt;b style=&quot;color:var(--dim)&quot;&gt;Lead Received Date&lt;/b&gt; · Approvals by &lt;b style=&quot;color:var(--dim)&quot;&gt;Credit Decision Date&lt;/b&gt; · Declines by &lt;b style=&quot;color:var(--dim)&quot;&gt;Lost Date&lt;/b&gt; · Commission &amp; settlements by &lt;b style=&quot;color:var(--dim)&quot;&gt;Settlement Date&lt;/b&gt;&lt;/div&gt;'+
     (function(){var mm=npw.months[selM];if(!mm)return'';var src=mm.src==='RCTI'?'from your RCTI':'estimate';var pw=mm.inProgress?mm.perWeekSoFar:mm.perWeek;var sofar=mm.inProgress?' so far':'';return '&lt;div style=&quot;background:rgba(45,212,191,.08);border:1px solid var(--teal);border-radius:12px;padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px&quot;&gt;&lt;div&gt;&lt;div style=&quot;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700&quot;&gt;'+monthLabel(selM)+' · making per week after all costs&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--mut);margin-top:2px&quot;&gt;Net after leads and fees, before GST and tax · '+src+(mm.inProgress?' · month in progress':'')+'&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot;&gt;&lt;div class=&quot;cm '+(pw&gt;=0?'c-teal':'c-neg')+'&quot; style=&quot;font-size:30px;font-weight:700&quot;&gt;'+fmtFull(pw)+'/wk'+sofar+'&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--mut)&quot;&gt;'+fmtFull(mm.net)+' net'+(mm.inProgress?' so far':' for the month')+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';})()+
     '&lt;div class=&quot;mg mg5&quot;&gt;'+
@@ -2304,8 +2362,6 @@ function rMonthly(){
       '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Total Settled Value&lt;/div&gt;&lt;div class=&quot;mc-v cm c-pos&quot;&gt;'+fmtFull(sd.totalSettledAmt)+'&lt;/div&gt;'+sk('value')+'&lt;/div&gt;'+
       '&lt;div class=&quot;mc has-sk&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;Avg Loan Settled&lt;/div&gt;&lt;div class=&quot;mc-v cm&quot;&gt;'+fmtFull(sd.avgLoanAmt)+'&lt;/div&gt;'+sk('avgLoan')+'&lt;/div&gt;'+
     '&lt;/div&gt;'+
-    '&lt;div class=&quot;ring-grid&quot;&gt;'+leadOutcomeRing(months[selM]||[],'Where '+monthLabel(selM)+&quot;'s leads ended up&quot;,'by lead received date')+incomeMixRing(sd.afterSplitTotal||0,sd.warrDollars,sd.driveDollars,insuranceDollars(selM),'Where the money came from','settled in '+monthLabel(selM))+'&lt;/div&gt;'+
-    plainMoneyLine((months[selM]||[]).filter(l=&gt;(l.cost||0)&gt;0).length,sd.settledCount,(selStats?selStats.totalSpend:0),(sd.afterSplitTotal||0),monthLabel(selM))+
     // ═══ MONTH PREDICTION ═══
     // Pending pipeline = this month's approvals that haven't settled yet (approved → might settle)
     // Predicted total = already-settled comm + (pending * rolling avg commission per deal from all time)
@@ -2389,7 +2445,8 @@ function rMonthly(){
 
   document.getElementById(&quot;sec-monthly&quot;).innerHTML=
   leadTypeFilter()+
-  historyChartsBlock(filteredLeads)+
+  monthHeader+
+  monthTop+
   monthCardsHTML+
   '&lt;div class=&quot;sh&quot; style=&quot;margin-top:24px&quot;&gt;&lt;h2&gt;Monthly Breakdown'+typeSuffix+'&lt;/h2&gt;&lt;/div&gt;'+
   '&lt;div style=&quot;font-size:11px;color:var(--mut);margin:-6px 0 8px&quot;&gt;$/wk after costs = net after leads and fees (before GST and tax), from your RCTIs. The current month is a run-rate, still in progress; ALL TIME is the blended average of your completed RCTI months.&lt;/div&gt;'+

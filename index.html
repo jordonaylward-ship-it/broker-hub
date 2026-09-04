@@ -475,7 +475,7 @@ html{scrollbar-color:#2c3247 transparent}::-webkit-scrollbar{width:10px;height:1
 .badge{background:rgba(34,211,238,.14)!important;color:#22d3ee!important;border:none!important;font-weight:700}
 .hist-badge{background:rgba(79,107,255,.18)!important;color:#9db1ff!important;border:none!important;font-weight:700}
 .tab.on,.filter-btn.on{color:#0a0c16!important;font-weight:700;background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;border-color:transparent!important}
-.tab.on{background:linear-gradient(135deg,#8b5cf6,#4f6bff)!important;border-color:transparent!important;color:#fff!important}
+.tab.on{background:linear-gradient(90deg,#8b5cf6,#4f6bff)!important;background-repeat:no-repeat!important;background-size:100% 100%!important;background-origin:border-box!important;border-color:transparent!important;color:#fff!important}
 &lt;/style&gt;
 &lt;style id=&quot;nightglass&quot;&gt;
 :root,[data-theme=&quot;dark&quot;],html[data-theme=&quot;dark&quot;],[data-theme=&quot;light&quot;],html[data-theme=&quot;light&quot;]{
@@ -503,8 +503,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 /* ── filter pills · true pill, no border seam, no browser focus ring, count sits with the label ── */
 .filter-btn{border:0!important;border-radius:999px!important;padding:8px 15px!important;line-height:1!important;display:inline-flex!important;align-items:center!important;gap:5px!important;background:rgba(148,163,255,.08)!important;color:var(--dim);transition-property:background-color,background-image,color!important;transition-duration:.18s!important;transition-timing-function:ease!important;-webkit-tap-highlight-color:transparent}
 .filter-btn:hover{background:rgba(148,163,255,.16)!important;color:var(--txt)}
-.filter-btn.on{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important;font-weight:700}
-.filter-btn.on:hover{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important}
+.filter-btn.on{background:linear-gradient(90deg,#4f6bff,#22d3ee)!important;background-repeat:no-repeat!important;background-size:100% 100%!important;background-origin:border-box!important;color:#06070d!important;font-weight:700}
+.filter-btn.on:hover{background:linear-gradient(90deg,#4f6bff,#22d3ee)!important;background-repeat:no-repeat!important;background-size:100% 100%!important;background-origin:border-box!important;color:#06070d!important}
 .filter-btn .count{opacity:.62;font-weight:600;margin-left:0;font-variant-numeric:tabular-nums}
 .filter-btn.on .count{opacity:.68}
 .filter-btn:focus{outline:none!important}
@@ -1474,7 +1474,7 @@ function historyChartsBlock(leads){
       +t('Cost per lead',cpl&gt;0?fmtFull(cpl):'·',when,'cpl','')
       +'&lt;/div&gt;';
   }
-  const pill=(m,l)=&gt;'&lt;button onclick=&quot;window._histMode=\''+m+'\';render()&quot; style=&quot;border:0;cursor:pointer;padding:5px 14px;border-radius:999px;font-size:11.5px;font-weight:600;font-family:inherit;'+(mode===m?'background:linear-gradient(135deg,#4f6bff,#22d3ee);color:#0a0c16':'background:transparent;color:var(--mut)')+'&quot;&gt;'+l+'&lt;/button&gt;';
+  const pill=(m,l)=&gt;'&lt;button onclick=&quot;window._histMode=\''+m+'\';render()&quot; style=&quot;border:0;cursor:pointer;padding:5px 14px;border-radius:999px;font-size:11.5px;font-weight:600;font-family:inherit;'+(mode===m?'background:linear-gradient(90deg,#4f6bff,#22d3ee);background-repeat:no-repeat;background-size:100% 100%;color:#0a0c16':'background:transparent;color:var(--mut)')+'&quot;&gt;'+l+'&lt;/button&gt;';
   const toggle='&lt;span style=&quot;display:inline-flex;gap:2px;background:var(--card2);border:1px solid var(--bdr);border-radius:999px;padding:3px&quot;&gt;'+pill('week','Week')+pill('month','Month')+'&lt;/span&gt;';
   const settleChart=lineChart(settleData,'Settlements per '+mode,totalSettled+' total','#8b5cf6','#22d3ee',v=&gt;(Math.round(v*10)/10).toString(),'s');
   const commChart=lineChart(incomeData,'Take-home commission per '+mode+' (after split · 80% floor from Aug ’26)','$'+Math.round(totalIncome).toLocaleString()+' total','#4f6bff','#38bdf8',v=&gt;Math.abs(v)&gt;=1000?'$'+(+(v/1000).toFixed(1))+'k':'$'+Math.round(v),'c');
@@ -10407,8 +10407,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 /* ── filter pills · true pill, no border seam, no browser focus ring, count sits with the label ── */
 .filter-btn{border:0!important;border-radius:999px!important;padding:8px 15px!important;line-height:1!important;display:inline-flex!important;align-items:center!important;gap:5px!important;background:rgba(148,163,255,.08)!important;color:var(--dim);transition-property:background-color,background-image,color!important;transition-duration:.18s!important;transition-timing-function:ease!important;-webkit-tap-highlight-color:transparent}
 .filter-btn:hover{background:rgba(148,163,255,.16)!important;color:var(--txt)}
-.filter-btn.on{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important;font-weight:700}
-.filter-btn.on:hover{background:linear-gradient(135deg,#4f6bff,#22d3ee)!important;color:#06070d!important}
+.filter-btn.on{background:linear-gradient(90deg,#4f6bff,#22d3ee)!important;background-repeat:no-repeat!important;background-size:100% 100%!important;background-origin:border-box!important;color:#06070d!important;font-weight:700}
+.filter-btn.on:hover{background:linear-gradient(90deg,#4f6bff,#22d3ee)!important;background-repeat:no-repeat!important;background-size:100% 100%!important;background-origin:border-box!important;color:#06070d!important}
 .filter-btn .count{opacity:.62;font-weight:600;margin-left:0;font-variant-numeric:tabular-nums}
 .filter-btn.on .count{opacity:.68}
 .filter-btn:focus{outline:none!important}

@@ -268,8 +268,8 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .blk{position:relative;min-width:0;display:flex;flex-direction:column}
 .blk&gt;.hist-chart,.blk&gt;.ring-card,.blk&gt;.mc{flex:1}
 .blk&gt;.kpi-row{padding-top:16px}
-.blk-bar{position:absolute;top:-4px;right:6px;display:flex;align-items:center;gap:6px;z-index:5;opacity:0;transition:opacity .15s;font-size:10.5px;color:var(--mut);background:#181b28;border-radius:8px;padding:3px 6px;pointer-events:auto}
-.blk:hover&gt;.blk-bar{opacity:1}
+.blk-bar{position:absolute;top:-13px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;z-index:6;opacity:0;pointer-events:none;transition:opacity .15s;font-size:10.5px;color:var(--mut);background:#181b28;border:1px solid rgba(148,163,255,.25);border-radius:999px;padding:3px 8px;white-space:nowrap}
+.blk:hover&gt;.blk-bar{opacity:1;pointer-events:auto}
 .blk-grip{cursor:grab;font-size:13px;letter-spacing:-2px;color:#9db1ff;padding:0 4px;user-select:none}
 .blk-grip:active{cursor:grabbing}
 .blk-name{font-weight:600;white-space:nowrap}

@@ -8468,8 +8468,23 @@ function weeklyise(v,f){f=(f||&quot;&quot;).toUpperCase();if(v==null)return null
 function normName(s){return(s||&quot;&quot;).toUpperCase().replace(/[^A-Z ]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim()}
 function normEmp(s){return(s||&quot;&quot;).toUpperCase().replace(/\b(PTY|LTD|LIMITED|PROPRIETARY|CO|GROUP|THE|AUSTRALIA|AUST|AU|TRADING|T\/A|DEPARTMENT|GOVERNMENT|OFFICE|MINISTRY|STATE|NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b\.?/g,&quot; &quot;).replace(/[^A-Z0-9 ]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim()}
 
-function classify(text){
-  var up=text.toUpperCase();
+// The filename is the most reliable signal we have · Zink names every download
+// &quot;1095343 1 - Drivers licence front - 6854xxx - Name.png&quot;. A dark licence photo
+// can OCR to almost nothing, so read the name before falling back to the text.
+function classifyName(fileName){
+  var n=String(fileName||&quot;&quot;).toUpperCase();
+  if(!n)return null;
+  if(/CREDIT ?REPORT|EQUIFAX|VEDA|ILLION/.test(n))return&quot;credit&quot;;
+  if(/PRIVACY|CONSENT|CREDIT GUIDE|QUOTE ACCEPT|DECLARATION/.test(n))return&quot;other&quot;;
+  if(/LICEN[CS]E|DRIVERS? ?LIC|\bID\b|PHOTO ?ID|PASSPORT|PROOF OF ID/.test(n))return&quot;licence&quot;;
+  if(/PAY ?SLIP|PAY ?ADVICE|PAYSLIP|RECENT PAY/.test(n))return&quot;payslip&quot;;
+  if(/BANK ?STATEMENT|STATEMENT/.test(n))return&quot;other&quot;;
+  if(/\bOTHER\b/.test(n))return&quot;other&quot;;
+  return null;
+}
+function classify(text,fileName){
+  var byName=classifyName(fileName);
+  var up=String(text||&quot;&quot;).toUpperCase();
   if(/EQUIFAX|VEDA ?SCORE|ILLION|EXPERIAN|CREDIT REPORT|COMPREHENSIVE SCORE|CREDIT ENQUIRIES|AGE OF FILE/.test(up))return&quot;credit&quot;;
   if(/PRIVACY CONSENT|CONSENT FORM|DECLARATION AND CONSENT|CREDIT GUIDE|QUOTE ACCEPTANCE/.test(up))return&quot;other&quot;;
   var pay=0,lic=0;
@@ -8477,7 +8492,11 @@ function classify(text){
   if(/\bABN\b/.test(up))pay+=1;
   if(/LICEN[CS]E|DRIVER/.test(up))lic+=2;
   if(/DATE OF BIRTH|\bDOB\b|CARD N|CLASS\s|CONDITIONS/.test(up))lic+=1;
-  if(pay===0&amp;&amp;lic===0)return&quot;unknown&quot;;
+  // extra licence tells · issuing bodies and card wording that survive a rough OCR
+  if(/TRANSPORT|VICROADS|SERVICE NSW|MAIN ROADS|MOTOR REGISTRY|ROAD SAFETY|EXPIRY|EXPIRES|LICENCE NO|LIC NO/.test(up))lic+=1;
+  if(pay===0&amp;&amp;lic===0)return byName||&quot;unknown&quot;;
+  // a clear name beats a weak text read
+  if(byName&amp;&amp;Math.abs(pay-lic)&lt;2)return byName;
   return pay&gt;=lic?&quot;payslip&quot;:&quot;licence&quot;;
 }
 
@@ -9573,7 +9592,7 @@ const addFiles=async(fl)=&gt;{
       const {text,ocr}=await window.DocsEngine.fileToText(entry.file,(m)=&gt;{
         setItems(cur=&gt;cur.map(x=&gt;x.id===entry.id?{...x,msg:m}:x));
       });
-      const kind=window.DocsEngine.classify(text);
+      const kind=window.DocsEngine.classify(text,entry.name);
       if(kind===&quot;credit&quot;){
         list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;skipped&quot;,kind,msg:&quot;Credit report · skipped, not part of the docs check&quot;,file:null}:x);
       }else if(kind===&quot;other&quot;){
@@ -10756,7 +10775,17 @@ function doExtract(){
   const enquiries=g([/Credit Shopping\s*\n?\s*([^\n]+)/i])||'';
 
   // Loan request
-  const loanAmt=gn([/Requested Loan Amount[\s\S]{0,30}?\$\s*([0-9,.]+)/i,/Loan Amount[\s\S]{0,30}?\$\s*([0-9,.]+)/i,/Requested[\s\S]{0,30}?Amount[\s\S]{0,30}?\$\s*([0-9,.]+)/i]);
+  // Loan amount · the dollar sign is optional because Zink does not always render one.
+  // Every candidate is sanity checked against a plausible car loan range so a stray number cannot sneak in.
+  const gnAmt=(patterns,lo,hi)=&gt;{for(const p of patterns){const m=raw.match(p);if(m&amp;&amp;m[1]){const n=parseFloat(String(m[1]).replace(/,/g,''));if(!isNaN(n)&amp;&amp;n&gt;=lo&amp;&amp;n&lt;=hi)return n}}return null};
+  const loanAmt=gnAmt([
+    /Requested Loan Amount[\s\S]{0,40}?\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i,
+    /Loan Amount(?:\s*Requested)?[\s\S]{0,40}?\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i,
+    /Amount (?:Financed|Requested|Required)[\s\S]{0,40}?\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i,
+    /(?:Finance|Purchase|Vehicle) (?:Amount|Price)[\s\S]{0,40}?\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i,
+    /Requested[\s\S]{0,30}?Amount[\s\S]{0,40}?\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i,
+    /\bNAF\b[\s\S]{0,40}?\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i
+  ],1000,500000);
   const term=gn([/Term \(months\)\s*\n?\s*(\d+)/i]);
   const condition=g([/Condition\s*\n?\s*(New|Used|Demo)/i])||'';
   const affordability=gn([/Affordability\s*\$\s*\n?\s*([0-9,.]+)/i]);
@@ -11361,6 +11390,48 @@ const R=function(status,why){return {status:status,why:why}};
 
 /* ── CONSUMER ASSET FINANCE ─────────────────────────────────────── */
 const CONSUMER=[
+ {name:'Azora',perfect:'The file that is fine on paper but thin somewhere. Short time in job, a renter, an older or high mileage car, a private sale, a past default or even a discharged bankrupt. Tiers 1 to 3 need no bank statements at all, so a clean score with a messy story gets through fast.',src:'Consumer Car Loans Product Guide, August 2026',
+  range:'$10,000 minimum excluding fees · Car loan 1 to 3 up to $100,000 · CL4 $75,000 · CL5 $50,000 · CL6 $35,000 · bankrupt and Part IX or X $75,000',
+  rates:['By comprehensive credit score','CL1 833 and over 9.99% · CL2 726 to 832 10.49% · CL3 622 to 725 10.99% · CL4 510 to 621 14.49%','CL5 401 to 509 21.99% · CL6 under 401 24.99% · negative bankrupt 18.99% · negative Part IX or X 18.99%','Rate dial down up to 2%: take 3% commission instead of 5.5% for 1% off, or 2% for 2% off'],
+  more:['No bank statements on CL1, CL2 and CL3 unless credit asks. Everything else is 90 days','Terms: CL1 and CL2 up to 7 years, CL3 to CL8 three to five years','Commission 5.5% of loan size on CL1 to CL4 until 30 November 2026, then 4% on CL5 to CL8. Clawback 100% inside 6 months','Application fee up to $1,990 that you set and you keep. Settlement $695, account keeping $15 a month','Risk fee nil on CL1 to CL4, $1,995 on CL5 to CL8. Early repayment $395, discharge $195','Asset up to 20 years at end of term with no loading. Petrol to 260,000km, diesel to 280,000km','LVR against Redbook 170% under $25,000, 140% over $25,000','No deposit needed. Funds trade in shortfalls and warranty','Non homeowners, renters and boarders carry no loading. Private sale and balloon no loading','Gross income over $45,000 a year including overtime, commission, bonuses, child support, Centrelink and rent','Full or part time 3 months in the job, casual 6 months. CL1 to CL4, CL7 and CL8 accept a previous employer for that history','Takes missed payments, paid defaults, unpaid financial defaults listed over 6 months ago, MyBudget, up to 2 payday facilities, gambling to 15% of net income and 100% Centrelink income','Current or discharged Part IX, Part X and bankrupts all have a tier','Minimum credit file age 12 months. Under 25 caps at $30,000 including fees'],
+  no:['Applicant living in a caravan park, mobile home, hostel, motel or hotel','Excluded postcodes across NSW, QLD, SA, WA, TAS and NT · check the guide before you promise anything','Grey imports, kit cars, homemade or exotic vehicles, trucks, holiday vans, camper vans, motorbikes and write offs','Loans under $10,000','More than 2 unpaid financial defaults, or an aggregate over $15,000'],
+  assets:['car'],
+  ev:function(f){var w=[],bad=0,warn=0;
+    var tier=null,rate=null,cap=null;
+    if(f.bankrupt){tier='negative';rate=18.99;cap=75000;w.push('Bankrupt or Part IX or X has its own tier at 18.99% to $75,000, they do not decline it')}
+    else if(f.score!=null){
+      if(f.score&gt;=833){tier=1;rate=9.99;cap=100000}
+      else if(f.score&gt;=726){tier=2;rate=10.49;cap=100000}
+      else if(f.score&gt;=622){tier=3;rate=10.99;cap=100000}
+      else if(f.score&gt;=510){tier=4;rate=14.49;cap=75000}
+      else if(f.score&gt;=401){tier=5;rate=21.99;cap=50000}
+      else {tier=6;rate=24.99;cap=(f.score&lt;300?20000:35000)}
+      w.push('Score '+f.score+' lands Car loan '+tier+' at '+rate+'% to $'+cap.toLocaleString());
+      if(tier&lt;=3)w.push('No bank statements needed on this tier unless credit asks for them');
+      if(tier&lt;=4)w.push('5.5% commission on this tier until 30 November 2026, plus an application fee up to $1,990 that you set');
+    }
+    if(f.asset&amp;&amp;f.asset!=='car'){bad++;w.push('!!'+'Car loans only. Caravans, campers, boats and bikes are all excluded')}
+    if(f.amt!=null&amp;&amp;f.amt&lt;10000){bad++;w.push('!!'+'Under their $10,000 minimum')}
+    if(f.amt!=null&amp;&amp;cap!=null&amp;&amp;f.amt&gt;cap){bad++;w.push('!!'+'Over the $'+cap.toLocaleString()+' cap for this tier')}
+    if(f.appAge==='u25'&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;30000){bad++;w.push('!!'+'Under 25 caps at $30,000 including fees')}
+    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'Asset is '+f.age+' years at end of term, they stop at 20')}
+    if(f.term!=null&amp;&amp;tier!=null&amp;&amp;tier!=='negative'){
+      if(tier&lt;=2&amp;&amp;f.term&gt;84){bad++;w.push('!!'+'CL1 and CL2 stop at 7 years')}
+      else if(tier&gt;=3&amp;&amp;f.term&gt;60){bad++;w.push('!!'+'CL3 and below run 3 to 5 years only, not '+f.term+' months')}
+      else if(tier&gt;=3&amp;&amp;f.term&lt;36){warn++;w.push('??'+'CL3 and below start at 3 years')}
+    }
+    if(f.job!=null){
+      if(f.emp==='casual'&amp;&amp;f.job&lt;6){bad++;w.push('!!'+'Casual needs 6 months, this file has '+f.job)}
+      else if(f.emp!=='casual'&amp;&amp;f.job&lt;3){bad++;w.push('!!'+'Full or part time needs 3 months, this file has '+f.job)}
+      else if(f.job&lt;12&amp;&amp;tier!=null&amp;&amp;tier!=='negative'&amp;&amp;tier&lt;=4){w.push('Short tenure is fine here. CL1 to CL4 count a previous employer toward the history')}
+    }
+    if(f.res==='renter'||f.res==='boarder'){w.push('Renters and boarders carry no rate loading')}
+    if(f.privateSale){w.push('Private sale carries no loading')}
+    if(f.payday){warn++;w.push('??'+'Up to 2 current payday facilities is fine, more than that is out')}
+    if(f.defaults){warn++;w.push('??'+'Paid defaults fine. Unpaid financial defaults need to be listed over 6 months ago, max 2, aggregate under $15,000, and 3% of the balance goes on as a post settlement commitment')}
+    if(f.income!=null&amp;&amp;f.income&gt;0&amp;&amp;f.income&lt;45000){warn++;w.push('??'+'They want gross income over $45,000 a year. Confirm what this figure covers')}
+    warn++;w.push('??'+'Check the postcode against their excluded list, and that the client does not live in a caravan park, hostel, motel or hotel');
+    return R(bad?'OUT':(warn?'CHECK':'IN'),w)}},
  {name:'Pepper Money',perfect:'Homeowner or long term renter with a clean file buying a car, caravan or boat from a dealer. Their spread across asset types is the widest of the prime lenders, so they are your default first call when the client is tidy and the asset is not a car.',src:'Consumer Product Guide 1 Oct 2025 + Aus Loans rate card 2 Mar 2026',
   range:'Car/caravan/marine $5,000 min · bikes $3,000 min · max $150,000 car and caravan, $100,000 marine, $55,000 bikes',
   rates:['Tier A/B/C by asset class and age','Car 9.04% to 17.68% · caravan 9.04% to 16.68% · bike 11.83% to 21.13% · marine 11.83% to 17.13%','Add 0.50% for terms 61 to 84 months, not on caravans','Introducer can cut up to 2%'],

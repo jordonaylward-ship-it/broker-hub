@@ -20319,23 +20319,46 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .card:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;setlayout&quot;&gt;
+/* Settings · one readable column, every section collapsible */
+body{padding:26px 22px 90px!important}
+h1,.sub,.card,#setBar,#saveBar{max-width:940px;margin-left:auto;margin-right:auto}
+.card{margin-bottom:12px!important;overflow:visible!important}
+details.card&gt;summary{list-style:none;cursor:pointer;padding:13px 18px;display:flex;align-items:center;gap:10px;justify-content:space-between;border-radius:12px;transition:background .14s}
+details.card&gt;summary::-webkit-details-marker{display:none}
+details.card&gt;summary:hover{background:rgba(148,163,255,.06)}
+details.card[open]&gt;summary{border-bottom:1px solid var(--line);border-radius:12px 12px 0 0}
+.sm-l{display:flex;align-items:center;gap:10px;min-width:0}
+.sm-caret{flex:0 0 14px;color:var(--mut);font-size:11px;transition:transform .16s;display:inline-block}
+details.card[open] .sm-caret{transform:rotate(90deg)}
+.sm-t{font-size:14px;font-weight:700;color:var(--ink)}
+.sm-c{font-size:11.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48%}
+#setBar{display:flex;gap:8px;flex-wrap:wrap;margin:0 auto 16px}
+#setBar button{border:0;background:rgba(148,163,255,.1);color:var(--dim);font-family:inherit;font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}
+#setBar button:hover{background:rgba(148,163,255,.2);color:var(--ink)}
+#saveBar{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(0,0,0,0),#000 40%);padding:14px 0 8px;display:flex;gap:12px;align-items:center;z-index:5}
+.ai-now{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--dim);background:rgba(79,107,255,.12);border-radius:9px;padding:9px 12px;margin-bottom:12px}
+.ai-now b{color:#9db1ff}
+.pill-ok{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(52,211,153,.15);color:#34d399}
+.pill-no{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(251,191,36,.15);color:#fbbf24}
+@media(max-width:700px){body{padding:18px 14px 90px!important}}
+&lt;/style&gt;&lt;/head&gt;
 &lt;body&gt;
 &lt;h1&gt;Settings&lt;/h1&gt;
 &lt;div class=&quot;sub&quot;&gt;Saves to this browser · applies across the Call Script, Serviceability and Lender Matcher instantly. AI keys stay where they were: Serviceability’s API card and the Lender Matcher’s Settings pane.&lt;/div&gt;
 
-&lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Broker&lt;/h2&gt;&lt;/div&gt;
+&lt;div id=&quot;setBar&quot;&gt;&lt;button onclick=&quot;setAll(true)&quot;&gt;Expand all&lt;/button&gt;&lt;button onclick=&quot;setAll(false)&quot;&gt;Collapse all&lt;/button&gt;&lt;/div&gt;
+
+&lt;details class=&quot;card&quot; open&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;Broker&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot;&gt;name used in the scripts&lt;/span&gt;&lt;/summary&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;div&gt;&lt;label&gt;Display name in scripts · optional&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;sName&quot; placeholder=&quot;leave blank to keep Jordon / Jordy as written&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;hint&quot;&gt;Blank = scripts stay exactly as written. Set a name and every &quot;Jordon&quot; and &quot;Jordy&quot; in the scripts swaps to it · handy if anyone else ever runs your file.&lt;/div&gt;
   &lt;/div&gt;
-&lt;/div&gt;
+&lt;/details&gt;
 
-&lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Display&lt;/h2&gt;&lt;/div&gt;
+&lt;details class=&quot;card&quot; open&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;Display&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot;&gt;zoom and accent&lt;/span&gt;&lt;/summary&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;div&gt;&lt;label&gt;App zoom · desktop only&lt;/label&gt;&lt;select id=&quot;sZoom&quot;&gt;
@@ -20347,17 +20370,25 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
     &lt;/div&gt;
     &lt;div class=&quot;hint&quot;&gt;How large the whole app renders on a computer. Phones ignore this. Applies the moment you save.&lt;/div&gt;
   &lt;/div&gt;
-&lt;/div&gt;
+&lt;/details&gt;
 
-&lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Call Script · edit the words&lt;/h2&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;resetAll()&quot;&gt;Reset everything to default&lt;/button&gt;&lt;/div&gt;
+&lt;details class=&quot;card&quot; id=&quot;cardScript&quot;&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;Call Script&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot; id=&quot;ovCount&quot;&gt;edit the words&lt;/span&gt;&lt;/summary&gt;&lt;div class=&quot;cb&quot; style=&quot;padding-bottom:0&quot;&gt;&lt;div style=&quot;display:flex;justify-content:flex-end&quot;&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;resetAll()&quot;&gt;Reset everything to default&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;hint&quot; style=&quot;margin:0 0 10px;&quot;&gt;Change any line, hit Save. Blank a box to fall back to the default. Your name substitution still applies to edited text. Stages hidden for some loan types only show on those calls.&lt;/div&gt;
     &lt;div id=&quot;stageList&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
-&lt;/div&gt;
+&lt;/details&gt;
 
-&lt;div style=&quot;display:flex;gap:12px;align-items:center;&quot;&gt;
+&lt;details class=&quot;card&quot; id=&quot;cardAI&quot; open&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;AI&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot; id=&quot;aiSummary&quot;&gt;&lt;/span&gt;&lt;/summary&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;div class=&quot;ai-now&quot;&gt;The Lender Matcher and Serviceability are using &lt;b id=&quot;aiNow&quot;&gt;&amp;hellip;&lt;/b&gt;&lt;span id=&quot;aiKeyPill&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;Model&lt;/label&gt;&lt;select id=&quot;sModel&quot;&gt;&lt;option value=&quot;claude-opus-5&quot;&gt;Claude Opus 5 · sharpest, best for lender assessments&lt;/option&gt;&lt;option value=&quot;claude-sonnet-5&quot;&gt;Claude Sonnet 5 · faster and cheaper, still strong&lt;/option&gt;&lt;option value=&quot;claude-haiku-4-5-20251001&quot;&gt;Claude Haiku 4.5 · quickest, for simple checks&lt;/option&gt;&lt;option value=&quot;claude-fable-5&quot;&gt;Claude Fable 5&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;hint&quot;&gt;Opus is the default and what your lender assessments have been running on. Sonnet is noticeably faster and cheaper if you are doing a lot of files in a day. The change applies the moment you save.&lt;/div&gt;
+    &lt;div class=&quot;hint&quot; style=&quot;margin-top:10px&quot;&gt;&lt;b&gt;What actually leaves this machine.&lt;/b&gt; The extraction, the quick quoter, Docs Check and every calculator run in your browser and send nothing anywhere. Only the Lender Matcher assessment and the Serviceability AI read go to Anthropic, and the client data is sanitised first. Your API key is stored in this browser only and is never shown here.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/details&gt;
+
+&lt;div id=&quot;saveBar&quot; style=&quot;display:flex;gap:12px;align-items:center;&quot;&gt;
   &lt;button class=&quot;btn&quot; onclick=&quot;saveAll()&quot;&gt;Save all settings&lt;/button&gt;
   &lt;span class=&quot;hint&quot; id=&quot;lastSaved&quot; style=&quot;margin:0;&quot;&gt;&lt;/span&gt;
 &lt;/div&gt;
@@ -20409,6 +20440,29 @@ function defaultFor(k){
   }
   return null;
 }
+
+/* ── Settings layout · remember which sections are open, show the model in use ── */
+const SET_MODELS={'claude-opus-5':'Claude Opus 5','claude-sonnet-5':'Claude Sonnet 5','claude-haiku-4-5-20251001':'Claude Haiku 4.5','claude-fable-5':'Claude Fable 5'};
+function setAll(open){document.querySelectorAll('details.card').forEach(function(d){d.open=open});setRemember()}
+function setRemember(){try{var o={};document.querySelectorAll('details.card').forEach(function(d,i){o[d.id||('c'+i)]=d.open});localStorage.setItem('hub_settings_v1_setopen',JSON.stringify(o))}catch(e){}}
+function setRestore(){try{var o=JSON.parse(localStorage.getItem('hub_settings_v1_setopen')||'null');if(!o)return;document.querySelectorAll('details.card').forEach(function(d,i){var k=d.id||('c'+i);if(k in o)d.open=!!o[k]})}catch(e){}}
+function aiPaint(){
+  var m='claude-opus-5';try{m=localStorage.getItem('anthropic_model')||'claude-opus-5'}catch(e){}
+  var sel=document.getElementById('sModel');
+  if(sel){var found=false;for(var i=0;i&lt;sel.options.length;i++){if(sel.options[i].value===m)found=true}
+    if(!found){var op=document.createElement('option');op.value=m;op.textContent=m+' · set elsewhere';sel.appendChild(op)}
+    sel.value=m}
+  var nm=SET_MODELS[m]||m;
+  var now=document.getElementById('aiNow');if(now)now.textContent=nm;
+  var hasKey=false;try{hasKey=!!(localStorage.getItem('claude_api_key')||'').trim()}catch(e){}
+  var pill=document.getElementById('aiKeyPill');
+  if(pill)pill.innerHTML=hasKey?'&lt;span class=&quot;pill-ok&quot;&gt;API key set&lt;/span&gt;':'&lt;span class=&quot;pill-no&quot;&gt;No API key yet&lt;/span&gt;';
+  var s=document.getElementById('aiSummary');if(s)s.textContent=nm;
+}
+function ovPaint(){var n=0;try{var s=S();n=Object.keys(s.ov||{}).length}catch(e){}
+  var el=document.getElementById('ovCount');if(el)el.textContent=n?(n+' line'+(n===1?'':'s')+' edited'):'edit the words'}
+document.addEventListener('toggle',function(e){if(e.target&amp;&amp;e.target.classList&amp;&amp;e.target.classList.contains('card'))setRemember()},true);
+
 function saveAll(){
   const s=S();
   s.name=document.getElementById('sName').value.trim();
@@ -20420,6 +20474,8 @@ function saveAll(){
   });
   s.ov=ov;
   localStorage.setItem('hub_settings_v1',JSON.stringify(s));
+  try{var mm=document.getElementById('sModel');if(mm&amp;&amp;mm.value)localStorage.setItem('anthropic_model',mm.value)}catch(e){}
+  aiPaint();ovPaint();
   try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*');}catch(e){}
   document.getElementById('lastSaved').textContent='Saved '+new Date().toLocaleTimeString('en-AU');
   const t=document.getElementById('savedToast');t.classList.add('show');setTimeout(()=&gt;t.classList.remove('show'),1800);
@@ -20442,6 +20498,8 @@ function resetAll(){
   if(s.zoom)document.getElementById('sZoom').value=String(s.zoom);
   buildEditor();
 })();
+
+aiPaint();ovPaint();setRestore();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;"></iframe>

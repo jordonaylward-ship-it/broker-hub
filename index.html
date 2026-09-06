@@ -10432,7 +10432,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .filter-btn.on .count{opacity:.68}
 .filter-btn:focus{outline:none!important}
 .filter-btn:focus-visible{outline:2px solid #9db1ff!important;outline-offset:2px!important}
-&lt;/style&gt;&lt;/head&gt;
+&lt;/style&gt;&lt;style id=&quot;qqcss&quot;&gt;.qq-note{font-size:12.5px;line-height:1.5;border-radius:10px;padding:10px 13px;margin-bottom:12px}.qq-note.ok{background:rgba(52,211,153,.1);color:#9ff0d0}.qq-note.warn{background:rgba(251,191,36,.1);color:#fbd88a}&lt;/style&gt;&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;h1&gt;Lender Matcher&lt;/h1&gt;
@@ -10450,6 +10450,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 &lt;div class=&quot;pane&quot; id=&quot;pane-quote&quot;&gt;
 
 
+&lt;div id=&quot;qqBar&quot; style=&quot;display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap&quot;&gt;&lt;button class=&quot;btn bp&quot; onclick=&quot;window.qqPrefill(false)&quot; style=&quot;padding:8px 14px&quot;&gt;Pull from the Zink extract&lt;/button&gt;&lt;span style=&quot;font-size:11.5px;color:var(--mut)&quot;&gt;Fills this form from whatever step 1 read&lt;/span&gt;&lt;/div&gt;&lt;div id=&quot;qqNote&quot; class=&quot;qq-note&quot; style=&quot;display:none&quot;&gt;&lt;/div&gt;
 &lt;div style=&quot;display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap&quot;&gt;
   &lt;button class=&quot;mmode on&quot; data-m=&quot;consumer&quot; onclick=&quot;mMode('consumer',this)&quot;&gt;🚗 Consumer asset&lt;/button&gt;
   &lt;button class=&quot;mmode&quot; data-m=&quot;personal&quot; onclick=&quot;mMode('personal',this)&quot;&gt;💳 Personal loan&lt;/button&gt;
@@ -10529,6 +10530,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 
 &lt;script&gt;
 function switchPane(id,el){
+  if(id==='quote'&amp;&amp;window._summaryFields&amp;&amp;window.qqPrefill){setTimeout(function(){window.qqPrefill(true)},0)}
   if(id==='results'){
     var area=document.getElementById('matchResultsArea'),emp=document.getElementById('resultsEmpty');
     if(area&amp;&amp;emp) emp.style.display = area.innerHTML.trim() ? 'none' : 'block';
@@ -10695,7 +10697,9 @@ function doExtract(){
       // Zink structured format
       const empYrsMatch=raw.match(/Years\s*\*?\s*\n?\s*(\d+)\s*\n\s*Months/i);
       if(empYrsMatch){empYears=parseInt(empYrsMatch[1])||0;}
-      const empMonMatch=raw.match(/Months\s*\*?\s*\n?\s*(\d+)\s*\n\s*Employer/i);
+      // Months used to require the literal word Employer on the next line. Any other
+      // label after it and tenure came back &quot;Not captured&quot;, which then reads as zero months.
+      const empMonMatch=raw.match(/Months\s*\*?\s*\n?\s*(\d+)\s*(?:\n|$)/i);
       if(empMonMatch){empMonths=parseInt(empMonMatch[1])||0;}
     }
   }
@@ -12399,8 +12403,73 @@ window.mMode=function(m,btn){
   }
   $('mInputs').innerHTML=FORMS[m].fields;
   $('mToggles').innerHTML=FORMS[m].toggles;
-  wire();mRun();
+  wire();
+  // rebuilding the form wipes it, so pull the Zink data straight back in
+  if(window._summaryFields){window.qqPrefill(true)}else{mRun()}
 };
+/* ── Quick quoter · fill from the Zink extract in step 1 ──────────────────
+   doExtract stashes window._summaryFields. Everything below maps that onto the
+   quoter form. Only fields we actually read from Zink get touched, and only when
+   Zink gave us a real value, so the defaults stay put for anything it did not find. */
+function qqMonths(tenure){
+  if(!tenure)return null;
+  var s=String(tenure);
+  var ym=s.match(/(\d+)\s*y[a-z]*\s*(\d+)?\s*m?/i);
+  if(ym)return (+ym[1])*12+(+(ym[2]||0));
+  var mo=s.match(/(\d+)\s*m/i); if(mo)return +mo[1];
+  var n=parseInt(s,10); return isNaN(n)?null:n;
+}
+function qqAnnualNet(v,freq){
+  if(v==null||!isFinite(v)||v&lt;=0)return null;
+  var f=String(freq||'').toUpperCase();
+  if(f.indexOf('WEEK')===0)return Math.round(v*52);
+  if(f.indexOf('FORT')===0)return Math.round(v*26);
+  if(f.indexOf('MONTH')===0)return Math.round(v*12);
+  if(f.indexOf('ANN')===0||f.indexOf('YEAR')===0)return Math.round(v);
+  return null;
+}
+function qqSet(id,v){var e=$(id);if(!e||v==null||v==='')return false;e.value=String(v);return true}
+function qqSetSel(id,v){var e=$(id);if(!e||v==null)return false;for(var i=0;i&lt;e.options.length;i++){if(e.options[i].value===String(v)){e.value=String(v);return true}}return false}
+function qqTog(id,on){var e=$(id);if(!e)return false;e.checked=!!on;return true}
+window.qqPrefill=function(silent){
+  var S=window._summaryFields;
+  var note=$('qqNote');
+  if(!S){ if(note&amp;&amp;!silent){note.style.display='block';note.className='qq-note warn';note.textContent='Nothing to pull yet. Paste the Zink page into step 1 and hit extract first.'} return false }
+  var got=[];
+  if(mode==='consumer'||mode==='personal'||mode==='commercial'){
+    if(S.loanAmt&amp;&amp;qqSet('mAmt',S.loanAmt))got.push('loan amount $'+Number(S.loanAmt).toLocaleString());
+    if(S.creditScore&amp;&amp;qqSet('mScore',S.creditScore))got.push('score '+S.creditScore);
+    var inc=qqAnnualNet(S.netIncome,S.incomeFreq);
+    if(inc&amp;&amp;qqSet('mInc',inc))got.push('income $'+inc.toLocaleString()+' a year, annualised from the net figure Zink holds');
+    if(S.term){var yrs=Math.round((+S.term)/12);if(yrs&gt;0&amp;&amp;qqSet('mTerm',yrs))got.push(yrs+' year term')}
+    var jm=qqMonths(S.empTenure);
+    if(jm!=null&amp;&amp;qqSet('mJob',jm))got.push(jm+' months in the job');
+    var et=String(S.empType||'').toUpperCase();
+    var emp=/FULL/.test(et)?'ft':/PART/.test(et)?'pt':/CASUAL/.test(et)?'casual':/SELF/.test(et)?'selfemp':null;
+    if(emp&amp;&amp;qqSetSel('mEmp',emp))got.push(S.empType);
+    var lt=String(S.livingType||'').toUpperCase();
+    var res=/OWN|MORTGAGE/.test(lt)?'owner':/RENT/.test(lt)?'renting':/BOARD/.test(lt)?'boarding':null;
+    if(res&amp;&amp;qqSetSel('mRes',res))got.push(S.livingType);
+    var ag=parseInt(S.age,10);
+    if(!isNaN(ag)){var band=ag&gt;=26?'26':ag&gt;=22?'22':'21';if(qqSetSel('mAge2',band))got.push('age '+ag)}
+    var d=String(S.defaults||'');
+    if(d&amp;&amp;!/^none/i.test(d)&amp;&amp;!/not captured/i.test(d)){if(qqTog('mDef',true))got.push('defaults on file')}
+    var desc=String(S.asset||'').toUpperCase();
+    var at=/CARAVAN|MOTORHOME|CAMPER/.test(desc)?'caravan':/BOAT|JETSKI|JET SKI|MARINE/.test(desc)?'marine':/MOTORBIKE|MOTORCYCLE/.test(desc)?'bike':(desc?'car':null);
+    if(at&amp;&amp;qqSetSel('mAsset',at))got.push(at==='car'?'car':at);
+    var st=String(S.saleType||'').toUpperCase();
+    var sale=/PRIVATE/.test(st)?'private':/DEALER/.test(st)?'dealer':null;
+    if(sale&amp;&amp;qqSetSel('mSale',sale))got.push(sale==='private'?'private sale':'dealer sale');
+  }
+  mRun();
+  if(note){
+    note.style.display='block';
+    if(got.length){note.className='qq-note ok';note.innerHTML='&lt;b&gt;Filled from the Zink extract'+(S.name?' for '+S.name:'')+'.&lt;/b&gt; Pulled '+got.join(' · ')+'. Anything Zink did not have is left on the default, so check the asset age and deposit before you quote it.'}
+    else {note.className='qq-note warn';note.textContent='The extract ran but nothing in it matched these fields. Check step 1 actually found the data.'}
+  }
+  return got.length&gt;0;
+};
+
 function wire(){
   var ins=$('mInputs').querySelectorAll('input,select');
   for(var i=0;i&lt;ins.length;i++){ins[i].addEventListener('input',mRun);ins[i].addEventListener('change',mRun)}

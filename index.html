@@ -11035,6 +11035,7 @@ function doExtract(){
     livingType:livingType,rentAmt:rentAmt,rentFreq:rentFreq,
     creditScore:creditScore,fileAge:fileAge,defaults:defaults,
     loanAmt:loanAmt,term:term,asset:description,
+    saleType:saleType,deposit:deposit,purchaseCost:purchaseCost,condition:condition,payday:payday,insolvency:insolvency,
     suburb:suburb,state:state,postcode:postcode
   };
 }
@@ -11062,6 +11063,10 @@ async function doMatch(){
   spinner.style.display='block';
   document.getElementById('matchResultsArea').style.display='none';
 
+  const aiPanel=(window.lenderPanel?window.lenderPanel('consumer'):[]).join(', ');
+  const aiPolicy=(window.lenderPolicyBrief?window.lenderPolicyBrief('consumer'):'');
+  const aiEngine=(window.lenderEngineLines?window.lenderEngineLines():'');
+
   const systemPrompt=`You are an expert Australian vehicle and asset finance broker's lender matching assistant. Given a sanitised client summary, assess which lenders are likely to approve this applicant.
 
 Return your response as VALID JSON ONLY (no markdown backticks, no preamble) with this exact structure:
@@ -11087,7 +11092,7 @@ Return your response as VALID JSON ONLY (no markdown backticks, no preamble) wit
     ...
   ],
   &quot;notAFit&quot;: [
-    {&quot;lender&quot;: &quot;Westpac&quot;, &quot;reasons&quot;: [&quot;Specific failure point&quot;]},
+    {&quot;lender&quot;: &quot;Wisr&quot;, &quot;reasons&quot;: [&quot;Specific failure point&quot;]},
     ...
   ],
   &quot;recommendedOrder&quot;: [&quot;Lender1&quot;, &quot;Lender2&quot;, &quot;Lender3&quot;],
@@ -11096,7 +11101,11 @@ Return your response as VALID JSON ONLY (no markdown backticks, no preamble) wit
   &quot;rateRange&quot;: &quot;estimated rate range, e.g. 8.99% - 12.99%&quot;
 }
 
-Cover these lenders: Money3, Plenti, Pepper Money, Liberty, Finance One, Now Finance, Latitude, FirstMac, Macquarie, Westpac, ANZ, CommBank, NAB, Angle Finance, Azora, Morris Finance, Metro Finance, Branded Financial, Grow Asset Finance.
+Cover ONLY these lenders. This is the broker's accredited panel: ${aiPanel}.
+Do not add banks or any lender that is not on this list.
+
+Current policy notes for each lender, taken from the guides the broker holds. Use these over anything you remember:
+${aiPolicy}
 
 CRITICAL CLASSIFICATION RULES:
 - Only place a lender in &quot;notAFit&quot; if there is a HARD disqualifier the client cannot fix: insolvency, multiple defaults, sub-threshold credit score, payday loan history, citizenship/visa issues, employment too short for ALL their tiers.
@@ -11150,7 +11159,7 @@ If the loan amount is missing from the data, don't flag it as red · just note i
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:(localStorage.getItem('anthropic_model')||'claude-opus-5'),max_tokens:4000,system:systemPrompt,messages:[{role:'user',content:input}]})
+      body:JSON.stringify({model:(localStorage.getItem('anthropic_model')||'claude-opus-5'),max_tokens:4000,system:systemPrompt,messages:[{role:'user',content:input+(aiEngine?'\n\nRULES ENGINE VERDICTS, built from the same guides. Treat these as ground truth on hard policy:\n'+aiEngine:'')}]})
     });
     const data=await resp.json();
     if(data.error)throw new Error(data.error.message||'API error');
@@ -11517,6 +11526,8 @@ renderResults=function(r){
 const $=function(id){return document.getElementById(id)};
 const money=function(n){return '$'+Number(n).toLocaleString()};
 const R=function(status,why){return {status:status,why:why}};
+// asset age NOW · the form holds age at end of term, some lenders cap age at the start
+const startAge=function(f){if(f.age==null)return null;var t=(f.term!=null&amp;&amp;f.term&gt;0)?f.term:5;return Math.max(0,Math.round(f.age-t))};
 
 /* ── CONSUMER ASSET FINANCE ─────────────────────────────────────── */
 const CONSUMER=[
@@ -11543,25 +11554,27 @@ const CONSUMER=[
     if(f.asset&amp;&amp;f.asset!=='car'){bad++;w.push('!!'+'Car loans only. Caravans, campers, boats and bikes are all excluded')}
     if(f.amt!=null&amp;&amp;f.amt&lt;10000){bad++;w.push('!!'+'Under their $10,000 minimum')}
     if(f.amt!=null&amp;&amp;cap!=null&amp;&amp;f.amt&gt;cap){bad++;w.push('!!'+'Over the $'+cap.toLocaleString()+' cap for this tier')}
-    if(f.appAge==='u25'&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;30000){bad++;w.push('!!'+'Under 25 caps at $30,000 including fees')}
+    if((f.appAge==='21'||f.appAge==='u21')&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;30000){bad++;w.push('!!'+'Under 25 caps at $30,000 including fees')}
+    else if(f.appAge==='22'&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;30000){warn++;w.push('??'+'Under 25 caps at $30,000 including fees. This one is in the 22 to 25 band, so check the exact age')}
     if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'Asset is '+f.age+' years at end of term, they stop at 20')}
     if(f.term!=null&amp;&amp;tier!=null&amp;&amp;tier!=='negative'){
-      if(tier&lt;=2&amp;&amp;f.term&gt;84){bad++;w.push('!!'+'CL1 and CL2 stop at 7 years')}
-      else if(tier&gt;=3&amp;&amp;f.term&gt;60){bad++;w.push('!!'+'CL3 and below run 3 to 5 years only, not '+f.term+' months')}
-      else if(tier&gt;=3&amp;&amp;f.term&lt;36){warn++;w.push('??'+'CL3 and below start at 3 years')}
+      if(tier&lt;=2&amp;&amp;f.term&gt;7){bad++;w.push('!!'+'CL1 and CL2 stop at 7 years')}
+      else if(tier&gt;=3&amp;&amp;f.term&gt;5){bad++;w.push('!!'+'CL3 and below run 3 to 5 years only, not '+f.term)}
+      else if(tier&gt;=3&amp;&amp;f.term&lt;3){warn++;w.push('??'+'CL3 and below start at 3 years')}
     }
     if(f.job!=null){
       if(f.emp==='casual'&amp;&amp;f.job&lt;6){bad++;w.push('!!'+'Casual needs 6 months, this file has '+f.job)}
       else if(f.emp!=='casual'&amp;&amp;f.job&lt;3){bad++;w.push('!!'+'Full or part time needs 3 months, this file has '+f.job)}
       else if(f.job&lt;12&amp;&amp;tier!=null&amp;&amp;tier!=='negative'&amp;&amp;tier&lt;=4){w.push('Short tenure is fine here. CL1 to CL4 count a previous employer toward the history')}
     }
-    if(f.res==='renter'||f.res==='boarder'){w.push('Renters and boarders carry no rate loading')}
+    if(f.res==='renting'||f.res==='boarding'){w.push('Renters and boarders carry no rate loading')}
     if(f.privateSale){w.push('Private sale carries no loading')}
     if(f.payday){warn++;w.push('??'+'Up to 2 current payday facilities is fine, more than that is out')}
-    if(f.defaults){warn++;w.push('??'+'Paid defaults fine. Unpaid financial defaults need to be listed over 6 months ago, max 2, aggregate under $15,000, and 3% of the balance goes on as a post settlement commitment')}
-    if(f.income!=null&amp;&amp;f.income&gt;0&amp;&amp;f.income&lt;45000){warn++;w.push('??'+'They want gross income over $45,000 a year. Confirm what this figure covers')}
+    if(f.defaults){warn++;w.push('??'+'Unpaid financial defaults need to be listed over 6 months ago, max 2, aggregate under $15,000, and 3% of the balance goes on as a post settlement commitment')}
+    if(f.defaultsPaid){w.push('Paid defaults are fine here')}
+    if(f.income!=null&amp;&amp;f.income&lt;45000){bad++;w.push('!!'+'They want gross income over $45,000 a year')}
     warn++;w.push('??'+'Check the postcode against their excluded list, and that the client does not live in a caravan park, hostel, motel or hotel');
-    return R(bad?'OUT':(warn?'CHECK':'IN'),w)}},
+    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
  {name:'Pepper Money',perfect:'Homeowner or long term renter with a clean file buying a car, caravan or boat from a dealer. Their spread across asset types is the widest of the prime lenders, so they are your default first call when the client is tidy and the asset is not a car.',src:'Consumer Product Guide 1 Oct 2025 + Aus Loans rate card 2 Mar 2026',
   range:'Car/caravan/marine $5,000 min · bikes $3,000 min · max $150,000 car and caravan, $100,000 marine, $55,000 bikes',
   rates:['Tier A/B/C by asset class and age','Car 9.04% to 17.68% · caravan 9.04% to 16.68% · bike 11.83% to 21.13% · marine 11.83% to 17.13%','Add 0.50% for terms 61 to 84 months, not on caravans','Introducer can cut up to 2%'],
@@ -11578,7 +11591,7 @@ const CONSUMER=[
     if(f.bankrupt){bad++;w.push('!!'+'Bankrupts and undischarged are out, need 2 years since discharge')}
     if(f.privateSale){w.push('Private sale fine, establishment fee is $600 instead of $499')}
     if(f.res==='boarding'){warn++;w.push('??'+'Boarding pushes them toward Tier C, which cannot do caravan or marine')}
-    if((f.appAge==='21'||f.appAge==='u21')&amp;&amp;f.amt&gt;40000){bad++;w.push('!!'+'Under 21 caps at $40,000 no matter the tier')}
+    if(f.appAge==='u21'&amp;&amp;f.amt&gt;40000){bad++;w.push('!!'+'Under 21 caps at $40,000 no matter the tier')}
     if(f.term!=null&amp;&amp;f.term&gt;5&amp;&amp;f.asset!=='caravan'){w.push('Terms over 5 years add 0.50%, though not on caravans')}
     if(f.term!=null&amp;&amp;f.term&gt;7){bad++;w.push('!!'+'84 months is the ceiling')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
@@ -11616,9 +11629,10 @@ const CONSUMER=[
     else if(f.score!=null){w.push('Platinum grade, 14.95%, full $75,000 available')}
     if(f.bankrupt){bad++;w.push('!!'+'Current and multiple bankrupts declined, and any default listed after bankruptcy')}
     if(f.defaults){warn++;w.push('??'+'No finance defaults inside 6 months, and no more than two unpaid inside 24 months')}
-    if(f.age!=null&amp;&amp;f.age&gt;25){warn++;w.push('??'+'Over 25 years at start limits them to a 3 year term unless pre 1990 classic')}
+    var sa=startAge(f);
+    if(sa!=null&amp;&amp;sa&gt;25){warn++;w.push('??'+'Vehicle is about '+sa+' years old now. Over 25 at commencement limits them to a 3 year term unless it is a pre 1990 classic')}
     if(f.privateSale){w.push('Private sale fine, needs an inspection report under 3 months, not required under $6,000')}
-    if((f.appAge==='21'||f.appAge==='u21')&amp;&amp;f.amt&gt;20000){bad++;w.push('!!'+'Under 21 caps at $20,000 secured')}
+    if(f.appAge==='u21'&amp;&amp;f.amt&gt;20000){bad++;w.push('!!'+'Under 21 caps at $20,000 secured')}
     if(f.payday){warn++;w.push('??'+'More than 2 current payday facilities is a decline, and 1 pay advance per cycle is the limit')}
     if(f.visa==='bridge'){warn++;w.push('??'+'Bridging visas other than A and B are declined')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
@@ -11630,17 +11644,23 @@ const CONSUMER=[
   no:['Less than 12 months of credit history','Current bankrupts and terminated Part 9s','Current hardship RHI or informal debt agreements','Centrelink only income','Gambling over 40% of income','All of NT, far north QLD, west of Dubbo, northern WA, and 200 to 250km beyond the southern capitals · caravan parks too','Grey imports and unregistrable dirt bikes','Learner licence with hours not completed'],
   assets:['car','bike','caravan'],
   ev:function(f){var w=[],bad=0,warn=0;
+    var sa=startAge(f);
+    if(f.asset==='marine'){warn++;w.push('??'+'Boats and trailers are case by case on request, not standard')}
     if(f.amt!=null&amp;&amp;f.amt&gt;0&amp;&amp;f.amt&lt;10000){bad++;w.push('!!'+'Below the $10,000 minimum')}
     if(f.amt!=null&amp;&amp;f.amt&gt;35000){bad++;w.push('!!'+'Over the $35,000 Premium cap')}
     else if(f.amt!=null&amp;&amp;f.amt&gt;30000){warn++;w.push('??'+'Over $30,000 needs Premium, clean conduct only')}
     else if(f.amt!=null&amp;&amp;f.amt&gt;20000){warn++;w.push('??'+'Over $20,000 rules out Lite, needs Standard conduct or better')}
+    if((f.asset==='bike'||f.asset==='caravan')&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;20000){warn++;w.push('??'+'Bikes and caravans cap at $20,000 on a single security, $30,000 with dual security')}
     if(f.bankrupt){warn++;w.push('??'+'Current bankrupt is declined. Discharged is fine from 1 day at a $20,000 cap')}
-    if(f.defaults){w.push('Defaults are their bread and butter. Paid sits Premium, unpaid outside a year Standard, recent goes Lite case by case')}
+    if(f.defaults||f.defaultsPaid){w.push('Defaults are their bread and butter. Paid sits Premium, unpaid outside a year Standard, recent goes Lite case by case')}
     if(f.score!=null){w.push('Score is not used here. Tiering runs off defaults, CCR conduct and repayment history')}
-    if(f.age!=null&amp;&amp;f.age&gt;11){bad++;w.push('!!'+'Vehicle over 11 years at settlement')}
-    else if(f.age!=null&amp;&amp;f.age&gt;8){warn++;w.push('??'+'Luxury marques cap at 8 years. BMW, Mercedes, Audi, Lexus, Jaguar, Land and Range Rover')}
+    if(sa!=null&amp;&amp;sa&gt;11){bad++;w.push('!!'+'Vehicle is about '+sa+' years old now, they stop at 11 at settlement')}
+    else if(sa!=null&amp;&amp;sa&gt;8){warn++;w.push('??'+'Luxury marques cap at 8 years at settlement. BMW, Mercedes, Audi, Lexus, Jaguar, Land and Range Rover')}
     if(f.emp==='casual'){warn++;w.push('??'+'Casuals sit on Standard or Lite. Premium is permanent PAYG only')}
     if(f.payday){warn++;w.push('??'+'Wage advance or BNPL activity becomes a monthly allowance unless closed and quiet for 40 days')}
+    if(f.visa==='temp'||f.visa==='bridge'){warn++;w.push('??'+'No student visas, and they need an Australian licence')}
+    if(f.term!=null&amp;&amp;f.term&gt;5){bad++;w.push('!!'+'60 months is the ceiling, and that is Premium only')}
+    if(f.privateSale){w.push('They create the invoice and chase the seller docs themselves, which saves you the work')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
  {name:'Wisr',perfect:'Strong file, decent income, buying a newer car or EV, and rate shopping. Their 350 floor is generous but the sweet spot is a 640 plus score where they will go to $150,000 with no seven year loading.',src:'Non-BID Rate Chart, document dated May 2026',
@@ -11658,10 +11678,15 @@ const CONSUMER=[
     else if(f.score!=null&amp;&amp;f.score&lt;450&amp;&amp;f.amt&gt;35000){bad++;w.push('!!'+'Score under 450 caps the lend at $35,000')}
     else if(f.score!=null&amp;&amp;f.score&lt;640&amp;&amp;f.amt&gt;80000){bad++;w.push('!!'+'Score under 640 caps the lend at $80,000')}
     if(f.age!=null&amp;&amp;f.age&gt;15){warn++;w.push('??'+'Assets over 15 years at end of term need a score of 640 or better')}
+    var sa=startAge(f);
+    if(f.asset==='bike'&amp;&amp;sa!=null&amp;&amp;sa&gt;=5){bad++;w.push('!!'+'Bikes must be under 5 years at the start, this one is about '+sa)}
+    else if(f.asset!=='bike'&amp;&amp;sa!=null&amp;&amp;sa&gt;13){bad++;w.push('!!'+'Vehicle is about '+sa+' years old now, 13 years at the start is their cap')}
+    if(f.asset==='bike'&amp;&amp;f.amt!=null){if(f.res==='renting'&amp;&amp;f.amt&gt;50000){bad++;w.push('!!'+'Bikes cap at $50,000 for a renter')}else if(f.res==='boarding'&amp;&amp;f.amt&gt;30000){bad++;w.push('!!'+'Bikes cap at $30,000 for a boarder')}}
+    if(f.appAge&amp;&amp;f.appAge!=='26'&amp;&amp;f.income!=null&amp;&amp;f.income&lt;70000&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;35000){bad++;w.push('!!'+'Under 26 on less than $70,000 gross caps the lend at $35,000')}
     if(f.score!=null&amp;&amp;f.score&lt;500){warn++;w.push('??'+'Bank statements required under a 500 score')}
     if(f.term!=null&amp;&amp;f.term&gt;7){bad++;w.push('!!'+'7 years is the ceiling')}
     else if(f.term!=null&amp;&amp;f.term&gt;=6){w.push('6 and 7 year terms carry no loading on it here, which is unusual')}
-    if(f.payday){bad++;w.push('!!'+'Payday enquiries or open facilities in the last 12 months means no bank statement waiver, and usually a decline')}
+    if(f.payday){warn++;w.push('??'+'Payday enquiries or open facilities in the last 12 months means bank statements are required, no waiver')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
  {name:'NOW Finance',perfect:'Perfectly clean credit and a private sale. No defaults, no judgements, nothing. They are the only one who treats a private sale exactly like a dealer deal, same LVR, same rate, same fee, so they should be your first thought on any private purchase.',src:'Auto Product Guide V17, 14 Feb 2026 + Broker Briefing Aug 2026',
@@ -11746,7 +11771,7 @@ const CONSUMER=[
     else if(f.appAge==='22'&amp;&amp;f.amt&gt;50000){bad++;w.push('!!'+'22 to 25 caps at $50,000')}
     if(f.job!=null&amp;&amp;f.emp==='ft'&amp;&amp;f.job&lt;3){bad++;w.push('!!'+'Full time needs more than 3 months in the job')}
     if(f.job!=null&amp;&amp;f.emp==='casual'&amp;&amp;f.job&lt;12){bad++;w.push('!!'+'Casuals need more than 12 months')}
-    if(f.income!=null&amp;&amp;f.income&lt;30000){bad++;w.push('!!'+'Minimum net income $30,000 excluding Centrelink')}
+    if(f.income!=null&amp;&amp;f.income&lt;34000){bad++;w.push('!!'+'Minimum net income $30,000 excluding Centrelink, about $34,000 gross')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
  {name:'Affordable Car Loans',perfect:'The file everyone else has knocked back. Defaults, judgements, discharged bankruptcy, a bridging visa, a remote postcode. If they earn $600 a week and want a passenger car, ACL will look at it when nobody else will.',src:'ACL Broker User Guide, June 2026',
@@ -11766,7 +11791,7 @@ const CONSUMER=[
     if(f.income!=null&amp;&amp;f.income&lt;31200){bad++;w.push('!!'+'They want $600 a week from all sources, about $31,200 a year')}
     if(f.visa==='bridge'||f.visa==='temp'){w.push('Temporary and bridging visas accepted, 1% loading, LVR capped at 120%')}
     if(f.balloon){bad++;w.push('!!'+'No balloon payments available')}
-    if((f.appAge==='21'||f.appAge==='u21')){warn++;w.push('??'+'Under 26 caps the LVR at 100%')}
+    if(f.appAge==='22'||f.appAge==='21'||f.appAge==='u21'){warn++;w.push('??'+'Under 26 caps the LVR at 100%')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
  {name:'Firstmac',perfect:'Homeowner buying a newer car or caravan who cares about the rate. Their 8.64% on a new green car is among the sharpest here, but the file has to be clean and the caravan side is homeowners only.',src:'Caravan and Car matrix and rate sheet, 5 Aug 2026',
@@ -11800,7 +11825,9 @@ const CONSUMER=[
     if(f.amt!=null&amp;&amp;(f.amt&lt;6000||f.amt&gt;25000)){bad++;w.push('!!'+'Their band is $6,000 to $25,000, this sits outside it')}
     if(f.bankrupt){warn++;w.push('??'+'Current bankrupt or Part IX is out, discharged is fine from the next day on Bronze')}
     if(f.defaults){warn++;w.push('??'+'Unpaid finance defaults up to $6,000 and older than 6 months can work on Bronze')}
-    if(f.asset==='bike'&amp;&amp;f.age!=null&amp;&amp;f.age&gt;7){bad++;w.push('!!'+'Bikes must be 7 years or newer at the start')}
+    var sa=startAge(f);
+    if(f.asset==='bike'&amp;&amp;sa!=null&amp;&amp;sa&gt;7){bad++;w.push('!!'+'Bike is about '+sa+' years old now, they want 7 or newer at the start')}
+    else if(f.asset!=='bike'&amp;&amp;sa!=null&amp;&amp;sa&gt;15){bad++;w.push('!!'+'Vehicle is about '+sa+' years old now, they stop at a 15 year old build date at the start')}
     if(f.visa!=='cit'&amp;&amp;f.visa!=null){warn++;w.push('??'+'Non citizens need 12 months residency minimum')}
     if(f.term!=null&amp;&amp;(f.term&lt;3||f.term&gt;5)){bad++;w.push('!!'+'They do 3, 4 or 5 year terms only')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
@@ -11853,10 +11880,11 @@ const CONSUMER=[
     if(f.bankrupt){bad++;w.push('!!'+'Currently bankrupt is an automatic decline')}
     if(f.score!=null&amp;&amp;f.score&lt;550){warn++;w.push('??'+'Tier 3 and 4 both need a 20% deposit')}
     if(f.privateSale){w.push('Private sale adds 0.50% and a $100 higher establishment fee')}
-    if(f.age!=null&amp;&amp;f.age&gt;15){warn++;w.push('??'+'15 years at start on terms to 60 months, 7 years if you go longer')}
-    if(f.income!=null&amp;&amp;f.income&lt;27816){bad++;w.push('!!'+'Net income under $2,318 a month is a hard decline, about $27,800 a year')}
+    var sa=startAge(f);
+    if(sa!=null&amp;&amp;sa&gt;15){bad++;w.push('!!'+'Vehicle is about '+sa+' years old now, 15 years at the start is their cap')}
+    if(f.income!=null&amp;&amp;f.income&lt;31000){bad++;w.push('!!'+'Net income under $2,318 a month is a hard decline, about $31,000 gross a year')}
     if(f.purpose==='consol'||f.refi){bad++;w.push('!!'+'No debt consolidation, cash raising, top ups or mid term refinance')}
-    if(f.term!=null&amp;&amp;f.term&gt;5&amp;&amp;f.age!=null&amp;&amp;f.age&gt;7){bad++;w.push('!!'+'Terms over 60 months need the asset at 7 years or less at the start')}
+    if(f.term!=null&amp;&amp;f.term&gt;5&amp;&amp;sa!=null&amp;&amp;sa&gt;7){bad++;w.push('!!'+'Terms over 60 months need the asset at 7 years or less at the start, this one is about '+sa)}
     if(f.visa!=='cit'&amp;&amp;f.visa!=null&amp;&amp;f.income!=null&amp;&amp;f.income&lt;100000){warn++;w.push('??'+'Visa holders need $100,000 income on Prime, $50,000 on their Plus product')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
@@ -11872,38 +11900,13 @@ const CONSUMER=[
     if(f.defaults){bad++;w.push('!!'+'No financier defaults at all, only paid telco and utility')}
     if(f.defaultsPaid){warn++;w.push('??'+'Paid telco and utility defaults are fine here, a paid financier default is not')}
     if(f.score!=null&amp;&amp;f.score&lt;509){warn++;w.push('??'+'Under 509 the rate jumps to 16.59% or higher, big cliff')}
-    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'20 years at origination is the cap')}
+    var sa=startAge(f);
+    if(sa!=null&amp;&amp;sa&gt;20){bad++;w.push('!!'+'Vehicle is about '+sa+' years old now, 20 years at origination is the cap')}
     if(f.privateSale){warn++;w.push('??'+'Private sale is allowed on cars, caravans and boats but needs a Verimoto report, roadworthy, and a gas certificate on caravans. The state by state grid did not extract, check it.')}
     if(f.payday){bad++;w.push('!!'+'No active payday loans and no payday enquiries in the last 6 months')}
     if(f.balloon){bad++;w.push('!!'+'No balloons or residuals on any RACV product')}
     if(f.visa==='bridge'){bad++;w.push('!!'+'No bridging or student visas')}
     if(f.term!=null&amp;&amp;f.term&gt;5){warn++;w.push('??'+'6 years adds 0.25%, 7 years adds 0.50%')}
-    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
-
- {name:'Azora Consumer',perfect:&quot;Almost anything with a pulse and a job on $45,000. Current bankrupt, Part IX, unpaid defaults, two payday facilities, 100% Centrelink income, all have a priced tier. When the file looks hopeless, start here.&quot;,src:'Consumer Car Loans Product Guide, August 2026',
-  range:'$10,000 to $100,000. Loan 4 caps at $75,000, Loan 5 at $50,000, Loan 6 at $35,000. Under 25 caps at $30,000, score under 300 caps at $20,000.',
-  rates:['By score band','833 to 1200 9.99% · 726 to 832 10.49% · 622 to 725 10.99% · 510 to 621 14.49% · 401 to 509 21.99% · 0 to 400 24.99% · negative bankrupt or Part IX and X 18.99%','Dial the rate down up to 2%: give back 3% of commission for 1% off, or 2% for 2% off','Commission is 5.5% of loan size on Loans 1 to 4 until 30 November 2026, then 4% on Loans 5 to 8'],
-  more:['This is the permissive one','No minimum score, 0 to 400 is just a priced tier','Terms 7 years on Loans 1 and 2 only, 3 to 5 years on Loans 3 to 8','Asset 20 years at end of term, 260,000km petrol or 280,000km diesel','LVR 170% under $25,000, 140% over','No deposit needed, and they fund trade in shortfalls and warranty','No bank statements on Loans 1 to 3, 90 days for everything else','No loading for non homeowners, older assets, high mileage, private sale, or a mid term or balloon refinance','Fees: settlement $695, risk fee nil on Loans 1 to 4 or $1,995 on 5 to 8, monthly $15, early repayment $395, discharge $195, application fee up to $1,990 which is yours'],
-  no:['What they accept is the point: missed payments, gambling to 15% of income, paid and unpaid non financial defaults, paid financial defaults, unpaid financial defaults listed more than 6 months ago, current or discharged Part IX and X and bankrupts, MyBudget and similar, up to 2 payday facilities, and 100% Centrelink income','3% of any unpaid default balance is counted as a commitment after settlement, and unpaid financial defaults must be 2 or fewer totalling under $15,000','Income floor is $45,000 gross including overtime, commission, bonuses, child support, Centrelink and rental','Employment: 3 months full or part time, 6 months casual. Loans 5, 6 and under 25s must be with the current employer','Long excluded postcode list across NSW, QLD, SA, WA, TAS and NT','Cars only. No grey imports, kit cars, homemade or exotic vehicles, trucks, holiday vans, camper vans, motorbikes or write offs','Cannot live in a caravan park, mobile home, hostel, motel or hotel'],
-  assets:['car'],
-  ev:function(f){var w=[],bad=0,warn=0;
-    if(f.asset!=='car'){bad++;w.push('!!'+'Their consumer product is car loans only, and they exclude motorbikes and camper vans outright')}
-    if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;100000)){bad++;w.push('!!'+'Outside $10,000 to $100,000')}
-    if(f.income!=null&amp;&amp;f.income&lt;45000){bad++;w.push('!!'+'Income floor is $45,000 gross')}
-    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'20 years at end of term')}
-    if(f.score!=null&amp;&amp;f.score&lt;300&amp;&amp;f.amt&gt;20000){bad++;w.push('!!'+'Score under 300 caps the loan at $20,000')}
-    else if(f.score!=null&amp;&amp;f.score&lt;401&amp;&amp;f.amt&gt;35000){bad++;w.push('!!'+'A 0 to 400 score is Loan 6, which caps at $35,000')}
-    else if(f.score!=null&amp;&amp;f.score&lt;510&amp;&amp;f.amt&gt;50000){bad++;w.push('!!'+'A 401 to 509 score is Loan 5, which caps at $50,000')}
-    else if(f.score!=null&amp;&amp;f.score&lt;622&amp;&amp;f.amt&gt;75000){bad++;w.push('!!'+'A 510 to 621 score is Loan 4, which caps at $75,000')}
-    if((f.appAge==='21'||f.appAge==='u21')&amp;&amp;f.amt&gt;30000){bad++;w.push('!!'+'Under 25 caps at $30,000')}
-    if(f.term!=null&amp;&amp;f.term&gt;5&amp;&amp;f.score!=null&amp;&amp;f.score&lt;726){bad++;w.push('!!'+'7 year terms are Loans 1 and 2 only, which needs a score of 726 or better')}
-    if(f.job!=null&amp;&amp;f.job&lt;3){bad++;w.push('!!'+'3 months continuous employment minimum, 6 for casuals')}
-    if(f.defaults){w.push('Unpaid financial defaults older than 6 months are fine here, max 2 and under $15,000 combined')}
-    if(f.bankrupt){w.push('Current and discharged bankrupts and Part IX both have their own priced tier at 18.99%')}
-    if(f.payday){w.push('Up to 2 current payday facilities is acceptable')}
-    if(f.privateSale||f.refi){w.push('No loading on a private sale, or on a mid term or balloon refinance')}
-    if(f.res!=='owner'){w.push('No loading for renters or boarders, which is unusual')}
-    if(f.score!=null&amp;&amp;f.score&lt;401){warn++;w.push('??'+'A 0 to 400 score prices at 24.99%')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
  {name:'Rapid Loans',perfect:'An older or unusual asset where the age rules elsewhere have killed it. No maximum asset age at either end is rare. Also takes grey imports, repairable write offs and already encumbered security.',src:'Product and Credit Guide, August 2025',
@@ -11922,24 +11925,6 @@ const CONSUMER=[
     if(f.privateSale){w.push('Private sale accepted, needs a safety certificate except in SA, WA and NT')}
     if(f.visa!=='cit'&amp;&amp;f.visa!=null){bad++;w.push('!!'+'Citizenship or permanent residency required, no visas at all')}
     if(f.term!=null&amp;&amp;f.term&gt;5){bad++;w.push('!!'+'60 months is the ceiling, 48 on Bronze')}
-    return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
-
- {name:'C1 Finance',perfect:'Smaller car loan, thin or messy file, metro client. They ignore credit scores entirely and do no upfront credit check, so you can test a deal without leaving a mark. Do not use for remote or NT clients.',src:'Introducer Product Guide v5.1, 17 March 2026',
-  range:'From $10,000. Premium to $35,000 · Standard to $30,000 · Lite to $20,000.',
-  rates:['Premium 24.99% · Standard 27.99% · Lite 29.99%','Flat by tier, no score matrix'],
-  more:['They say it outright: credit score is not applicable, they care about defaults and CCR','What matters is credit file age, 2 years on Premium and Standard, 1 year on Lite','Terms 24 to 60 months by tier','Asset 11 years at settlement, 8 for luxury European','LVR 140%','Fees: establishment $995, monthly $28, risk fee 8% to 9% of the loan, funded broker fee to $1,595','No upfront credit check, the enquiry only happens at the last moment'],
-  no:['Living in NT or northern WA, or in a caravan park','Current or double bankrupt, terminated Part IX, current hardship','Under 12 months credit history','No student visas','Must hold an Australian licence','Long remote area exclusion list, and over 250km from a major centre may decline','Gambling over 40% of income declines'],
-  assets:['car','caravan','bike'],
-  ev:function(f){var w=[],bad=0,warn=0;
-    if(f.asset==='marine'){warn++;w.push('??'+'Boats and trailers are case by case on request, not standard')}
-    if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;35000)){bad++;w.push('!!'+'Their range is $10,000 to $35,000')}
-    if(f.bankrupt){warn++;w.push('??'+'Current or double bankrupt is out. Discharged is fine on Standard and Lite from day one, capped $20,000, but Premium will not take it.')}
-    if(f.asset!=='car'&amp;&amp;f.amt&gt;20000){warn++;w.push('??'+'Bikes and caravans cap at $20,000 on a single security')}
-    if(f.age!=null&amp;&amp;f.age&gt;11){bad++;w.push('!!'+'11 years at settlement, 8 for luxury European')}
-    if(f.privateSale){w.push('They create the invoice and chase the seller docs themselves, which saves you the work')}
-    w.push('No credit score minimum and no upfront credit check');
-    if(f.visa==='temp'||f.visa==='bridge'){warn++;w.push('??'+'No student visas, and they need an Australian licence')}
-    if(f.term!=null&amp;&amp;f.term&gt;5){bad++;w.push('!!'+'60 months is the ceiling')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}},
 
  {name:'CarStart',perfect:'A buyer with a cash deposit or a trade in. They match the deposit dollar for dollar and add half the trade value on top, so a client with $5,000 down effectively lends $10,000 more than they would elsewhere.',src:'Product Guide, undated in the document, filename says 2023. Their target market determinations are dated 5 October 2025.',
@@ -12019,7 +12004,7 @@ const PERSONAL=[
     if(f.amt!=null&amp;&amp;f.amt&gt;50000){warn++;w.push('??'+'Over $50,000 needs 12 months with the employer and the loan cannot exceed one year of gross income')}
     if(f.purpose==='business'){warn++;w.push('??'+'Check the purpose with them, the guide does not list acceptable purposes')}
     if(f.term!=null&amp;&amp;f.term&gt;7){bad++;w.push('!!'+'7 years is the ceiling and needs $15,000 minimum')}
-    else if(f.term!=null&amp;&amp;f.term&gt;5&amp;&amp;f.amt&lt;15000){bad++;w.push('!!'+'Under $15,000 caps at 60 months')}
+    else if(f.term!=null&amp;&amp;f.term&gt;5&amp;&amp;f.amt!=null&amp;&amp;f.amt&lt;15000){bad++;w.push('!!'+'Under $15,000 caps at 60 months')}
     if(f.payday){bad++;w.push('!!'+'No salary advance in 90 days and max 1 SACC')}
     if((f.appAge==='21'||f.appAge==='u21')&amp;&amp;f.amt&gt;20000){bad++;w.push('!!'+'21 and under caps at $20,000')}
     if(f.job!=null&amp;&amp;f.emp==='casual'&amp;&amp;f.job&lt;12){bad++;w.push('!!'+'Casuals need 12 months')}
@@ -12100,7 +12085,9 @@ const EQUIP=[
     if(f.trad!=null&amp;&amp;f.trad&lt;24&amp;&amp;!big){w.push('Under 2 years ABN goes to Accelerate: 6 months ABN is enough, caps at $100,000 homeowner or $50,000 not')}
     if(f.age!=null&amp;&amp;f.age&gt;25&amp;&amp;f.amt&gt;50000){bad++;w.push('!!'+'Assets over $50,000 cap at 25 years end of term')}
     if(!f.prop){w.push('Non homeowner pays the higher rate column and needs comparable credit')}
-    if(f.gst!=null&amp;&amp;f.gst&lt;24&amp;&amp;f.amt&gt;150000){bad++;w.push('!!'+'Over $150,000 needs 4 years GST')}
+    if(f.gst!=null&amp;&amp;f.gst&lt;48&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;150000){bad++;w.push('!!'+'Over $150,000 needs 4 years GST')}
+    else if(f.gst!=null&amp;&amp;f.gst&lt;24&amp;&amp;!big){warn++;w.push('??'+'Under 2 years GST is off Streamline. Accelerate takes 6 months GST for a non homeowner and none for a homeowner, capped at $50,000 or $100,000')}
+    if(big&amp;&amp;f.cat!=='primary'){bad++;w.push('!!'+'Over $150,000 is Category A only: trucks, trailers, buses and yellow goods')}
     if(f.dep&gt;=20){w.push('A 20% deposit covers them where comparable credit sits between 40% and 70% of the loan')}
     if(f.privateSale){w.push('Private sale adds 1% and lifts the application fee to $750')}
     if(f.ent!=='company'&amp;&amp;f.amt&gt;150000){bad++;w.push('!!'+'Over $150,000 is company or trust only')}
@@ -12248,11 +12235,14 @@ const EQUIP=[
   no:['Prohibited: coal mining, oil and gas, adult, tobacco, petroleum and coal manufacturing, gambling, rideshare','They also run a luxury and exotic vehicle product to $1.2m at 8.99% needing a 20% deposit and 5 year old maximum asset'],
   ev:function(f){var w=[],bad=0,warn=0;
     if(f.amt!=null&amp;&amp;f.amt&lt;10000){bad++;w.push('!!'+'$10,000 minimum')}
-    if(f.trad!=null&amp;&amp;f.trad&lt;24){warn++;w.push('??'+'GST under 2 years needs a 700 score and adds 2%')}
     if(f.score!=null&amp;&amp;f.score&lt;500){bad++;w.push('!!'+'Equifax 500 is the floor')}
     if(f.amt!=null&amp;&amp;f.amt&lt;25000){warn++;w.push('??'+'Facilities under $25,000 carry a 2% loading')}
     if(!f.prop){w.push('Non property adds about 1% across their tiers')}
-    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'20 years at end of term primary and secondary')}
+    if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'20 years at end of term primary and secondary, though under $100,000 they may consider 30 on a quality asset')}
+    else if(f.age!=null&amp;&amp;f.age&gt;15){w.push('End of term over 15 years adds 2.5%, over 10 adds 1.5%')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;2000000){bad++;w.push('!!'+'$2m is the ceiling')}
+    else if(f.amt!=null&amp;&amp;f.amt&gt;500000){warn++;w.push('??'+'Over $500,000 is full doc, financials and bank statements')}
+    else if(f.amt!=null&amp;&amp;f.amt&gt;250000&amp;&amp;!f.prop){bad++;w.push('!!'+'$250,000 to $500,000 is lite doc and needs a property owner')}
     if(f.gst!=null&amp;&amp;f.gst&lt;24){warn++;w.push('??'+'Under 2 years GST needs a 700 score and adds 2%')}
     if(f.cat==='tertiary'){warn++;w.push('??'+'Tertiary needs a 700 score, a 20% deposit and bank statements')}
     if(f.privateSale){w.push('Private sale adds 0.50% and the fee goes to $695')}
@@ -12284,7 +12274,7 @@ const EQUIP=[
   ev:function(f){var w=[],bad=0,warn=0;
     if(f.trad!=null&amp;&amp;f.trad&lt;3){bad++;w.push('!!'+'ABN must be active at least 3 months')}
     if(f.score!=null&amp;&amp;f.score&lt;530){bad++;w.push('!!'+'530 is the floor and that is ST1 or ST2')}
-    else if(f.score!=null&amp;&amp;f.score&lt;600&amp;&amp;f.trad&lt;12){bad++;w.push('!!'+'Under 12 months ABN needs a 600 score')}
+    else if(f.score!=null&amp;&amp;f.score&lt;600&amp;&amp;f.trad!=null&amp;&amp;f.trad&lt;12){bad++;w.push('!!'+'Under 12 months ABN needs a 600 score')}
     if(f.amt!=null&amp;&amp;f.amt&gt;250000){bad++;w.push('!!'+'$250,000 is the ceiling')}
     w.push('No GST registration required and no deposit mandated, which is unusual');
     warn++;w.push('??'+'No rates in this document. Get their interest rate card.');
@@ -12303,22 +12293,25 @@ const EQUIP=[
     w.push('No credit score requirement, no bank statements, no financials. Worth remembering when a file is messy but the asset is good.');
     if(f.ind!=='ct'&amp;&amp;f.ind!=='std'){warn++;w.push('??'+'They only do earthmoving, civil, mining, building and quarrying')}
     return R(bad?'OUT':'CHECK',w)}},
- {name:'MoneyMe Commercial',perfect:'Business buying a vehicle where GST registration is the sticking point. Neither of their paths requires it. Full doc takes a 3 month old ABN if the business is cashflow positive.',src:'Autopay Broker Guide, accurate as at 11 August 2025',
+ {name:'MoneyMe Commercial',perfect:'Business buying a vehicle where GST registration is the sticking point. Neither of their paths requires it. Full doc takes a 3 month old ABN if the business is cashflow positive.',src:'Autopay Broker Guide, commercial pages accurate as at 2 February 2026',
   range:'$10,000 to $150,000',
   rates:['Property owner AA 6.75% to 9.95% by asset age and LVR · A from 7.10% · BB from 7.30% · B from 7.70%, capped at $50,000','Non property owner AA 7.70% to 11.30%','Add 1.5% where the vehicle is 16 years plus at end of term, add 1% for casuals, take 1% off for a full EV','Your 5% broker fee adds 2% to the client rate, and cutting it cuts theirs'],
   more:['Two paths','Low doc needs 2 years ABN, a 650 score and the applicant must be a property owner','Full doc drops to 3 months ABN and a 550 score but they must be cashflow positive','Neither path requires GST registration, which is unusual','Over $100,000 needs 26 plus, a full licence, asset under 12 years at end of term and the loan capped at one times annual turnover','Cars, SUVs, vans, utes and light commercial to 4.5 tonne, dealer sale only','Fees: establishment $350 to $550, monthly $12.50, no exit fee','Settlement can be inside an hour, 7 days'],
   no:['No paid or unpaid default judgements, court actions or bankruptcy','Utility and telco defaults must stay under $500','No current arrears','RHI 2 or more in 3 months','Repairable write offs not accepted here on the commercial side','Credit file under 12 months caps at $20,000'],
   ev:function(f){var w=[],bad=0,warn=0;
     if(f.amt!=null&amp;&amp;(f.amt&lt;10000||f.amt&gt;150000)){bad++;w.push('!!'+'Their range is $10,000 to $150,000')}
-    if(f.defaults){bad++;w.push('!!'+'No defaults, judgements or court actions at all')}
-    if(f.score!=null&amp;&amp;f.score&lt;550){bad++;w.push('!!'+'550 is the full doc floor, low doc needs 650')}
+    if(f.defaults||f.defaultsPaid){bad++;w.push('!!'+'No financial defaults paid or unpaid, no judgements, no court actions')}
+    if(f.score!=null&amp;&amp;f.score&lt;400){bad++;w.push('!!'+'OneScore 400 is the floor')}
+    else if(f.score!=null&amp;&amp;f.score&lt;550){warn++;w.push('??'+'Under 550 is full doc only, a lodged BAS or 3 months of statements, and caps at $50,000')}
+    if(f.score!=null&amp;&amp;f.score&lt;550&amp;&amp;f.amt!=null&amp;&amp;f.amt&gt;50000){bad++;w.push('!!'+'Under 550 caps at $50,000')}
     if(f.trad!=null&amp;&amp;f.trad&lt;3){bad++;w.push('!!'+'3 months ABN on full doc, 2 years on low doc')}
-    else if(f.trad!=null&amp;&amp;f.trad&lt;24&amp;&amp;f.prop){warn++;w.push('??'+'Under 2 years ABN means full doc rather than low doc')}
-    if(f.amt!=null&amp;&amp;f.amt&gt;100000){warn++;w.push('??'+'Over $100,000 needs 26 plus, a 650 score, asset under 12 years and the loan capped at one times turnover')}
+    else if(f.trad!=null&amp;&amp;f.trad&lt;24){warn++;w.push('??'+'Under 2 years ABN means full doc rather than low doc')}
+    if(!f.prop){w.push('Low doc needs a property owner. Non property owners go full doc with a lodged BAS or 3 months of statements')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;100000){warn++;w.push('??'+'Over $100,000 needs 26 plus, a full licence, 550 full doc or 600 low doc, asset finance history on the credit file, and the loan under one times annual turnover')}
+    if(f.amt!=null&amp;&amp;f.amt&gt;100000&amp;&amp;f.age!=null&amp;&amp;f.age&gt;12){bad++;w.push('!!'+'Over $100,000 the asset must be 12 years or under at end of term')}
     if(f.age!=null&amp;&amp;f.age&gt;20){bad++;w.push('!!'+'20 years at end of term')}
     w.push('No GST registration required on either path, which not many will do');
     if(f.privateSale){bad++;w.push('!!'+'Dealer sale only on their commercial product')}
-    if(f.gst!=null){w.push('GST registration is not required on either path')}
     return R(bad?'OUT':(warn?'CHECK':'PASS'),w)}}
 
 ];
@@ -12501,7 +12494,7 @@ const FORMS={
    +sel('mVisa','Residency',[['cit','Citizen or permanent resident'],['temp','Temporary work visa'],['bridge','Bridging visa']])
    +sel('mDep','Deposit',[['0','None'],['10','Around 10%'],['20','20% or more']])
    +sel('mAge2','Applicant age',[['26','26 or over'],['22','22 to 25'],['21','21'],['u21','Under 21']]),
-  toggles:tog('mDef','Unpaid defaults on file')+tog('mDefPaid','Paid or settled defaults')+tog('mBank','Bankruptcy, current or discharged')+tog('mPay','Payday loans in the last 6 months')+tog('mBal','Balloon needed')},
+  toggles:tog('mDef','Unpaid defaults on file')+tog('mDefPaid','Paid or settled defaults')+tog('mBank','Bankruptcy, current or discharged')+tog('mJoint','Joint application')+tog('mPay','Payday loans in the last 6 months')+tog('mBal','Balloon needed')},
 
  personal:{
   fields:inp('mAmt','Loan amount $','number','25000')
@@ -12513,7 +12506,8 @@ const FORMS={
    +sel('mRes','Living situation',[['owner','Home owner'],['renting','Renting'],['boarding','Boarding or with family']])
    +sel('mEmp','Employment',[['ft','Full time'],['pt','Part time'],['casual','Casual'],['selfemp','Self employed']])
    +inp('mJob','Months in current job','number','18')
-   +sel('mVisa','Residency',[['cit','Citizen or permanent resident'],['temp','Temporary work visa'],['bridge','Bridging visa']]),
+   +sel('mVisa','Residency',[['cit','Citizen or permanent resident'],['temp','Temporary work visa'],['bridge','Bridging visa']])
+   +sel('mAge2','Applicant age',[['26','26 or over'],['22','22 to 25'],['21','21'],['u21','Under 21']]),
   toggles:tog('mDef','Unpaid defaults on file')+tog('mDefPaid','Paid or settled defaults')+tog('mBank','Bankruptcy, current or discharged')+tog('mJoint','Joint application')+tog('mPay','Payday loans in the last 6 months')},
 
  commercial:{
@@ -12527,9 +12521,11 @@ const FORMS={
    +sel('mCat','Asset category',[['mv','Motor vehicle or light commercial'],['primary','Primary · trucks, yellow goods, ag'],['secondary','Secondary · forklifts, trailers, medical'],['tertiary','Tertiary · IT, fitout, signage']])
    +sel('mSale','How are they buying it',[['dealer','Dealer or auction'],['private','Private sale'],['refi','Refinance or capital raise']])
    +inp('mAge','Asset age at end of term · yrs','number','8')
+   +inp('mTerm','Term wanted · yrs','number','5')
    +sel('mDep','Deposit',[['0','None'],['10','Around 10%'],['20','20% or more']])
+   +sel('mVisa','Residency',[['cit','Citizen or permanent resident'],['temp','Temporary work visa'],['bridge','Bridging visa']])
    +sel('mInd','Industry',[['std','Standard'],['ct','Construction or transport'],['cs','Cleaning, security or labour hire'],['restricted','Ticket broker or crypto']]),
-  toggles:tog('mProp','Property owner')+tog('mAto','ATO debt')+tog('mDef','Unpaid defaults on file')+tog('mDefPaid','Paid or settled defaults')+tog('mStack','Already has another cashflow loan')}
+  toggles:tog('mProp','Property owner')+tog('mAto','ATO debt')+tog('mDef','Unpaid defaults on file')+tog('mDefPaid','Paid or settled defaults')+tog('mBank','Director bankruptcy, current or discharged')+tog('mStack','Already has another cashflow loan')}
 };
 
 let mode='consumer';
@@ -12573,6 +12569,26 @@ function qqAnnualNet(v,freq){
   if(f.indexOf('ANN')===0||f.indexOf('YEAR')===0)return Math.round(v);
   return null;
 }
+
+/* Zink only holds net income. The quoter form and every lender floor are gross, so work
+   the gross figure back from the net using the 2024-25 resident scale, LITO and Medicare. */
+function qqTax(g){
+  var t=0;
+  if(g&gt;190000)t=51638+(g-190000)*0.45;
+  else if(g&gt;135000)t=31288+(g-135000)*0.37;
+  else if(g&gt;45000)t=4288+(g-45000)*0.30;
+  else if(g&gt;18200)t=(g-18200)*0.16;
+  var lito=g&lt;=37500?700:(g&lt;=45000?700-(g-37500)*0.05:(g&lt;=66667?325-(g-45000)*0.015:0));
+  t=Math.max(0,t-lito);
+  var ml=g&lt;=27222?0:(g&lt;=34027?(g-27222)*0.10:g*0.02);
+  return t+ml;
+}
+function qqGrossUp(net){
+  if(net==null||!(net&gt;0))return null;
+  var lo=net,hi=net*2.2;
+  for(var i=0;i&lt;48;i++){var mid=(lo+hi)/2;if(mid-qqTax(mid)&lt;net)lo=mid;else hi=mid}
+  return Math.round(hi/100)*100;
+}
 function qqSet(id,v){var e=$(id);if(!e||v==null||v==='')return false;e.value=String(v);return true}
 function qqSetSel(id,v){var e=$(id);if(!e||v==null)return false;for(var i=0;i&lt;e.options.length;i++){if(e.options[i].value===String(v)){e.value=String(v);return true}}return false}
 function qqTog(id,on){var e=$(id);if(!e)return false;e.checked=!!on;return true}
@@ -12584,8 +12600,9 @@ window.qqPrefill=function(silent){
   if(mode==='consumer'||mode==='personal'||mode==='commercial'){
     if(S.loanAmt&amp;&amp;qqSet('mAmt',S.loanAmt))got.push('loan amount $'+Number(S.loanAmt).toLocaleString());
     if(S.creditScore&amp;&amp;qqSet('mScore',S.creditScore))got.push('score '+S.creditScore);
-    var inc=qqAnnualNet(S.netIncome,S.incomeFreq);
-    if(inc&amp;&amp;qqSet('mInc',inc))got.push('income $'+inc.toLocaleString()+' a year, annualised from the net figure Zink holds');
+    var incNet=qqAnnualNet(S.netIncome,S.incomeFreq);
+    var inc=qqGrossUp(incNet);
+    if(inc&amp;&amp;qqSet('mInc',inc))got.push('income about $'+inc.toLocaleString()+' gross a year, worked back from the $'+incNet.toLocaleString()+' net Zink holds');
     if(S.term){var yrs=Math.round((+S.term)/12);if(yrs&gt;0&amp;&amp;qqSet('mTerm',yrs))got.push(yrs+' year term')}
     var jm=qqMonths(S.empTenure);
     if(jm!=null&amp;&amp;qqSet('mJob',jm))got.push(jm+' months in the job');
@@ -12607,11 +12624,20 @@ window.qqPrefill=function(silent){
     var st=String(S.saleType||'').toUpperCase();
     var sale=/PRIVATE/.test(st)?'private':/DEALER/.test(st)?'dealer':null;
     if(sale&amp;&amp;qqSetSel('mSale',sale))got.push(sale==='private'?'private sale':'dealer sale');
+    var dpN=parseFloat(S.deposit),pcN=parseFloat(S.purchaseCost);
+    if(dpN&gt;0&amp;&amp;pcN&gt;0){var pct=dpN/pcN*100;var dband=pct&gt;=20?'20':(pct&gt;=7.5?'10':'0');if(qqSetSel('mDep',dband))got.push('deposit '+Math.round(pct)+'%')}
+    var yrM=String(S.asset||'').match(/\b(19[89]\d|20[0-2]\d)\b/);
+    if(yrM){var nowY=new Date().getFullYear();var tY=val('mTerm');if(tY==null){var tm=parseInt(S.term,10);tY=isNaN(tm)?5:Math.max(1,Math.round(tm/12))}
+      var eot=(nowY-parseInt(yrM[1],10))+tY;if(eot&gt;=0&amp;&amp;eot&lt;60&amp;&amp;qqSet('mAge',eot))got.push('asset '+eot+' years old at end of term, from the '+yrM[1]+' build')}
+    var pdS=String(S.payday||'').trim();
+    if(pdS&amp;&amp;!/^(none|nil|no\b|n\/a|0+\b|unknown|not captured)/i.test(pdS)){if(qqTog('mPay',true))got.push('payday activity: '+pdS)}
+    var insS=String(S.insolvency||'').trim();
+    if(insS&amp;&amp;!/^(none|nil|no\b|n\/a|0+\b|unknown|not captured)/i.test(insS)){if(qqTog('mBank',true))got.push('insolvency: '+insS)}
   }
   mRun();
   if(note){
     note.style.display='block';
-    if(got.length){note.className='qq-note ok';note.innerHTML='&lt;b&gt;Filled from the Zink extract'+(S.name?' for '+S.name:'')+'.&lt;/b&gt; Pulled '+got.join(' · ')+'. Anything Zink did not have is left on the default, so check the asset age and deposit before you quote it.'}
+    if(got.length){note.className='qq-note ok';note.innerHTML='&lt;b&gt;Filled from the Zink extract'+(S.name?' for '+S.name:'')+'.&lt;/b&gt; Pulled '+got.join(' · ')+'. Anything Zink did not have is left on the default, so glance over the form before you quote it.'}
     else {note.className='qq-note warn';note.textContent='The extract ran but nothing in it matched these fields. Check step 1 actually found the data.'}
   }
   return got.length&gt;0;
@@ -12633,6 +12659,17 @@ function facts(){
     appAge:pick('mAge2'),payday:chk('mPay'),balloon:chk('mBal'),purpose:pick('mPurp'),
     gst:val('mGst'),ent:pick('mEnt'),cat:pick('mCat'),stack:chk('mStack')};
 }
+
+/* The AI matcher lives in another script block. Hand it the real panel and the current
+   guide notes so it stops guessing from memory or adding banks that are not on the panel. */
+window.lenderPanel=function(m){var set=(m==='personal')?PERSONAL:(m==='commercial')?EQUIP.concat(CASH):CONSUMER;return set.map(function(L){return L.name})};
+window.lenderPolicyBrief=function(m){
+  var set=(m==='personal')?PERSONAL:(m==='commercial')?EQUIP.concat(CASH):CONSUMER;
+  return set.map(function(L){return L.name+' ('+(L.src||'')+')\n  Range: '+(L.range||'')+'\n  Hard stops: '+((L.no||[]).join('; '))}).join('\n');
+};
+window.lenderEngineLines=function(){
+  try{var f=facts(),set=setFor(f);return set.map(function(L){var r=L.ev(f);return L.name+' ['+r.status+'] '+r.why.map(function(t){return String(t).replace(/^(!!|\?\?)/,'')}).join('; ')}).join('\n')}catch(e){return ''}
+};
 function setFor(f){
   if(mode==='consumer')return CONSUMER.filter(function(L){return !L.assets||!f.asset||L.assets.indexOf(f.asset)&gt;=0||true});
   if(mode==='personal')return PERSONAL;

@@ -8859,7 +8859,102 @@ function compare(cd,docs,raw){
   return{rows:rows,block:block,warns:warns};
 }
 
-return{fileToText:fileToText,classify:classify,parseLicence:parseLicence,parsePayslip:parsePayslip,compare:compare,normDate:normDate};
+
+/* ── vision escalation · one document at a time, only when the broker taps it ── */
+function thinRead(kind,data){
+  if(!data)return true;
+  var n=0;
+  if(kind===&quot;licence&quot;){
+    if(data.licenceNo)n++;if(data.cardNo)n++;if(data.dob)n++;if(data.expiry)n++;
+    return n&lt;3;
+  }
+  if(data.employer)n++;if(data.gross!=null)n++;if(data.net!=null)n++;if(data.frequency)n++;if(data.payDate)n++;
+  return n&lt;3;
+}
+function blobToB64(blob){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){var s=String(r.result);var i=s.indexOf(&quot;,&quot;);res(i&lt;0?s:s.slice(i+1))};
+    r.onerror=function(){rej(new Error(&quot;Could not read the file&quot;))};
+    r.readAsDataURL(blob);
+  });
+}
+async function fileToJpg(file){
+  var isPdf=file.type===&quot;application/pdf&quot;||/\.pdf$/i.test(file.name);
+  var MX=1568,cv;
+  if(isPdf){
+    await ensurePdf();
+    var buf=await file.arrayBuffer();
+    var pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    var pg=await pdf.getPage(1);
+    var v1=pg.getViewport({scale:1});
+    var sc=MX/Math.max(v1.width||1,v1.height||1);
+    if(!(sc&gt;0)||sc&gt;3)sc=Math.min(3,sc&gt;0?sc:2);
+    var vp=pg.getViewport({scale:sc});
+    cv=document.createElement(&quot;canvas&quot;);cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
+    await pg.render({canvasContext:cv.getContext(&quot;2d&quot;),viewport:vp}).promise;
+  }else{
+    var img=await createImageBitmap(file);
+    var w=img.width,h=img.height;
+    if(Math.max(w,h)&gt;MX){var k=MX/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
+    cv=document.createElement(&quot;canvas&quot;);cv.width=w;cv.height=h;
+    cv.getContext(&quot;2d&quot;).drawImage(img,0,0,w,h);
+  }
+  var blob=await new Promise(function(r){cv.toBlob(r,&quot;image/jpeg&quot;,0.92)});
+  if(!blob)throw new Error(&quot;Could not turn the file into a picture&quot;);
+  return await blobToB64(blob);
+}
+var VIS_LIC=&quot;Read this Australian driver licence. Return ONLY a JSON object and nothing else, with these keys: licenceNo (the licence number, digits only, as a string), cardNo (the card number, usually printed small on the front or the back, letters and digits, as a string), dob (date of birth as DD/MM/YYYY), expiry (expiry date as DD/MM/YYYY), address (the full residential address on one line including state and postcode). Use null for anything you cannot read with confidence. Do not guess.&quot;;
+var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
+async function visionRead(file,kind){
+  var key=localStorage.getItem(&quot;claude_api_key&quot;);
+  if(!key)throw new Error(&quot;no API key saved, add it in Settings first&quot;);
+  var b64=await fileToJpg(file);
+  var resp=await fetch(&quot;https://api.anthropic.com/v1/messages&quot;,{
+    method:&quot;POST&quot;,
+    headers:{&quot;Content-Type&quot;:&quot;application/json&quot;,&quot;x-api-key&quot;:key,&quot;anthropic-version&quot;:&quot;2023-06-01&quot;,&quot;anthropic-dangerous-direct-browser-access&quot;:&quot;true&quot;},
+    body:JSON.stringify({
+      model:(localStorage.getItem(&quot;anthropic_model&quot;)||&quot;claude-opus-5&quot;),
+      max_tokens:1200,
+      messages:[{role:&quot;user&quot;,content:[
+        {type:&quot;image&quot;,source:{type:&quot;base64&quot;,media_type:&quot;image/jpeg&quot;,data:b64}},
+        {type:&quot;text&quot;,text:(kind===&quot;licence&quot;?VIS_LIC:VIS_PAY)}
+      ]}]
+    })
+  });
+  var out=await resp.json();
+  if(out&amp;&amp;out.error)throw new Error(out.error.message||&quot;Claude could not read it&quot;);
+  var txt=((out&amp;&amp;out.content)||[]).map(function(c){return c.text||&quot;&quot;}).join(&quot;&quot;);
+  txt=txt.replace(/```json/g,&quot;&quot;).replace(/```/g,&quot;&quot;).trim();
+  var a=txt.indexOf(&quot;{&quot;),b=txt.lastIndexOf(&quot;}&quot;);
+  if(a&lt;0||b&lt;a)throw new Error(&quot;Claude did not send back readable data&quot;);
+  var j=JSON.parse(txt.slice(a,b+1));
+  var str=function(v){if(v==null)return null;var s=String(v).trim();return(s&amp;&amp;s.toUpperCase()!==&quot;NULL&quot;&amp;&amp;s.toUpperCase()!==&quot;N/A&quot;)?s:null};
+  var alnum=function(v){var s=str(v);if(!s)return null;s=s.replace(/[^A-Za-z0-9]/g,&quot;&quot;).toUpperCase();return s||null};
+  var num=function(v){var s=str(v);if(!s)return null;var n=parseFloat(s.replace(/[^0-9.\-]/g,&quot;&quot;));return isNaN(n)?null:n};
+  var o={type:kind,byClaude:true};
+  if(kind===&quot;licence&quot;){
+    o.licenceNo=alnum(j.licenceNo);
+    o.cardNo=alnum(j.cardNo);
+    o.dob=str(j.dob);
+    o.expiry=str(j.expiry);
+    o.address=str(j.address);
+  }else{
+    o.employer=str(j.employer);
+    o.abn=str(j.abn);
+    var f=(str(j.frequency)||&quot;&quot;).toUpperCase();
+    o.frequency=(f===&quot;WEEKLY&quot;||f===&quot;FORTNIGHTLY&quot;||f===&quot;MONTHLY&quot;)?f:null;
+    o.gross=num(j.gross);
+    o.net=num(j.net);
+    o.superAmt=num(j.superAmt);
+    o.ytdGross=num(j.ytdGross);
+    o.payDate=str(j.payDate);
+    o.phone=str(j.phone);
+  }
+  return o;
+}
+
+return{fileToText:fileToText,classify:classify,parseLicence:parseLicence,parsePayslip:parsePayslip,compare:compare,normDate:normDate,thinRead:thinRead,visionRead:visionRead};
 })();
 &lt;/script&gt;
 &lt;script type=&quot;text/babel&quot;&gt;
@@ -9564,7 +9659,7 @@ function calcWeeklyAt(a,ratePct,months,addFee){
 }
 function calcWeekly(a){if(a&lt;=0)return 0;const t=QUOTE_TABLE;if(a&lt;=t[0].amount)return+(t[0].weekly*a/t[0].amount).toFixed(2);if(a&gt;=t[t.length-1].amount)return+(t[t.length-1].weekly*a/t[t.length-1].amount).toFixed(2);for(let i=0;i&lt;t.length-1;i++){if(a&gt;=t[i].amount&amp;&amp;a&lt;=t[i+1].amount){const p=(a-t[i].amount)/(t[i+1].amount-t[i].amount);return+(t[i].weekly+p*(t[i+1].weekly-t[i].weekly)).toFixed(2);}}return 0;}
 
-/* ══ STAGE 14 · DOCS CHECK · offline extraction, no AI ══ */
+/* ══ STAGE 14 · DOCS CHECK · offline first, one tap sends a single file to Claude ══ */
 function DocsCheck({clientData,zinkRaw,ac}){
 const [items,setItems]=useState([]);
 const [result,setResult]=useState(null);
@@ -9598,19 +9693,49 @@ const addFiles=async(fl)=&gt;{
       }else if(kind===&quot;other&quot;){
         list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;skipped&quot;,kind,msg:&quot;Not an ID or payslip · skipped&quot;,file:null}:x);
       }else if(kind===&quot;unknown&quot;){
-        list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;error&quot;,msg:&quot;Could not tell what this is · check it by eye&quot;,file:null}:x);
+        list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;error&quot;,msg:&quot;Could not tell what this is · check it by eye&quot;,file:entry.file}:x);
       }else{
         const data=kind===&quot;licence&quot;?window.DocsEngine.parseLicence(text):window.DocsEngine.parsePayslip(text);
-        list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;done&quot;,kind,data,text,ocr,msg:(kind===&quot;licence&quot;?&quot;Licence&quot;:&quot;Payslip&quot;)+(ocr?&quot; · OCR read, verify every field&quot;:&quot;&quot;),file:null}:x);
+        list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;done&quot;,kind,data,text,ocr,msg:(kind===&quot;licence&quot;?&quot;Licence&quot;:&quot;Payslip&quot;)+(ocr?&quot; · OCR read, verify every field&quot;:&quot;&quot;),file:entry.file}:x);
       }
     }catch(err){
-      list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;error&quot;,msg:&quot;Could not read it · type the details into Zink manually&quot;,file:null}:x);
+      list=itemsRef.current.map(x=&gt;x.id===entry.id?{...x,status:&quot;error&quot;,msg:&quot;Could not read it · type the details into Zink manually&quot;,file:entry.file}:x);
     }
     setItems(list);
   }
   recompare(list);
 };
 
+
+const [aiBusy,setAiBusy]=useState(null);
+const aiOn=(x)=&gt;{
+  if(!x.file)return false;
+  if(aiBusy===x.id)return true;
+  if(aiBusy)return false;
+  if(x.status===&quot;error&quot;)return true;
+  if(x.status===&quot;done&quot;)return window.DocsEngine.thinRead(x.kind,x.data);
+  return false;
+};
+const escalate=async(id)=&gt;{
+  const it=itemsRef.current.find(x=&gt;x.id===id);
+  if(!it||!it.file)return;
+  const kind=(it.kind===&quot;licence&quot;||it.kind===&quot;payslip&quot;)?it.kind:(/PAY ?SLIP|PAY ?ADVICE|PAYSLIP/i.test(it.name)?&quot;payslip&quot;:&quot;licence&quot;);
+  setAiBusy(id);
+  setItems(cur=&gt;cur.map(x=&gt;x.id===id?{...x,msg:&quot;Claude is reading it now&quot;}:x));
+  try{
+    const got=await window.DocsEngine.visionRead(it.file,kind);
+    const merged=Object.assign({},it.data||{});
+    Object.keys(got).forEach(k=&gt;{if(got[k]!=null)merged[k]=got[k]});
+    merged.type=kind;
+    delete merged.expiryLoose;delete merged.cardLoose;delete merged.payDateLoose;
+    const list=itemsRef.current.map(x=&gt;x.id===id?{...x,status:&quot;done&quot;,kind,data:merged,msg:(kind===&quot;licence&quot;?&quot;Licence&quot;:&quot;Payslip&quot;)+&quot; · read by Claude, still check every field&quot;}:x);
+    setItems(list);recompare(list);
+  }catch(err){
+    const m=String((err&amp;&amp;err.message)||err||&quot;something went wrong&quot;);
+    setItems(cur=&gt;cur.map(x=&gt;x.id===id?{...x,msg:&quot;Claude could not read it · &quot;+m}:x));
+  }
+  setAiBusy(null);
+};
 const removeItem=(id)=&gt;{const list=itemsRef.current.filter(x=&gt;x.id!==id);setItems(list);recompare(list)};
 const copyBlock=()=&gt;{
   const ok=()=&gt;{setCopied(true);setTimeout(()=&gt;setCopied(false),1600)};
@@ -9621,7 +9746,7 @@ const STC={match:{bg:&quot;#12341f&quot;,bd:&quot;#2ea043&quot;,fg:&quot;#34d399
 return(
 &lt;div style={{marginTop:8,padding:16,background:&quot;#161b22&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:10}}&gt;
 &lt;div className=&quot;sl&quot; style={{color:&quot;#4a9eff&quot;,marginBottom:4}}&gt;Stage 14 · Docs check&lt;/div&gt;
-&lt;div style={{fontSize:11,color:&quot;#6e7681&quot;,marginBottom:10,lineHeight:1.5}}&gt;Drop the licence and payslips. Read on this machine · nothing uploaded, no AI. Photos take about 20 seconds. Cross-checks against Zink and builds the update list.&lt;/div&gt;
+&lt;div style={{fontSize:11,color:&quot;#6e7681&quot;,marginBottom:10,lineHeight:1.5}}&gt;Drop the licence and payslips. Read on this machine first, nothing is sent anywhere. If a read comes back thin, tap Read with Claude on that one file and only that file gets sent. Cross-checks against Zink and builds the update list.&lt;/div&gt;
 &lt;div
   onClick={()=&gt;fileRef.current&amp;&amp;fileRef.current.click()}
   onDragOver={e=&gt;{e.preventDefault();setDragOn(true)}}
@@ -9629,7 +9754,7 @@ return(
   onDrop={e=&gt;{e.preventDefault();setDragOn(false);addFiles(e.dataTransfer.files)}}
   style={{padding:&quot;16px 12px&quot;,textAlign:&quot;center&quot;,background:dragOn?&quot;#101c2c&quot;:&quot;#0d1117&quot;,border:`2px dashed ${dragOn?&quot;#1f6feb&quot;:&quot;#242a4a&quot;}`,borderRadius:8,cursor:&quot;pointer&quot;,marginBottom:10}}&gt;
 &lt;div style={{fontSize:12.5,fontWeight:600,color:&quot;#eef0ff&quot;}}&gt;Drop ID and payslips here or tap to attach&lt;/div&gt;
-&lt;div style={{fontSize:10.5,color:&quot;#6e7681&quot;,marginTop:3}}&gt;PDF payslips read best. Licence photos get an OCR pass · always verify the read.&lt;/div&gt;
+&lt;div style={{fontSize:10.5,color:&quot;#6e7681&quot;,marginTop:3}}&gt;PDF payslips read best. Licence photos get an OCR pass · always verify the read. Thin read? Tap Read with Claude on that file.&lt;/div&gt;
 &lt;/div&gt;
 &lt;input ref={fileRef} type=&quot;file&quot; accept=&quot;.pdf,image/*&quot; multiple hidden onChange={e=&gt;{addFiles(e.target.files);e.target.value=&quot;&quot;}}/&gt;
 {items.length&gt;0&amp;&amp;(
@@ -9639,6 +9764,7 @@ return(
 &lt;span style={{fontSize:13}}&gt;{x.status===&quot;reading&quot;?&quot;⏳&quot;:x.status===&quot;error&quot;?&quot;❌&quot;:x.status===&quot;skipped&quot;?&quot;⏭️&quot;:x.kind===&quot;licence&quot;?&quot;🪪&quot;:&quot;💰&quot;}&lt;/span&gt;
 &lt;span style={{color:&quot;#eef0ff&quot;,fontWeight:600,maxWidth:150,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;,whiteSpace:&quot;nowrap&quot;}}&gt;{x.name}&lt;/span&gt;
 &lt;span style={{color:x.status===&quot;error&quot;?&quot;#fb7185&quot;:&quot;#8b949e&quot;,flex:1}}&gt;{x.msg}&lt;/span&gt;
+{aiOn(x)&amp;&amp;&lt;span onClick={()=&gt;{if(aiBusy!==x.id)escalate(x.id)}} title=&quot;Sends this one file to Claude to read. Nothing else leaves the machine.&quot; style={{fontSize:9.5,fontWeight:700,color:aiBusy===x.id?&quot;#7f86ad&quot;:&quot;#4a9eff&quot;,border:&quot;1px solid &quot;+(aiBusy===x.id?&quot;#242a4a&quot;:&quot;#1f6feb&quot;),borderRadius:5,padding:&quot;2px 7px&quot;,cursor:aiBusy===x.id?&quot;default&quot;:&quot;pointer&quot;,whiteSpace:&quot;nowrap&quot;}}&gt;{aiBusy===x.id?&quot;Reading…&quot;:&quot;Read with Claude&quot;}&lt;/span&gt;}
 &lt;span style={{color:&quot;#4a5280&quot;,cursor:&quot;pointer&quot;,fontSize:11}} onClick={()=&gt;removeItem(x.id)}&gt;✕&lt;/span&gt;
 &lt;/div&gt;))}
 &lt;/div&gt;)}

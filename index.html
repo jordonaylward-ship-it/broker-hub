@@ -8513,6 +8513,32 @@ function classify(text,fileName){
   return pay&gt;=lic?&quot;payslip&quot;:&quot;licence&quot;;
 }
 
+/* Licence card number shapes by state, the DVS rules. NSW and NT print digits only, the rest mix letters and digits.
+   OCR on a dirty card throws up strings like ITI3A2HSAE, this stops them reaching the Add to Zink block. */
+var LIC_STATES=[[&quot;NEW SOUTH WALES&quot;,&quot;NSW&quot;],[&quot;QUEENSLAND&quot;,&quot;QLD&quot;],[&quot;VICTORIA&quot;,&quot;VIC&quot;],[&quot;WESTERN AUSTRALIA&quot;,&quot;WA&quot;],[&quot;SOUTH AUSTRALIA&quot;,&quot;SA&quot;],[&quot;TASMANIA&quot;,&quot;TAS&quot;],[&quot;AUSTRALIAN CAPITAL TERRITORY&quot;,&quot;ACT&quot;],[&quot;NORTHERN TERRITORY&quot;,&quot;NT&quot;]];
+function licState(up){
+  for(var i=0;i&lt;LIC_STATES.length;i++){if(up.indexOf(LIC_STATES[i][0])&gt;=0)return LIC_STATES[i][1]}
+  var m=up.match(/\b(NSW|QLD|VIC|WA|SA|TAS|ACT|NT)\s*\d{4}\b/);
+  return m?m[1]:null;
+}
+function cardShapeOk(v,state){
+  if(!v)return false;
+  v=String(v).replace(/[^A-Z0-9]/gi,&quot;&quot;).toUpperCase();
+  var letters=(v.match(/[A-Z]/g)||[]).length;
+  switch(state){
+    case &quot;NSW&quot;:return /^\d{10}$/.test(v);
+    case &quot;NT&quot;:return /^\d{6,8}$/.test(v);
+    case &quot;VIC&quot;:return /^[A-Z0-9]{8}$/.test(v);
+    case &quot;QLD&quot;:return /^[A-Z0-9]{10}$/.test(v);
+    case &quot;WA&quot;:return /^[A-Z0-9]{8,10}$/.test(v);
+    case &quot;SA&quot;:return /^[A-Z0-9]{9}$/.test(v);
+    case &quot;TAS&quot;:return /^[A-Z0-9]{9}$/.test(v);
+    case &quot;ACT&quot;:return /^[A-Z0-9]{10}$/.test(v);
+  }
+  return v.length&gt;=8&amp;&amp;v.length&lt;=11&amp;&amp;letters&lt;=3;
+}
+/* Employers whose payslips carry no name, only a logo and an ABN. Keyed by ABN, checked against the ABR. */
+var KNOWN_ABN={&quot;40300173822&quot;:&quot;NSW DEPARTMENT OF EDUCATION&quot;};
 function parseLicence(text){
   var up=text.toUpperCase();
   var o={type:&quot;licence&quot;};
@@ -8521,6 +8547,8 @@ function parseLicence(text){
   o.licenceNo=cleanNum(g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!04\d{8}\b)([0-9][0-9 ]{4,12}[0-9])\b/),6,10);
   o.cardNo=cleanNum(g(/CARD\s*(?:NO|NUMBER|N0)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/),8,11);
   if(!o.cardNo){var fz=up.match(/\bC[A-Z]{2}D\s*(?:N[O0]|NUMBER)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/);if(fz)o.cardNo=cleanNum(fz[1],8,11)}
+  o.state=licState(up);
+  if(o.cardNo&amp;&amp;!cardShapeOk(o.cardNo,o.state)){o.cardRaw=o.cardNo;o.cardNo=null}
   o.dob=g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
         ||g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}\s*(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*(?:19|20)\d{2})/);
   o.expiry=g(/EXP(?:IRY|IRES)?\.?[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
@@ -8552,6 +8580,7 @@ function parseLicence(text){
       var v=cm[1].replace(/ /g,&quot;&quot;);
       if(v.length&lt;9||v.length&gt;11)continue;
       if(((v.match(/[A-Z]/g)||[]).length)&gt;2)continue;
+      if(!cardShapeOk(v,o.state))continue;
       if(/^(04|05|61|00)/.test(v))continue;
       if(o.licenceNo&amp;&amp;v===o.licenceNo)continue;
       cands.push(v);
@@ -8585,7 +8614,7 @@ function parsePayslip(text){
   if(!emp){var dep=up.match(/\b(DEPARTMENT OF [A-Z][A-Z &amp;]{2,40})/);if(dep)emp=dep[1].trim()}
   if(!emp){var gv=up.match(/\b(NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b(?:[\s|]*GOVERNMENT)?[\s|\n]{0,6}(EDUCATION|HEALTH|TRANSPORT|POLICE|JUSTICE|COMMUNITIES|TREASURY|PLANNING|CUSTOMER SERVICE)\b/);if(gv)emp=gv[1]+&quot; &quot;+gv[2]}
   if(!emp){var lm=up.match(/^\s*([^\n]{0,70}\b(?:PTY\.?\s*LTD|PTY\s*LIMITED|LIMITED|LTD|PTY|CORPORATION|INCORPORATED|CO-?OPERATIVE|ASSOCIATION|FOUNDATION)\b\.?[^\n]{0,20})$/m);if(lm&amp;&amp;!badEmp(lm[1]))emp=lm[1].trim()}
-  if(!emp&amp;&amp;o.abn){var idx=up.indexOf(&quot;ABN&quot;);var before=up.slice(Math.max(0,idx-120),idx).split(&quot;\n&quot;).map(function(s){return s.trim()}).filter(function(s){return !badEmp(s)});if(before.length)emp=before[before.length-1]}
+  if(!emp&amp;&amp;o.abn){var idx=up.indexOf(&quot;ABN&quot;);var st0=up.lastIndexOf(&quot;\n&quot;,Math.max(0,idx-120));var before=up.slice(st0&lt;0?0:st0+1,idx).split(&quot;\n&quot;).map(function(s){return s.trim()}).filter(function(s){return !badEmp(s)});if(before.length)emp=before[before.length-1]}
   if(emp)o.employer=emp.replace(/\s+/g,&quot; &quot;).replace(/\s*(ACN|ABN).*$/,&quot;&quot;).trim();
   o.frequency=g(/\b(WEEKLY|FORTNIGHTLY|MONTHLY)\b/);
   if(!o.frequency){var pf=up.match(/PER\s+(WEEK|FORTNIGHT|MONTH)\b/);if(pf)o.frequency=pf[1]+&quot;LY&quot;;if(o.frequency===&quot;WEEKLY&quot;||o.frequency===&quot;FORTNIGHTLY&quot;||o.frequency===&quot;MONTHLY&quot;){}else if(o.frequency)o.frequency=null}
@@ -8634,6 +8663,14 @@ function parsePayslip(text){
     if(pdBest){o.payDate=pdBest.raw;o.payDateLoose=true}
   }
   o.phone=g(/(?:PH|PHONE|TEL|CONTACT|MOB(?:ILE)?)[:.\s]{0,4}(\(?0\d[\d\s()\-]{7,12}\d)/);
+  // employment basis words, the loading and whether it is an hourly slip · feeds the Employment type check
+  var hints=[];
+  [[/\bCASUAL\b/,&quot;CASUAL&quot;],[/\bSHORT TERM(?! INCENTIVE)/,&quot;SHORT TERM&quot;],[/\bTEMPORARY\b/,&quot;TEMPORARY&quot;],[/\bTEMP\b/,&quot;TEMP&quot;],[/\bPART[ -]?TIME\b/,&quot;PART TIME&quot;],[/\bFULL[ -]?TIME\b/,&quot;FULL TIME&quot;],[/\bPERMANENT\b/,&quot;PERMANENT&quot;]].forEach(function(p){if(p[0].test(up))hints.push(p[1])});
+  if(hints.length)o.empHints=hints;
+  var ldm=up.match(/([A-Z ]{0,12})(\d{1,2}(?:\.\d+)?)\s*%\s*LOAD(?:ING)?\b/);
+  if(ldm&amp;&amp;!/LEAVE|SHIFT|ANNUAL|WEEKEND|PENALTY|SAT|SUN/.test(ldm[1]))o.loading=ldm[2]+&quot;%&quot;;
+  if(/\b(UNITS|HRS|HOURS)\b[\s\S]{0,80}?\bRATE\b/.test(up)&amp;&amp;/\b\d{1,3}\.\d{3,4}\b/.test(up))o.hourly=true;
+  if(/PRIOR PERIOD|BACK ?PAY/.test(up))o.priorAdj=true;
   return o;
 }
 
@@ -8646,6 +8683,7 @@ function zinkExtras(raw){
   var g=function(re){var m=raw.match(re);return m?m[1].trim():null};
   o.licenceNo=g(/Licen[cs]e Number\s*\n?\s*(\d{6,10})\b/i);
   o.cardNo=g(/Card Number\s*\n?\s*([A-Z0-9]{8,11})\b/i);
+  o.licState=g(/\b(NSW|QLD|VIC|WA|SA|TAS|ACT|NT)\s*\n\s*State of Issue/i)||g(/State of Issue\s*\n?\s*(NSW|QLD|VIC|WA|SA|TAS|ACT|NT)\b/i);
   var ex=raw.match(/Licen[cs]e Number[\s\S]{0,220}?Expiry Date\s*\n?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i);
   if(ex)o.licExpiry=ex[1];
   var ep=raw.match(/Current Employment[\s\S]{0,2500}?Contact Phone\s*\n?\s*\+?\s*(\(?[\d][\d\s()\-]{6,15}\d)/i);
@@ -8672,10 +8710,12 @@ function compare(cd,docs,raw){
   var lic=null,pays=[];
   docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;!lic)lic=d.data;if(d.kind===&quot;payslip&quot;)pays.push(d.data)});
   // merge licence fronts/backs: later licence docs fill gaps
-  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;d.data!==lic&amp;&amp;lic){[&quot;licenceNo&quot;,&quot;cardNo&quot;,&quot;dob&quot;,&quot;expiry&quot;,&quot;address&quot;].forEach(function(k){if(!lic[k]&amp;&amp;d.data[k])lic[k]=d.data[k]});
+  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;d.data!==lic&amp;&amp;lic){[&quot;licenceNo&quot;,&quot;cardNo&quot;,&quot;dob&quot;,&quot;expiry&quot;,&quot;address&quot;,&quot;state&quot;,&quot;cardRaw&quot;].forEach(function(k){if(!lic[k]&amp;&amp;d.data[k])lic[k]=d.data[k]});
     // Front prints the full licence number, the back sticker drops the leading zero · prefer the fuller read when they agree otherwise.
     if(lic.licenceNo&amp;&amp;d.data.licenceNo&amp;&amp;lic.licenceNo!==d.data.licenceNo&amp;&amp;lic.licenceNo.replace(/^0+/,&quot;&quot;)===d.data.licenceNo.replace(/^0+/,&quot;&quot;)&amp;&amp;d.data.licenceNo.length&gt;lic.licenceNo.length)lic.licenceNo=d.data.licenceNo;
   }});
+  var licSt=lic?(lic.state||zx.licState||null):null;
+  if(lic&amp;&amp;lic.cardNo&amp;&amp;!cardShapeOk(lic.cardNo,licSt)){lic.cardRaw=lic.cardNo;lic.cardNo=null;lic.cardLoose=false}
   // pick the payslip with the latest pay date, else the first
   var pay=pays[0]||null;
   if(pays.length&gt;1){
@@ -8737,7 +8777,7 @@ function compare(cd,docs,raw){
   // Card number · never silent
   var looseC=lic&amp;&amp;lic.cardLoose?&quot; Read loosely off the doc · confirm against the card.&quot;:&quot;&quot;;
   if(lic&amp;&amp;!lic.cardNo&amp;&amp;!zx.cardNo){
-    rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Type it off the card into Zink · lenders use it for ID verification.&quot;});
+    rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Type it off the card into Zink · lenders use it for ID verification.&quot;+(lic.cardRaw?&quot; The OCR saw &quot;+lic.cardRaw+&quot;, which is not a valid &quot;+(licSt||&quot;&quot;)+&quot; card number, so it was dropped.&quot;:&quot;&quot;)});
     warns.push(&quot;Card number could not be read · type it off the card&quot;);
   }
   if(lic&amp;&amp;(lic.cardNo||zx.cardNo)){
@@ -8800,6 +8840,16 @@ function compare(cd,docs,raw){
     // a payslip &quot;employer&quot; that is actually the client's own name is an unreadable letterhead, not a finding
     var empDoc=pay.employer;
     if(empDoc&amp;&amp;cd.clientName&amp;&amp;normName(empDoc)&amp;&amp;normName(empDoc)===normName(cd.clientName))empDoc=null;
+    // letterhead reads often glue the client's name to the logo text · take the name out, and if nothing real is left it is unreadable
+    var empLoose=false;
+    if(empDoc&amp;&amp;cd.clientName){
+      var nmT=normName(cd.clientName).split(&quot; &quot;).filter(function(t){return t.length&gt;=3});
+      var eN=normName(empDoc),hadName=false;
+      nmT.forEach(function(t){var re=new RegExp(&quot;\\b&quot;+t+&quot;\\b&quot;,&quot;g&quot;);if(re.test(eN)){hadName=true;eN=eN.replace(re,&quot; &quot;)}});
+      if(hadName){eN=eN.replace(/\s+/g,&quot; &quot;).trim();empLoose=true;empDoc=eN.replace(/[^A-Z]/g,&quot;&quot;).length&gt;=3?eN:null}
+    }
+    var knownEmp=pay.abn?KNOWN_ABN[String(pay.abn).replace(/\D/g,&quot;&quot;)]:null;
+    if(knownEmp){empDoc=knownEmp;empLoose=false}
     if(cd.employer){
       var toksE=empTokens(cd.employer);
       if(!toksE.length)toksE=normName(cd.employer).split(&quot; &quot;).filter(function(t){return t.length&gt;=4&amp;&amp;!GENERIC_TOKENS[t]});
@@ -8813,8 +8863,12 @@ function compare(cd,docs,raw){
       if(strict||tokenMatch){
         rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc||(&quot;Zink employer name found in the payslip text&quot;),status:&quot;match&quot;,
           note:strict?null:&quot;Wording differs but the Zink employer name appears in the payslip.&quot;});
+      }else if(empDoc&amp;&amp;empLoose){
+        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc+&quot; (read loosely)&quot;,status:&quot;check&quot;,
+          note:&quot;Letterhead read loosely after taking the client's name out.&quot;+(pay.abn?(&quot; The ABN &quot;+pay.abn+&quot; read cleanly · punch it into abr.business.gov.au and put the legal name in Zink.&quot;):&quot; Open the payslip and check the letterhead against Zink by eye.&quot;)});
+        warns.push(&quot;Employer unclear on the payslip · reads &quot;+empDoc+&quot;, Zink says &quot;+cd.employer+(pay.abn?&quot; · verify via ABN &quot;+pay.abn:&quot;&quot;));
       }else if(empDoc){
-        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc,status:&quot;mismatch&quot;,
+        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc+(knownEmp?&quot; (from the ABN)&quot;:&quot;&quot;),status:&quot;mismatch&quot;,
           note:&quot;Payslip employer differs from Zink · fix Zink to the legal name on the payslip, that's what the lender verifies.&quot;});
         warns.push(&quot;Employer mismatch · payslip says &quot;+empDoc+&quot;, Zink says &quot;+cd.employer);
       }else{
@@ -8828,6 +8882,23 @@ function compare(cd,docs,raw){
     }
   }
   if(pay&amp;&amp;pay.abn){rows.push({field:&quot;Employer ABN&quot;,zink:&quot;—&quot;,doc:pay.abn,status:&quot;add&quot;});adds.push(&quot;Employer ABN: &quot;+pay.abn)}
+  // Employment type · casual and temp words or a casual loading on the slip against what Zink says
+  if(pay&amp;&amp;((pay.empHints&amp;&amp;pay.empHints.length)||pay.loading)){
+    var etHints=(pay.empHints||[]).slice();
+    if(pay.loading)etHints.push(pay.loading+&quot; loading&quot;);
+    if(pay.hourly)etHints.push(&quot;hourly rate&quot;);
+    var zt=String(cd.employmentType||&quot;&quot;).toUpperCase();
+    var casualish=(pay.empHints||[]).some(function(h){return /CASUAL|TEMP|SHORT TERM/.test(h)})||!!pay.loading;
+    var permish=(pay.empHints||[]).some(function(h){return /PERMANENT|FULL TIME|PART TIME/.test(h)});
+    if(zt&amp;&amp;/FULL|PART|PERM/.test(zt)&amp;&amp;casualish&amp;&amp;!permish){
+      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType,doc:etHints.join(&quot;, &quot;),status:&quot;check&quot;,note:&quot;Payslip reads as casual or temporary, Zink says &quot;+cd.employmentType+&quot;. Lenders price casuals and temps differently and some want 6 to 12 months in the job, confirm the basis before you pick a lender.&quot;});
+      warns.push(&quot;Employment type · Zink says &quot;+cd.employmentType+&quot;, payslip shows &quot;+etHints.join(&quot;, &quot;));
+    }else if(zt&amp;&amp;/CASUAL/.test(zt)&amp;&amp;permish&amp;&amp;!casualish){
+      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType,doc:etHints.join(&quot;, &quot;),status:&quot;check&quot;,note:&quot;Payslip reads as permanent, Zink says casual. Confirm the basis, permanent opens up more lenders.&quot;});
+    }else{
+      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType||&quot;—&quot;,doc:etHints.join(&quot;, &quot;),status:zt?&quot;match&quot;:&quot;check&quot;,note:zt?null:&quot;Zink has no employment type, set it from the payslip.&quot;});
+    }
+  }
   if(pay&amp;&amp;pay.phone){
     var dph=normPhone(pay.phone),zph=normPhone(zx.empPhone);
     if(zph&amp;&amp;dph===zph){rows.push({field:&quot;Employer phone&quot;,zink:zx.empPhone,doc:pay.phone,status:&quot;match&quot;})}
@@ -8854,6 +8925,15 @@ function compare(cd,docs,raw){
     if(pay.ytdGross!=null)adds.push(&quot;YTD gross: &quot;+fmtMoney(pay.ytdGross));
   }
 
+  // Income basis · the first slip of a financial year and back pay both make one slip read high
+  if(pay&amp;&amp;pay.ytdGross!=null&amp;&amp;pay.gross!=null&amp;&amp;pay.gross&gt;0&amp;&amp;Math.abs(pay.ytdGross-pay.gross)&lt;=Math.max(1,pay.gross*0.01)){
+    rows.push({field:&quot;Income basis&quot;,zink:&quot;—&quot;,doc:&quot;YTD &quot;+fmtMoney(pay.ytdGross)+&quot; equals this pay&quot;,status:&quot;check&quot;,note:&quot;First pay of the financial year, the YTD proves nothing. Annualise off the last two or three slips, or get last year's income statement from myGov.&quot;});
+    warns.push(&quot;Payslip is the first of the financial year · YTD is one pay, do not annualise off it&quot;);
+  }
+  if(pay&amp;&amp;pay.priorAdj){
+    rows.push({field:&quot;Back pay&quot;,zink:&quot;—&quot;,doc:&quot;Prior period adjustments on this slip&quot;,status:&quot;check&quot;,note:&quot;This pay includes back pay for earlier days, so it reads high. Use the run rate across two or three slips.&quot;});
+    warns.push(&quot;Payslip includes prior period adjustments · one slip reads high, use two or three&quot;);
+  }
   // Payslip freshness
   if(pay&amp;&amp;pay.payDate){
     var pd=normDate(pay.payDate);
@@ -8863,6 +8943,13 @@ function compare(cd,docs,raw){
     }
   }
 
+  // a thin licence read never gets to add anything to Zink on its own · show the value, ask for a look
+  if(lic&amp;&amp;thinRead(&quot;licence&quot;,lic)){
+    var thinAdds=false;
+    rows.forEach(function(r){if(r.status===&quot;add&quot;&amp;&amp;/^(Licence number|Card number|Licence expiry|Address)$/.test(r.field)){r.status=&quot;check&quot;;thinAdds=true;r.note=(r.note?r.note+&quot; &quot;:&quot;&quot;)+&quot;Licence read was thin, tap Read with Claude or confirm it by eye before adding.&quot;}});
+    if(thinAdds)adds=adds.filter(function(a){return !/^(Licence no|Card no|Licence expiry|Address \(licence\)):/.test(a)});
+    warns.push(&quot;Licence read was thin · tap Read with Claude on the licence, or type the details off the card&quot;);
+  }
   var lines=[];
   if(warns.length){lines.push(&quot;FLAGS:&quot;);warns.forEach(function(w){lines.push(&quot;· &quot;+w)});lines.push(&quot;&quot;)}
   if(adds.length){lines.push(&quot;ADD TO ZINK:&quot;);adds.forEach(function(a){lines.push(&quot;· &quot;+a)})}
@@ -8918,7 +9005,7 @@ async function fileToJpg(file){
   return await blobToB64(blob);
 }
 var VIS_LIC=&quot;Read this Australian driver licence. Return ONLY a JSON object and nothing else, with these keys: licenceNo (the licence number, digits only, as a string), cardNo (the card number, usually printed small on the front or the back, letters and digits, as a string), dob (date of birth as DD/MM/YYYY), expiry (expiry date as DD/MM/YYYY), address (the full residential address on one line including state and postcode). Use null for anything you cannot read with confidence. Do not guess.&quot;;
-var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
+var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number), basis (any words on the slip that describe the employment basis such as CASUAL, TEMPORARY, SHORT TERM, PART TIME, FULL TIME or PERMANENT, plus any casual loading percentage, as one short string, else null). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
 async function visionRead(file,kind){
   var key=localStorage.getItem(&quot;claude_api_key&quot;);
   if(!key)throw new Error(&quot;no API key saved, add it in Settings first&quot;);
@@ -8963,6 +9050,8 @@ async function visionRead(file,kind){
     o.ytdGross=num(j.ytdGross);
     o.payDate=str(j.payDate);
     o.phone=str(j.phone);
+    var bs=str(j.basis);
+    if(bs){o.empHints=[bs.toUpperCase()];var bl=bs.match(/(\d{1,2}(?:\.\d+)?)\s*%/);if(bl)o.loading=bl[1]+&quot;%&quot;}
   }
   return o;
 }
@@ -8976,6 +9065,54 @@ const {useState,useEffect,useRef,useCallback}=React;
 /* ══════════════════════════════════════════════════════════════════════
    ZINK PARSER · pure JS, no API
    ══════════════════════════════════════════════════════════════════════ */
+/* Zink &quot;Other Incomes&quot; section. Every line is a type name, then Type, Amount, the dollar figure,
+   a monthly equivalent and the frequency. The left hand nav also says Other Incomes, so every
+   section is checked and the first one that actually holds lines wins, which is the applicant. Zink spells Centrelink both ways. */
+function bhfOtherIncomeSource(label){
+  var s=String(label||'').toLowerCase();
+  if(/parent/.test(s))return 'parenting_payment_single';
+  if(/family tax|\bftb\b/.test(s))return 'ftb_only';
+  if(/disab|\bdsp\b/.test(s))return 'dsp';
+  if(/aged? pension/.test(s))return 'age_pension';
+  if(/carer/.test(s))return 'carer_payment';
+  if(/child support|maintenance/.test(s))return 'child_support';
+  if(/super|pension|veteran|\bdva\b/.test(s))return 'super_pension';
+  if(/commercial/.test(s)&amp;&amp;/rent|lease/.test(s))return 'rental_commercial';
+  if(/rent|lease|board/.test(s))return 'rental_residential';
+  if(/dividend|invest|interest|share/.test(s))return 'dividends';
+  if(/centrelink|centerlink|jobseeker|job seeker|youth allowance|austudy|abstudy|newstart|benefit|allowance/.test(s))return 'centrelink_ftb';
+  return 'other';
+}
+function bhfParseOtherIncomes(raw){
+  var res={lines:[],total:0,source:null,kids:false};
+  if(!raw)return res;
+  var text=String(raw).replace(/\r/g,'');
+  var re=/(?:^|\n)[ \t]*Other Incomes?[ \t]*\n/gi,m,best=null;
+  while((m=re.exec(text))){
+    var seg=text.slice(m.index+m[0].length);
+    var end=seg.search(/\n[ \t]*(?:Request Documents|Document Requests|Living Expenses|Assets\s*&amp;\s*Liabilities|Capacity Analysis|Spouses?\b[^\n]*)[ \t]*\n/i);
+    if(end&gt;-1)seg=seg.slice(0,end);
+    var lines=[],x;
+    var lr=/([^\n]+)\n[ \t]*Type[ \t]*\*?[ \t]*\n[ \t]*Amount[ \t]*\n[ \t]*\$?[ \t]*\n?[ \t]*([0-9][0-9,]*(?:\.\d+)?)[ \t]*\n(?:[ \t]*\$[0-9,.]+\s*\/\s*m[ \t]*\n)?[ \t]*(Weekly|Fortnightly|Monthly|Quarterly|Yearly|Annually|Annual)[ \t]*\n[ \t]*Frequency/gi;
+    while((x=lr.exec(seg))){
+      var label=x[1].trim(),amt=parseFloat(x[2].replace(/,/g,'')),fq=x[3].toLowerCase();
+      if(!(amt&gt;0)||!label||/^(type|amount|frequency)$/i.test(label))continue;
+      var mult=fq.indexOf('week')===0?52:fq.indexOf('fort')===0?26:fq.indexOf('month')===0?12:fq.indexOf('quart')===0?4:1;
+      lines.push({label:label,amount:amt,freq:x[3],annual:Math.round(amt*mult),source:bhfOtherIncomeSource(label)});
+    }
+    if(lines.length&amp;&amp;!best)best=lines;
+  }
+  if(!best)return res;
+  res.lines=best;
+  var srcs=[];
+  best.forEach(function(l){res.total+=l.annual;if(srcs.indexOf(l.source)&lt;0)srcs.push(l.source);});
+  var cl=['parenting_payment_single','ftb_only','centrelink_ftb','dsp','age_pension','carer_payment'];
+  if(srcs.length===1)res.source=srcs[0];
+  else if(srcs.every(function(s){return cl.indexOf(s)&gt;-1;}))res.source='centrelink_ftb';
+  else res.source=best.slice().sort(function(a,b){return b.annual-a.annual;})[0].source;
+  res.kids=best.some(function(l){return l.source==='parenting_payment_single'||l.source==='ftb_only';});
+  return res;
+}
 function parseZinkText(raw){
   const d={};
   const grab=(patterns)=&gt;{for(const p of patterns){const m=raw.match(p);if(m&amp;&amp;m[1]&amp;&amp;m[1].trim())return m[1].trim()}return null};
@@ -9081,8 +9218,13 @@ function parseZinkText(raw){
 
   // Other income · broader patterns for partner/spouse and other sources
   const otherTypes=[];
-  const otherMatches=raw.matchAll(/(Pension|Centrelink|Family Tax|Child Support|Rental Income|Partner Income|Spouse Income|Overtime|Bonus|Commission|Second Job)\s*\n?\s*Type[\s\S]*?Amount\s*\$\s*\n?\s*([0-9,.]+)/gi);
-  for(const m of otherMatches){const amt=parseFloat(m[2].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`${m[1]}: $${m[2]}`)}
+  const _oiSec=bhfParseOtherIncomes(raw);
+  _oiSec.lines.forEach(l=&gt;otherTypes.push(`${l.label}: $${l.amount} ${String(l.freq).toLowerCase()}`));
+  if(_oiSec.total&gt;0)otherTypes.push(`about $${Math.round(_oiSec.total).toLocaleString()} a year`);
+  if(!_oiSec.lines.length){
+    const otherMatches=raw.matchAll(/(Pension|Centrelink|Family Tax|Child Support|Rental Income|Partner Income|Spouse Income|Overtime|Bonus|Commission|Second Job)\s*\n?\s*Type[\s\S]*?Amount\s*\$\s*\n?\s*([0-9,.]+)/gi);
+    for(const m of otherMatches){const amt=parseFloat(m[2].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`${m[1]}: $${m[2]}`)}
+  }
   // Also check for generic &quot;Other Income&quot; blocks with type + amount
   const genericOtherMatches=raw.matchAll(/Other Income[\s\S]{0,80}?Type\s*\n?\s*([A-Z][a-zA-Z ]+)[\s\S]*?Amount\s*\$\s*\n?\s*([0-9,.]+)/gi);
   for(const m of genericOtherMatches){const amt=parseFloat(m[2].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`${m[1].trim()}: $${m[2]}`)}
@@ -10698,6 +10840,54 @@ function redactLastName(s){if(!s)return null;return s.charAt(0)+'xxx'}
 function redactNumLast3(s){if(!s)return 'xxx';const d=s.replace(/\D/g,'');if(d.length&lt;4)return 'xxx';return d.slice(0,d.length-3)+'xxx'}
 
 // ═══ EXTRACTION ═══
+/* Zink &quot;Other Incomes&quot; section. Every line is a type name, then Type, Amount, the dollar figure,
+   a monthly equivalent and the frequency. The left hand nav also says Other Incomes, so every
+   section is checked and the first one that actually holds lines wins, which is the applicant. Zink spells Centrelink both ways. */
+function bhfOtherIncomeSource(label){
+  var s=String(label||'').toLowerCase();
+  if(/parent/.test(s))return 'parenting_payment_single';
+  if(/family tax|\bftb\b/.test(s))return 'ftb_only';
+  if(/disab|\bdsp\b/.test(s))return 'dsp';
+  if(/aged? pension/.test(s))return 'age_pension';
+  if(/carer/.test(s))return 'carer_payment';
+  if(/child support|maintenance/.test(s))return 'child_support';
+  if(/super|pension|veteran|\bdva\b/.test(s))return 'super_pension';
+  if(/commercial/.test(s)&amp;&amp;/rent|lease/.test(s))return 'rental_commercial';
+  if(/rent|lease|board/.test(s))return 'rental_residential';
+  if(/dividend|invest|interest|share/.test(s))return 'dividends';
+  if(/centrelink|centerlink|jobseeker|job seeker|youth allowance|austudy|abstudy|newstart|benefit|allowance/.test(s))return 'centrelink_ftb';
+  return 'other';
+}
+function bhfParseOtherIncomes(raw){
+  var res={lines:[],total:0,source:null,kids:false};
+  if(!raw)return res;
+  var text=String(raw).replace(/\r/g,'');
+  var re=/(?:^|\n)[ \t]*Other Incomes?[ \t]*\n/gi,m,best=null;
+  while((m=re.exec(text))){
+    var seg=text.slice(m.index+m[0].length);
+    var end=seg.search(/\n[ \t]*(?:Request Documents|Document Requests|Living Expenses|Assets\s*&amp;\s*Liabilities|Capacity Analysis|Spouses?\b[^\n]*)[ \t]*\n/i);
+    if(end&gt;-1)seg=seg.slice(0,end);
+    var lines=[],x;
+    var lr=/([^\n]+)\n[ \t]*Type[ \t]*\*?[ \t]*\n[ \t]*Amount[ \t]*\n[ \t]*\$?[ \t]*\n?[ \t]*([0-9][0-9,]*(?:\.\d+)?)[ \t]*\n(?:[ \t]*\$[0-9,.]+\s*\/\s*m[ \t]*\n)?[ \t]*(Weekly|Fortnightly|Monthly|Quarterly|Yearly|Annually|Annual)[ \t]*\n[ \t]*Frequency/gi;
+    while((x=lr.exec(seg))){
+      var label=x[1].trim(),amt=parseFloat(x[2].replace(/,/g,'')),fq=x[3].toLowerCase();
+      if(!(amt&gt;0)||!label||/^(type|amount|frequency)$/i.test(label))continue;
+      var mult=fq.indexOf('week')===0?52:fq.indexOf('fort')===0?26:fq.indexOf('month')===0?12:fq.indexOf('quart')===0?4:1;
+      lines.push({label:label,amount:amt,freq:x[3],annual:Math.round(amt*mult),source:bhfOtherIncomeSource(label)});
+    }
+    if(lines.length&amp;&amp;!best)best=lines;
+  }
+  if(!best)return res;
+  res.lines=best;
+  var srcs=[];
+  best.forEach(function(l){res.total+=l.annual;if(srcs.indexOf(l.source)&lt;0)srcs.push(l.source);});
+  var cl=['parenting_payment_single','ftb_only','centrelink_ftb','dsp','age_pension','carer_payment'];
+  if(srcs.length===1)res.source=srcs[0];
+  else if(srcs.every(function(s){return cl.indexOf(s)&gt;-1;}))res.source='centrelink_ftb';
+  else res.source=best.slice().sort(function(a,b){return b.annual-a.annual;})[0].source;
+  res.kids=best.some(function(l){return l.source==='parenting_payment_single'||l.source==='ftb_only';});
+  return res;
+}
 function doExtract(){
   const raw=document.getElementById('rawInput').value.trim();
   if(!raw){toast('Paste something first');return}
@@ -10993,6 +11183,11 @@ function doExtract(){
     out+='  Applicant Net Income: Not captured\n';
   }
   if(totalIncMonth)out+='  Total Household Monthly Income (applicant + spouse): $'+totalIncMonth+'/month\n';
+  const otherInc=bhfParseOtherIncomes(raw);
+  if(otherInc.lines.length){
+    otherInc.lines.forEach(l=&gt;{out+='  Other Income: '+l.label+' $'+l.amount+' '+String(l.freq).toLowerCase()+' ($'+l.annual.toLocaleString()+' a year)\n';});
+    out+='  Other Income Total: $'+Math.round(otherInc.total).toLocaleString()+' a year\n';
+  }
   out+='\n';
 
   out+='LIVING\n';
@@ -11049,7 +11244,8 @@ function doExtract(){
     creditScore:creditScore,fileAge:fileAge,defaults:defaults,
     loanAmt:loanAmt,term:term,asset:description,
     saleType:saleType,deposit:deposit,purchaseCost:purchaseCost,condition:condition,payday:payday,insolvency:insolvency,
-    suburb:suburb,state:state,postcode:postcode
+    suburb:suburb,state:state,postcode:postcode,
+    otherIncomes:otherInc.lines,otherIncomeAnnual:otherInc.total,otherIncomeSource:otherInc.source
   };
 }
 
@@ -12615,7 +12811,14 @@ window.qqPrefill=function(silent){
     if(S.creditScore&amp;&amp;qqSet('mScore',S.creditScore))got.push('score '+S.creditScore);
     var incNet=qqAnnualNet(S.netIncome,S.incomeFreq);
     var inc=qqGrossUp(incNet);
-    if(inc&amp;&amp;qqSet('mInc',inc))got.push('income about $'+inc.toLocaleString()+' gross a year, worked back from the $'+incNet.toLocaleString()+' net Zink holds');
+    var oth=Math.round(+S.otherIncomeAnnual||0);
+    var incAll=(inc||0)+oth;
+    if(incAll&gt;0&amp;&amp;qqSet('mInc',incAll)){
+      var incBits=[];
+      if(inc)incBits.push('$'+inc.toLocaleString()+' wage worked back from the $'+incNet.toLocaleString()+' net Zink holds');
+      if(oth)incBits.push('$'+oth.toLocaleString()+' other income Zink holds, '+(S.otherIncomes||[]).map(function(l){return l.label+' $'+l.amount+' '+String(l.freq).toLowerCase()}).join(' and '));
+      got.push('income about $'+incAll.toLocaleString()+' gross a year, '+incBits.join(', plus ')+(oth?'. Most income floors count every source, a few want wage only, so read the lender line':''));
+    }
     if(S.term){var yrs=Math.round((+S.term)/12);if(yrs&gt;0&amp;&amp;qqSet('mTerm',yrs))got.push(yrs+' year term')}
     var jm=qqMonths(S.empTenure);
     if(jm!=null&amp;&amp;qqSet('mJob',jm))got.push(jm+' months in the job');
@@ -19847,6 +20050,54 @@ document.addEventListener('change', e =&gt; {
 loadApiKey();
 renderClientDropdown();
 
+/* Zink &quot;Other Incomes&quot; section. Every line is a type name, then Type, Amount, the dollar figure,
+   a monthly equivalent and the frequency. The left hand nav also says Other Incomes, so every
+   section is checked and the first one that actually holds lines wins, which is the applicant. Zink spells Centrelink both ways. */
+function bhfOtherIncomeSource(label){
+  var s=String(label||'').toLowerCase();
+  if(/parent/.test(s))return 'parenting_payment_single';
+  if(/family tax|\bftb\b/.test(s))return 'ftb_only';
+  if(/disab|\bdsp\b/.test(s))return 'dsp';
+  if(/aged? pension/.test(s))return 'age_pension';
+  if(/carer/.test(s))return 'carer_payment';
+  if(/child support|maintenance/.test(s))return 'child_support';
+  if(/super|pension|veteran|\bdva\b/.test(s))return 'super_pension';
+  if(/commercial/.test(s)&amp;&amp;/rent|lease/.test(s))return 'rental_commercial';
+  if(/rent|lease|board/.test(s))return 'rental_residential';
+  if(/dividend|invest|interest|share/.test(s))return 'dividends';
+  if(/centrelink|centerlink|jobseeker|job seeker|youth allowance|austudy|abstudy|newstart|benefit|allowance/.test(s))return 'centrelink_ftb';
+  return 'other';
+}
+function bhfParseOtherIncomes(raw){
+  var res={lines:[],total:0,source:null,kids:false};
+  if(!raw)return res;
+  var text=String(raw).replace(/\r/g,'');
+  var re=/(?:^|\n)[ \t]*Other Incomes?[ \t]*\n/gi,m,best=null;
+  while((m=re.exec(text))){
+    var seg=text.slice(m.index+m[0].length);
+    var end=seg.search(/\n[ \t]*(?:Request Documents|Document Requests|Living Expenses|Assets\s*&amp;\s*Liabilities|Capacity Analysis|Spouses?\b[^\n]*)[ \t]*\n/i);
+    if(end&gt;-1)seg=seg.slice(0,end);
+    var lines=[],x;
+    var lr=/([^\n]+)\n[ \t]*Type[ \t]*\*?[ \t]*\n[ \t]*Amount[ \t]*\n[ \t]*\$?[ \t]*\n?[ \t]*([0-9][0-9,]*(?:\.\d+)?)[ \t]*\n(?:[ \t]*\$[0-9,.]+\s*\/\s*m[ \t]*\n)?[ \t]*(Weekly|Fortnightly|Monthly|Quarterly|Yearly|Annually|Annual)[ \t]*\n[ \t]*Frequency/gi;
+    while((x=lr.exec(seg))){
+      var label=x[1].trim(),amt=parseFloat(x[2].replace(/,/g,'')),fq=x[3].toLowerCase();
+      if(!(amt&gt;0)||!label||/^(type|amount|frequency)$/i.test(label))continue;
+      var mult=fq.indexOf('week')===0?52:fq.indexOf('fort')===0?26:fq.indexOf('month')===0?12:fq.indexOf('quart')===0?4:1;
+      lines.push({label:label,amount:amt,freq:x[3],annual:Math.round(amt*mult),source:bhfOtherIncomeSource(label)});
+    }
+    if(lines.length&amp;&amp;!best)best=lines;
+  }
+  if(!best)return res;
+  res.lines=best;
+  var srcs=[];
+  best.forEach(function(l){res.total+=l.annual;if(srcs.indexOf(l.source)&lt;0)srcs.push(l.source);});
+  var cl=['parenting_payment_single','ftb_only','centrelink_ftb','dsp','age_pension','carer_payment'];
+  if(srcs.length===1)res.source=srcs[0];
+  else if(srcs.every(function(s){return cl.indexOf(s)&gt;-1;}))res.source='centrelink_ftb';
+  else res.source=best.slice().sort(function(a,b){return b.annual-a.annual;})[0].source;
+  res.kids=best.some(function(l){return l.source==='parenting_payment_single'||l.source==='ftb_only';});
+  return res;
+}
 function bhfParseZink(raw){
   const d={};
   const grab=(patterns)=&gt;{for(const p of patterns){const m=raw.match(p);if(m&amp;&amp;m[1]&amp;&amp;m[1].trim())return m[1].trim()}return null};
@@ -19952,8 +20203,12 @@ function bhfParseZink(raw){
 
   // Other income · broader patterns for partner/spouse and other sources
   const otherTypes=[];
-  const otherMatches=raw.matchAll(/(Pension|Centrelink|Family Tax|Child Support|Rental Income|Partner Income|Spouse Income|Overtime|Bonus|Commission|Second Job)\s*\n?\s*Type[\s\S]*?Amount\s*\$\s*\n?\s*([0-9,.]+)/gi);
-  for(const m of otherMatches){const amt=parseFloat(m[2].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`${m[1]}: $${m[2]}`)}
+  const _oiSec=bhfParseOtherIncomes(raw);
+  _oiSec.lines.forEach(l=&gt;otherTypes.push(`${l.label}: $${l.amount} ${String(l.freq).toLowerCase()}`));
+  if(!_oiSec.lines.length){
+    const otherMatches=raw.matchAll(/(Pension|Centrelink|Family Tax|Child Support|Rental Income|Partner Income|Spouse Income|Overtime|Bonus|Commission|Second Job)\s*\n?\s*Type[\s\S]*?Amount\s*\$\s*\n?\s*([0-9,.]+)/gi);
+    for(const m of otherMatches){const amt=parseFloat(m[2].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`${m[1]}: $${m[2]}`)}
+  }
   // Also check for generic &quot;Other Income&quot; blocks with type + amount
   const genericOtherMatches=raw.matchAll(/Other Income[\s\S]{0,80}?Type\s*\n?\s*([A-Z][a-zA-Z ]+)[\s\S]*?Amount\s*\$\s*\n?\s*([0-9,.]+)/gi);
   for(const m of genericOtherMatches){const amt=parseFloat(m[2].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`${m[1].trim()}: $${m[2]}`)}
@@ -20113,6 +20368,19 @@ function bhfApplyHandoff(){
     const _nm=bhfFreqMonthly(d.netIncome,d.incomeFrequency);
     if(_nm&gt;0){_grossEst=bhfGrossUpAnnual(_nm);if(_grossEst&gt;0)set('baseGross',_grossEst);}
   }
+  // Other income · Zink keeps Centrelink, child support, rent and the like in its own section.
+  // Load the annual total into Other Income, pick the source so the haircut and runway check fire.
+  const _oi=bhfParseOtherIncomes(h.raw||'');
+  let _oiKids=false;
+  if(_oi.total&gt;0){
+    set('otherIncome',Math.round(_oi.total));
+    set('otherIncomeSource',_oi.source||'other');
+    try{autoSetHaircut();}catch(e){}
+    d.otherIncome=_oi.lines.map(l=&gt;l.label+' $'+l.amount+' '+String(l.freq).toLowerCase()).join(', ')+' · $'+Math.round(_oi.total).toLocaleString()+' a year PREFILLED into Other Income as '+(_oi.source||'other');
+    const _depRaw=String(h.raw||'').match(/Number of Dependants[^\n]*\n\s*(\d+)/);
+    const _deps=d.dependants!=null?+d.dependants:(_depRaw?+_depRaw[1]:null);
+    _oiKids=_oi.kids&amp;&amp;!(_deps&gt;0);
+  }
   if(d.livingType){
     const lt=String(d.livingType).toLowerCase();
     set('housingStatus', lt.indexOf('rent')&gt;-1?'rent':lt.indexOf('board')&gt;-1?'board':lt.indexOf('mortgage')&gt;-1?'mortgage':lt.indexOf('own')&gt;-1?'own_outright':lt.indexOf('family')&gt;-1?'family':'rent');
@@ -20128,6 +20396,7 @@ function bhfApplyHandoff(){
   const noteBits=['--- ZINK HANDOFF · '+(d.clientName||'client')+' · '+new Date(h.at).toLocaleString('en-AU')+' ---'];
   if(d.netIncome)noteBits.push('Income: net $'+d.netIncome+' '+(d.incomeFrequency||'')+' declared · base gross PREFILLED ≈ $'+(_grossEst?_grossEst.toLocaleString():'?')+' (2025-26 resident gross-up estimate) · VERIFY against payslips before quoting');
   if(d.otherIncome)noteBits.push('Other income: '+d.otherIncome);
+  if(_oiKids)noteBits.push('CHECK: Parenting Payment or FTB is on the file but Zink shows 0 dependants. Fix the dependants and household type, then enter the youngest child age for the runway check.');
   if(Array.isArray(d.liabilities)&amp;&amp;d.liabilities.length){noteBits.push('Liabilities mapped: '+d.liabilities.map(l=&gt;l.type+(l.provider?' ('+l.provider+')':'')+' · bal $'+(l.outstanding||0)+(l.limit?' · limit $'+l.limit:'')+(l.repayMonthly?' · $'+l.repayMonthly+'/mo':'')).join(' | '));}
   else if(d.debts)noteBits.push('Debts (self-declared): '+d.debts);
   if(h.productType)noteBits.push('Product: '+h.productType+(h.callType?' · '+h.callType:''));
@@ -20138,7 +20407,7 @@ function bhfApplyHandoff(){
   if(typeof updateExtractButton==='function')updateExtractButton();
   markDirty();calcAll();
   try{switchStep('profile');}catch(e){}
-  toast('Zink handoff loaded'+(d.clientName?' · '+d.clientName:'')+(_grossEst?' · income est. from net — verify':''),'success');
+  toast('Zink handoff loaded'+(d.clientName?' · '+d.clientName:'')+(_grossEst?' · wage grossed up from net, verify':'')+(_oi.total&gt;0?' · other income $'+Math.round(_oi.total).toLocaleString()+' a year loaded':'')+(_oiKids?' · Zink shows 0 dependants, check':''),_oiKids?'error':'success',_oiKids?7000:3500);
   return true;
 }
 window.addEventListener('storage',e=&gt;{if(e&amp;&amp;e.key==='hub_handoff_v1')bhfApplyHandoff();});

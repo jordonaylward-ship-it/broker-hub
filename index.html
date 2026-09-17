@@ -3859,7 +3859,7 @@ textarea{line-height:1.5;resize:vertical;}
 &lt;/head&gt;
 &lt;body&gt;
 &lt;h1&gt;Insurance&lt;/h1&gt;
-&lt;div class=&quot;sub&quot;&gt;Zink in, Suncorp answers out, then the email and SMS.&lt;/div&gt;
+&lt;div class=&quot;sub&quot;&gt;Zink and the documents fill the left. Punch the Suncorp screens off the answers, then type the cover, excess and prices into Type back from Suncorp on the right. The email, SMS and note write themselves.&lt;/div&gt;
 
 &lt;div class=&quot;grid&quot;&gt;
 &lt;div&gt;
@@ -3972,7 +3972,7 @@ textarea{line-height:1.5;resize:vertical;}
     &lt;div class=&quot;grp&quot;&gt;Other driver&lt;/div&gt;
     &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Anyone else driving it more than once&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;addDriver&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div id=&quot;adBox&quot; class=&quot;hide&quot;&gt;
-      &lt;div class=&quot;row&quot; style=&quot;margin-bottom:10px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;useApp2()&quot;&gt;Use second applicant&lt;/button&gt;&lt;/div&gt;
+      &lt;div class=&quot;row&quot; style=&quot;margin-bottom:10px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; id=&quot;useApp2Btn&quot; onclick=&quot;useApp2()&quot;&gt;Use second applicant&lt;/button&gt;&lt;/div&gt;
       &lt;div class=&quot;r2&quot;&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adName&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Date of birth&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adDob&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
@@ -3986,8 +3986,21 @@ textarea{line-height:1.5;resize:vertical;}
   &lt;/div&gt;
 &lt;/div&gt;
 
+
+&lt;/div&gt;
+&lt;div&gt;
+
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Quote&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;type back what Suncorp shows&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Suncorp answers&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(ansText)&quot;&gt;Copy all&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;div id=&quot;warnBox&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;out&quot; id=&quot;answers&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;hint&quot;&gt;Tap a value to copy it.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Type back from Suncorp&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;cover, excess and the four monthly prices&lt;/span&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;r3&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Cover&lt;/label&gt;&lt;select id=&quot;coverMode&quot;&gt;&lt;option value=&quot;agreed&quot;&gt;Agreed value&lt;/option&gt;&lt;option value=&quot;market&quot;&gt;Market value&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
@@ -4011,18 +4024,6 @@ textarea{line-height:1.5;resize:vertical;}
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Sign off as&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;signName&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gap insurance line&lt;/label&gt;&lt;select id=&quot;gapLine&quot;&gt;&lt;option value=&quot;yes&quot;&gt;Include&lt;/option&gt;&lt;option value=&quot;no&quot;&gt;Leave out&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-
-&lt;/div&gt;
-&lt;div&gt;
-
-&lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Suncorp answers&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(ansText)&quot;&gt;Copy all&lt;/button&gt;&lt;/div&gt;
-  &lt;div class=&quot;cb&quot;&gt;
-    &lt;div id=&quot;warnBox&quot;&gt;&lt;/div&gt;
-    &lt;div class=&quot;out&quot; id=&quot;answers&quot;&gt;&lt;/div&gt;
-    &lt;div class=&quot;hint&quot;&gt;Tap a value to copy it.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
@@ -4070,6 +4071,7 @@ function money(n){n=Math.round(+n||0);return '$'+n.toLocaleString('en-AU')}
 function money2(n){n=+n||0;return '$'+n.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function today(){var d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
 function esc(s){return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;')}
+function niceModel(x){x=String(x||'').trim();return (/^[A-Z][A-Z]{3,}$/.test(x))?titleCase(x):x}
 function titleCase(s){return String(s||'').toLowerCase().replace(/(^|[\s\-'])([a-z])/g,function(m,a,b){return a+b.toUpperCase()})}
 
 /* ─── Zink parser · tolerant of Zink printing selects as value then label and text boxes as label then value ─── */
@@ -4093,7 +4095,7 @@ function parseZink(raw){
     p.gender=grab([/\n\s*(Male|Female)\s*\n\s*Gender/i,/Gender\s*\*?\s*\n\s*(Male|Female)/i],src);
     if(p.gender)p.gender=titleCase(p.gender);
     p.email=grab([/Email\s*\*?\s*\n\s*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/],src);
-    p.mobile=grab([/Mobile Contact Number\s*\n\s*(?:\+61\s*\n\s*)?(0?\d{9,10})\b/],src);
+    p.mobile=grab([/Mobile Contact Number\s*\n\s*(?:\+\d{0,2}\s*\n\s*)?(0?\d{9,10})\b/],src);
     if(p.mobile&amp;&amp;p.mobile.length===9)p.mobile='0'+p.mobile;
     p.address=grab([/Search Address\s*\n\s*([^\n]+?(?:QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s+\d{4})\s*(?:\n|$)/i],src);
     return p;
@@ -4109,6 +4111,8 @@ function parseZink(raw){
     }
     if(src2){var p2=person(src2);if(p2.firstName&amp;&amp;p2.firstName!==d.firstName){d.p2=p2}}
   }
+  var sp=t.match(/Spouses? Name\s*\n\s*First Name\s*\n\s*([A-Za-z][A-Za-z'\-]+)\s*\n(?:\s*Middle Name\s*\n(?:\s*[A-Za-z'\-]+\s*\n)?)?\s*Last Name\s*\n\s*([A-Za-z][A-Za-z'\- ]+?)\s*\n/);
+  if(sp){d.spouse={firstName:sp[1],lastName:sp[2].trim()};var spm=t.slice(sp.index).match(/Mobile Contact Number\s*\n\s*(?:\+\d{0,2}\s*\n\s*)?(0?\d{9,10})\b/);if(spm){d.spouse.mobile=spm[1].length===9?'0'+spm[1]:spm[1]}}
   if(d.address){
     var am=d.address.match(/^(.*),\s*([A-Za-z' ]+?)\s+(QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s+(\d{4})$/i);
     if(am){d.addrLine=am[1].trim();d.suburb=titleCase(am[2].trim());d.state=am[3].toUpperCase();d.postcode=am[4]}
@@ -4123,7 +4127,7 @@ function parseZink(raw){
   d.make=firstOk(up.concat(mk),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^\d/.test(x)?titleCase(x):null});
   var md=[];var rmo=/\n[ \t]*Model[ \t]*\n[ \t]*([^\n]+)\n/g;while((m=rmo.exec(t)))md.push(m[1].trim());
   var upm=[];var rum=/\n([A-Za-z0-9][A-Za-z0-9 \-]{0,24})\n[ \t]*Model[ \t]*\n/g;while((m=rum.exec(t)))upm.push(m[1].trim());
-  d.model=firstOk(upm.concat(md),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^(19|20)\d{2}$/.test(x)&amp;&amp;x!=='0'&amp;&amp;(!d.make||x.toLowerCase()!==d.make.toLowerCase())?x:null});
+  d.model=firstOk(upm.concat(md),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^(19|20)\d{2}$/.test(x)&amp;&amp;x!=='0'&amp;&amp;(!d.make||x.toLowerCase()!==d.make.toLowerCase())?niceModel(x):null});
   var yrs=[];var ry=/\n\s*((?:19|20)\d{2})\s*\n\s*Year\b/g;while((m=ry.exec(t)))yrs.push(m[1]);
   var ry2=/\n\s*Year\s*\n\s*((?:19|20)\d{2})\b/g;while((m=ry2.exec(t)))yrs.push(m[1]);
   d.year=yrs.length?yrs[0]:null;
@@ -4202,6 +4206,7 @@ function paintSegs(){
 function syncBoxes(){
   $('app2Box').classList.toggle('hide',!$('hasApp2').checked);
   $('adBox').classList.toggle('hide',seg.addDriver!=='Yes');
+  var b=$('useApp2Btn');if(b){var f2=v('firstName2');b.textContent=$('hasApp2').checked?'Use second applicant':(f2?'Use partner '+f2:'Use second applicant');b.classList.toggle('hide',!f2)}
 }
 function clearAll(){
   if(!confirm('Clear everything for a new client?'))return;
@@ -4226,6 +4231,7 @@ function readZink(){
   set('year',d.year);set('make',d.make);set('model',d.model);set('desc',d.desc);set('nvic',d.nvic);set('rego',d.rego);set('vin',d.vin);set('odo',d.odo);set('condition',d.condition);set('dealer',d.dealer);
   if(d.price){set('price',d.price);if(!v('agreed')||edited.agreedAuto){set('agreed',d.price);edited.agreedAuto=true}}
   if(d.p2){$('hasApp2').checked=true;set('firstName2',d.p2.firstName);set('lastName2',d.p2.lastName);set('dob2',d.p2.dob);set('gender2',d.p2.gender);set('mobile2',d.p2.mobile);}
+  else if(d.spouse){set('firstName2',d.spouse.firstName);set('lastName2',d.spouse.lastName);set('mobile2',d.spouse.mobile)}
   var got=[];['clientName','dob','mobile','email','address','year','make','model','nvic','price'].forEach(function(k){if(d[k])got.push(k)});
   $('readTag').textContent=got.length?('read '+got.length+' fields'+(d.p2?' · joint':'')):'nothing recognised';
   edited.email=false;edited.sms=false;edited.crm=false;
@@ -4238,9 +4244,9 @@ function useHandoff(){
   $('raw').value=h.raw;readZink();
 }
 function useApp2(){
-  if(!$('hasApp2').checked||!v('firstName2')){toast('No second applicant loaded');return}
+  if(!v('firstName2')){toast('No second applicant or partner loaded');return}
   $('adName').value=[v('firstName2'),v('lastName2')].filter(Boolean).join(' ');
-  $('adDob').value=v('dob2');$('adGender').value=v('gender2');if(!v('adRel'))$('adRel').value='Partner';
+  if(v('dob2'))$('adDob').value=v('dob2');if(v('gender2'))$('adGender').value=v('gender2');if(!v('adRel'))$('adRel').value='Partner';
   render();save();
 }
 
@@ -4404,11 +4410,15 @@ function darkCount(img,thr,x0,y0,x1,y1){
   return c;
 }
 function decide(counts){
-  // counts · [{opt,n}] · winner needs ink and a clear margin over the rest
+  // counts · [{opt,n}] · the emptiest box sets the floor, since a printed outline is ink too on a scan.
+  // The winner needs real ink above that floor and a clear margin over the next one.
+  if(!counts.length)return {opt:null,why:'boxes not found'};
+  var base=Infinity;counts.forEach(function(c){if(c.n&lt;base)base=c.n});
+  if(counts.length===1)base=0;
   var best=null,second=0;
-  counts.forEach(function(c){if(!best||c.n&gt;best.n){if(best)second=Math.max(second,best.n);best=c}else second=Math.max(second,c.n)});
-  if(!best||best.n&lt;40)return {opt:null,why:'blank'};
-  if(second&gt;=40&amp;&amp;best.n&lt;second*1.8)return {opt:null,why:'two marked'};
+  counts.forEach(function(c){var ex=c.n-base;if(!best||ex&gt;best.ex){if(best)second=Math.max(second,best.ex);best={opt:c.opt,ex:ex}}else second=Math.max(second,ex)});
+  if(!best||best.ex&lt;25)return {opt:null,why:'blank'};
+  if(second&gt;=25&amp;&amp;best.ex&lt;Math.max(second*1.8,second+20))return {opt:null,why:'two marked'};
   return {opt:best.opt,why:'ok'};
 }
 async function renderToCanvas(file){
@@ -4445,10 +4455,14 @@ function vectorBallots(items){
   return out;
 }
 function ocrBallots(words){
-  // every word gets a candidate box to its left, groups then pick the words they need
+  // every word gets a candidate box to its left, groups then pick the words they need.
+  // Box size comes from the typical word height on the page so a tall word does not drag the box wide.
+  var hs=words.map(function(w){return w.bbox.y1-w.bbox.y0}).filter(function(h){return h&gt;5}).sort(function(a,b){return a-b});
+  var mh=hs.length?hs[Math.floor(hs.length/2)]:14;
   return words.filter(function(w){return w.text&amp;&amp;/[A-Z0-9]/i.test(w.text)}).map(function(w){
-    var h=Math.max(8,w.bbox.y1-w.bbox.y0);
-    return {text:w.text,label:dnorm(w.text),x0:w.bbox.x0-1.9*h,y0:w.bbox.y0-0.35*h,x1:w.bbox.x0-0.15*h,y1:w.bbox.y1+0.35*h,line:w.bbox.y1,h:h,wx0:w.bbox.x0,wx1:w.bbox.x1};
+    var h=Math.max(8,Math.min(w.bbox.y1-w.bbox.y0,mh*1.4));
+    var cy=(w.bbox.y0+w.bbox.y1)/2;
+    return {text:w.text,label:dnorm(w.text),x0:w.bbox.x0-1.75*h,y0:cy-0.8*h,x1:w.bbox.x0-0.1*h,y1:cy+0.8*h,line:w.bbox.y1,h:h,wx0:w.bbox.x0,wx1:w.bbox.x1};
   });
 }
 function textAfter(items,labelRe,stopRe){
@@ -4757,16 +4771,21 @@ async function ocrDealer(cv){
   // dealer name usually sits in a logo up top with no text layer · OCR just that strip
   try{
     await ensureOcr();
-    var c2=document.createElement('canvas');c2.width=cv.width;c2.height=Math.round(cv.height*0.22);
-    c2.getContext('2d').drawImage(cv,0,0,cv.width,c2.height,0,0,cv.width,c2.height);
+    var c2=document.createElement('canvas'),sh=Math.round(cv.height*0.22),up2=cv.width&lt;1800?1.6:1;
+    c2.width=Math.round(cv.width*up2);c2.height=Math.round(sh*up2);
+    c2.getContext('2d').drawImage(cv,0,0,cv.width,sh,0,0,c2.width,c2.height);
     var r=await Tesseract.recognize(c2,'eng');
     var lines=(r.data.lines||[]).map(function(l){return (l.text||'').replace(/\s+/g,' ').trim()}).filter(Boolean);
     var best=null;
     var dm0=(r.data.text||'').toUpperCase().match(/(?:WWW\.|@)([A-Z0-9\-]+)\.(?:COM|NET)(?:\.AU)?/);
     if(dm0){var dom0=dm0[1].replace(/-/g,''),fm0=findMakeLoose(dom0);if(fm0&amp;&amp;fm0.index&gt;0)best=tcase(dom0.slice(0,fm0.index))+' '+makeName(fm0.make);else if(fm0&amp;&amp;dom0.length&gt;fm0.len)best=makeName(fm0.make)+' '+tcase(dom0.slice(fm0.len));}
-    lines.forEach(function(l){if(best)return;var U=l.toUpperCase();var fm=findMake(U);var words=U.split(' ').length;
+    lines.forEach(function(l,li){if(best)return;var U=l.toUpperCase();var fm=findMake(U);var words=U.split(' ').length;
       if(/TAX INVOICE|CUSTOMER COPY|INVOICE TO|DELIVERY|ABN|BSB|ACC\b|PHONE|\bT:|\bE:|\bW:|WWW|@|MAKE IT YOURS/.test(U))return;
-      if((fm&amp;&amp;words&lt;=5)||(/PTY|LTD|MOTORS|AUTOS?\b|CARS?\b|AUTOMOTIVE|MOTOR GROUP|PRESTIGE/.test(U)&amp;&amp;words&lt;=7))best=l;
+      if(fm&amp;&amp;words&lt;=5){
+        var only=U.replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim();
+        if(only===fm.make&amp;&amp;li&gt;0){var prev=lines[li-1].toUpperCase().replace(/[^A-Z ]/g,' ').trim().split(' ').filter(Boolean);var pw=prev[prev.length-1];if(pw&amp;&amp;pw.length&gt;=3&amp;&amp;pw.length&lt;=14&amp;&amp;!findMake(pw)&amp;&amp;!/^(THE|AND|FOR|COPY|INVOICE)$/.test(pw))only=pw+' '+only}
+        best=only;
+      }else if(/PTY|LTD|MOTORS|AUTOS?\b|CARS?\b|AUTOMOTIVE|MOTOR GROUP|PRESTIGE/.test(U)&amp;&amp;words&lt;=7)best=l;
     });
     if(!best){var dm=(r.data.text||'').toUpperCase().match(/(?:WWW\.|@)([A-Z0-9\-]+)\.(?:COM|NET)(?:\.AU)?/);if(dm){var dom=dm[1].replace(/-/g,''),fm2=findMakeLoose(dom);best=fm2?(tcase(dom.slice(0,fm2.index))+' '+makeName(fm2.make)).trim():tcase(dom)}}
     return best?tcase(best.replace(/[^A-Za-z0-9 &amp;'\-]/g,' ').replace(/\s+/g,' ').trim()):null;

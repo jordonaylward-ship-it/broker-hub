@@ -3866,6 +3866,10 @@ textarea{line-height:1.55;resize:vertical;}
 &lt;div class=&quot;card&quot;&gt;
   &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;2 · Client and car&lt;/h2&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
+    &lt;div class=&quot;drop&quot; id=&quot;invDrop&quot;&gt;Drop the dealer invoice or contract of sale here or tap to attach · fills the car and the price&lt;/div&gt;
+    &lt;input type=&quot;file&quot; id=&quot;invFile&quot; accept=&quot;application/pdf,image/*&quot; class=&quot;hide&quot;&gt;
+    &lt;div class=&quot;hint&quot; id=&quot;invStatus&quot; style=&quot;margin:0 0 8px;&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;invResult&quot; class=&quot;hide&quot;&gt;&lt;div class=&quot;readlist&quot; id=&quot;invList&quot;&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:12px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;invVision()&quot;&gt;Read with Claude&lt;/button&gt;&lt;span class=&quot;hint&quot; style=&quot;margin:0;&quot;&gt;For a scan the local read cannot make out.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;r2&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;First name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;firstName&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Last name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;lastName&quot;&gt;&lt;/div&gt;
@@ -3903,13 +3907,17 @@ textarea{line-height:1.55;resize:vertical;}
     &lt;div class=&quot;r4&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;NVIC&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;nvic&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Rego&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;rego&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;VIN&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;vin&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Odometer&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;odo&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Condition&lt;/label&gt;&lt;select id=&quot;condition&quot;&gt;&lt;option value=&quot;&quot;&gt;·&lt;/option&gt;&lt;option&gt;New&lt;/option&gt;&lt;option&gt;Used&lt;/option&gt;&lt;option&gt;Demo&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;r3&quot;&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Condition&lt;/label&gt;&lt;select id=&quot;condition&quot;&gt;&lt;option value=&quot;&quot;&gt;·&lt;/option&gt;&lt;option&gt;New&lt;/option&gt;&lt;option&gt;Used&lt;/option&gt;&lt;option&gt;Demo&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Purchase price&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;price&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Policy start date&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;startDate&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;r2&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Current insurer&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;insurer&quot; placeholder=&quot;NRMA, none&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Bought from&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dealer&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
@@ -4022,7 +4030,7 @@ textarea{line-height:1.55;resize:vertical;}
    Reads a Zink page dump, holds the disclosure answers, and writes the Suncorp screen answers,
    the client email, the SMS and a CRM note. Nothing leaves the browser. Saved under hub_ins_v1. */
 var KEY='hub_ins_v1';
-var TEXT_IDS=['firstName','lastName','dob','gender','mobile','email','firstName2','lastName2','dob2','gender2','mobile2','addrLine','suburb','state','postcode','year','make','model','desc','nvic','rego','odo','condition','price','startDate','insurer','adName','adDob','adGender','adRel','adHolder','coverMode','agreed','excess','rangeMin','rangeMax','quoteNo','pA','pB','pC','pD','signName','gapLine','raw'];
+var TEXT_IDS=['firstName','lastName','dob','gender','mobile','email','firstName2','lastName2','dob2','gender2','mobile2','addrLine','suburb','state','postcode','year','make','model','desc','nvic','rego','vin','odo','condition','price','startDate','insurer','dealer','adName','adDob','adGender','adRel','adHolder','coverMode','agreed','excess','rangeMin','rangeMax','quoteNo','pA','pB','pC','pD','signName','gapLine','raw'];
 var SEG_KEYS=['use','km','peak','parked','workDays','claims','multi','mods','addDriver'];
 var FLAGS=['f_susp','f_decl','f_unlic','f_acc','f_crime'];
 var seg={};
@@ -4188,7 +4196,7 @@ function readZink(){
   var set=function(id,val){if(val!=null&amp;&amp;val!==''&amp;&amp;$(id)){$(id).value=val}};
   set('firstName',d.firstName);set('lastName',d.lastName);set('dob',d.dob);set('gender',d.gender);set('mobile',d.mobile);set('email',d.email);
   set('addrLine',d.addrLine);set('suburb',d.suburb);set('state',d.state);set('postcode',d.postcode);
-  set('year',d.year);set('make',d.make);set('model',d.model);set('desc',d.desc);set('nvic',d.nvic);set('rego',d.rego);set('odo',d.odo);set('condition',d.condition);
+  set('year',d.year);set('make',d.make);set('model',d.model);set('desc',d.desc);set('nvic',d.nvic);set('rego',d.rego);set('vin',d.vin);set('odo',d.odo);set('condition',d.condition);set('dealer',d.dealer);
   if(d.price){set('price',d.price);if(!v('agreed')||edited.agreedAuto){set('agreed',d.price);edited.agreedAuto=true}}
   if(d.p2){$('hasApp2').checked=true;set('firstName2',d.p2.firstName);set('lastName2',d.p2.lastName);set('dob2',d.p2.dob);set('gender2',d.p2.gender);set('mobile2',d.p2.mobile);}
   var got=[];['clientName','dob','mobile','email','address','year','make','model','nvic','price'].forEach(function(k){if(d[k])got.push(k)});
@@ -4323,7 +4331,7 @@ function render(){
 
   // crm
   var prices=[['A',pA],['B',pB],['C',pC],['D',pD]].filter(function(x){return x[1]}).map(function(x){return x[0]+' '+money2(x[1])}).join(', ');
-  var crm='Suncorp quotes emailed '+today()+(car?' on the '+car:'')+'. '+(mode==='agreed'?'Agreed value '+money(agreed):'Market value')+', excess '+(excess?money(excess):'tbc')+'. Options '+(prices||'tbc')+' a month.'+(seg.addDriver==='Yes'&amp;&amp;v('adName')?' '+v('adName')+' added as a driver.':'')+(v('quoteNo')?' Quote '+v('quoteNo')+'.':'')+' SMS sent, waiting on their pick.';
+  var crm='Suncorp quotes emailed '+today()+(car?' on the '+car:'')+(v('dealer')?' from '+v('dealer'):'')+'. '+(mode==='agreed'?'Agreed value '+money(agreed):'Market value')+', excess '+(excess?money(excess):'tbc')+'. Options '+(prices||'tbc')+' a month.'+(seg.addDriver==='Yes'&amp;&amp;v('adName')?' '+v('adName')+' added as a driver.':'')+(v('quoteNo')?' Quote '+v('quoteNo')+'.':'')+' SMS sent, waiting on their pick.';
   if(!edited.crm)$('crmBody').value=crm;
 }
 function openMail(){
@@ -4533,22 +4541,10 @@ function applyDisclosure(res,how){
   paintSegs();syncBoxes();inputChanged('disclosure');
 }
 async function discVision(){
-  var key=localStorage.getItem('claude_api_key');
-  if(!key){toast('Add your Claude key in Settings first');return}
   if(!discPage){toast('Drop the notice in first');return}
   $('discStatus').textContent='Asking Claude to read the notice';
   try{
-    var cv=discPage.cv,k=Math.min(1,1600/Math.max(cv.width,cv.height)),c2=document.createElement('canvas');
-    c2.width=Math.round(cv.width*k);c2.height=Math.round(cv.height*k);c2.getContext('2d').drawImage(cv,0,0,c2.width,c2.height);
-    var b64=c2.toDataURL('image/jpeg',0.85).split(',')[1];
-    var prompt='This is a signed Comprehensive Insurance Disclosure Notice. Read which box is ticked or marked for each question and return ONLY JSON with these keys: suspended, declined, unlicensed, accident, crime (each &quot;YES&quot;, &quot;NO&quot; or null), use (&quot;Private&quot;, &quot;Business&quot;, &quot;Ridesharing&quot; or null), km (&quot;Less than 5,000&quot;, &quot;Up to 10,000&quot;, &quot;Up to 15,000&quot;, &quot;Up to 20,000&quot;, &quot;More than 20,000&quot; or null), peak (&quot;YES&quot;, &quot;NO&quot; or null), parked (&quot;Same Suburb&quot;, &quot;Another Suburb&quot;, &quot;Multiple Suburbs&quot; or null), workDays (&quot;0 days&quot;, &quot;1-2 days&quot;, &quot;3-4 days&quot;, &quot;5+ days&quot;, &quot;I don\'t work or study&quot; or null), otherDriver (&quot;YES&quot;, &quot;NO&quot; or null), driverName, driverDob (DD/MM/YYYY), relationship, policyHolder (&quot;YES&quot;, &quot;NO&quot; or null), details (any text written next to the YES answers, else null). Use null when a box is not clearly marked.';
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:(localStorage.getItem('anthropic_model')||'claude-opus-5'),max_tokens:800,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:prompt}]}]})});
-    var out=await resp.json();
-    if(out&amp;&amp;out.error)throw new Error(out.error.message||'Claude could not read it');
-    var txt=((out&amp;&amp;out.content)||[]).map(function(c){return c.text||''}).join('').replace(/```json/g,'').replace(/```/g,'');
-    var a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a&lt;0||b&lt;a)throw new Error('no readable answer');
-    var j=JSON.parse(txt.slice(a,b+1));
+    var j=await visionJSON(discPage.cv,'This is a signed Comprehensive Insurance Disclosure Notice. Read which box is ticked or marked for each question and return ONLY JSON with these keys: suspended, declined, unlicensed, accident, crime (each &quot;YES&quot;, &quot;NO&quot; or null), use (&quot;Private&quot;, &quot;Business&quot;, &quot;Ridesharing&quot; or null), km (&quot;Less than 5,000&quot;, &quot;Up to 10,000&quot;, &quot;Up to 15,000&quot;, &quot;Up to 20,000&quot;, &quot;More than 20,000&quot; or null), peak (&quot;YES&quot;, &quot;NO&quot; or null), parked (&quot;Same Suburb&quot;, &quot;Another Suburb&quot;, &quot;Multiple Suburbs&quot; or null), workDays (&quot;0 days&quot;, &quot;1-2 days&quot;, &quot;3-4 days&quot;, &quot;5+ days&quot;, &quot;I don\'t work or study&quot; or null), otherDriver (&quot;YES&quot;, &quot;NO&quot; or null), driverName, driverDob (DD/MM/YYYY), relationship, policyHolder (&quot;YES&quot;, &quot;NO&quot; or null), details (any text written next to the YES answers, else null). Use null when a box is not clearly marked.',800);
     var yn=function(x){x=String(x||'').toUpperCase();return x==='YES'?'yes':x==='NO'?'no':null};
     var YN=function(x){x=String(x||'').toUpperCase();return x==='YES'?'Yes':x==='NO'?'No':null};
     var pick=function(x,list){if(!x)return null;var n=dnorm(x);var hit=null;list.forEach(function(o){if(!hit&amp;&amp;(n.indexOf(dnorm(o[0]))===0||dnorm(o[1])===n))hit=o[1]});return hit};
@@ -4564,6 +4560,131 @@ function discPick(file){
   if(!file)return;
   readDisclosure(file).catch(function(e){$('discStatus').textContent='Could not read that file: '+(e.message||e);});
 }
+
+/* ─── dealer invoice reader · fills the car and the price off the tax invoice or contract of sale ─── */
+var MAKES=['TOYOTA','FORD','HOLDEN','MAZDA','HYUNDAI','KIA','NISSAN','MITSUBISHI','VOLKSWAGEN','SUBARU','HONDA','ISUZU','ISUZU UTE','BMW','MERCEDES-BENZ','MERCEDES','AUDI','SUZUKI','JEEP','LEXUS','LAND ROVER','RANGE ROVER','TESLA','MG','GWM','HAVAL','LDV','RAM','CHEVROLET','SKODA','RENAULT','PEUGEOT','VOLVO','PORSCHE','MINI','FIAT','ALFA ROMEO','JAGUAR','CHERY','BYD','CUPRA','GENESIS','POLESTAR','SSANGYONG','KGM','GREAT WALL','INEOS','CITROEN','DODGE','CHRYSLER','INFINITI','ABARTH','SMART','MAHINDRA','TATA','DEEPAL','ZEEKR','XPENG','LEAPMOTOR','JAC','FOTON','HINO','IVECO','SEAT','OPEL','SAAB','DAIHATSU','PROTON','DAEWOO','ROLLS-ROYCE','BENTLEY','MASERATI','FERRARI','LAMBORGHINI','MCLAREN','ASTON MARTIN','LOTUS','HUMMER','CADILLAC','LINCOLN','BUICK','GMC','PONTIAC'];
+var invPage=null;
+function invMoney(s){var n=parseFloat(String(s).replace(/[^0-9.]/g,''));return isNaN(n)?0:n}
+function parseInvoice(text){
+  var t=String(text||'').replace(/\r/g,''),up=t.toUpperCase(),o={};
+  var lines=up.split('\n').map(function(l){return l.replace(/\s+/g,' ').trim()}).filter(Boolean);
+  var g=function(re,src){var m=(src||up).match(re);return m&amp;&amp;m[1]?m[1].trim():null};
+  // VIN · 17 characters, no I O Q, must mix letters and digits
+  var vins=up.match(/\b[A-HJ-NPR-Z0-9]{17}\b/g)||[];
+  var near=g(/VIN\s*(?:NO|NUMBER|#)?\s*[:.]?\s*([A-HJ-NPR-Z0-9]{17})\b/);
+  o.vin=near||vins.filter(function(v){return /[A-Z]/.test(v)&amp;&amp;/\d/.test(v)})[0]||null;
+  o.rego=g(/(?:REG(?:O|ISTRATION)?(?:\s*(?:NO|NUMBER|#))?|PLATE(?:\s*(?:NO|NUMBER))?)\s*[:.]?\s*([A-Z0-9]{2,3}[ -]?[A-Z0-9]{2,4})\b/);
+  if(o.rego){o.rego=o.rego.replace(/[ -]/g,'');if(/^(NO|NUMBER|DATE|STATE|EXP|VIN)$/.test(o.rego)||o.rego.length&lt;3)o.rego=null}
+  var od=g(/(?:ODOMETER|ODO|KILOMETRES?|KMS?)\s*(?:READING)?\s*[:.]?\s*([\d,]{1,7})\b/)||g(/\b([\d,]{4,7})\s*KMS?\b/);
+  if(od){var on=parseInt(od.replace(/,/g,''),10);if(on&gt;0&amp;&amp;on&lt;2000000)o.odo=on}
+  o.year=g(/(?:MODEL\s*YEAR|BUILD(?:\s*DATE)?|COMPLIANCE(?:\s*DATE)?|YEAR|\bMY)\s*[:.]?\s*(?:\d{1,2}\s*[\/\-]\s*)?((?:19|20)\d{2})\b/);
+  // make and model · first line that names a make, model is the next word, the rest of the line is the variant
+  for(var i=0;i&lt;lines.length&amp;&amp;!o.make;i++){
+    var L=lines[i];
+    for(var k=0;k&lt;MAKES.length;k++){
+      var mk=MAKES[k],re=new RegExp('(?:^|[^A-Z])'+mk.replace(/[-]/g,'[- ]')+'(?=[^A-Z]|$)');
+      var m=L.match(re);if(!m)continue;
+      var after=L.slice(m.index+m[0].length).trim();
+      var toks=after.split(' ').filter(Boolean);
+      if(!toks.length||/^(PTY|LTD|MOTORS|AUTO|AUTOS|DEALER|FINANCE|CREDIT|INSURANCE|GROUP|CITY|CENTRE|CENTER|OF|AUSTRALIA|GENUINE|PARTS|SERVICE)$/.test(toks[0]))continue;
+      o.make=mk.split(' ').map(function(w){return w.charAt(0)+w.slice(1).toLowerCase()}).join(' ');
+      if(/MERCEDES/.test(mk))o.make='Mercedes-Benz';
+      var model=toks[0].replace(/[^A-Z0-9\-]/g,'');
+      if(/^\d/.test(model)&amp;&amp;toks[1]&amp;&amp;!/^\d/.test(toks[1]))model=toks[1];
+      o.model=model.charAt(0)+model.slice(1).toLowerCase();
+      if(/^[A-Z]{1,3}\d*$/.test(model)||model.length&lt;=3)o.model=model;
+      o.desc=after.replace(/\s+/g,' ').trim();if(o.desc.toUpperCase().indexOf(model)===0)o.desc=o.desc.slice(model.length).trim();
+      var yl=L.match(/\b((?:19|20)\d{2})\b/);if(yl&amp;&amp;!o.year)o.year=yl[1];
+      break;
+    }
+  }
+  // price · the biggest money figure sitting on a total style line, else the biggest in the document
+  var priceLines=lines.filter(function(l){return /(TOTAL|BALANCE|PURCHASE PRICE|SALE PRICE|DRIVE ?AWAY|AMOUNT (?:DUE|PAYABLE)|VEHICLE PRICE|CONTRACT PRICE|PRICE INC)/.test(l)&amp;&amp;!/DEPOSIT|TRADE|GST ONLY|SUB ?TOTAL EX/.test(l)});
+  var pick=0;
+  priceLines.forEach(function(l){(l.match(/\$?\s*\d{1,3}(?:,\d{3})+(?:\.\d{2})?|\$\s*\d{4,7}(?:\.\d{2})?/g)||[]).forEach(function(x){var n=invMoney(x);if(n&gt;pick&amp;&amp;n&lt;500000)pick=n})});
+  if(!pick){(up.match(/\$\s*\d{1,3}(?:,\d{3})+(?:\.\d{2})?/g)||[]).forEach(function(x){var n=invMoney(x);if(n&gt;pick&amp;&amp;n&lt;500000)pick=n})}
+  if(pick&gt;=1000)o.price=Math.round(pick);
+  var vp=0;lines.filter(function(l){return /(VEHICLE PRICE|SALE PRICE|PURCHASE PRICE|PRICE OF (?:THE )?VEHICLE|CAR PRICE|LIST PRICE)/.test(l)&amp;&amp;!/TOTAL|BALANCE/.test(l)}).forEach(function(l){(l.match(/\$?\s*\d{1,3}(?:,\d{3})+(?:\.\d{2})?|\$\s*\d{4,7}(?:\.\d{2})?/g)||[]).forEach(function(x){var n=invMoney(x);if(n&gt;vp&amp;&amp;n&lt;500000)vp=n})});
+  if(vp&gt;=1000&amp;&amp;Math.round(vp)!==o.price)o.vehiclePrice=Math.round(vp);
+  var dep=g(/DEPOSIT\s*(?:PAID|RECEIVED)?\s*[:.]?\s*\$?\s*([\d,]+(?:\.\d{2})?)/);if(dep&amp;&amp;invMoney(dep)&gt;0)o.deposit=Math.round(invMoney(dep));
+  var tr=g(/TRADE[ -]?IN\s*(?:ALLOWANCE|VALUE|PRICE)?\s*[:.]?\s*\$?\s*([\d,]+(?:\.\d{2})?)/);if(tr&amp;&amp;invMoney(tr)&gt;0)o.tradeIn=Math.round(invMoney(tr));
+  // dealer · a business name in the top of the page
+  var top=lines.slice(0,10);
+  for(var d=0;d&lt;top.length&amp;&amp;!o.dealer;d++){if(/PTY|LTD|MOTORS|AUTOS?\b|CARS?\b|DEALER|AUTOMOTIVE|MOTOR GROUP|USED CARS|CAR SALES|PRESTIGE|WHOLESALE/.test(top[d])&amp;&amp;!/TAX INVOICE|CONTRACT|ABN\s*:?\s*\d/.test(top[d])&amp;&amp;top[d].length&lt;70)o.dealer=top[d]}
+  if(o.dealer)o.dealer=o.dealer.replace(/\s*(ABN|ACN).*$/,'').trim().split(' ').map(function(w){return (w.length&gt;3||/^(PTY|LTD)$/.test(w))?w.charAt(0)+w.slice(1).toLowerCase():w}).join(' ');
+  if(/\bNEW VEHICLE|\bBRAND NEW|CONDITION\s*[:.]?\s*NEW\b/.test(up))o.condition='New';
+  else if(/\bDEMO(?:NSTRATOR)?\b/.test(up))o.condition='Demo';
+  else if(/\bUSED\b|PRE[- ]?OWNED|SECOND ?HAND/.test(up)||o.odo&gt;1000)o.condition='Used';
+  var col=g(/COLOU?R\s*[:.]?\s*([A-Z][A-Z ]{2,18}?)(?:\s{2,}|\n|$|\s(?:VIN|REG|ENGINE|BODY|TRANS))/);if(col)o.colour=col.trim();
+  return o;
+}
+async function fileText(file){
+  // text layer for real PDFs, OCR for scans and photos · keeps page one on a canvas for Read with Claude
+  var isPdf=file.type==='application/pdf'||/\.pdf$/i.test(file.name);
+  var page=await renderToCanvas(file);
+  if(isPdf){
+    await ensurePdf();
+    var pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,text='';
+    for(var i=1;i&lt;=Math.min(pdf.numPages,4);i++){
+      var pg=await pdf.getPage(i),tc=await pg.getTextContent(),lastY=null,line='';
+      tc.items.forEach(function(it){var y=Math.round(it.transform[5]);if(lastY!==null&amp;&amp;Math.abs(y-lastY)&gt;3){text+=line+'\n';line=''}line+=(line?' ':'')+it.str;lastY=y});
+      text+=line+'\n';
+    }
+    if(text.replace(/\s/g,'').length&gt;=40)return {text:text,page:page,ocr:false};
+  }
+  $('invStatus').textContent='Scanned or photographed, reading the words, about 20 seconds';
+  await ensureOcr();
+  var r=await Tesseract.recognize(page.cv,'eng');
+  return {text:r.data.text||'',page:page,ocr:true};
+}
+async function readInvoice(file){
+  $('invStatus').textContent='Reading the invoice';
+  var got=await fileText(file);
+  invPage=got.page;
+  var o=parseInvoice(got.text);
+  applyInvoice(o,got.ocr?'read off the scan':'read off the PDF');
+  return o;
+}
+function applyInvoice(o,how){
+  var list=[],n=0,set=function(id,val,label){if(val==null||val==='')return;$(id).value=val;n++;list.push(label+': '+val)};
+  set('year',o.year,'Year');set('make',o.make,'Make');set('model',o.model,'Model');set('desc',o.desc,'Variant');
+  set('vin',o.vin,'VIN');set('rego',o.rego,'Rego');set('odo',o.odo,'Odometer');set('condition',o.condition,'Condition');set('dealer',o.dealer,'Bought from');
+  if(o.price){var zp=+v('price')||0;set('price',o.price,'Price');if(zp&amp;&amp;Math.abs(zp-o.price)&gt;1)list.push('&lt;span class=&quot;bad&quot;&gt;Zink had '+money(zp)+', invoice says '+money(o.price)+', invoice wins&lt;/span&gt;');if(!v('agreed')||edited.agreedAuto){$('agreed').value=o.price;edited.agreedAuto=true}}
+  if(o.vehiclePrice&amp;&amp;o.price)list.push('Car alone '+money(o.vehiclePrice)+', total with on roads '+money(o.price)+'. Loaded the total, change the price box if you want the car only.');
+  if(o.deposit)list.push('Deposit on the invoice: '+money(o.deposit));
+  if(o.tradeIn)list.push('Trade in on the invoice: '+money(o.tradeIn));
+  ['vin','rego','odo','price','year','make','model'].forEach(function(k){if(!o[k]&amp;&amp;!v(k==='price'?'price':k))list.push('&lt;span class=&quot;bad&quot;&gt;'+({vin:'VIN',rego:'Rego',odo:'Odometer',price:'Price',year:'Year',make:'Make',model:'Model'})[k]+': not found, type it in&lt;/span&gt;')});
+  $('invStatus').textContent=n+' fields '+how+'. Check anything red.';
+  $('invList').innerHTML=list.map(function(l){return '&lt;div&gt;'+(l.indexOf('&lt;span')===0?l:esc(l))+'&lt;/div&gt;'}).join('');
+  $('invResult').classList.remove('hide');
+  inputChanged('invoice');
+}
+async function visionJSON(cv,prompt,maxTokens){
+  var key=localStorage.getItem('claude_api_key');
+  if(!key)throw new Error('Add your Claude key in Settings first');
+  var k=Math.min(1,1600/Math.max(cv.width,cv.height)),c2=document.createElement('canvas');
+  c2.width=Math.round(cv.width*k);c2.height=Math.round(cv.height*k);c2.getContext('2d').drawImage(cv,0,0,c2.width,c2.height);
+  var b64=c2.toDataURL('image/jpeg',0.85).split(',')[1];
+  var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:(localStorage.getItem('anthropic_model')||'claude-opus-5'),max_tokens:maxTokens||800,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:prompt}]}]})});
+  var out=await resp.json();
+  if(out&amp;&amp;out.error)throw new Error(out.error.message||'Claude could not read it');
+  var txt=((out&amp;&amp;out.content)||[]).map(function(c){return c.text||''}).join('').replace(/```json/g,'').replace(/```/g,'');
+  var a=txt.indexOf('{'),b=txt.lastIndexOf('}');if(a&lt;0||b&lt;a)throw new Error('no readable answer');
+  return JSON.parse(txt.slice(a,b+1));
+}
+async function invVision(){
+  if(!invPage){toast('Drop the invoice in first');return}
+  $('invStatus').textContent='Asking Claude to read the invoice';
+  try{
+    var j=await visionJSON(invPage.cv,'This is a car dealer tax invoice or contract of sale. Return ONLY JSON with keys: dealer, make, model, variant, year, vin, rego, odometer (number), price (the total purchase price including GST as a number), deposit (number), tradeIn (number), condition (&quot;New&quot;, &quot;Used&quot; or &quot;Demo&quot;), colour. Use null for anything not on the page.',700);
+    var num=function(x){var n=parseFloat(String(x==null?'':x).replace(/[^0-9.]/g,''));return isNaN(n)?null:n};
+    var s=function(x){if(x==null)return null;var t=String(x).trim();return t&amp;&amp;t.toUpperCase()!=='NULL'?t:null};
+    var o={dealer:s(j.dealer),make:s(j.make),model:s(j.model),desc:s(j.variant),year:s(j.year),vin:s(j.vin)?s(j.vin).toUpperCase().replace(/[^A-Z0-9]/g,''):null,rego:s(j.rego)?s(j.rego).toUpperCase().replace(/[^A-Z0-9]/g,''):null,odo:num(j.odometer),price:num(j.price)?Math.round(num(j.price)):null,deposit:num(j.deposit),tradeIn:num(j.tradeIn),condition:s(j.condition),colour:s(j.colour)};
+    applyInvoice(o,'read by Claude');
+  }catch(e){$('invStatus').textContent='Claude read failed: '+(e.message||e)}
+}
+function invPick(file){if(!file)return;readInvoice(file).catch(function(e){$('invStatus').textContent='Could not read that file: '+(e.message||e)})}
 
 /* ─── wiring ─── */
 document.querySelectorAll('.seg').forEach(function(s){
@@ -4590,6 +4711,12 @@ $('raw').addEventListener('input',function(){save()});
   ['dragenter','dragover'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.add('over')})});
   ['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.remove('over')})});
   dz.addEventListener('drop',function(e){var f=e.dataTransfer&amp;&amp;e.dataTransfer.files&amp;&amp;e.dataTransfer.files[0];discPick(f)});
+  var iz=$('invDrop'),ifi=$('invFile');
+  iz.addEventListener('click',function(){ifi.click()});
+  ifi.addEventListener('change',function(){invPick(ifi.files[0]);ifi.value=''});
+  ['dragenter','dragover'].forEach(function(ev){iz.addEventListener(ev,function(e){e.preventDefault();iz.classList.add('over')})});
+  ['dragleave','drop'].forEach(function(ev){iz.addEventListener(ev,function(e){e.preventDefault();iz.classList.remove('over')})});
+  iz.addEventListener('drop',function(e){var f=e.dataTransfer&amp;&amp;e.dataTransfer.files&amp;&amp;e.dataTransfer.files[0];invPick(f)});
 })();
 load();render();
 &lt;/script&gt;

@@ -3790,120 +3790,139 @@ function skTileMini(label,value,sub,vals,kind,up){
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;&gt;
 &lt;title&gt;Insurance Quote&lt;/title&gt;
 &lt;style&gt;
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap');
-:root{--paper:#000000;--card:#151823;--card2:#11141d;--ink:#eef0ff;--dim:#b4b9d9;--mut:#6f7689;--line:#242a4a;--teal:#34d399;--gold:#fbbf24;--blue:#4f9cf7;--pink:#f277a8;--red:#fb7185;}
-*{box-sizing:border-box;font-family:'Poppins',system-ui,sans-serif;}
-body{margin:0;background:var(--paper);color:var(--ink);padding:24px 26px 60px;}
-h1{font-size:20px;margin:0 0 4px;}
-.sub{font-size:12.5px;color:var(--mut);margin-bottom:18px;line-height:1.55;}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;}
-@media(max-width:980px){.grid{grid-template-columns:1fr;}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden;}
-.ch{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-.ch h2{font-size:13.5px;margin:0;}
-.ch .tag{font-size:10.5px;color:var(--mut);font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
-.cb{padding:14px 16px;}
-label{display:block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600;margin:0 0 5px;}
-input[type=text],input[type=number],select,textarea{width:100%;background:#12152a;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:13px;font-family:inherit;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:#3a7bd5;}
-textarea{line-height:1.55;resize:vertical;}
-.f{margin-bottom:10px;}
-.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.r4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-@media(max-width:560px){.r3,.r4{grid-template-columns:1fr 1fr;}}
-.btn{background:linear-gradient(135deg,#128a5f,#17a874);color:#0a0c16;border:none;border-radius:8px;padding:9px 15px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;}
-.btn.ghost{background:transparent;color:var(--dim);border:1px solid var(--line);font-weight:600;}
-.btn.blue{background:linear-gradient(135deg,#2b6cb8,#4f9cf7);color:#0a0c16;}
-.btn.sm{padding:6px 11px;font-size:11.5px;border-radius:7px;}
-.btn:hover{filter:brightness(1.09);}
+:root{--bg:#000000;--card:#1c1c1e;--card2:#2c2c2e;--sep:#3a3a3c;--ink:#f5f5f7;--dim:#c7c7cc;--mut:#8e8e93;--acc:#0a84ff;--green:#30d158;--orange:#ff9f0a;--red:#ff453a;}
+*{box-sizing:border-box;}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;Segoe UI&quot;,Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+body{padding:28px 32px 80px;}
+h1{font-size:28px;font-weight:700;letter-spacing:-.4px;margin:0 0 4px;}
+.sub{font-size:14px;color:var(--mut);margin:0 0 24px;}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;}
+@media(max-width:1100px){.grid{grid-template-columns:1fr;}}
+.card{background:var(--card);border-radius:16px;margin-bottom:20px;overflow:hidden;}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px 12px;flex-wrap:wrap;}
+.ch h2{font-size:17px;font-weight:600;margin:0;letter-spacing:-.2px;}
+.ch .tag{font-size:12px;color:var(--mut);}
+.cb{padding:4px 20px 20px;}
+.grp{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px;}
+.grp:first-child{margin-top:8px;}
+label{display:block;font-size:12px;color:var(--mut);margin:0 0 5px;}
+input[type=text],input[type=number],select,textarea{width:100%;background:var(--card2);color:var(--ink);border:1px solid transparent;border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;line-height:1.3;}
+input::placeholder,textarea::placeholder{color:#636366;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(10,132,255,.25);}
+select{appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'&gt;&lt;path d='M1 1l5 5 5-5' fill='none' stroke='%238e8e93' stroke-width='1.8' stroke-linecap='round'/&gt;&lt;/svg&gt;&quot;);background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;}
+textarea{line-height:1.5;resize:vertical;}
+.f{margin-bottom:12px;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.r4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:600px){.r3,.r4{grid-template-columns:1fr 1fr;}}
+.btn{background:var(--acc);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;transition:filter .15s;}
+.btn.ghost{background:var(--card2);color:var(--ink);}
+.btn.blue{background:var(--acc);}
+.btn.sm{padding:6px 12px;font-size:13px;}
+.btn:hover{filter:brightness(1.12);}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-.hint{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:7px;}
-.seg{display:flex;flex-wrap:wrap;gap:6px;}
-.seg button{background:#12152a;color:var(--dim);border:1px solid var(--line);border-radius:7px;padding:7px 11px;font-size:12px;font-family:inherit;cursor:pointer;font-weight:500;}
-.seg button.on{background:#12291f;border-color:#1f5c46;color:var(--teal);font-weight:600;}
-.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--dim);margin:6px 0;cursor:pointer;}
-.chk input{width:auto;margin:0;}
-.out{white-space:pre-wrap;font-size:12.5px;line-height:1.6;color:var(--ink);background:#0d1019;border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-height:80px;}
-.out .h{color:var(--gold);font-weight:700;display:block;margin-top:10px;}
-.out .h:first-child{margin-top:0;}
-.out .k{color:var(--mut);}
-.out .v{color:var(--ink);cursor:pointer;border-bottom:1px dotted #3a4270;}
-.out .v:hover{color:var(--teal);}
-.out .w{color:var(--gold);}
-.out .bad{color:var(--red);}
-.warn{background:#2a2312;border:1px solid #5c4a1f;color:#fbd88a;border-radius:8px;padding:9px 12px;font-size:12px;line-height:1.5;margin-bottom:10px;}
-.toast{position:fixed;bottom:20px;right:20px;background:#12291f;color:var(--teal);border:1px solid #1f5c46;border-radius:8px;padding:10px 15px;font-size:12.5px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;}
+.hint{font-size:12.5px;color:var(--mut);line-height:1.5;margin-top:8px;}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;background:var(--card2);border-radius:9px;padding:2px;}
+.seg button{background:transparent;color:var(--dim);border:none;border-radius:7px;padding:7px 13px;font-size:13.5px;font-family:inherit;cursor:pointer;font-weight:500;transition:background .15s;}
+.seg button.on{background:#636366;color:#fff;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.4);}
+.chk{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px;color:var(--ink);padding:11px 0;border-bottom:1px solid var(--sep);cursor:pointer;}
+.chk:last-of-type{border-bottom:none;}
+.chk input{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:13px;background:#48484a;position:relative;margin:0;flex:none;cursor:pointer;transition:background .2s;}
+.chk input::after{content:&quot;&quot;;position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.35);transition:left .2s;}
+.chk input:checked{background:var(--green);}
+.chk input:checked::after{left:20px;}
+.list{background:var(--card2);border-radius:12px;padding:0 14px;margin-bottom:12px;}
+.drop{border:1.5px dashed #48484a;border-radius:12px;padding:16px;text-align:center;color:var(--mut);font-size:14px;cursor:pointer;margin:6px 0 14px;transition:border-color .15s,color .15s;}
+.drop:hover,.drop.over{border-color:var(--acc);color:var(--acc);}
+.readlist{font-size:13px;line-height:1.7;color:var(--dim);margin:2px 0 10px;}
+.readlist .bad{color:var(--orange);}
+.status{font-size:13px;color:var(--mut);margin:-6px 0 10px;min-height:0;}
+.warn{background:rgba(255,159,10,.12);color:#ffcf7a;border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.5;margin-bottom:10px;}
+.out{background:var(--card2);border-radius:12px;padding:4px 14px;}
+.out .h{display:block;font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;padding:16px 0 6px;}
+.out .h:first-child{padding-top:12px;}
+.out .ar{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:9px 0;border-top:1px solid var(--sep);}
+.out .h+.ar{border-top:none;}
+.out .ar:first-child{border-top:none;}
+.out .k{font-size:13.5px;color:var(--mut);flex:0 0 auto;max-width:46%;}
+.out .v{font-size:15px;color:var(--ink);text-align:right;cursor:pointer;flex:1 1 auto;word-break:break-word;}
+.out .v:hover{color:var(--acc);}
+.out .v.w{color:var(--orange);}
+.out .v.bad{color:var(--red);}
+.out .t{display:block;font-size:15px;font-weight:600;color:var(--ink);padding:12px 0 2px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(44,44,46,.96);color:var(--ink);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:500;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.5);}
 .toast.show{opacity:1;}
 .hide{display:none!important;}
-.drop{border:1.5px dashed #3a4270;border-radius:10px;padding:14px;text-align:center;color:var(--dim);font-size:12.5px;cursor:pointer;background:#0d1019;margin-bottom:10px;}
-.drop.over{border-color:var(--teal);color:var(--teal);}
-.readlist{font-size:12px;line-height:1.7;color:var(--dim);margin:6px 0 8px;}
-.readlist .bad{color:var(--red);}
-.pill{display:inline-block;background:#12291f;border:1px solid #1f5c46;color:var(--teal);border-radius:6px;padding:1px 8px;font-size:11px;font-weight:600;}
+.outbox{background:var(--card2);border:none;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.55;}
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;h1&gt;Insurance Quote&lt;/h1&gt;
-&lt;div class=&quot;sub&quot;&gt;Paste the Zink page, tick the disclosure answers, punch the Suncorp screens in the order shown, then type the four monthly prices back in. The email, SMS and CRM note write themselves.&lt;/div&gt;
+&lt;h1&gt;Insurance&lt;/h1&gt;
+&lt;div class=&quot;sub&quot;&gt;Zink in, Suncorp answers out, then the email and SMS.&lt;/div&gt;
 
 &lt;div class=&quot;grid&quot;&gt;
 &lt;div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;1 · Zink paste&lt;/h2&gt;&lt;span class=&quot;tag&quot; id=&quot;readTag&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Zink&lt;/h2&gt;&lt;span class=&quot;tag&quot; id=&quot;readTag&quot;&gt;&lt;/span&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
-    &lt;textarea id=&quot;raw&quot; rows=&quot;7&quot; placeholder=&quot;Copy the whole Zink application page and paste it here&quot;&gt;&lt;/textarea&gt;
-    &lt;div class=&quot;row&quot; style=&quot;margin-top:9px;&quot;&gt;
+    &lt;textarea id=&quot;raw&quot; rows=&quot;5&quot; placeholder=&quot;Paste the whole Zink application page&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;row&quot; style=&quot;margin-top:10px;&quot;&gt;
       &lt;button class=&quot;btn&quot; onclick=&quot;readZink()&quot;&gt;Read Zink&lt;/button&gt;
-      &lt;button class=&quot;btn ghost&quot; onclick=&quot;useHandoff()&quot;&gt;Use last Zink handoff&lt;/button&gt;
+      &lt;button class=&quot;btn ghost&quot; onclick=&quot;useHandoff()&quot;&gt;Use last handoff&lt;/button&gt;
       &lt;button class=&quot;btn ghost&quot; onclick=&quot;clearAll()&quot;&gt;New client&lt;/button&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;hint&quot;&gt;Names, DOB, gender, mobile, email, address, car and purchase price come across. Everything below stays editable.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;2 · Client and car&lt;/h2&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Client and car&lt;/h2&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
-    &lt;div class=&quot;drop&quot; id=&quot;invDrop&quot;&gt;Drop the dealer invoice or contract of sale here or tap to attach · fills the car and the price&lt;/div&gt;
+    &lt;div class=&quot;drop&quot; id=&quot;invDrop&quot;&gt;Drop the dealer invoice or contract of sale here&lt;/div&gt;
     &lt;input type=&quot;file&quot; id=&quot;invFile&quot; accept=&quot;application/pdf,image/*&quot; class=&quot;hide&quot;&gt;
-    &lt;div class=&quot;hint&quot; id=&quot;invStatus&quot; style=&quot;margin:0 0 8px;&quot;&gt;&lt;/div&gt;
-    &lt;div id=&quot;invResult&quot; class=&quot;hide&quot;&gt;&lt;div class=&quot;readlist&quot; id=&quot;invList&quot;&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:12px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;invVision()&quot;&gt;Read with Claude&lt;/button&gt;&lt;span class=&quot;hint&quot; style=&quot;margin:0;&quot;&gt;For a scan the local read cannot make out.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;status&quot; id=&quot;invStatus&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;invResult&quot; class=&quot;hide&quot;&gt;&lt;div class=&quot;readlist&quot; id=&quot;invList&quot;&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:12px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;invVision()&quot;&gt;Read with Claude&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;grp&quot;&gt;Client&lt;/div&gt;
     &lt;div class=&quot;r2&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;First name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;firstName&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Last name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;lastName&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;r3&quot;&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;DOB&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dob&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gender&lt;/label&gt;&lt;select id=&quot;gender&quot;&gt;&lt;option value=&quot;&quot;&gt;·&lt;/option&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Date of birth&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dob&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gender&lt;/label&gt;&lt;select id=&quot;gender&quot;&gt;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Mobile&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;mobile&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Email&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;email&quot;&gt;&lt;/div&gt;
-    &lt;label class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;hasApp2&quot;&gt; Second applicant on the loan&lt;/label&gt;
+    &lt;div class=&quot;list&quot;&gt;&lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Second applicant on the loan&lt;/span&gt;&lt;input type=&quot;checkbox&quot; id=&quot;hasApp2&quot;&gt;&lt;/label&gt;&lt;/div&gt;
     &lt;div id=&quot;app2Box&quot; class=&quot;hide&quot;&gt;
       &lt;div class=&quot;r2&quot;&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;First name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;firstName2&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Last name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;lastName2&quot;&gt;&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;r3&quot;&gt;
-        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;DOB&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dob2&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
-        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gender&lt;/label&gt;&lt;select id=&quot;gender2&quot;&gt;&lt;option value=&quot;&quot;&gt;·&lt;/option&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Date of birth&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dob2&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gender&lt;/label&gt;&lt;select id=&quot;gender2&quot;&gt;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Mobile&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;mobile2&quot;&gt;&lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Garaging address · street line&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;addrLine&quot; placeholder=&quot;23/1 Sample Street&quot;&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;grp&quot;&gt;Garaging address&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Street&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;addrLine&quot; placeholder=&quot;23/1 Sample Street&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;r3&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Suburb&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;suburb&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;State&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;state&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Postcode&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;postcode&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
+
+    &lt;div class=&quot;grp&quot;&gt;Car&lt;/div&gt;
     &lt;div class=&quot;r3&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Year&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;year&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Make&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;make&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Model&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;model&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Description from Zink or Glass's&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;desc&quot; placeholder=&quot;XLT 2.0 4x4 Double Cab P/Up 10sp Auto&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Variant&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;desc&quot; placeholder=&quot;XLT 2.0 4x4 Double Cab P/Up 10sp Auto&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;r4&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;NVIC&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;nvic&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Rego&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;rego&quot;&gt;&lt;/div&gt;
@@ -3911,50 +3930,55 @@ textarea{line-height:1.55;resize:vertical;}
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Odometer&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;odo&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;r3&quot;&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Condition&lt;/label&gt;&lt;select id=&quot;condition&quot;&gt;&lt;option value=&quot;&quot;&gt;·&lt;/option&gt;&lt;option&gt;New&lt;/option&gt;&lt;option&gt;Used&lt;/option&gt;&lt;option&gt;Demo&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Condition&lt;/label&gt;&lt;select id=&quot;condition&quot;&gt;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&lt;option&gt;New&lt;/option&gt;&lt;option&gt;Used&lt;/option&gt;&lt;option&gt;Demo&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Purchase price&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;price&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Policy start date&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;startDate&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Bought from&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dealer&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;r2&quot;&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Policy start date&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;startDate&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Current insurer&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;insurer&quot; placeholder=&quot;NRMA, none&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Bought from&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;dealer&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;3 · Disclosure answers&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;off the signed notice&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Disclosure&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;off the signed notice&lt;/span&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
-    &lt;div class=&quot;drop&quot; id=&quot;discDrop&quot;&gt;Drop the signed disclosure notice here or tap to attach · PDF or photo&lt;/div&gt;
+    &lt;div class=&quot;drop&quot; id=&quot;discDrop&quot;&gt;Drop the signed disclosure notice here&lt;/div&gt;
     &lt;input type=&quot;file&quot; id=&quot;discFile&quot; accept=&quot;application/pdf,image/*&quot; class=&quot;hide&quot;&gt;
-    &lt;div class=&quot;hint&quot; id=&quot;discStatus&quot; style=&quot;margin:0 0 8px;&quot;&gt;&lt;/div&gt;
-    &lt;div id=&quot;discResult&quot; class=&quot;hide&quot;&gt;&lt;div class=&quot;readlist&quot; id=&quot;discList&quot;&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:12px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;discVision()&quot;&gt;Read with Claude&lt;/button&gt;&lt;span class=&quot;hint&quot; style=&quot;margin:0;&quot;&gt;Uses your Claude key from Settings, for scans the local read cannot make out.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Use&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;use&quot;&gt;&lt;button data-val=&quot;Private&quot;&gt;Private&lt;/button&gt;&lt;button data-val=&quot;Business&quot;&gt;Business&lt;/button&gt;&lt;button data-val=&quot;Ridesharing&quot;&gt;Ridesharing&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Km a year&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;km&quot;&gt;&lt;button data-val=&quot;Less than 5,000&quot;&gt;Less than 5,000&lt;/button&gt;&lt;button data-val=&quot;Up to 10,000&quot;&gt;Up to 10,000&lt;/button&gt;&lt;button data-val=&quot;Up to 15,000&quot;&gt;Up to 15,000&lt;/button&gt;&lt;button data-val=&quot;Up to 20,000&quot;&gt;Up to 20,000&lt;/button&gt;&lt;button data-val=&quot;More than 20,000&quot;&gt;More than 20,000&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Driven 3 or more weekdays in peak times&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;peak&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Parked on weekdays&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;parked&quot;&gt;&lt;button data-val=&quot;Same Suburb&quot;&gt;Same suburb&lt;/button&gt;&lt;button data-val=&quot;Another Suburb&quot;&gt;Another suburb&lt;/button&gt;&lt;button data-val=&quot;Multiple Suburbs&quot;&gt;Multiple suburbs&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Days a week to work or study&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;workDays&quot;&gt;&lt;button data-val=&quot;0 days&quot;&gt;0&lt;/button&gt;&lt;button data-val=&quot;1 - 2 days&quot;&gt;1 to 2&lt;/button&gt;&lt;button data-val=&quot;3 - 4 days&quot;&gt;3 to 4&lt;/button&gt;&lt;button data-val=&quot;5+ days&quot;&gt;5 plus&lt;/button&gt;&lt;button data-val=&quot;I don't work or study&quot;&gt;Doesn't work or study&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;status&quot; id=&quot;discStatus&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;discResult&quot; class=&quot;hide&quot;&gt;&lt;div class=&quot;readlist&quot; id=&quot;discList&quot;&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:12px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;discVision()&quot;&gt;Read with Claude&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Use&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;use&quot;&gt;&lt;button data-val=&quot;Private&quot;&gt;Private&lt;/button&gt;&lt;button data-val=&quot;Business&quot;&gt;Business&lt;/button&gt;&lt;button data-val=&quot;Ridesharing&quot;&gt;Rideshare&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Kilometres a year&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;km&quot;&gt;&lt;button data-val=&quot;Less than 5,000&quot;&gt;Under 5k&lt;/button&gt;&lt;button data-val=&quot;Up to 10,000&quot;&gt;10k&lt;/button&gt;&lt;button data-val=&quot;Up to 15,000&quot;&gt;15k&lt;/button&gt;&lt;button data-val=&quot;Up to 20,000&quot;&gt;20k&lt;/button&gt;&lt;button data-val=&quot;More than 20,000&quot;&gt;Over 20k&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Driven in peak times three or more weekdays&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;peak&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Parked on weekdays&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;parked&quot;&gt;&lt;button data-val=&quot;Same Suburb&quot;&gt;Same suburb&lt;/button&gt;&lt;button data-val=&quot;Another Suburb&quot;&gt;Another suburb&lt;/button&gt;&lt;button data-val=&quot;Multiple Suburbs&quot;&gt;Multiple&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Days a week to work or study&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;workDays&quot;&gt;&lt;button data-val=&quot;0 days&quot;&gt;0&lt;/button&gt;&lt;button data-val=&quot;1 - 2 days&quot;&gt;1 to 2&lt;/button&gt;&lt;button data-val=&quot;3 - 4 days&quot;&gt;3 to 4&lt;/button&gt;&lt;button data-val=&quot;5+ days&quot;&gt;5 plus&lt;/button&gt;&lt;button data-val=&quot;I don't work or study&quot;&gt;Not working&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Claims, suspensions or cancellations in the last 3 years&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;claims&quot;&gt;&lt;button data-val=&quot;0&quot;&gt;0&lt;/button&gt;&lt;button data-val=&quot;1&quot;&gt;1&lt;/button&gt;&lt;button data-val=&quot;2&quot;&gt;2&lt;/button&gt;&lt;button data-val=&quot;3&quot;&gt;3&lt;/button&gt;&lt;button data-val=&quot;4&quot;&gt;4&lt;/button&gt;&lt;button data-val=&quot;5&quot;&gt;5&lt;/button&gt;&lt;button data-val=&quot;6&quot;&gt;6&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;r2&quot;&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Claims, suspensions, cancellations last 3 years&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;claims&quot;&gt;&lt;button data-val=&quot;0&quot;&gt;0&lt;/button&gt;&lt;button data-val=&quot;1&quot;&gt;1&lt;/button&gt;&lt;button data-val=&quot;2&quot;&gt;2&lt;/button&gt;&lt;button data-val=&quot;3&quot;&gt;3&lt;/button&gt;&lt;button data-val=&quot;4&quot;&gt;4&lt;/button&gt;&lt;button data-val=&quot;5&quot;&gt;5&lt;/button&gt;&lt;button data-val=&quot;6&quot;&gt;6&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Two or more Suncorp policies already&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;multi&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Modifications Suncorp won't cover&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;mods&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Modifications Suncorp won't cover · custom paint, nitro, aftermarket turbo, roll cage&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;mods&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
-    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Disclosure has a YES on&lt;/label&gt;
-      &lt;label class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_susp&quot;&gt; Licence suspended or cancelled&lt;/label&gt;
-      &lt;label class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_decl&quot;&gt; Insurance declined, cancelled or special terms&lt;/label&gt;
-      &lt;label class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_unlic&quot;&gt; Drove while unlicensed&lt;/label&gt;
-      &lt;label class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_acc&quot;&gt; Accident or claim lodged&lt;/label&gt;
-      &lt;label class=&quot;chk&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_crime&quot;&gt; Criminal offence&lt;/label&gt;
+
+    &lt;div class=&quot;grp&quot;&gt;Answered yes to&lt;/div&gt;
+    &lt;div class=&quot;list&quot;&gt;
+      &lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Licence suspended or cancelled&lt;/span&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_susp&quot;&gt;&lt;/label&gt;
+      &lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Insurance declined, cancelled or special terms&lt;/span&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_decl&quot;&gt;&lt;/label&gt;
+      &lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Drove while unlicensed&lt;/span&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_unlic&quot;&gt;&lt;/label&gt;
+      &lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Accident or claim lodged&lt;/span&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_acc&quot;&gt;&lt;/label&gt;
+      &lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Criminal offence&lt;/span&gt;&lt;input type=&quot;checkbox&quot; class=&quot;flag&quot; id=&quot;f_crime&quot;&gt;&lt;/label&gt;
     &lt;/div&gt;
+
+    &lt;div class=&quot;grp&quot;&gt;Other driver&lt;/div&gt;
     &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Anyone else driving it more than once&lt;/label&gt;&lt;div class=&quot;seg&quot; data-key=&quot;addDriver&quot;&gt;&lt;button data-val=&quot;Yes&quot;&gt;Yes&lt;/button&gt;&lt;button data-val=&quot;No&quot;&gt;No&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div id=&quot;adBox&quot; class=&quot;hide&quot;&gt;
-      &lt;div class=&quot;row&quot; style=&quot;margin-bottom:8px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;useApp2()&quot;&gt;Use second applicant&lt;/button&gt;&lt;/div&gt;
+      &lt;div class=&quot;row&quot; style=&quot;margin-bottom:10px;&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;useApp2()&quot;&gt;Use second applicant&lt;/button&gt;&lt;/div&gt;
       &lt;div class=&quot;r2&quot;&gt;
-        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Additional driver name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adName&quot;&gt;&lt;/div&gt;
-        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;DOB&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adDob&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Name&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adName&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Date of birth&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adDob&quot; placeholder=&quot;dd/mm/yyyy&quot;&gt;&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;r3&quot;&gt;
-        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gender&lt;/label&gt;&lt;select id=&quot;adGender&quot;&gt;&lt;option value=&quot;&quot;&gt;·&lt;/option&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+        &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gender&lt;/label&gt;&lt;select id=&quot;adGender&quot;&gt;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Relationship&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;adRel&quot; placeholder=&quot;Partner&quot;&gt;&lt;/div&gt;
         &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Also a policy holder&lt;/label&gt;&lt;select id=&quot;adHolder&quot;&gt;&lt;option&gt;No&lt;/option&gt;&lt;option&gt;Yes&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
       &lt;/div&gt;
@@ -3963,7 +3987,7 @@ textarea{line-height:1.55;resize:vertical;}
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;4 · Quote page&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;type back what Suncorp shows&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Quote&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;type back what Suncorp shows&lt;/span&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;r3&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Cover&lt;/label&gt;&lt;select id=&quot;coverMode&quot;&gt;&lt;option value=&quot;agreed&quot;&gt;Agreed value&lt;/option&gt;&lt;option value=&quot;market&quot;&gt;Market value&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
@@ -3975,16 +3999,17 @@ textarea{line-height:1.55;resize:vertical;}
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Suncorp range high&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;rangeMax&quot; placeholder=&quot;optional&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Quote number&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;quoteNo&quot; placeholder=&quot;QTE&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
+    &lt;div class=&quot;grp&quot;&gt;Monthly prices&lt;/div&gt;
     &lt;div class=&quot;r4&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;A · Basic&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pA&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;B · Basic + Roadside&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pB&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;B · Basic and Roadside&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pB&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;C · Advantages&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pC&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;D · Advantages + Roadside&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pD&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;D · Advantages and Roadside&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pD&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;hint&quot;&gt;Monthly prices. A is the base quote as it lands. B tick Roadside Assist. C untick Roadside, tick Comprehensive Advantages. D leave Advantages on and tick Roadside again. Leave commission at 31.50 and the discretionary discount at 0.&lt;/div&gt;
-    &lt;div class=&quot;r2&quot; style=&quot;margin-top:10px;&quot;&gt;
+    &lt;div class=&quot;hint&quot;&gt;A is the quote as it lands. B tick Roadside Assist. C untick Roadside, tick Comprehensive Advantages. D Advantages plus Roadside. Leave commission at 31.50, discount at 0.&lt;/div&gt;
+    &lt;div class=&quot;r2&quot; style=&quot;margin-top:14px;&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Sign off as&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;signName&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gap insurance line in the email&lt;/label&gt;&lt;select id=&quot;gapLine&quot;&gt;&lt;option value=&quot;yes&quot;&gt;Include&lt;/option&gt;&lt;option value=&quot;no&quot;&gt;Leave out&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gap insurance line&lt;/label&gt;&lt;select id=&quot;gapLine&quot;&gt;&lt;option value=&quot;yes&quot;&gt;Include&lt;/option&gt;&lt;option value=&quot;no&quot;&gt;Leave out&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
@@ -3993,31 +4018,31 @@ textarea{line-height:1.55;resize:vertical;}
 &lt;div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Suncorp answers · screen by screen&lt;/h2&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;copyTxt(ansText)&quot;&gt;Copy all&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Suncorp answers&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(ansText)&quot;&gt;Copy all&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div id=&quot;warnBox&quot;&gt;&lt;/div&gt;
     &lt;div class=&quot;out&quot; id=&quot;answers&quot;&gt;&lt;/div&gt;
-    &lt;div class=&quot;hint&quot;&gt;Tap any value to copy it on its own.&lt;/div&gt;
+    &lt;div class=&quot;hint&quot;&gt;Tap a value to copy it.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Email to client&lt;/h2&gt;&lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('subject').value)&quot;&gt;Copy subject&lt;/button&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;copyTxt(document.getElementById('emailBody').value)&quot;&gt;Copy email&lt;/button&gt;&lt;button class=&quot;btn blue sm&quot; onclick=&quot;openMail()&quot;&gt;Open in mail&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Email&lt;/h2&gt;&lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('subject').value)&quot;&gt;Copy subject&lt;/button&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('emailBody').value)&quot;&gt;Copy email&lt;/button&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;openMail()&quot;&gt;Open in mail&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Subject&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;subject&quot;&gt;&lt;/div&gt;
-    &lt;textarea id=&quot;emailBody&quot; rows=&quot;22&quot;&gt;&lt;/textarea&gt;
-    &lt;div class=&quot;hint&quot;&gt;Attach the Suncorp PDS before you send. Edit anything here, it won't be overwritten until you change an input above.&lt;/div&gt;
+    &lt;textarea id=&quot;emailBody&quot; class=&quot;outbox&quot; rows=&quot;22&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;hint&quot;&gt;Attach the Suncorp PDS. Edits here hold until you change something above.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;SMS&lt;/h2&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;copyTxt(document.getElementById('smsBody').value)&quot;&gt;Copy SMS&lt;/button&gt;&lt;/div&gt;
-  &lt;div class=&quot;cb&quot;&gt;&lt;textarea id=&quot;smsBody&quot; rows=&quot;4&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;SMS&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('smsBody').value)&quot;&gt;Copy&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;&lt;textarea id=&quot;smsBody&quot; class=&quot;outbox&quot; rows=&quot;4&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
-  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;CRM note&lt;/h2&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;copyTxt(document.getElementById('crmBody').value)&quot;&gt;Copy note&lt;/button&gt;&lt;/div&gt;
-  &lt;div class=&quot;cb&quot;&gt;&lt;textarea id=&quot;crmBody&quot; rows=&quot;4&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;CRM note&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('crmBody').value)&quot;&gt;Copy&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;&lt;textarea id=&quot;crmBody&quot; class=&quot;outbox&quot; rows=&quot;4&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;/div&gt;
@@ -4092,13 +4117,13 @@ function parseZink(raw){
   // vehicle · Zink prints Make and Model as text boxes and Year as a select, and may hold several asset blocks
   var LBL=/^(MAKE|MODEL|YEAR|TYPE|CONDITION|USED|NEW|DEMO|STATE|VIN|HIN|NVIC|SERIAL NUMBER|DESCRIPTION|REGISTRATION|ODOMETER|ENGINE NUMBER|BUILD DATE|MM|YYYY|GLASS'S RETAIL VALUE|PURCHASE COST)$/i;
   var firstOk=function(list,fn){for(var i=0;i&lt;list.length;i++){var x=fn(list[i]);if(x)return x}return null};
-  // Make and Model are text boxes in Zink, so the value sits under the label. Value above the label is the fallback.
+  // Make and Model come from a lookup in Zink, so the value sits above the label. Value under the label is the fallback.
   var mk=[];var rm=/\n[ \t]*Make[ \t]*\n[ \t]*([^\n]+)\n/g;while((m=rm.exec(t)))mk.push(m[1].trim());
   var up=[];var ru=/\n([A-Za-z][A-Za-z &amp;\-]{1,24})\n[ \t]*Make[ \t]*\n/g;while((m=ru.exec(t)))up.push(m[1].trim());
-  d.make=firstOk(mk.concat(up),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^\d/.test(x)?titleCase(x):null});
+  d.make=firstOk(up.concat(mk),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^\d/.test(x)?titleCase(x):null});
   var md=[];var rmo=/\n[ \t]*Model[ \t]*\n[ \t]*([^\n]+)\n/g;while((m=rmo.exec(t)))md.push(m[1].trim());
   var upm=[];var rum=/\n([A-Za-z0-9][A-Za-z0-9 \-]{0,24})\n[ \t]*Model[ \t]*\n/g;while((m=rum.exec(t)))upm.push(m[1].trim());
-  d.model=firstOk(md.concat(upm),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^(19|20)\d{2}$/.test(x)&amp;&amp;x!=='0'&amp;&amp;(!d.make||x.toLowerCase()!==d.make.toLowerCase())?x:null});
+  d.model=firstOk(upm.concat(md),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^(19|20)\d{2}$/.test(x)&amp;&amp;x!=='0'&amp;&amp;(!d.make||x.toLowerCase()!==d.make.toLowerCase())?x:null});
   var yrs=[];var ry=/\n\s*((?:19|20)\d{2})\s*\n\s*Year\b/g;while((m=ry.exec(t)))yrs.push(m[1]);
   var ry2=/\n\s*Year\s*\n\s*((?:19|20)\d{2})\b/g;while((m=ry2.exec(t)))yrs.push(m[1]);
   d.year=yrs.length?yrs[0]:null;
@@ -4218,7 +4243,7 @@ function useApp2(){
 }
 
 /* ─── outputs ─── */
-function line(k,val,cls){return '&lt;span class=&quot;k&quot;&gt;'+esc(k)+':&lt;/span&gt; &lt;span class=&quot;v'+(cls?' '+cls:'')+'&quot; data-c=&quot;'+esc(val)+'&quot;&gt;'+esc(val)+'&lt;/span&gt;'}
+function line(k,val,cls){return '&lt;div class=&quot;ar&quot;&gt;&lt;span class=&quot;k&quot;&gt;'+esc(k)+'&lt;/span&gt;&lt;span class=&quot;v'+(cls?' '+cls:'')+'&quot; data-c=&quot;'+esc(val)+'&quot;&gt;'+esc(val)+'&lt;/span&gt;&lt;/div&gt;'}
 function plain(k,val){return k+': '+val}
 function firstNames(){
   var a=v('firstName')||'there';
@@ -4243,7 +4268,7 @@ function render(){
   var warns=[];
   if(mode==='agreed'&amp;&amp;agreed&amp;&amp;hi&amp;&amp;agreed&gt;hi)warns.push('Suncorp tops out at '+money(hi)+' for this car. Put '+money(hi)+' in Amount Covered and the email will follow.');
   if(mode==='agreed'&amp;&amp;agreed&amp;&amp;lo&amp;&amp;agreed&lt;lo)warns.push('Suncorp will not go under '+money(lo)+' for this car. Use '+money(lo)+'.');
-  var flagged=FLAGS.filter(function(id){return $(id)&amp;&amp;$(id).checked}).map(function(id){return $(id).nextSibling.textContent.trim()});
+  var flagged=FLAGS.filter(function(id){return $(id)&amp;&amp;$(id).checked}).map(function(id){var p=$(id).previousElementSibling;return p?p.textContent.trim():id});
   if(flagged.length)warns.push('Disclosure has a YES on '+flagged.join(', ').toLowerCase()+'. Ring the client before you quote, Suncorp will ask and it changes the price or the answer.');
   if(seg.mods==='Yes')warns.push('Modifications ticked. Suncorp will not cover those, tell the client before you go further.');
   if(seg.use==='Business')warns.push('Business use ticked. Check the lender is fine with a business use policy on a consumer loan.');
@@ -4255,22 +4280,22 @@ function render(){
   // answers panel
   var H=[],P=[];
   var head='SUNCORP QUOTE'+(name?' · '+name:'')+(car?' · '+car:'');
-  H.push('&lt;span class=&quot;h&quot;&gt;'+esc(head)+'&lt;/span&gt;');P.push(head);
+  H.push('&lt;span class=&quot;t&quot;&gt;'+esc(head)+'&lt;/span&gt;');P.push(head);
   var add=function(k,val,cls){if(val==null||val==='')return;H.push(line(k,val,cls));P.push(plain(k,val))};
   var hd=function(s){H.push('&lt;span class=&quot;h&quot;&gt;'+esc(s)+'&lt;/span&gt;');P.push('');P.push(s)};
   hd('1 · Find your car');
   add('Policy start date',v('startDate')||today());
   add('Year',v('year')||'check');add('Make',v('make')||'check');add('Model',v('model')||'check');
-  add('Transmission',hints.trans||'not in Zink, check the listing','w');
-  add('Cylinders code',hints.eng||'check the badge · DT is diesel turbo, DTT twin turbo, the number is cylinders','w');
-  add('Body type',hints.body||'not in Zink, check the listing','w');
+  add('Transmission',hints.trans||'not in Zink, check the listing',hints.trans?'':'w');
+  add('Cylinders code',hints.eng||'check the badge, DT is diesel turbo, DTT twin turbo, the number is cylinders',hints.eng&amp;&amp;!/check/.test(hints.eng)?'':'w');
+  add('Body type',hints.body||'not in Zink, check the listing',hints.body?'':'w');
   add('Model row',v('nvic')?('pick the row whose code is '+v('nvic')):'no NVIC in Zink, match the description'+(v('desc')?(' · '+v('desc')):''),v('nvic')?'':'w');
   hd('2 · Car features');
   add('Modifications Suncorp does not cover',seg.mods||'No');
   hd('3 · Car details');
   add('Is the car financed','Yes');
   add('Use',seg.use||'Private');
-  add('Km a year',seg.km||'not answered yet','w');
+  add('Km a year',seg.km||'not answered yet',seg.km?'':'w');
   add('Peak times 3 or more weekdays',seg.peak||'No');
   add('Two or more Suncorp policies',seg.multi||'No');
   add('Postcode or suburb',[v('suburb'),v('postcode'),v('state')].filter(Boolean).join(', ')||'check');
@@ -4279,22 +4304,22 @@ function render(){
   hd('4 · Driver details');
   add('Main driver DOB',v('dob')||'check');
   add('Gender',v('gender')||'check');
-  add('Days a week to work or study',seg.workDays||'not answered yet','w');
+  add('Days a week to work or study',seg.workDays||'not answered yet',seg.workDays?'':'w');
   add('Claims, suspensions, cancellations in 3 years',seg.claims||'0');
-  add('Current or most recent insurer',v('insurer')||'ask the client','w');
+  add('Current or most recent insurer',v('insurer')||'ask the client',v('insurer')?'':'w');
   if(seg.addDriver==='Yes'){
     add('Additional drivers','1');
-    add('Additional driver',[v('adName'),v('adDob'),v('adGender'),v('adRel')].filter(Boolean).join(' · ')||'details needed','w');
+    add('Additional driver',[v('adName'),v('adDob'),v('adGender'),v('adRel')].filter(Boolean).join(' · ')||'details needed',v('adName')?'':'w');
     add('Also a policy holder',v('adHolder')||'No');
   }else add('Additional drivers','0');
   hd('5 · Quote page');
-  add('Excess',excess?money(excess):'pick the highest one Suncorp offers, then type it in','w');
+  add('Excess',excess?money(excess):'pick the highest one Suncorp offers, then type it in',excess?'':'w');
   add('Cover',mode==='agreed'?('Amount Covered · '+(agreed?money(agreed):'purchase price')):'Market Value');
-  add('Commission','leave at 31.50 · discount 0');
-  add('Prices to read off','A base · B tick Roadside · C untick Roadside, tick Comprehensive Advantages · D Advantages plus Roadside');
+  add('Commission','leave at 31.50, discount 0');
+  add('Prices to read off','A as it lands · B tick Roadside · C untick Roadside, tick Advantages · D Advantages plus Roadside');
   add('Email the quote to',[name,v('email')].filter(Boolean).join(' · ')||'check');
   if(v('quoteNo'))add('Quote number',v('quoteNo'));
-  $('answers').innerHTML=H.join('\n');
+  $('answers').innerHTML=H.join('');
   ansText=P.join('\n').replace(/\n\n+/g,'\n\n').trim();
   document.querySelectorAll('#answers .v').forEach(function(el){el.onclick=function(){copyTxt(el.getAttribute('data-c'))}});
 

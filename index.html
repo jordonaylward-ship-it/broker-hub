@@ -3854,6 +3854,10 @@ textarea{line-height:1.5;resize:vertical;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(44,44,46,.96);color:var(--ink);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:500;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.5);}
 .toast.show{opacity:1;}
 .hide{display:none!important;}
+.script{font-size:16.5px;line-height:1.65;color:var(--ink);}
+.script h3{font-size:13px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px;}
+.script h3:first-child{margin-top:6px;}
+.script p{margin:0 0 12px;}
 .outbox{background:var(--card2);border:none;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.55;}
 &lt;/style&gt;
 &lt;/head&gt;
@@ -3991,6 +3995,36 @@ textarea{line-height:1.5;resize:vertical;}
 &lt;div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Suncorp numbers&lt;/h2&gt;&lt;span class=&quot;tag&quot;&gt;tap to copy&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;&lt;div class=&quot;out&quot; style=&quot;padding:2px 14px;&quot;&gt;
+    &lt;div class=&quot;ar&quot;&gt;&lt;span class=&quot;k&quot;&gt;Dealer number&lt;/span&gt;&lt;span class=&quot;v&quot; onclick=&quot;copyTxt('10002068')&quot;&gt;10002068&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;ar&quot;&gt;&lt;span class=&quot;k&quot;&gt;Reference for delaying the first payment&lt;/span&gt;&lt;span class=&quot;v&quot; onclick=&quot;copyTxt('U270495')&quot;&gt;U270495&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;ar&quot;&gt;&lt;span class=&quot;k&quot;&gt;Suncorp dealer line&lt;/span&gt;&lt;span class=&quot;v&quot; onclick=&quot;copyTxt('1300 304 785')&quot;&gt;1300 304 785&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;ar&quot;&gt;&lt;span class=&quot;k&quot;&gt;Suncorp for the client, 8am to 7pm AEST, 7 days&lt;/span&gt;&lt;span class=&quot;v&quot; onclick=&quot;copyTxt('13 11 55')&quot;&gt;13 11 55&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Read to the client&lt;/h2&gt;&lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; id=&quot;scriptToggle&quot; onclick=&quot;toggleScript()&quot;&gt;Show&lt;/button&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('scriptText').innerText)&quot;&gt;Copy&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb hide&quot; id=&quot;scriptBox&quot;&gt;
+    &lt;div class=&quot;script&quot; id=&quot;scriptText&quot;&gt;
+      &lt;h3&gt;Your duty to us, no misrepresentation&lt;/h3&gt;
+      &lt;p&gt;Before you buy, make changes to or reinstate this consumer insurance contract we will ask you questions. Your answers will be used to decide if we can insure you and on what terms.&lt;/p&gt;
+      &lt;p&gt;You have a duty to us under the Insurance Contracts Act to take reasonable care not to make a misrepresentation. To make sure that you meet this duty to us, it is important that you answer all questions truthfully and accurately.&lt;/p&gt;
+      &lt;p&gt;If you give us information that is not true and accurate, we may be able to reduce or refuse to pay a claim or cancel your policy, or both. If your failure is fraudulent, we may be able to refuse to pay a claim and treat the contract as if it never existed.&lt;/p&gt;
+      &lt;h3&gt;Verbal disclosure&lt;/h3&gt;
+      &lt;p&gt;I am required to provide you with certain information. As a distributor of Suncorp Insurance, I can arrange insurance policies on their behalf, but I cannot provide advice. You will receive policy documentation from both Suncorp and us. The insurance is issued by AAI Limited trading as Suncorp Insurance and you can contact them on 13 11 55 between 8am and 7pm AEST, 7 days.&lt;/p&gt;
+      &lt;p&gt;The Product Disclosure Statement explains what is and isn't covered and includes details about your 21 day cooling off period.&lt;/p&gt;
+      &lt;p&gt;The Distributor Disclosure Document details how we may be remunerated, information about Suncorp's dispute resolution service and how you can contact them if you want to make a complaint.&lt;/p&gt;
+      &lt;p&gt;You should read these documents carefully.&lt;/p&gt;
+      &lt;p&gt;Also, just to let you know there is no cover under the Suncorp Roadside Assist benefit during the first 24 hours of the policy.&lt;/p&gt;
+      &lt;p&gt;Before we continue do you have any other questions about your insurance?&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;list&quot; style=&quot;margin-top:14px;&quot;&gt;&lt;label class=&quot;chk&quot;&gt;&lt;span&gt;Read to the client, put it in the CRM note&lt;/span&gt;&lt;input type=&quot;checkbox&quot; id=&quot;scriptRead&quot;&gt;&lt;/label&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
   &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Suncorp answers&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(ansText)&quot;&gt;Copy all&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div id=&quot;warnBox&quot;&gt;&lt;/div&gt;
@@ -4020,7 +4054,12 @@ textarea{line-height:1.5;resize:vertical;}
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;D · Advantages and Roadside&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pD&quot; step=&quot;0.01&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;hint&quot;&gt;A is the quote as it lands. B tick Roadside Assist. C untick Roadside, tick Comprehensive Advantages. D Advantages plus Roadside. Leave commission at 31.50, discount at 0.&lt;/div&gt;
-    &lt;div class=&quot;r2&quot; style=&quot;margin-top:14px;&quot;&gt;
+    &lt;div class=&quot;grp&quot;&gt;Once they pick&lt;/div&gt;
+    &lt;div class=&quot;r2&quot;&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Client chose&lt;/label&gt;&lt;select id=&quot;chosen&quot;&gt;&lt;option value=&quot;&quot;&gt;Not yet&lt;/option&gt;&lt;option value=&quot;A&quot;&gt;Option A&lt;/option&gt;&lt;option value=&quot;B&quot;&gt;Option B&lt;/option&gt;&lt;option value=&quot;C&quot;&gt;Option C&lt;/option&gt;&lt;option value=&quot;D&quot;&gt;Option D&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Policy number&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;policyNo&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;r2&quot; style=&quot;margin-top:4px;&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Sign off as&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;signName&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Gap insurance line&lt;/label&gt;&lt;select id=&quot;gapLine&quot;&gt;&lt;option value=&quot;yes&quot;&gt;Include&lt;/option&gt;&lt;option value=&quot;no&quot;&gt;Leave out&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
     &lt;/div&gt;
@@ -4042,6 +4081,15 @@ textarea{line-height:1.5;resize:vertical;}
 &lt;/div&gt;
 
 &lt;div class=&quot;card&quot;&gt;
+  &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;Policy documents email&lt;/h2&gt;&lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('docSubject').value)&quot;&gt;Copy subject&lt;/button&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('docBody').value)&quot;&gt;Copy email&lt;/button&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;openMail('docSubject','docBody')&quot;&gt;Open in mail&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;cb&quot;&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Subject&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;docSubject&quot;&gt;&lt;/div&gt;
+    &lt;textarea id=&quot;docBody&quot; class=&quot;outbox&quot; rows=&quot;18&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;hint&quot;&gt;For when Suncorp's documents land and you forward them on. Check the attachment lines match what actually came through.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;card&quot;&gt;
   &lt;div class=&quot;ch&quot;&gt;&lt;h2&gt;CRM note&lt;/h2&gt;&lt;button class=&quot;btn ghost sm&quot; onclick=&quot;copyTxt(document.getElementById('crmBody').value)&quot;&gt;Copy&lt;/button&gt;&lt;/div&gt;
   &lt;div class=&quot;cb&quot;&gt;&lt;textarea id=&quot;crmBody&quot; class=&quot;outbox&quot; rows=&quot;4&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
 &lt;/div&gt;
@@ -4056,11 +4104,12 @@ textarea{line-height:1.5;resize:vertical;}
    Reads a Zink page dump, holds the disclosure answers, and writes the Suncorp screen answers,
    the client email, the SMS and a CRM note. Nothing leaves the browser. Saved under hub_ins_v1. */
 var KEY='hub_ins_v1';
-var TEXT_IDS=['firstName','lastName','dob','gender','mobile','email','firstName2','lastName2','dob2','gender2','mobile2','addrLine','suburb','state','postcode','year','make','model','desc','nvic','rego','vin','odo','condition','price','startDate','insurer','dealer','adName','adDob','adGender','adRel','adHolder','coverMode','agreed','excess','rangeMin','rangeMax','quoteNo','pA','pB','pC','pD','signName','gapLine','raw'];
+var TEXT_IDS=['firstName','lastName','dob','gender','mobile','email','firstName2','lastName2','dob2','gender2','mobile2','addrLine','suburb','state','postcode','year','make','model','desc','nvic','rego','vin','odo','condition','price','startDate','insurer','dealer','adName','adDob','adGender','adRel','adHolder','coverMode','agreed','excess','rangeMin','rangeMax','quoteNo','pA','pB','pC','pD','signName','gapLine','chosen','policyNo','raw'];
 var SEG_KEYS=['use','km','peak','parked','workDays','claims','multi','mods','addDriver'];
 var FLAGS=['f_susp','f_decl','f_unlic','f_acc','f_crime'];
+var EXTRA_CHK=['scriptRead'];
 var seg={};
-var edited={email:false,sms:false,crm:false};
+var edited={email:false,sms:false,crm:false,docs:false};
 var ansText='';
 
 function $(id){return document.getElementById(id)}
@@ -4175,15 +4224,15 @@ function carHints(desc){
 function save(){
   var o={seg:seg,edited:edited,txt:{},flags:{}};
   TEXT_IDS.forEach(function(id){o.txt[id]=v(id)});
-  FLAGS.forEach(function(id){o.flags[id]=!!($(id)&amp;&amp;$(id).checked)});
+  FLAGS.concat(EXTRA_CHK).forEach(function(id){o.flags[id]=!!($(id)&amp;&amp;$(id).checked)});
   o.hasApp2=!!$('hasApp2').checked;
-  o.email=v('emailBody');o.subject=v('subject');o.sms=v('smsBody');o.crm=v('crmBody');
+  o.email=v('emailBody');o.subject=v('subject');o.sms=v('smsBody');o.crm=v('crmBody');o.docSubject=v('docSubject');o.docBody=v('docBody');
   try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}
 }
 function load(){
   var o=null;try{o=JSON.parse(localStorage.getItem(KEY))}catch(e){}
   if(o&amp;&amp;o.txt){TEXT_IDS.forEach(function(id){if($(id)&amp;&amp;o.txt[id]!=null)$(id).value=o.txt[id]});}
-  if(o&amp;&amp;o.flags)FLAGS.forEach(function(id){if($(id))$(id).checked=!!o.flags[id]});
+  if(o&amp;&amp;o.flags)FLAGS.concat(EXTRA_CHK).forEach(function(id){if($(id))$(id).checked=!!o.flags[id]});
   if(o&amp;&amp;o.seg)seg=o.seg;
   if(o&amp;&amp;o.edited)edited=o.edited;
   if(o&amp;&amp;o.hasApp2)$('hasApp2').checked=true;
@@ -4197,7 +4246,7 @@ function load(){
   if(!seg.mods)seg.mods='No';
   if(!seg.addDriver)seg.addDriver='No';
   paintSegs();
-  if(o){if(o.subject)$('subject').value=o.subject;if(o.email)$('emailBody').value=o.email;if(o.sms)$('smsBody').value=o.sms;if(o.crm)$('crmBody').value=o.crm;}
+  if(o){if(o.subject)$('subject').value=o.subject;if(o.email)$('emailBody').value=o.email;if(o.sms)$('smsBody').value=o.sms;if(o.crm)$('crmBody').value=o.crm;if(o.docSubject)$('docSubject').value=o.docSubject;if(o.docBody)$('docBody').value=o.docBody;}
   syncBoxes();
 }
 function paintSegs(){
@@ -4211,12 +4260,12 @@ function syncBoxes(){
 function clearAll(){
   if(!confirm('Clear everything for a new client?'))return;
   TEXT_IDS.forEach(function(id){if($(id)&amp;&amp;id!=='signName')$(id).value=''});
-  FLAGS.forEach(function(id){if($(id))$(id).checked=false});
+  FLAGS.concat(EXTRA_CHK).forEach(function(id){if($(id))$(id).checked=false});
   $('hasApp2').checked=false;
   seg={use:'Private',peak:'No',parked:'Same Suburb',claims:'0',multi:'No',mods:'No',addDriver:'No'};
-  edited={email:false,sms:false,crm:false};
+  edited={email:false,sms:false,crm:false,docs:false};
   $('startDate').value=today();
-  $('subject').value='';$('emailBody').value='';$('smsBody').value='';$('crmBody').value='';
+  $('subject').value='';$('emailBody').value='';$('smsBody').value='';$('crmBody').value='';$('docSubject').value='';$('docBody').value='';
   $('readTag').textContent='';
   paintSegs();syncBoxes();render();save();
 }
@@ -4234,10 +4283,11 @@ function readZink(){
   else if(d.spouse){set('firstName2',d.spouse.firstName);set('lastName2',d.spouse.lastName);set('mobile2',d.spouse.mobile)}
   var got=[];['clientName','dob','mobile','email','address','year','make','model','nvic','price'].forEach(function(k){if(d[k])got.push(k)});
   $('readTag').textContent=got.length?('read '+got.length+' fields'+(d.p2?' · joint':'')):'nothing recognised';
-  edited.email=false;edited.sms=false;edited.crm=false;
+  edited.email=false;edited.sms=false;edited.crm=false;edited.docs=false;
   syncBoxes();render();save();
   toast(d.clientName?('Loaded '+d.clientName):'Read the paste, check the fields');
 }
+function toggleScript(){var b=$('scriptBox'),t=$('scriptToggle');b.classList.toggle('hide');t.textContent=b.classList.contains('hide')?'Show':'Hide'}
 function useHandoff(){
   var h=null;try{h=JSON.parse(localStorage.getItem('hub_handoff_v1'))}catch(e){}
   if(!h||!h.raw){toast('No Zink handoff saved yet');return}
@@ -4362,14 +4412,29 @@ function render(){
   var sms='Hi '+firstNames()+', I\'ve just emailed you the Suncorp insurance options for the '+(car||'car')+'. Have a look and text me back which option you\'d like, or if you want the excess changed. '+(v('signName')||'Jordon');
   if(!edited.sms)$('smsBody').value=sms;
 
+  // policy documents email · sent when Suncorp's documents come through
+  var chosen=v('chosen'),optNames={A:'Suncorp Basic Comprehensive Insurance',B:'Suncorp Basic Comprehensive Insurance with Roadside Assistance',C:'Suncorp Comprehensive Advantages with window and windscreen cover and hire car',D:'Suncorp Comprehensive Advantages with Roadside Assistance'},optPrice={A:pA,B:pB,C:pC,D:pD};
+  var D=[];
+  D.push('Hi '+firstNames());D.push('');
+  D.push('Please take the time to review the attached documents and read through these carefully and if something looks incorrect please don\'t hesitate to contact myself to have it rectified.');D.push('');
+  D.push('The explanation for each attachment is listed below.');D.push('');
+  D.push('Certificate of Insurance: your policy schedule'+(v('policyNo')?', policy number '+v('policyNo'):'')+', showing the '+(car||'car')+', the cover, your excess and the start date. Please check every detail on it.');
+  D.push('Product Disclosure Statement: explains what is and isn\'t covered and includes details about your 21 day cooling off period.');
+  D.push('Distributor Disclosure Document: details how we may be remunerated, information about Suncorp\'s dispute resolution service and how you can contact them if you want to make a complaint.');
+  if(chosen&amp;&amp;optNames[chosen]){D.push('');D.push('Your policy is Option '+chosen+', '+optNames[chosen]+(optPrice[chosen]?' at '+money2(optPrice[chosen])+' per month':'')+(excess?', with an excess of '+money(excess):'')+'.')}
+  D.push('');
+  D.push('Reminder your first payment will be direct debited out of your account which your income goes into in the next 24/48 hours, this will reoccur each month on or around that date.');
+  D.push('');D.push('Thanks,');D.push(v('signName')||'Jordon');
+  if(!edited.docs){$('docSubject').value='Your Suncorp insurance documents'+(car?' for the '+car:'');$('docBody').value=D.join('\n')}
+
   // crm
   var prices=[['A',pA],['B',pB],['C',pC],['D',pD]].filter(function(x){return x[1]}).map(function(x){return x[0]+' '+money2(x[1])}).join(', ');
-  var crm='Suncorp quotes emailed '+today()+(car?' on the '+car:'')+(v('dealer')?' from '+v('dealer'):'')+'. '+(mode==='agreed'?'Agreed value '+money(agreed):'Market value')+', excess '+(excess?money(excess):'tbc')+'. Options '+(prices||'tbc')+' a month.'+(seg.addDriver==='Yes'&amp;&amp;v('adName')?' '+v('adName')+' added as a driver.':'')+(v('quoteNo')?' Quote '+v('quoteNo')+'.':'')+' SMS sent, waiting on their pick.';
+  var crm='Suncorp quotes emailed '+today()+(car?' on the '+car:'')+(v('dealer')?' from '+v('dealer'):'')+'. '+(mode==='agreed'?'Agreed value '+money(agreed):'Market value')+', excess '+(excess?money(excess):'tbc')+'. Options '+(prices||'tbc')+' a month.'+(seg.addDriver==='Yes'&amp;&amp;v('adName')?' '+v('adName')+' added as a driver.':'')+(v('quoteNo')?' Quote '+v('quoteNo')+'.':'')+(chosen?' Client chose Option '+chosen+(optPrice[chosen]?' at '+money2(optPrice[chosen])+' a month':'')+'.'+(v('policyNo')?' Policy '+v('policyNo')+'.':''):' SMS sent, waiting on their pick.')+($('scriptRead')&amp;&amp;$('scriptRead').checked?' Duty of disclosure and verbal disclosure read to the client.':'');
   if(!edited.crm)$('crmBody').value=crm;
 }
-function openMail(){
+function openMail(sid,bid){
   var to=v('email');
-  var url='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(v('subject'))+'&amp;body='+encodeURIComponent(v('emailBody'));
+  var url='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(v(sid||'subject'))+'&amp;body='+encodeURIComponent(v(bid||'emailBody'));
   if(url.length&gt;1900)toast('Long email, use Copy email if it opens blank');
   window.open(url,'_blank');
 }
@@ -4868,15 +4933,17 @@ document.querySelectorAll('.seg').forEach(function(s){
 function inputChanged(id){
   if(id==='price'&amp;&amp;(!v('agreed')||edited.agreedAuto)){$('agreed').value=v('price');edited.agreedAuto=true}
   if(id==='agreed')edited.agreedAuto=false;
-  edited.email=false;edited.sms=false;edited.crm=false;
+  edited.email=false;edited.sms=false;edited.crm=false;edited.docs=false;
   render();save();
 }
-TEXT_IDS.concat(FLAGS).forEach(function(id){var el=$(id);if(!el||id==='raw')return;el.addEventListener('input',function(){inputChanged(id)});el.addEventListener('change',function(){inputChanged(id)})});
+TEXT_IDS.concat(FLAGS).concat(EXTRA_CHK).forEach(function(id){var el=$(id);if(!el||id==='raw')return;el.addEventListener('input',function(){inputChanged(id)});el.addEventListener('change',function(){inputChanged(id)})});
 $('hasApp2').addEventListener('change',function(){syncBoxes();inputChanged('hasApp2')});
 $('subject').addEventListener('input',function(){edited.email=true;save()});
 $('emailBody').addEventListener('input',function(){edited.email=true;save()});
 $('smsBody').addEventListener('input',function(){edited.sms=true;save()});
 $('crmBody').addEventListener('input',function(){edited.crm=true;save()});
+$('docSubject').addEventListener('input',function(){edited.docs=true;save()});
+$('docBody').addEventListener('input',function(){edited.docs=true;save()});
 $('raw').addEventListener('input',function(){save()});
 (function(){
   var dz=$('discDrop'),fi=$('discFile');

@@ -10405,6 +10405,18 @@ function parsePayslip(text){
   if(ldm&amp;&amp;!/LEAVE|SHIFT|ANNUAL|WEEKEND|PENALTY|SAT|SUN/.test(ldm[1]))o.loading=ldm[2]+&quot;%&quot;;
   if(/\b(UNITS|HRS|HOURS)\b[\s\S]{0,80}?\bRATE\b/.test(up)&amp;&amp;/\b\d{1,3}\.\d{3,4}\b/.test(up))o.hourly=true;
   if(/PRIOR PERIOD|BACK ?PAY/.test(up))o.priorAdj=true;
+  // pay advances · Wageflo and the like print their own transactions on the slip, one line per draw
+  var pam=up.match(/\b(WAGEFLO|BEFOREPAY|MYPAYNOW|MY PAY NOW|EARND|PAYTIME|WAGESTREAM|INSTAPAY|EARLYPAY|PAY ADVANCE|SALARY ADVANCE|WAGE ADVANCE)\b/);
+  if(pam){
+    o.payAdvanceProvider=pam[1].replace(/\s+/g,' ');
+    var sec=up.slice(pam.index,pam.index+1500);
+    var stop=sec.search(/\n[^\n]*\b(NET PAY|GROSS|SUPERANNUATION|BANK|YTD|TOTAL DEDUCTIONS|LEAVE)\b/);
+    if(stop&gt;0)sec=sec.slice(0,stop);
+    var draws=0,total=0;
+    sec.split('\n').forEach(function(l){if(!/\d{1,2}[\/\-\.]\d{1,2}/.test(l)&amp;&amp;!/\bADVANCE\b|\bDRAW\b|\bWITHDRAW/.test(l))return;var ms=l.match(/\$?\s*\d{1,4}(?:,\d{3})?(?:\.\d{2})\b/g);if(!ms)return;draws++;total+=parseFloat(ms[ms.length-1].replace(/[^0-9.]/g,''))});
+    if(!draws){var all=sec.match(/\$?\s*\d{1,4}(?:,\d{3})?\.\d{2}\b/g)||[];draws=all.length;total=all.reduce(function(a,x){return a+parseFloat(x.replace(/[^0-9.]/g,''))},0)}
+    o.payAdvances=draws;o.payAdvanceTotal=Math.round(total*100)/100;
+  }
   return o;
 }
 
@@ -10659,6 +10671,12 @@ function compare(cd,docs,raw){
     if(pay.ytdGross!=null)adds.push(&quot;YTD gross: &quot;+fmtMoney(pay.ytdGross));
   }
 
+  // Pay advances · Money3 knocks out more than one in a cycle, everyone else asks
+  if(pay&amp;&amp;pay.payAdvanceProvider){
+    var pn=pay.payAdvances||0;
+    rows.push({field:&quot;Pay advances&quot;,zink:&quot;—&quot;,doc:pay.payAdvanceProvider+(pn?&quot; · &quot;+pn+&quot; draw&quot;+(pn&gt;1?&quot;s&quot;:&quot;&quot;)+(pay.payAdvanceTotal?&quot; totalling &quot;+fmtMoney(pay.payAdvanceTotal):&quot;&quot;)+&quot; this cycle&quot;:&quot; on the slip&quot;),status:&quot;check&quot;,note:(pn&gt;1?&quot;More than one pay advance in the cycle knocks Money3 out and drops the grade at Finance One. &quot;:&quot;&quot;)+&quot;They will show on the statements as small credits through the week. For Money3 the client needs one full clean pay cycle without them, then lodge with that payslip. Put the count into the serviceability calc.&quot;});
+    warns.push(&quot;Pay advances on the payslip · &quot;+pay.payAdvanceProvider+(pn?&quot;, &quot;+pn+&quot; this cycle&quot;:&quot;&quot;)+(pn&gt;1?&quot; · Money3 knockout until a clean cycle&quot;:&quot;&quot;));
+  }
   // Income basis · the first slip of a financial year and back pay both make one slip read high
   if(pay&amp;&amp;pay.ytdGross!=null&amp;&amp;pay.gross!=null&amp;&amp;pay.gross&gt;0&amp;&amp;Math.abs(pay.ytdGross-pay.gross)&lt;=Math.max(1,pay.gross*0.01)){
     rows.push({field:&quot;Income basis&quot;,zink:&quot;—&quot;,doc:&quot;YTD &quot;+fmtMoney(pay.ytdGross)+&quot; equals this pay&quot;,status:&quot;check&quot;,note:&quot;First pay of the financial year, the YTD proves nothing. Annualise off the last two or three slips, or get last year's income statement from myGov.&quot;});
@@ -10739,7 +10757,7 @@ async function fileToJpg(file){
   return await blobToB64(blob);
 }
 var VIS_LIC=&quot;Read this Australian driver licence. Return ONLY a JSON object and nothing else, with these keys: licenceNo (the licence number, digits only, as a string), cardNo (the card number, usually printed small on the front or the back, letters and digits, as a string), dob (date of birth as DD/MM/YYYY), expiry (expiry date as DD/MM/YYYY), address (the full residential address on one line including state and postcode). Use null for anything you cannot read with confidence. Do not guess.&quot;;
-var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number), basis (any words on the slip that describe the employment basis such as CASUAL, TEMPORARY, SHORT TERM, PART TIME, FULL TIME or PERMANENT, plus any casual loading percentage, as one short string, else null). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
+var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number), basis (any words on the slip that describe the employment basis such as CASUAL, TEMPORARY, SHORT TERM, PART TIME, FULL TIME or PERMANENT, plus any casual loading percentage, as one short string, else null), payAdvances (the number of pay advance or wage advance draws such as Wageflo, Beforepay or MyPayNow listed on this slip, else null), payAdvanceProvider (the provider name, else null). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
 async function visionRead(file,kind){
   var key=localStorage.getItem(&quot;claude_api_key&quot;);
   if(!key)throw new Error(&quot;no API key saved, add it in Settings first&quot;);
@@ -10786,6 +10804,7 @@ async function visionRead(file,kind){
     o.phone=str(j.phone);
     var bs=str(j.basis);
     if(bs){o.empHints=[bs.toUpperCase()];var bl=bs.match(/(\d{1,2}(?:\.\d+)?)\s*%/);if(bl)o.loading=bl[1]+&quot;%&quot;}
+    if(j.payAdvances!=null&amp;&amp;!isNaN(+j.payAdvances)&amp;&amp;+j.payAdvances&gt;0){o.payAdvances=+j.payAdvances;o.payAdvanceProvider=str(j.payAdvanceProvider)||&quot;Pay advance&quot;}
   }
   return o;
 }
@@ -16423,6 +16442,13 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
             &lt;/label&gt;
             &lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;color:#78350f;&quot;&gt;Only tick if both partners materially share housing &amp;amp; living costs. Liberty often refuses the split if the spouse's income is much smaller than the applicant's · calc will flag per-lender. Even when refused at lender level, your own calc still shows the optimistic case for reference.&lt;/div&gt;
           &lt;/div&gt;
+          &lt;div style=&quot;margin-top:12px;padding:10px 14px;background:#132a1f;border:1px solid #1f5c46;border-radius:8px;&quot;&gt;
+            &lt;label style=&quot;display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;font-size:13px;&quot;&gt;
+              &lt;input type=&quot;checkbox&quot; id=&quot;spouseEvidenced&quot; style=&quot;width:18px;height:18px;cursor:pointer;&quot;&gt;
+              Partner income is backed by payslips in the file
+            &lt;/label&gt;
+            &lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;&quot;&gt;Until this is ticked the partner's income is not counted and the expense split stays off. Azora and most lenders will not share living costs with a partner who cannot show income. A stay at home partner is a No, and loading their $300 a week with nothing behind it gets the file bounced.&lt;/div&gt;
+          &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
@@ -16479,9 +16505,14 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
         &lt;div class=&quot;grid grid-3&quot; style=&quot;margin-top:10px;&quot;&gt;
           &lt;div class=&quot;field&quot;&gt;&lt;label&gt;YTD gross · latest payslip&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;ytdGross&quot; value=&quot;0&quot; min=&quot;0&quot;&gt;&lt;/div&gt;
           &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Weeks covered by YTD&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;ytdWeeks&quot; value=&quot;0&quot; min=&quot;0&quot; step=&quot;0.5&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Pay advances · current pay cycle&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;payAdvances&quot; value=&quot;0&quot; min=&quot;0&quot; step=&quot;1&quot; title=&quot;Wageflo, Beforepay, MyPayNow and the like. Count them on the latest payslip's transactions section, or as small pay day credits on the statements.&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;grid grid-3&quot; style=&quot;margin-top:10px;&quot;&gt;
+          &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Current SACC loans&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;saccCount&quot; value=&quot;0&quot; min=&quot;0&quot; step=&quot;1&quot; title=&quot;Open payday loans right now. Money3 knocks out more than 2.&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;field&quot;&gt;&lt;/div&gt;
           &lt;div class=&quot;field&quot;&gt;&lt;/div&gt;
         &lt;/div&gt;
-        &lt;div class=&quot;hint&quot; style=&quot;margin-top:8px;&quot;&gt;v1.2 sanity gates. Credits vs payslip variance over 15%, or a YTD mismatch over 20%, turns banners amber and hides max-lend until you manually check the income. When statements are in the file: gambling and observed spend load onto living for every lender, a payday facility voids Azora's no-statements shortcut, Azora reassesses off actual bank credits, and trailing-30-day BNPL loads onto Azora's living expenses. Revolving facilities are assessed at limit · tick &quot;At limit&quot; on the liability row.&lt;/div&gt;
+        &lt;div class=&quot;hint&quot; style=&quot;margin-top:8px;&quot;&gt;v1.2 sanity gates. Credits vs payslip variance over 15%, or a YTD mismatch over 20%, turns banners amber and hides max-lend until you manually check the income. When statements are in the file: gambling and observed spend load onto living for every lender, a payday facility voids Azora's no-statements shortcut, Azora reassesses off actual bank credits, and trailing-30-day BNPL loads onto Azora's living expenses. Pay advances: Money3 knocks out more than one in the current pay cycle, look for them on the payslip and as small credits through the week on the statements. Revolving facilities are assessed at limit · tick &quot;At limit&quot; on the liability row.&lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
 
@@ -18631,6 +18662,35 @@ function renderTips(tips) {
 function generateQueries(c) {
   const queries = [];
 
+  // ===== HOUSEHOLD REALITY CHECKS · the Kataraina file =====
+  const _incSp = $('includeSpouse') &amp;&amp; $('includeSpouse').checked;
+  const _evid = $('spouseEvidenced') &amp;&amp; $('spouseEvidenced').checked;
+  const _hh = valStr('householdType');
+  const _deps = valInt('dependents') || 0;
+  if (_incSp &amp;&amp; !_evid) {
+    queries.push({
+      text: 'Partner income is not backed by payslips · left out of every lender and the expense split is off',
+      impact: 'Do not load a partner\'s income unless payslips back it. Azora bounces the file, share on Yes needs the partner\'s own income. Either get the payslips and tick the box, or untick Include spouse and run it as one income.'
+    });
+  }
+  if ((_hh === 'couple_deps' || _hh === 'couple') &amp;&amp; !(_incSp &amp;&amp; _evid)) {
+    const _rent = val('housingPayment');
+    queries.push({
+      text: 'One income household' + (_deps &gt; 0 ? ' with ' + _deps + ' dependant' + (_deps &gt; 1 ? 's' : '') : '') + ' · full couple HEM lands on the applicant',
+      impact: 'Every lender runs the full household living cost on the one income' + (_rent &gt; 0 ? ', on top of $' + Math.round(_rent).toLocaleString() + ' a month rent' : '') + '. That is the problem, not the split. If it is short, drop the loan, every $1,000 off is about $22 a month back. Money3 is the exception, it assesses the applicant alone on its own floor table.'
+    });
+  }
+  const _pa = valInt('payAdvances') || 0;
+  if (_pa &gt; 0) {
+    queries.push({
+      text: 'Pay advances in the current pay cycle: ' + _pa + (_pa &gt; 1 ? ' · Money3 knockout' : ''),
+      impact: 'Wageflo, Beforepay, MyPayNow. They show on the payslip transactions and as small credits through the week on the statements. Money3 knocks out more than one in a cycle, Finance One drops the grade, everyone else will ask. One full clean pay cycle without them, then lodge with that payslip in hand.'
+    });
+  }
+  if ((valInt('saccCount') || 0) &gt; 2) {
+    queries.push({ text: 'More than 2 current SACC loans · Money3 knockout', impact: 'Payday loans open right now. Money3 declines at 3 or more, most others will not touch it either.' });
+  }
+
   // ===== OTHER INCOME SANITY CHECK =====
   const applicantOther = val('otherIncome');
 
@@ -19051,6 +19111,7 @@ function snapshotState() {
     spouseEmpType: valStr('spouseEmpType') || 'none',
     spouseNetOverride: val('spouseNetOverride'),
     splitExpenses: $('splitExpenses') ? $('splitExpenses').checked : false,
+    spouseEvidenced: $('spouseEvidenced') ? $('spouseEvidenced').checked : false,
 
     genLiving: val('genLiving'),
     childcare: val('childcare'),
@@ -19068,6 +19129,8 @@ function snapshotState() {
     bankCreditAvg: val('bankCreditAvg'),
     bnpl30: val('bnpl30'),
     paydayFacility: $('paydayFacility') ? $('paydayFacility').checked : false,
+    payAdvances: valInt('payAdvances') || 0,
+    saccCount: valInt('saccCount') || 0,
     ytdGross: val('ytdGross'),
     ytdWeeks: val('ytdWeeks'),
     gamblingMo: val('gamblingMo'),
@@ -19168,7 +19231,7 @@ function baseCommitments(s) {
 
   // Spouse split for housing · only when broker explicitly ticks Include Spouse + Apply 50% split.
   // Each lender's calc can still warn if their policy would refuse this split.
-  const housingSplitApplied = !!(s.includeSpouse &amp;&amp; s.splitExpenses &amp;&amp; housingPay &gt; 0);
+  const housingSplitApplied = !!(s.includeSpouse &amp;&amp; s.splitExpenses &amp;&amp; s.spouseEvidenced &amp;&amp; housingPay &gt; 0);
   const housingPayRawFull = housingPay;
   if (housingSplitApplied) housingPay = housingPay * 0.5;
 
@@ -19360,7 +19423,8 @@ function calcIncomeGeneric(s, haircuts) {
   // decides whether to actually use this · the generic income just makes it available.
   let spouseNetMonthly = 0;
   let spouseGrossUsed = 0;
-  if (s.includeSpouse) {
+  // Partner income only counts when it is backed by payslips. A stay at home partner adds nothing.
+  if (s.includeSpouse &amp;&amp; s.spouseEvidenced) {
     spouseGrossUsed = s.spouseGrossRaw || 0;
     if (s.spouseNetOverride &gt; 0) {
       spouseNetMonthly = s.spouseNetOverride;
@@ -19395,7 +19459,7 @@ function livingExpenses(s, grossIncome) {
   const core = Math.max(statedCore, hem, observedFloor);
 
   // Spouse 50/50 split only applies when the broker explicitly ticks Include Spouse + Apply Split.
-  const splitApplied = !!(s.includeSpouse &amp;&amp; s.splitExpenses);
+  const splitApplied = !!(s.includeSpouse &amp;&amp; s.splitExpenses &amp;&amp; s.spouseEvidenced);
   const coreEffective = splitApplied ? core * 0.5 : core;
   const extras = s.education + s.privateHealth + s.otherLiving + gambling;
   const extrasEffective = splitApplied ? extras * 0.5 : extras;
@@ -19617,6 +19681,9 @@ function calcAzora(s, base) {
   const knockouts = [];
   const warnings = [];
   if (tier === null) knockouts.push('Credit score required to tier this file');
+  if (s.includeSpouse &amp;&amp; !s.spouseEvidenced) warnings.push('Partner income not backed by payslips · Azora will not count it and will not share living costs. Assessed on the applicant alone with the full household HEM. Loading it anyway gets the file bounced');
+  if ((s.householdType === 'couple_deps' || s.householdType === 'couple') &amp;&amp; !(s.includeSpouse &amp;&amp; s.spouseEvidenced)) warnings.push('One income household · full couple HEM on the applicant. Share on Yes needs the partner\'s own evidenced income');
+  if (s.payAdvances &gt; 0) warnings.push(`${s.payAdvances} pay advance${s.payAdvances &gt; 1 ? 's' : ''} in the current cycle · Azora will see them on the statements and ask`);
   if (inc.grossIncome &lt; 45000) knockouts.push('Gross income under $45k minimum');
   if (azoraAssessAmount &gt; 0 &amp;&amp; azoraAssessAmount &lt; 8500) knockouts.push('Below Azora minimum $8,500 (assessed on Total Purchase Price + fees)');
   if (maxLoan &gt; 0 &amp;&amp; s.loanAmt &gt; maxLoan) knockouts.push(`Loan exceeds tier ${tier} max of $${maxLoan.toLocaleString()}`);
@@ -19649,6 +19716,7 @@ function calcAzora(s, base) {
   // (skipping - we don't have DOB-derived age)
 
   if (surplus &lt; 0) warnings.push(`Monthly surplus is ${fmt(surplus)} · tight for Azora's calc`);
+  else if (surplus &lt; 300) warnings.push(`Monthly surplus is only ${fmt(surplus)} · Azora's own HEM often lands above this estimate, treat it as a coin flip and ring the BDM before you lodge`);
 
   return {
     name: 'Azora', color: '#1e3a8a',
@@ -20558,8 +20626,25 @@ function calcMoney3(s, base) {
   // Income: 100% base, 80% OT/comm/bonus (similar to Pepper/Liberty).
   // Centrelink + child support taken at the user's haircut (default 100% via dropdown).
   // CASUAL: × 1.0 (Money3 most flexible · 52-week basis, apprentices treated as full-time continuity)
-  const inc = calcIncomeGeneric(s, { base: 1, ot: 0.8, comm: 0.8, car: 0.8, casualFactor: 1.0 });
-  const liv = livingExpenses(s, inc.grossIncome);
+  // Money3 assesses the applicant on their own. A partner only counts as a co-applicant, and this calc has none,
+  // so partner income is off and the living floor is the single applicant table with dependants.
+  const sM3 = Object.assign({}, s, { includeSpouse: false, splitExpenses: false });
+  const inc = calcIncomeGeneric(sM3, { base: 1, ot: 0.8, comm: 0.8, car: 0.8, casualFactor: 1.0 });
+  // Money3 minimum living expenses, weekly, top income band, 2025 Q2 HEM release · single 0 to 3 dependants, +$100 each extra
+  const m3Deps = s.dependents || 0;
+  const m3Single = [366, 464, 575, 687];
+  const m3Weekly = m3Deps &lt;= 3 ? m3Single[m3Deps] : m3Single[3] + 100 * (m3Deps - 3);
+  const m3Floor = m3Weekly * 52 / 12;
+  const livGen = livingExpenses(sM3, inc.grossIncome);
+  const m3Core = Math.max(livGen.statedCore, m3Floor, livGen.observedFloor);
+  const m3Extras = s.education + s.privateHealth + s.otherLiving + livGen.gambling;
+  const liv = Object.assign({}, livGen, { hem: m3Floor, splitApplied: false, coreFull: m3Core, totalFull: m3Core + m3Extras, total: m3Core + m3Extras, m3Weekly });
+  // Money3 rent floor · $150 a week renting, $75 boarding
+  const m3Housing = s.housingStatus === 'rent' ? Math.max(s.housingPayRawFull || s.housingPayRaw, 650) : s.housingStatus === 'board' ? Math.max(s.housingPayRaw, 325) : base.housingPayRawFull;
+  const m3ExProposed = base.exProposedTotal - base.housingPay + m3Housing;
+  // Term caps by loan size · asset finance guide
+  const m3TermCap = s.loanAmt &lt; 6000 ? 24 : s.loanAmt &lt; 8000 ? 36 : s.loanAmt &lt;= 12000 ? 48 : s.loanAmt &lt; 30000 ? 60 : 72;
+  const m3Term = Math.min(s.loanTerm, m3TermCap);
 
   // Tier matrix anchored on Cooper's 13.95% settlement.
   // Cooper hit the BEST tier despite negatives (thin file, age 18, apprentice,
@@ -20598,10 +20683,12 @@ function calcMoney3(s, base) {
   // (18yr at start, 23yr at EOT) · Money3 prices on profile not vehicle age. Vehicle
   // age impacts approval (mechanical inspection required) but not rate card.
 
-  const repayment = rate !== null ? pmtWithBalloon(s.loanAmt, rate, s.loanTerm, s.balloonDollar) : 0;
+  const repayment = rate !== null ? pmtWithBalloon(s.loanAmt, rate, m3Term, s.balloonDollar) : 0;
   const ndi = inc.netMonthly - liv.total;
-  const commitments = base.exProposedTotal + repayment;
+  const commitments = m3ExProposed + repayment;
   const surplus = ndi - commitments;
+  const m3NetWeekly = inc.netMonthly * 12 / 52;
+  const m3CommitShare = inc.netMonthly &gt; 0 ? (base.liabMonthly + base.ccCommit + s.hecs + s.childSupport + s.otherC + repayment) / inc.netMonthly : 0;
 
   // Knockouts
   const knockouts = [];
@@ -20609,7 +20696,11 @@ function calcMoney3(s, base) {
   if (tier === null) knockouts.push('Credit score required to tier this file');
   if (s.loanAmt &gt; 0 &amp;&amp; s.loanAmt &lt; 5000) knockouts.push('Below Money3 minimum $5,000');
   if (tier &amp;&amp; s.loanAmt &gt; maxLoan) knockouts.push(`Loan exceeds tier ${tier} max of $${maxLoan.toLocaleString()}`);
-  if (inc.grossIncome &gt; 0 &amp;&amp; inc.grossIncome &lt; 26000) knockouts.push('Gross income under ~$26k Money3 minimum (varies by tier, but rule of thumb)');
+  if (inc.netMonthly &gt; 0 &amp;&amp; m3NetWeekly &lt; 480) knockouts.push(`Net income $${Math.round(m3NetWeekly)} a week · Money3 minimum is $480 for a single applicant`);
+  if (s.payAdvances &gt; 1) knockouts.push(`${s.payAdvances} pay advances in the current pay cycle · Money3 knocks out more than one. One full clean cycle without Wageflo or the like, then apply with that payslip`);
+  if (s.saccCount &gt; 2) knockouts.push(`${s.saccCount} current SACC loans · Money3 knocks out more than 2`);
+  if (inc.netMonthly &gt; 0 &amp;&amp; m3CommitShare &gt; 0.35) knockouts.push(`Commitments including this loan are ${Math.round(m3CommitShare * 100)}% of net income · Money3 caps at 35%`);
+  if (s.stmtsInFile &amp;&amp; s.gamblingMo &gt; 0 &amp;&amp; inc.netMonthly &gt; 0 &amp;&amp; s.gamblingMo / inc.netMonthly &gt; 0.20) knockouts.push(`Gambling is ${Math.round(s.gamblingMo / inc.netMonthly * 100)}% of net income · Money3 caps at 20%, 15% when Centrelink is over half the income`);
   if (s.vehicleAgeEnd &gt; 25) knockouts.push(`Vehicle age EOT ${s.vehicleAgeEnd.toFixed(1)}y exceeds Money3's ~25y cap`);
   if (s.empType === 'casual' &amp;&amp; s.monthsCurrent &lt; 6 &amp;&amp; s.monthsPrev &lt; 6) {
     knockouts.push('Casual: 6mo current OR previous same-industry employer required');
@@ -20627,6 +20718,9 @@ function calcMoney3(s, base) {
 
   // Soft warnings (not knockouts)
   if (tier &amp;&amp; surplus &lt; 0) warnings.push(`Monthly surplus is ${fmt(surplus)} · won't service`);
+  if (s.loanTerm &gt; m3TermCap) warnings.push(`Term capped at ${m3TermCap} months on a $${Math.round(s.loanAmt).toLocaleString()} loan · repayment shown on ${m3TermCap} months`);
+  if (s.payAdvances === 1) warnings.push('One pay advance this cycle · allowed, the fees get loaded into capacity and the statements will show it');
+  if (s.includeSpouse) warnings.push('Partner income left out · Money3 only counts a partner as a co-applicant. Living costs run on the single applicant table with dependants, which is why this one often passes where the HEM lenders fail');
   if (s.vehicleAgeEnd &gt; 18) warnings.push(`Vehicle age ${s.vehicleAgeEnd.toFixed(1)}y at EOT · Money3 will accept but expect detailed mechanical inspection requirement`);
   if (s.empType === 'permanent_ft' &amp;&amp; s.monthsCurrent &lt; 6) {
     warnings.push('FT under 6mo · Money3 generally OK if industry continuity (apprenticeship counts), but Credit may want manager letter');
@@ -20643,8 +20737,8 @@ function calcMoney3(s, base) {
 
   return {
     name: 'Money3', color: '#be185d',
-    incomeMethod: 'YTD-based annualisation. Casuals: 6mo current OR previous same industry. Apprentices treated as full-time. Most flexible lender on thin files, young applicants, aged vehicles.',
-    tier: tierDesc, rate, maxLoan, maxTerm: 84, termUsed: s.loanTerm,
+    incomeMethod: `Applicant assessed alone. Living floor $${m3Weekly} a week for ${m3Deps &gt; 0 ? 'a single with ' + m3Deps + ' dependant' + (m3Deps &gt; 1 ? 's' : '') : 'a single applicant'}, or verified spend if higher. Rent floor $150 a week. Casuals: 6mo current OR previous same industry. Term caps by loan size.`,
+    tier: tierDesc, rate, maxLoan, maxTerm: m3TermCap, termUsed: m3Term,
     grossIncome: inc.grossIncome, netMonthly: inc.netMonthly,
     ndi, repayment, commitments, surplus,
     services: tier !== null &amp;&amp; knockouts.length === 0 &amp;&amp; surplus &gt; 0,

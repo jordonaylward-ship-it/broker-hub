@@ -10990,7 +10990,7 @@ function parseZinkText(raw){
     if(spouseAlt){const amt=parseFloat(spouseAlt[1].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`Spouse income: $${spouseAlt[1]} ${spouseAlt[2]}`)}
   }
   // Detect partner/spouse from marital status
-  d.maritalStatus=grab([/(Single|Married|De ?Facto|Defacto|Separated|Divorced|Widowed)\s*\n\s*Marital Status/i,/Marital Status\s*\*?\s*\n?\s*(Single|Married|De Facto|Defacto|Separated|Divorced|Widowed)/i]);
+  d.maritalStatus=grab([/(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)\s*\n\s*Marital Status/i,/Marital Status\s*\*?\s*\n?\s*(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)/i]);
   d.hasPartner=d.maritalStatus&amp;&amp;/married|de.?facto/i.test(d.maritalStatus);
   if(d.hasPartner&amp;&amp;otherTypes.length===0)otherTypes.push(&quot;Has partner (check income)&quot;);
   d.otherIncome=otherTypes.length&gt;0?otherTypes.join(&quot;, &quot;):null;
@@ -11012,18 +11012,31 @@ d.mortgageRepay=grabNum([/\bHome\b[\s\S]{0,600}?Repayments\s*\$\s*\n?\s*([0-9,.]
 
   // Structured liabilities from the Assets &amp; Liabilities blocks (Home/Mortgage excluded · housing card owns those)
   d.liabilities=[];
-  const liaBlocks=raw.matchAll(/(Credit Card|Personal Loan|Car Loan|Vehicle Loan|Store Card|BNPL|After ?Pay|Zip(?: Pay)?)\s*\n\s*Type\b([\s\S]{0,500}?)(?=\n\s*(?:Income|Trade In|Credit Card|Personal Loan|Car Loan|Home|Superannuation|Capacity Analysis)\b|$)/gi);
-  for(const bm of liaBlocks){
-    const blk=bm[2]||'';
-    const outm=blk.match(/Outstanding\s*\$\s*\n?\s*([0-9,.]+)/);
-    const limm=blk.match(/Limit\s*\$\s*\n?\s*([0-9,.]+)/);
-    const repm=blk.match(/Repayments[^\n]*\n?\s*\$\s*\n?\s*([0-9,.]+)/);
-    const freqm=blk.match(/(Weekly|Fortnightly|Monthly)\s*\n\s*Frequency/);
-    const provm=blk.match(/\n([A-Z][A-Z\s&amp;]{2,40})\n\s*Finance Provider/);
-    const num2=(m)=&gt;m?parseFloat(m[1].replace(/,/g,'')):null;
-    const out=num2(outm),lim=num2(limm);let rep=num2(repm);
-    if(rep!=null&amp;&amp;freqm){const fq=freqm[1].toLowerCase();if(fq==='weekly')rep=rep*52/12;else if(fq==='fortnightly')rep=rep*26/12;}
-    if((out||0)&gt;0||(lim||0)&gt;0)d.liabilities.push({type:bm[1].trim(),provider:provm?provm[1].trim():null,outstanding:out||0,limit:lim||0,repayMonthly:rep!=null?Math.round(rep):null});
+  // Every block under Assets &amp; Liabilities that carries a Liability sub form, whatever Zink calls the type.
+  // A debt collector fine files as &quot;Debt Collection and Consolidation&quot;, a tax debt as &quot;Tax Debt&quot;, and so on.
+  {
+    const alIdx=raw.lastIndexOf('Assets &amp; Liabilities');
+    const alText=alIdx&gt;-1?raw.slice(alIdx):'';
+    const liaRe=/\n([A-Za-z][A-Za-z &amp;\/\-]{2,60})\s*\n\s*Type\s*\*?\s*\n([\s\S]{0,900}?)(?=\n\s*(?:Income|Trade In|Capacity Analysis)\s*\n|$)/g;
+    let bm;
+    while((bm=liaRe.exec(alText))){
+      const tname=bm[1].trim(),blk=bm[2]||'';
+      if(!/\bLiability\b/.test(blk))continue;
+      if(/^(Home|Mortgage)/i.test(tname))continue;
+      const num2=(m)=&gt;m?parseFloat(m[1].replace(/,/g,'')):null;
+      const out=num2(blk.match(/Outstanding\s*\$\s*\n?\s*([0-9,.]+)/)),lim=num2(blk.match(/Limit\s*\$\s*\n?\s*([0-9,.]+)/));
+      const monEq=num2(blk.match(/\$([0-9,.]+)\/m\b/));
+      let rep=num2(blk.match(/Repayments?\s*\$\s*\n?\s*([0-9,.]+)/));
+      const freqm=blk.match(/(Weekly|Fortnightly|Monthly|Quarterly|Yearly)\s*\n\s*Frequency/);
+      if(monEq!=null)rep=monEq;
+      else if(rep!=null&amp;&amp;freqm){const fq=freqm[1].toLowerCase();if(fq==='weekly')rep=rep*52/12;else if(fq==='fortnightly')rep=rep*26/12;else if(fq==='quarterly')rep=rep/3;else if(fq==='yearly')rep=rep/12;}
+      if(!((out||0)&gt;0||(lim||0)&gt;0||(rep||0)&gt;0))continue;
+      const provm=blk.match(/Finance Provider\s*\n\s*([^\n$][^\n]*)\n/);
+      const descm=blk.match(/Description\s*\n\s*([^\n$][^\n]*)\n/);
+      let provider=provm&amp;&amp;!/^(Outstanding|Limit|Original|Years|Repayments)/.test(provm[1].trim())?provm[1].trim():null;
+      if(!provider&amp;&amp;descm&amp;&amp;!/^(Liability|Finance Provider)/.test(descm[1].trim()))provider=descm[1].trim();
+      d.liabilities.push({type:tname,provider:provider,outstanding:out||0,limit:lim||0,repayMonthly:rep!=null?Math.round(rep):null});
+    }
   }
   const livTot=raw.match(/Total:\s*\$\s*([0-9,.]+)/);
   d.livingDeclaredMonthly=livTot?parseFloat(livTot[1].replace(/,/g,'')):null;
@@ -22163,7 +22176,7 @@ function bhfParseZink(raw){
     if(spouseAlt){const amt=parseFloat(spouseAlt[1].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`Spouse income: $${spouseAlt[1]} ${spouseAlt[2]}`)}
   }
   // Detect partner/spouse from marital status
-  d.maritalStatus=grab([/(Single|Married|De ?Facto|Defacto|Separated|Divorced|Widowed)\s*\n\s*Marital Status/i,/Marital Status\s*\*?\s*\n?\s*(Single|Married|De Facto|Defacto|Separated|Divorced|Widowed)/i]);
+  d.maritalStatus=grab([/(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)\s*\n\s*Marital Status/i,/Marital Status\s*\*?\s*\n?\s*(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)/i]);
   d.hasPartner=d.maritalStatus&amp;&amp;/married|de.?facto/i.test(d.maritalStatus);
   if(d.hasPartner&amp;&amp;otherTypes.length===0)otherTypes.push(&quot;Has partner (check income)&quot;);
   d.otherIncome=otherTypes.length&gt;0?otherTypes.join(&quot;, &quot;):null;
@@ -22185,18 +22198,31 @@ d.mortgageRepay=grabNum([/\bHome\b[\s\S]{0,600}?Repayments\s*\$\s*\n?\s*([0-9,.]
 
   // Structured liabilities from the Assets &amp; Liabilities blocks (Home/Mortgage excluded · housing card owns those)
   d.liabilities=[];
-  const liaBlocks=raw.matchAll(/(Credit Card|Personal Loan|Car Loan|Vehicle Loan|Store Card|BNPL|After ?Pay|Zip(?: Pay)?)\s*\n\s*Type\b([\s\S]{0,500}?)(?=\n\s*(?:Income|Trade In|Credit Card|Personal Loan|Car Loan|Home|Superannuation|Capacity Analysis)\b|$)/gi);
-  for(const bm of liaBlocks){
-    const blk=bm[2]||'';
-    const outm=blk.match(/Outstanding\s*\$\s*\n?\s*([0-9,.]+)/);
-    const limm=blk.match(/Limit\s*\$\s*\n?\s*([0-9,.]+)/);
-    const repm=blk.match(/Repayments[^\n]*\n?\s*\$\s*\n?\s*([0-9,.]+)/);
-    const freqm=blk.match(/(Weekly|Fortnightly|Monthly)\s*\n\s*Frequency/);
-    const provm=blk.match(/\n([A-Z][A-Z\s&amp;]{2,40})\n\s*Finance Provider/);
-    const num2=(m)=&gt;m?parseFloat(m[1].replace(/,/g,'')):null;
-    const out=num2(outm),lim=num2(limm);let rep=num2(repm);
-    if(rep!=null&amp;&amp;freqm){const fq=freqm[1].toLowerCase();if(fq==='weekly')rep=rep*52/12;else if(fq==='fortnightly')rep=rep*26/12;}
-    if((out||0)&gt;0||(lim||0)&gt;0)d.liabilities.push({type:bm[1].trim(),provider:provm?provm[1].trim():null,outstanding:out||0,limit:lim||0,repayMonthly:rep!=null?Math.round(rep):null});
+  // Every block under Assets &amp; Liabilities that carries a Liability sub form, whatever Zink calls the type.
+  // A debt collector fine files as &quot;Debt Collection and Consolidation&quot;, a tax debt as &quot;Tax Debt&quot;, and so on.
+  {
+    const alIdx=raw.lastIndexOf('Assets &amp; Liabilities');
+    const alText=alIdx&gt;-1?raw.slice(alIdx):'';
+    const liaRe=/\n([A-Za-z][A-Za-z &amp;\/\-]{2,60})\s*\n\s*Type\s*\*?\s*\n([\s\S]{0,900}?)(?=\n\s*(?:Income|Trade In|Capacity Analysis)\s*\n|$)/g;
+    let bm;
+    while((bm=liaRe.exec(alText))){
+      const tname=bm[1].trim(),blk=bm[2]||'';
+      if(!/\bLiability\b/.test(blk))continue;
+      if(/^(Home|Mortgage)/i.test(tname))continue;
+      const num2=(m)=&gt;m?parseFloat(m[1].replace(/,/g,'')):null;
+      const out=num2(blk.match(/Outstanding\s*\$\s*\n?\s*([0-9,.]+)/)),lim=num2(blk.match(/Limit\s*\$\s*\n?\s*([0-9,.]+)/));
+      const monEq=num2(blk.match(/\$([0-9,.]+)\/m\b/));
+      let rep=num2(blk.match(/Repayments?\s*\$\s*\n?\s*([0-9,.]+)/));
+      const freqm=blk.match(/(Weekly|Fortnightly|Monthly|Quarterly|Yearly)\s*\n\s*Frequency/);
+      if(monEq!=null)rep=monEq;
+      else if(rep!=null&amp;&amp;freqm){const fq=freqm[1].toLowerCase();if(fq==='weekly')rep=rep*52/12;else if(fq==='fortnightly')rep=rep*26/12;else if(fq==='quarterly')rep=rep/3;else if(fq==='yearly')rep=rep/12;}
+      if(!((out||0)&gt;0||(lim||0)&gt;0||(rep||0)&gt;0))continue;
+      const provm=blk.match(/Finance Provider\s*\n\s*([^\n$][^\n]*)\n/);
+      const descm=blk.match(/Description\s*\n\s*([^\n$][^\n]*)\n/);
+      let provider=provm&amp;&amp;!/^(Outstanding|Limit|Original|Years|Repayments)/.test(provm[1].trim())?provm[1].trim():null;
+      if(!provider&amp;&amp;descm&amp;&amp;!/^(Liability|Finance Provider)/.test(descm[1].trim()))provider=descm[1].trim();
+      d.liabilities.push({type:tname,provider:provider,outstanding:out||0,limit:lim||0,repayMonthly:rep!=null?Math.round(rep):null});
+    }
   }
   const livTot=raw.match(/Total:\s*\$\s*([0-9,.]+)/);
   d.livingDeclaredMonthly=livTot?parseFloat(livTot[1].replace(/,/g,'')):null;
@@ -22297,8 +22323,19 @@ function bhfApplyHandoff(){
   if(d.creditScore)set('creditScore',d.creditScore);
   if(d.oneScore||d.one_score)set('oneScore',d.oneScore||d.one_score);
   if(d.dependants!=null)set('dependents',d.dependants);
-  if(d.maritalStatus){const _cp=/married|de ?facto/i.test(d.maritalStatus);const _dep=(d.dependants||0)&gt;0;set('householdType',_cp?(_dep?'couple_deps':'couple'):(_dep?'single_deps':'single'));}
+  if(d.maritalStatus){const _cp=/married|de[ -]?facto|partner|couple|domestic/i.test(d.maritalStatus);const _dep=(d.dependants||0)&gt;0;set('householdType',_cp?(_dep?'couple_deps':'couple'):(_dep?'single_deps':'single'));}
   if(d.location&amp;&amp;/(SYDNEY|MELBOURNE|BRISBANE|PERTH|ADELAIDE|HOBART|DARWIN|CANBERRA)/i.test(d.location))set('locationType','capital');
+  else if(d.location){
+    // capital city postcode bands · Brisbane, Sydney, Melbourne, Perth, Adelaide, Hobart, Darwin, Canberra
+    const _pc=parseInt((d.location.match(/\b(\d{4})\s*$/)||[])[1]||'0',10);
+    const _cap=(_pc&gt;=4000&amp;&amp;_pc&lt;=4207)||(_pc&gt;=4300&amp;&amp;_pc&lt;=4306)||(_pc&gt;=4500&amp;&amp;_pc&lt;=4520)||(_pc&gt;=2000&amp;&amp;_pc&lt;=2249)||(_pc&gt;=2555&amp;&amp;_pc&lt;=2574)||(_pc&gt;=2745&amp;&amp;_pc&lt;=2770)||(_pc&gt;=3000&amp;&amp;_pc&lt;=3207)||(_pc&gt;=3800&amp;&amp;_pc&lt;=3810)||(_pc&gt;=3975&amp;&amp;_pc&lt;=3978)||(_pc&gt;=6000&amp;&amp;_pc&lt;=6199)||(_pc&gt;=5000&amp;&amp;_pc&lt;=5199)||(_pc&gt;=7000&amp;&amp;_pc&lt;=7019)||(_pc&gt;=800&amp;&amp;_pc&lt;=832)||(_pc&gt;=2600&amp;&amp;_pc&lt;=2618)||(_pc&gt;=2900&amp;&amp;_pc&lt;=2914);
+    set('locationType',_cap?'capital':'regional');
+  }
+  // youngest child from Zink's dependant ages · feeds the FTB and parenting payment runway check
+  {
+    const _ages=Array.from(String(h.raw||'').matchAll(/Dependant\s*\d+\s*age\s*\n\s*(\d{1,2})\b/gi)).map(m=&gt;parseInt(m[1],10)).filter(a=&gt;!isNaN(a));
+    if(_ages.length)set('youngestChildAge',Math.min.apply(null,_ages));
+  }
   if(d.employer)set('employer',d.employer);
   if(d.employmentType){
     const t=String(d.employmentType).toLowerCase();
@@ -22336,7 +22373,7 @@ function bhfApplyHandoff(){
     d.liabilities.forEach(li=&gt;{try{addLiability({type:_tmap[String(li.type||'').toLowerCase()]||'other',creditor:li.provider||'',balance:li.outstanding||0,limit:li.limit||0,monthly_payment:li.repayMonthly||0,applicant_share:100});}catch(e){}});
   }
   const noteBits=['--- ZINK HANDOFF · '+(d.clientName||'client')+' · '+new Date(h.at).toLocaleString('en-AU')+' ---'];
-  if(d.netIncome)noteBits.push('Income: net $'+d.netIncome+' '+(d.incomeFrequency||'')+' declared · base gross PREFILLED ≈ $'+(_grossEst?_grossEst.toLocaleString():'?')+' (2025-26 resident gross-up estimate) · VERIFY against payslips before quoting');
+  if(d.netIncome)noteBits.push('Income: net $'+d.netIncome+' '+(d.incomeFrequency||'')+' declared · base gross PREFILLED ≈ $'+(_grossEst?_grossEst.toLocaleString():'?')+' (2025-26 resident gross-up estimate) · VERIFY against payslips before quoting'+(/casual/i.test(String(d.employmentType||''))?' · CASUAL, the Zink net is usually rounded up, annualise off the payslip YTD and put the YTD and weeks in Statements &amp; Conduct so the gate checks it':''));
   if(d.otherIncome)noteBits.push('Other income: '+d.otherIncome);
   if(_oiKids)noteBits.push('CHECK: Parenting Payment or FTB is on the file but Zink shows 0 dependants. Fix the dependants and household type, then enter the youngest child age for the runway check.');
   if(Array.isArray(d.liabilities)&amp;&amp;d.liabilities.length){noteBits.push('Liabilities mapped: '+d.liabilities.map(l=&gt;l.type+(l.provider?' ('+l.provider+')':'')+' · bal $'+(l.outstanding||0)+(l.limit?' · limit $'+l.limit:'')+(l.repayMonthly?' · $'+l.repayMonthly+'/mo':'')).join(' | '));}

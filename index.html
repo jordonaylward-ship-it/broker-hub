@@ -3932,7 +3932,7 @@ textarea{line-height:1.5;resize:vertical;}
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;NVIC&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;nvic&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Rego&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;rego&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;VIN&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;vin&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Odometer&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;odo&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Odometer&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;odo&quot;&gt;&lt;input type=&quot;hidden&quot; id=&quot;build&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;r3&quot;&gt;
       &lt;div class=&quot;f&quot;&gt;&lt;label&gt;Condition&lt;/label&gt;&lt;select id=&quot;condition&quot;&gt;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&lt;option&gt;New&lt;/option&gt;&lt;option&gt;Used&lt;/option&gt;&lt;option&gt;Demo&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
@@ -4100,7 +4100,7 @@ textarea{line-height:1.5;resize:vertical;}
    Reads a Zink page dump, holds the disclosure answers, and writes the Suncorp screen answers,
    the client email, the SMS and a CRM note. Nothing leaves the browser. Saved under hub_ins_v1. */
 var KEY='hub_ins_v1';
-var TEXT_IDS=['firstName','lastName','dob','gender','mobile','email','firstName2','lastName2','dob2','gender2','mobile2','addrLine','suburb','state','postcode','year','make','model','desc','nvic','rego','vin','odo','condition','price','startDate','insurer','dealer','adName','adDob','adGender','adRel','adHolder','coverMode','agreed','excess','pA','pB','pC','pD','signName','gapLine','chosen','policyNo','raw'];
+var TEXT_IDS=['firstName','lastName','dob','gender','mobile','email','firstName2','lastName2','dob2','gender2','mobile2','addrLine','suburb','state','postcode','year','make','model','desc','nvic','rego','vin','odo','build','condition','price','startDate','insurer','dealer','adName','adDob','adGender','adRel','adHolder','coverMode','agreed','excess','pA','pB','pC','pD','signName','gapLine','chosen','policyNo','raw'];
 var SEG_KEYS=['use','km','peak','parked','workDays','claims','multi','mods','addDriver'];
 var FLAGS=['f_susp','f_decl','f_unlic','f_acc','f_crime'];
 var EXTRA_CHK=['scriptRead'];
@@ -4116,7 +4116,7 @@ function money(n){n=Math.round(+n||0);return '$'+n.toLocaleString('en-AU')}
 function money2(n){n=+n||0;return '$'+n.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function today(){var d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
 function esc(s){return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;')}
-function niceModel(x){x=String(x||'').trim();return (/^[A-Z][A-Z]{3,}$/.test(x))?titleCase(x):x}
+function niceModel(x){x=String(x||'').trim();if(!/[a-z]/.test(x)&amp;&amp;/[A-Z]{3,}/.test(x))return x.split(' ').map(function(w){return /^[A-Z]{3,}$/.test(w)?titleCase(w):(w==='FE'?'Fe':w)}).join(' ');return x}
 function titleCase(s){return String(s||'').toLowerCase().replace(/(^|[\s\-'])([a-z])/g,function(m,a,b){return a+b.toUpperCase()})}
 
 /* ─── Zink parser · tolerant of Zink printing selects as value then label and text boxes as label then value ─── */
@@ -4139,7 +4139,7 @@ function parseZink(raw){
     p.dob=grab([/Date of Birth\s*\*?\s*\n\s*(\d{2}\/\d{2}\/\d{4})/],src);
     p.gender=grab([/\n\s*(Male|Female)\s*\n\s*Gender/i,/Gender\s*\*?\s*\n\s*(Male|Female)/i],src);
     if(p.gender)p.gender=titleCase(p.gender);
-    p.email=grab([/Email\s*\*?\s*\n\s*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/],src);
+    p.email=grab([/(?:^|\n)[ \t]*Email[ \t]*\*[ \t]*\n\s*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/,/(?:^|\n)[ \t]*Email[ \t]*\n\s*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/],src);
     p.mobile=grab([/Mobile Contact Number\s*\n\s*(?:\+\d{0,2}\s*\n\s*)?(0?\d{9,10})\b/],src);
     if(p.mobile&amp;&amp;p.mobile.length===9)p.mobile='0'+p.mobile;
     p.address=grab([/Search Address\s*\n\s*([^\n]+?(?:QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s+\d{4})\s*(?:\n|$)/i],src);
@@ -4169,7 +4169,7 @@ function parseZink(raw){
   // Make and Model come from a lookup in Zink, so the value sits above the label. Value under the label is the fallback.
   var mk=[];var rm=/\n[ \t]*Make[ \t]*\n[ \t]*([^\n]+)\n/g;while((m=rm.exec(t)))mk.push(m[1].trim());
   var up=[];var ru=/\n([A-Za-z][A-Za-z &amp;\-]{1,24})\n[ \t]*Make[ \t]*\n/g;while((m=ru.exec(t)))up.push(m[1].trim());
-  d.make=firstOk(up.concat(mk),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^\d/.test(x)?titleCase(x):null});
+  d.make=firstOk(up.concat(mk),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^\d/.test(x)?makeName(String(x).toUpperCase()):null});
   var md=[];var rmo=/\n[ \t]*Model[ \t]*\n[ \t]*([^\n]+)\n/g;while((m=rmo.exec(t)))md.push(m[1].trim());
   var upm=[];var rum=/\n([A-Za-z0-9][A-Za-z0-9 \-]{0,24})\n[ \t]*Model[ \t]*\n/g;while((m=rum.exec(t)))upm.push(m[1].trim());
   d.model=firstOk(upm.concat(md),function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/^(19|20)\d{2}$/.test(x)&amp;&amp;x!=='0'&amp;&amp;(!d.make||x.toLowerCase()!==d.make.toLowerCase())?niceModel(x):null});
@@ -4178,8 +4178,8 @@ function parseZink(raw){
   d.year=yrs.length?yrs[0]:null;
   d.nvic=grab([/\n\s*NVIC\s*\n\s*([A-Z0-9]{6})\s*\n/,/\n\s*([A-Z0-9]{6})\s*\n\s*NVIC\s*\n/]);
   d.vin=grab([/\n\s*VIN\s*\n\s*([A-HJ-NPR-Z0-9]{17})\b/i]);
-  d.rego=grab([/\n\s*Registration\s*\n\s*([A-Z0-9]{2,7})\s*\n(?!\s*State\b)/i]);
-  if(d.rego&amp;&amp;LBL.test(d.rego))d.rego=null;
+  var rgz=[],rz=/\n[ \t]*Registration[ \t]*\n[ \t]*([A-Z0-9]{2,7})[ \t]*\n/gi;while((m=rz.exec(t)))rgz.push(m[1].toUpperCase());
+  d.rego=firstOk(rgz,function(x){return plateOk(x)?x:null});
   var odos=[];var ro=/\n\s*Odometer\s*\n\s*([\d,]+)\s*\n\s*km/gi;while((m=ro.exec(t)))odos.push(parseInt(m[1].replace(/,/g,''),10));
   d.odo=firstOk(odos,function(x){return x&gt;0?x:null});
   d.condition=grab([/\n\s*Condition\s*\n\s*(New|Used|Demo)\b/i]);
@@ -4188,23 +4188,36 @@ function parseZink(raw){
   d.desc=firstOk(descs,function(x){return x&amp;&amp;!LBL.test(x)&amp;&amp;!/still deciding|^n\/?a$/i.test(x)?x:null});
   var costs=[];var rc=/Purchase Cost\s*\n\s*\$?\s*\n?\s*([\d,]+(?:\.\d+)?)/g;while((m=rc.exec(t)))costs.push(parseFloat(m[1].replace(/,/g,'')));
   d.price=firstOk(costs,function(x){return x&gt;0?x:null});
-  d.dealer=grab([/Supplier Name\s*\n\s*([A-Za-z][^\n]{1,60}?)\s*\n(?=\s*Supplier Phone)/]);
+  var dl=grab([/\n([^\n]{3,90})\n[ \t]*Supplier Name[ \t]*\n/,/Supplier Name\s*\n\s*([A-Za-z][^\n]{1,60}?)\s*\n(?=\s*Supplier Phone)/]);
+  if(dl&amp;&amp;!/^(Dealership|Private|Auction|Supplier|Sale Type)/i.test(dl)){var tam=dl.match(/\b(?:trading as|t\/as?|t\/a)\b\s*(.+)$/i);d.dealer=cleanDealer(tam?tam[1]:dl)}else d.dealer=null;
+  var bdm=t.match(/Build Date\s*\n\s*(\d{1,2})\s*\n\s*((?:19|20)\d{2})/);d.build=bdm?bdm[1].padStart(2,'0')+'/'+bdm[2]:null;
   d.clientName=[d.firstName,d.lastName].filter(Boolean).join(' ')||null;
   return d;
 }
 
 /* ─── what the description tells us for the Suncorp car search ─── */
-function carHints(desc){
-  var u=String(desc||'').toUpperCase(),h={};
-  if(/\bCVT\b|\bAUTO(MATIC)?\b|\bA\/T\b|\d\s*SP\s*AUTO|\bSPORTS AUTO/.test(u))h.trans='Auto';
-  else if(/\bMAN(UAL)?\b|\bM\/T\b|\d\s*SP\s*MAN/.test(u))h.trans='Manual';
-  var e=u.match(/\b(\d\.\d)\s*(DTT|DT|T|D|I)\s*(\d)?\b/)||u.match(/\b(\d\.\d)\s*(?:L|LITRE)?\b/);
-  var lone=u.match(/\b(DTT|DT|T|I|D)(\d)\b/);
-  if(e){var code=(e[2]||'')+(e[3]||'');if(!code&amp;&amp;lone)code=lone[1]+lone[2];if(code)h.eng=code+' · '+e[1]+' litre'+(/^D/.test(code)?' diesel':'')+(/\d$/.test(code)?'':', add the cylinder count off the badge');else h.eng=e[1]+' litre, check the badge for the cylinder code'}
-  else if(lone)h.eng=lone[1]+lone[2]+(/^D/.test(lone[1])?' · diesel':'');
+function carHints(desc,make,model){
+  var u=' '+String(desc||'').toUpperCase().replace(/,/g,' ')+' ',h={};
+  if(/\bCVT\b|\bAUTO(MATIC)?\b|\bA\/T\b|\bDCT\b|\bDSG\b|DUAL CLUT|\bTIPTRONIC\b|\d\s*SP(?:D|EED)?\s*AUTO|\bSPORTS AUTO/.test(u))h.trans='Auto';
+  else if(/\bMAN(UAL)?\b|\bM\/T\b|\d\s*SP(?:D|EED)?\s*MAN/.test(u))h.trans='Manual';
+  var e=u.match(/\b(\d\.\d)\s*(DTT|DT|T|D|I)\s*(\d)?\b/);
+  var explicit=u.match(/(?:\b|\d)(DTT\d|DT\d|T\d)\b/);
+  var diesel=/\bDIESEL\b|\bTDI\b|\bCRDI?\b|\bD-?4D\b|\bTD\b/.test(u)||/^D/.test((explicit&amp;&amp;explicit[1])||(e&amp;&amp;e[2])||'');
+  var elec=/\bELECTRIC\b|\bBEV\b|\bEV\b/.test(u)&amp;&amp;!/HYBRID|\bPHEV\b/.test(u);
+  var hybrid=/HYBRID|\bHEV\b|\bPHEV\b/.test(u);
+  var twin=/TWIN[ -]?TURBO|BI-?TURBO/.test(u)||/^DTT/.test((explicit&amp;&amp;explicit[1])||(e&amp;&amp;e[2])||'');
+  var turbo=twin||diesel||/\bTURBO\b|\bTSI\b|\bTFSI\b|\bECOBOOST\b/.test(u)||/^T/.test((explicit&amp;&amp;explicit[1])||(e&amp;&amp;e[2])||'');
+  var cm=u.match(/\b[DT]{0,3}(\d{1,2})\s*-?\s*CYL(?:INDER)?S?\b/)||u.match(/\bV(6|8|10|12)\b/),cyl=explicit?explicit[1].replace(/\D/g,''):(e&amp;&amp;e[3])?e[3]:cm?cm[1]:null;
+  var size=(e&amp;&amp;e[1])||((u.match(/\b(\d\.\d)\s*(?:L|LT|LITRE|LITER)?\b/)||[])[1])||null;
+  var fuel=diesel?'diesel':hybrid?'hybrid':'petrol';
+  if(elec)h.eng='Electric';
+  else if(cyl){var code=explicit?explicit[1]:(diesel?(twin?'DTT':'DT'):(turbo?'T':''))+cyl;h.eng=code+' · '+(size?size+' litre ':'')+fuel+(turbo&amp;&amp;!diesel?' turbo':'');h.engComplete=true}
+  else if(size)h.eng=size+' litre '+fuel+(turbo&amp;&amp;!diesel?' turbo':'')+', check the cylinders on the listing';
+  var bm=u.match(/\b(\d)\s*D(?:R|OOR)?\s+(WAGON|SEDAN|HATCH(?:BACK)?|COUPE|CONVERTIBLE|CABRIOLET|VAN|LIFTBACK|FASTBACK)\b/);
   if(/DOUBLE CAB|DUAL CAB|D\/CAB|CREW CAB/.test(u))h.body=/C\/CHAS|CAB CHASSIS/.test(u)?'Double C/chas':'Double Cab P/up';
-  else if(/SUPER CAB|EXTRA CAB|X\/CAB|KING CAB|SPACE CAB/.test(u))h.body=/C\/CHAS|CAB CHASSIS/.test(u)?'Super Cab Chassis':'Super Cab Utility';
+  else if(/SUPER CAB|EXTRA CAB|X\/CAB|KING CAB|SPACE CAB|FREESTYLE/.test(u))h.body=/C\/CHAS|CAB CHASSIS/.test(u)?'Super Cab Chassis':'Super Cab Utility';
   else if(/C\/CHAS|CAB CHASSIS/.test(u))h.body='C/chas';
+  else if(bm)h.body=bm[1]+'D '+(/^HATCH/.test(bm[2])?'Hatchback':titleCase(bm[2]));
   else if(/WAGON|\bSUV\b/.test(u))h.body='Wagon';
   else if(/HATCH/.test(u))h.body='Hatchback';
   else if(/SEDAN/.test(u))h.body='Sedan';
@@ -4213,6 +4226,11 @@ function carHints(desc){
   else if(/\bVAN\b/.test(u))h.body='Van';
   else if(/\bUTE\b|UTILITY|P\/UP|PICKUP/.test(u))h.body='Utility';
   if(/4X4|4WD|AWD/.test(u))h.drive=/AWD/.test(u)?'AWD':'4x4';else if(/4X2|2WD|RWD|FWD/.test(u))h.drive='4x2';
+  // badge · first real word once the make, model and the engine and body words are gone
+  var drop={};String((make||'')+' '+(model||'')).toUpperCase().split(/[\s\-]+/).forEach(function(w){if(w)drop[w]=1});
+  var skip=/^(\d{4}|\d\.\d.*|\(?4X[24]\)?|4WD|AWD|2WD|FWD|RWD|AUTO.*|MANUAL|MAN|CVT|DCT|DSG|\d+SP.*|SP|SPD|SPEED|WAGON|SEDAN|HATCH.*|UTE|UTILITY|DOUBLE|DUAL|CAB|P\/UP|C\/CHAS|CHASSIS|\dD|\dDR|TURBO|DIESEL|PETROL|HYBRID|DTT?\d?|T\d|\d+|MY\d+|PX|MKII+I?|MK\d|SERIES|NEW|USED|DIRECT|F\/INJ|INJ|CLUT|CLUTCH|DOOR|DOORS|BLUE|WHITE|BLACK|SILVER|GREY|GRAY|RED|GREEN)$/;
+  var vt=u.trim().split(/\s+/);
+  for(var q=0;q&lt;vt.length;q++){var wd=vt[q].replace(/[^A-Z0-9\-\+]/g,'');if(!wd||drop[wd]||skip.test(wd))continue;if(/^[A-Z][A-Z0-9\-\+]{1,14}$/.test(wd)){h.badge=wd;break}}
   return h;
 }
 
@@ -4273,7 +4291,7 @@ function readZink(){
   var set=function(id,val){if(val!=null&amp;&amp;val!==''&amp;&amp;$(id)){$(id).value=val}};
   set('firstName',d.firstName);set('lastName',d.lastName);set('dob',d.dob);set('gender',d.gender);set('mobile',d.mobile);set('email',d.email);
   set('addrLine',d.addrLine);set('suburb',d.suburb);set('state',d.state);set('postcode',d.postcode);
-  set('year',d.year);set('make',d.make);set('model',d.model);set('desc',d.desc);set('nvic',d.nvic);set('rego',d.rego);set('vin',d.vin);set('odo',d.odo);set('condition',d.condition);set('dealer',d.dealer);
+  set('year',d.year);set('make',d.make);set('model',d.model);set('desc',d.desc);set('nvic',d.nvic);set('rego',d.rego);set('vin',d.vin);set('odo',d.odo);set('build',d.build);set('condition',d.condition);set('dealer',d.dealer);
   if(d.price){set('price',d.price);if(!v('agreed')||edited.agreedAuto){set('agreed',d.price);edited.agreedAuto=true}}
   if(d.p2){$('hasApp2').checked=true;set('firstName2',d.p2.firstName);set('lastName2',d.p2.lastName);set('dob2',d.p2.dob);set('gender2',d.p2.gender);set('mobile2',d.p2.mobile);}
   else if(d.spouse){set('firstName2',d.spouse.firstName);set('lastName2',d.spouse.lastName);set('mobile2',d.spouse.mobile)}
@@ -4314,7 +4332,7 @@ function render(){
   var first=v('firstName'),last=v('lastName'),name=[first,last].filter(Boolean).join(' ');
   var car=(v('make')||v('model'))?[v('year'),v('make'),v('model')].filter(Boolean).join(' '):'';
   var modelWord=v('model')||v('make')||'car';
-  var hints=carHints(v('desc'));
+  var hints=carHints(v('desc'),v('make'),v('model'));
   var agreed=+v('agreed')||+v('price')||0;
   var excess=+v('excess')||0;
   var mode=v('coverMode')||'agreed';
@@ -4336,11 +4354,12 @@ function render(){
   var hd=function(s){H.push('&lt;span class=&quot;h&quot;&gt;'+esc(s)+'&lt;/span&gt;');P.push('');P.push(s)};
   hd('1 · Find your car');
   add('Policy start date',v('startDate')||today());
-  add('Year',v('year')||'check');add('Make',v('make')||'check');add('Model',v('model')||'check');
+  add('Year',v('year')||'check');add('Make',({GWM:'Gwm'})[v('make')]||v('make')||'check');add('Model',v('model')||'check');
   add('Transmission',hints.trans||'not in Zink, check the listing',hints.trans?'':'w');
   add('Cylinders code',hints.eng||'check the badge, DT is diesel turbo, DTT twin turbo, the number is cylinders',hints.eng&amp;&amp;!/check/.test(hints.eng)?'':'w');
   add('Body type',hints.body||'not in Zink, check the listing',hints.body?'':'w');
-  add('Model row',v('nvic')?('pick the row whose code is '+v('nvic')):'no NVIC in Zink, match the description'+(v('desc')?(' · '+v('desc')):''),v('nvic')?'':'w');
+  var rowBody=hints.body?hints.body.replace(/^(\d)D /,'$1 Door '):'';
+  add('Model row',v('nvic')?('pick the row whose code is '+v('nvic')):hints.badge?('the '+hints.badge+(rowBody?' '+rowBody:'')+' row'+(v('build')?', built '+v('build'):'')+'. If two rows match, look the VIN up in Glass\'s in Zink and use that NVIC'):('no NVIC in Zink, match the description'+(v('desc')?(' · '+v('desc')):'')),v('nvic')||hints.badge?'':'w');
   hd('2 · Car features');
   add('Modifications Suncorp does not cover',seg.mods||'No');
   hd('3 · Car details');
@@ -4630,6 +4649,8 @@ async function readDisclosure(file){
 }
 function applyDisclosure(res,how){
   var got=0,list=[];
+  var adAns=null;res.groups.forEach(function(g){if(g.key==='addDriver')adAns=g.opt});
+  if(adAns==='No')res.groups=res.groups.filter(function(g){return g.key!=='adHolder'});
   res.groups.forEach(function(g){
     var grp=null;DISC_GROUPS.forEach(function(x){if(x.key===g.key)grp=x});
     if(g.opt!=null){
@@ -4646,7 +4667,7 @@ function applyDisclosure(res,how){
     if(res.text.adName)list.push('Other driver: '+res.text.adName+(res.text.adDob?' · '+res.text.adDob:'')+(res.text.adRel?' · '+res.text.adRel:''));
     if(res.text.details)list.push('Details written: '+res.text.details);
   }
-  $('discStatus').textContent=got+' of '+res.groups.length+' answers '+how+'. Check the red ones by eye.';
+  $('discStatus').textContent=got===res.groups.length?('All '+got+' answers '+how+'.'):(got+' of '+res.groups.length+' answers '+how+'. Check the red ones by eye.');
   $('discList').innerHTML=list.map(function(l){return '&lt;div&gt;'+(l.indexOf('&lt;span')===0?l:esc(l))+'&lt;/div&gt;'}).join('');
   $('discResult').classList.remove('hide');
   paintSegs();syncBoxes();inputChanged('disclosure');
@@ -4727,6 +4748,31 @@ function findMakeLoose(dom){
   for(var k2=0;k2&lt;MAKES.length;k2++){var m2=MAKES[k2].replace(/[^A-Z0-9]/g,'');if(m2.length&lt;5)continue;for(var pos=0;pos&lt;m2.length;pos++){var re=new RegExp(m2.slice(0,pos)+'[A-Z0-9]'+m2.slice(pos+1));var mm=U.match(re);if(mm)return {make:MAKES[k2],index:mm.index,len:m2.length}}}
   return null;
 }
+var MODEL2=[
+  {a:/^HAVAL$/,b:/^(JOLION|H6GT|H6|H2|H9|H4|DARGO)$/},
+  {a:/^LANDCRUISER$/,b:/^PRADO$/},
+  {a:/^PAJERO$/,b:/^SPORT$/},
+  {a:/^ECLIPSE$/,b:/^CROSS$/},
+  {a:/^SANTA$/,b:/^FE$/},
+  {a:/^IONIQ$/,b:/^\d$/},
+  {a:/^GRAND$/,b:/^(VITARA|CHEROKEE)$/},
+  {a:/^YARIS$/,b:/^CROSS$/},
+  {a:/^COROLLA$/,b:/^CROSS$/},
+  {a:/^TANK$/,b:/^\d{3}$/},
+  {a:/^RANGE$/,b:/^ROVER$/,c:/^(SPORT|EVOQUE|VELAR)$/}
+];
+function modelWords(toks){
+  // some models are two words the way Suncorp lists them, GWM Haval Jolion, Toyota Landcruiser Prado
+  var cl=function(x){return String(x||'').replace(/[^A-Z0-9\-]/g,'')};
+  var t0=cl(toks[0]),t1=cl(toks[1]),t2=cl(toks[2]);
+  var nice=function(x){return /^[A-Z]{3,}$/.test(x)?tcase(x):(x==='FE'?'Fe':x)};
+  if(t0==='LAND'&amp;&amp;t1==='CRUISER')return t2==='PRADO'?{model:'Landcruiser Prado',n:3}:{model:'Landcruiser',n:2};
+  for(var i=0;i&lt;MODEL2.length;i++){var q=MODEL2[i];if(q.a.test(t0)&amp;&amp;q.b.test(t1)){if(q.c&amp;&amp;q.c.test(t2))return {model:nice(t0)+' '+nice(t1)+' '+nice(t2),n:3};return {model:nice(t0)+' '+nice(t1),n:2}}}
+  if(!t0)return {model:null,n:0};
+  return {model:(/^[A-Z]{1,3}\d*$|^[A-Z0-9\-]{1,3}$/.test(t0))?t0:tcase(t0),n:1};
+}
+function plateOk(x){x=String(x||'').replace(/[\s\-]/g,'').toUpperCase();return /^[A-Z0-9]{2,7}$/.test(x)&amp;&amp;/\d/.test(x)&amp;&amp;/[A-Z]/.test(x)&amp;&amp;!/^(19|20)\d{2}$/.test(x)&amp;&amp;!/^\d{1,2}(AM|PM)$/.test(x)}
+function cleanDealer(s){s=String(s||'').replace(/\s*(ABN|ACN)\b.*$/i,'').replace(/\s+-\s+/g,' ').replace(/\s+/g,' ').trim();return /[a-z]/.test(s)?s:tcase(s)}
 function makeName(mk){if(/MERCEDES/.test(mk))return 'Mercedes-Benz';if(/^(BMW|MG|GWM|LDV|BYD|KGM|RAM|GMC|JAC)$/.test(mk))return mk;return tcase(mk)}
 function splitDesc(s){
   // &quot;2021 FORD RANGER WILDTRAK 2.0 (4X4) ...&quot; → year, make, model, variant
@@ -4736,11 +4782,10 @@ function splitDesc(s){
   if(!mk)return o;
   o.make=makeName(mk.make);
   var after=U.slice(mk.index+mk.len).trim().split(' ').filter(Boolean);
+  // Haval on its own is GWM's range, Suncorp files it as GWM Haval something
+  if(mk.make==='HAVAL'){o.make='GWM';after=['HAVAL'].concat(after)}
   var i=0;while(i&lt;after.length&amp;&amp;/^(?:19|20)\d{2}$/.test(after[i]))i++;
-  if(i&lt;after.length){
-    var model=after[i].replace(/[^A-Z0-9\-]/g,'');
-    if(model){o.model=(/^[A-Z]{1,3}\d*$|^[A-Z0-9\-]{1,3}$/.test(model))?model:tcase(model);o.variant=after.slice(i+1).join(' ')}
-  }
+  if(i&lt;after.length){var mw=modelWords(after.slice(i));if(mw.model){o.model=mw.model;o.variant=after.slice(i+mw.n).join(' ')}}
   return o;
 }
 function parseInvoice(text){
@@ -4775,8 +4820,8 @@ function parseInvoice(text){
   if((r=lab(/^(?:ENGINE(?:\s*(?:NO|NUMBER|SIZE|CAPACITY))?\.?)\s*[:.]\s*(.*)$/))&amp;&amp;!noiseVal(r.val))o.engine=r.val;
   if((r=lab(/^(?:BUILD(?:\s*DATE)?|BUILT)\s*[:.]\s*(.*)$/))&amp;&amp;!noiseVal(r.val))o.build=r.val;
   if((r=lab(/^(?:COMPL(?:IANCE)?\.?(?:\s*DATE)?)\s*[:.]\s*(.*)$/))&amp;&amp;!noiseVal(r.val))o.compliance=r.val;
-  if((r=lab(/^(?:CHASSIS|VIN)(?:\s*(?:NO|NUMBER))?\.?\s*[:.]\s*([A-HJ-NPR-Z0-9]{17})\b/)))o.vin=r.val;
-  if((r=lab(/^(?:REGO?|REGISTRATION)(?:\s*(?:NO|NUMBER|#))?\.?\s*[:.]\s*([A-Z0-9][A-Z0-9 \-]{1,8})$/))&amp;&amp;!/EXPIR/.test(cells[r.i])){var rg=r.val.replace(/[ \-]/g,'');if(rg.length&gt;=3&amp;&amp;rg.length&lt;=7&amp;&amp;!/^(EXPIRY|EXP|DATE|STATE|NIL|NA|TBA|NONE)$/.test(rg)&amp;&amp;!/^\d{1,2}\/\d{1,2}/.test(r.val))o.rego=rg}
+  if((r=lab(/^(?:CHASSIS|VIN)(?:\s*(?:NO|NUMBER))?\.?\s*[:.]?\s*([A-HJ-NPR-Z0-9]{17})\b/)))o.vin=r.val;
+  if((r=lab(/^(?:REGO?|REGISTRATION)(?:\s*(?:NO|NUMBER|#))?\.?\s*[:.]\s*([A-Z0-9][A-Z0-9 \-]{1,8})$/))&amp;&amp;!/EXPIR/.test(cells[r.i])){var rg=r.val.replace(/[ \-]/g,'');if(plateOk(rg)&amp;&amp;!/^\d{1,2}\/\d{1,2}/.test(r.val))o.rego=rg}
   if((r=lab(/^(?:ODOMETER|ODO|KMS?|KILOMETRES?|MILEAGE)(?:\s*READING)?\s*[:.]\s*([\d,]+)/))){var on=parseInt(r.val.replace(/,/g,''),10);if(on&gt;0&amp;&amp;on&lt;2000000)o.odo=on}
   if((r=lab(/^COLOU?R\s*[:.]\s*(.*)$/))&amp;&amp;!noiseVal(r.val))o.colour=tcase(r.val);
   if((r=lab(/^NVIC\s*[:.]\s*([A-Z0-9]{6})\b/)))o.nvic=r.val;
@@ -4786,10 +4831,36 @@ function parseInvoice(text){
   var up=t.toUpperCase();
   if(!o.vin){var vins=(up.match(/\b[A-HJ-NPR-Z0-9]{17}\b/g)||[]).filter(function(x){return /[A-Z]/.test(x)&amp;&amp;/\d/.test(x)});if(vins.length)o.vin=vins[0]}
   if(!o.make||!o.model){
-    for(var li=0;li&lt;rawLines.length;li++){var sd2=splitDesc(rawLines[li]);if(sd2.make&amp;&amp;sd2.model&amp;&amp;!/PTY|LTD|MOTORS|DEALER|AUTOS?\b|ABN|@|WWW/.test(rawLines[li].toUpperCase())){if(!o.make)o.make=sd2.make;if(!o.model)o.model=sd2.model;if(o.variant==null&amp;&amp;sd2.variant)o.variant=sd2.variant;if(!o.year&amp;&amp;sd2.year)o.year=sd2.year;break}}
+    // no Model label · find the cell that names a make, cut it at the price, and follow the wrapped lines under it
+    for(var ci=0;ci&lt;cells.length;ci++){
+      var C=cells[ci];
+      if(/PTY|LTD|MOTORS|DEALER|AUTOS?\b|ABN|@|WWW|THANK YOU|PURCHAS|TRADING AS/.test(C))continue;
+      var fmc=findMake(C);if(!fmc)continue;
+      var head=C.slice(fmc.index).replace(/\s+(?:AUCTION|HAMMER|SALE|VEHICLE|SELLING|RETAIL)?\s*PRICE\b.*$/,'').replace(/\s+(?:AMOUNT|EXCL?\.?|INC\.?|TOTAL)\b.*$/,'').replace(/\s+\$?\d{1,3}(?:,\d{3})+(?:\.\d{2})?.*$/,'');
+      var dsc=head,taken=0;
+      for(var lj=lineOf[ci]+1;lj&lt;rawLines.length&amp;&amp;taken&lt;4;lj++){
+        var first=rawLines[lj].split(/\s{3,}/)[0].trim().toUpperCase();
+        if(!first)continue;
+        if(/^(ENGINE|CHASSIS|VIN|REGO|REGISTRATION|M\.?T\.?A|PPSR|STOCK|KEY|COLOU?R|TRIM|ODOMETER|BUILD|COMPL|BODY|TRANS|TYPE|NOTES|RECEIPT|INVOICE|TOTAL|SUB ?TOTAL|GST|DEPOSIT|BALANCE|WARRANTY)\b/.test(first))break;
+        if(/^[\d,]+(?:\s*KMS?)?$/.test(first)&amp;&amp;/ODO(?:METER)?:?\s*$/.test(dsc)){dsc=dsc.replace(/\s*ODO(?:METER)?:?\s*$/,'');taken++;continue}
+        if(/\d{1,3}(?:,\d{3})+\.\d{2}|\$\s*\d/.test(first))break;
+        if(/^[A-Z][A-Z .\/#]{1,24}:\s*\S/.test(first))break;
+        dsc+=' '+first;taken++;
+      }
+      dsc=dsc.replace(/\s*ODO(?:METER)?:?\s*[\d,]*\s*(?:KMS?)?\s*$/,'').replace(/\s+/g,' ').trim();
+      var sd2=splitDesc(dsc);
+      if(sd2.make&amp;&amp;sd2.model){if(!o.make)o.make=sd2.make;if(!o.model)o.model=sd2.model;if(o.variant==null&amp;&amp;sd2.variant)o.variant=sd2.variant;if(!o.year&amp;&amp;sd2.year)o.year=sd2.year;break}
+    }
   }
+  // build date written as 06/25 Build, or Build Date: 06/2025
+  if(o.build){var bx=String(o.build).match(/(\d{1,2})\s*[\/\-]\s*(\d{2,4})/);if(bx)o.build=bx[1].padStart(2,'0')+'/'+(bx[2].length===2?'20'+bx[2]:bx[2])}
+  if(!o.build){var bm2=up.match(/\b(\d{1,2})\s*\/\s*(\d{2}|\d{4})\s*BUILD\b/)||up.match(/\bBUILD(?:\s*DATE)?\s*[:.]?\s*(\d{1,2})\s*[\/\-]\s*(\d{2}|\d{4})\b/);if(bm2)o.build=bm2[1].padStart(2,'0')+'/'+(bm2[2].length===2?'20'+bm2[2]:bm2[2])}
   if(!o.year){var by=(o.build||o.compliance||'').match(/((?:19|20)\d{2})/);if(by)o.year=by[1];else{var yy=up.match(/(?:BUILD|COMPLIANCE|YEAR|MY)\D{0,12}((?:19|20)\d{2})\b/);if(yy)o.year=yy[1]}}
-  if(!o.rego){var rg2=up.match(/(?:REGO?|REGISTRATION|PLATE)(?:\s*(?:NO|NUMBER|#))?\.?\s*[:.]?\s*([A-Z0-9]{2,3}[ \-]?[A-Z0-9]{2,4})\b(?!\s*EXPIR)/);if(rg2&amp;&amp;!/^(EXPIRY|EXP|DATE|STATE)/.test(rg2[1]))o.rego=rg2[1].replace(/[ \-]/g,'')}
+  if(!o.rego){
+    // a Registration column header with the plate under it on the next line
+    for(var hl=0;hl&lt;rawLines.length-1&amp;&amp;!o.rego;hl++){var HL=rawLines[hl].toUpperCase();if(/\b(REGISTRATION|REGO)\b/.test(HL)&amp;&amp;!/:/.test(HL)){for(var nl=hl+1;nl&lt;Math.min(rawLines.length,hl+3)&amp;&amp;!o.rego;nl++){var tk=rawLines[nl].trim().toUpperCase().split(/\s+/);for(var q=0;q&lt;Math.min(tk.length,3);q++){if(plateOk(tk[q])){o.rego=tk[q];break}}}}}
+  }
+  if(!o.rego){var rgRe=/(?:REGO?|REGISTRATION|PLATE)(?:\s*(?:NO|NUMBER|#))?\.?\s*[:.]?\s*([A-Z0-9]{2,3}[ \-]?[A-Z0-9]{2,4})\b(?!\s*EXPIR)/g,rg3;while((rg3=rgRe.exec(up))){var cand=rg3[1].replace(/[ \-]/g,'');if(plateOk(cand)){o.rego=cand;break}}}
   if(!o.odo){var od2=up.match(/(?:ODOMETER|ODO|KMS?|KILOMETRES?)\s*(?:READING)?\s*[:.]?\s*([\d,]{2,7})\b/)||up.match(/\b([\d,]{4,7})\s*KMS?\b/);if(od2){var on2=parseInt(od2[1].replace(/,/g,''),10);if(on2&gt;0&amp;&amp;on2&lt;2000000)o.odo=on2}}
   if(!o.condition){if(/\bNEW VEHICLE|\bBRAND NEW\b/.test(up))o.condition='New';else if(/\bDEMO(?:NSTRATOR)?\b/.test(up))o.condition='Demo';else if(/\bUSED\b|PRE[- ]?OWNED|SECOND ?HAND/.test(up)||o.odo&gt;1000)o.condition='Used'}
   // description for the Suncorp car search · the variant plus whatever the labels gave us
@@ -4813,11 +4884,11 @@ function parseInvoice(text){
   money.forEach(function(m){
     var L=m.label;
     if(m.amt&gt;500000)return;
-    if(/DEPOSIT/.test(L)){if(!o.deposit)o.deposit=Math.round(m.amt);return}
+    if(/DEPOSIT|AMOUNT PAID|TOTAL PAID|PAID TO DATE|RECEIVED/.test(L)){if(!o.deposit)o.deposit=Math.round(m.amt);return}
     if(/TRADE/.test(L)){if(!o.tradeIn)o.tradeIn=Math.round(m.amt);return}
     if(/TOTAL\s*GST|GST\s*(?:PAYABLE|ON|COMPONENT|INCLUDED|AMOUNT)|^\*?\s*GST\b/.test(L))return;
     var ex=/BEFORE\s*GST|EX(?:CL)?(?:USIVE|UDING)?\.?\s*(?:OF\s*)?GST|\(EX\)|EX\s*GST/.test(L);
-    var carish=/(?:VEHICLE|UNIT|SALE|SELLING|RETAIL|LIST|CAR|BASE|NET)\s*PRICE|PRICE\s*OF\s*(?:THE\s*)?(?:VEHICLE|CAR)|\bVEHICLE\s*(?:AMOUNT|VALUE|COST)|^UNIT\b|^VEHICLE\b/.test(L)&amp;&amp;!/TOTAL\s*PURCHASE|DRIVE|ON\s*ROAD|BALANCE|GRAND/.test(L);
+    var carish=/(?:VEHICLE|UNIT|SALE|SELLING|RETAIL|LIST|CAR|BASE|NET|AUCTION|HAMMER)\s*PRICE|PRICE\s*OF\s*(?:THE\s*)?(?:VEHICLE|CAR)|\bVEHICLE\s*(?:AMOUNT|VALUE|COST)|^UNIT\b|^VEHICLE\b/.test(L)&amp;&amp;!/TOTAL\s*PURCHASE|DRIVE|ON\s*ROAD|BALANCE|GRAND/.test(L);
     var totalish=/^TOTAL\b|GRAND\s*TOTAL|TOTAL\s*(?:PURCHASE|PRICE|AMOUNT|PAYABLE|DUE|INC)|AMOUNT\s*(?:DUE|PAYABLE)|DRIVE\s*AWAY|INVOICE\s*TOTAL|BALANCE\s*(?:PAYABLE|DUE|REQUIRED|TO\s*PAY|OWING)|CONTRACT\s*PRICE|PURCHASE\s*PRICE/.test(L);
     if(carish){if(ex){if(m.amt&gt;carEx)carEx=m.amt}else if(m.amt&gt;car)car=m.amt}
     else if(totalish&amp;&amp;ex){if(m.amt&gt;carEx)carEx=m.amt}
@@ -4831,31 +4902,32 @@ function parseInvoice(text){
   // dealer · a business line up top, else the web or email domain split around a make
   var top=rawLines.slice(0,14);
   for(var d=0;d&lt;top.length&amp;&amp;!o.dealer;d++){
-    top[d].split(/\s{3,}/).forEach(function(c){if(o.dealer)return;var C=c.toUpperCase().trim();if(/PTY|LTD|MOTORS|AUTOS?\b|CARS?\b|DEALER|AUTOMOTIVE|MOTOR GROUP|USED CARS|CAR SALES|PRESTIGE|WHOLESALE|AUTO GROUP|MOTOR CO/.test(C)&amp;&amp;!/TAX INVOICE|CONTRACT|ABN\s*:?\s*\d|INVOICE TO|DELIVERY TO|\(\d+\)|DEPARTMENT|SALES REP|CUSTOMER/.test(C)&amp;&amp;C.length&lt;60&amp;&amp;!/^\(?\d/.test(C))o.dealer=c.trim()})
+    top[d].split(/\s{3,}/).forEach(function(c){if(o.dealer)return;var C=c.toUpperCase().trim();if(/PTY|LTD|MOTORS|AUTOS?\b|AUCTIONS?\b|CARS?\b|DEALER|AUTOMOTIVE|MOTOR GROUP|USED CARS|CAR SALES|PRESTIGE|WHOLESALE|AUTO GROUP|MOTOR CO/.test(C)&amp;&amp;!/TAX INVOICE|CONTRACT|ABN\s*:?\s*\d|INVOICE TO|DELIVERY TO|\(\d+\)|DEPARTMENT|SALES REP|CUSTOMER/.test(C)&amp;&amp;C.length&lt;70&amp;&amp;!/^\(?\d/.test(C)){
+      // &quot;West Three Pty Ltd trading as&quot; then the trading name on the next line · the trading name is the one to use
+      var ta=c.match(/\b(?:trading as|t\/as?|t\/a)\b\s*(.*)$/i);
+      if(ta){var rest=ta[1].trim();if(!rest&amp;&amp;top[d+1])rest=top[d+1].split(/\s{3,}/)[0].trim();if(rest)o.dealer=rest}
+      else o.dealer=c.trim();
+    }})
   }
   if(!o.dealer){var dm=up.match(/(?:WWW\.|@)([A-Z0-9\-]+)\.(?:COM|NET)(?:\.AU)?/);if(dm){var dom=dm[1].replace(/-/g,''),fm2=findMakeLoose(dom);if(fm2&amp;&amp;fm2.index&gt;0)o.dealer=tcase(dom.slice(0,fm2.index))+' '+makeName(fm2.make);else if(fm2)o.dealer=makeName(fm2.make)+(dom.length&gt;fm2.len?' '+tcase(dom.slice(fm2.len)):'');else o.dealer=tcase(dom)}}
-  if(o.dealer)o.dealer=tcase(o.dealer.replace(/\s*(ABN|ACN).*$/i,'').trim());
+  if(o.dealer)o.dealer=cleanDealer(o.dealer);
+  o._text=up;
   return o;
 }
 async function ocrDealer(cv){
   // dealer name usually sits in a logo up top with no text layer · OCR just that strip
   try{
     await ensureOcr();
-    var c2=document.createElement('canvas'),sh=Math.round(cv.height*0.22),up2=cv.width&lt;1800?1.6:1;
-    c2.width=Math.round(cv.width*up2);c2.height=Math.round(sh*up2);
-    c2.getContext('2d').drawImage(cv,0,0,cv.width,sh,0,0,c2.width,c2.height);
+    var c2=document.createElement('canvas');c2.width=cv.width;c2.height=Math.round(cv.height*0.22);
+    c2.getContext('2d').drawImage(cv,0,0,cv.width,c2.height,0,0,cv.width,c2.height);
     var r=await Tesseract.recognize(c2,'eng');
     var lines=(r.data.lines||[]).map(function(l){return (l.text||'').replace(/\s+/g,' ').trim()}).filter(Boolean);
     var best=null;
     var dm0=(r.data.text||'').toUpperCase().match(/(?:WWW\.|@)([A-Z0-9\-]+)\.(?:COM|NET)(?:\.AU)?/);
     if(dm0){var dom0=dm0[1].replace(/-/g,''),fm0=findMakeLoose(dom0);if(fm0&amp;&amp;fm0.index&gt;0)best=tcase(dom0.slice(0,fm0.index))+' '+makeName(fm0.make);else if(fm0&amp;&amp;dom0.length&gt;fm0.len)best=makeName(fm0.make)+' '+tcase(dom0.slice(fm0.len));}
-    lines.forEach(function(l,li){if(best)return;var U=l.toUpperCase();var fm=findMake(U);var words=U.split(' ').length;
+    lines.forEach(function(l){if(best)return;var U=l.toUpperCase();var fm=findMake(U);var words=U.split(' ').length;
       if(/TAX INVOICE|CUSTOMER COPY|INVOICE TO|DELIVERY|ABN|BSB|ACC\b|PHONE|\bT:|\bE:|\bW:|WWW|@|MAKE IT YOURS/.test(U))return;
-      if(fm&amp;&amp;words&lt;=5){
-        var only=U.replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim();
-        if(only===fm.make&amp;&amp;li&gt;0){var prev=lines[li-1].toUpperCase().replace(/[^A-Z ]/g,' ').trim().split(' ').filter(Boolean);var pw=prev[prev.length-1];if(pw&amp;&amp;pw.length&gt;=3&amp;&amp;pw.length&lt;=14&amp;&amp;!findMake(pw)&amp;&amp;!/^(THE|AND|FOR|COPY|INVOICE)$/.test(pw))only=pw+' '+only}
-        best=only;
-      }else if(/PTY|LTD|MOTORS|AUTOS?\b|CARS?\b|AUTOMOTIVE|MOTOR GROUP|PRESTIGE/.test(U)&amp;&amp;words&lt;=7)best=l;
+      if((fm&amp;&amp;words&lt;=5)||(/PTY|LTD|MOTORS|AUTOS?\b|CARS?\b|AUTOMOTIVE|MOTOR GROUP|PRESTIGE/.test(U)&amp;&amp;words&lt;=7))best=l;
     });
     if(!best){var dm=(r.data.text||'').toUpperCase().match(/(?:WWW\.|@)([A-Z0-9\-]+)\.(?:COM|NET)(?:\.AU)?/);if(dm){var dom=dm[1].replace(/-/g,''),fm2=findMakeLoose(dom);best=fm2?(tcase(dom.slice(0,fm2.index))+' '+makeName(fm2.make)).trim():tcase(dom)}}
     return best?tcase(best.replace(/[^A-Za-z0-9 &amp;'\-]/g,' ').replace(/\s+/g,' ').trim()):null;
@@ -4870,13 +4942,31 @@ async function readInvoice(file){
   applyInvoice(o,got.ocr?'read off the scan':'read off the PDF');
   return o;
 }
+function hintScore(d){var h=carHints(d||'');return (h.trans?1:0)+(h.engComplete?2:h.eng?1:0)+(h.body?1:0)+(h.badge?1:0)}
 function applyInvoice(o,how){
-  var list=[],n=0,set=function(id,val,label){if(val==null||val==='')return;$(id).value=val;n++;list.push(label+': '+val)};
-  set('year',o.year,'Year');set('make',o.make,'Make');set('model',o.model,'Model');set('desc',o.desc,'Variant');
-  set('nvic',o.nvic,'NVIC');set('vin',o.vin,'VIN');set('rego',o.rego,'Rego');set('odo',o.odo,'Odometer');set('condition',o.condition,'Condition');set('dealer',o.dealer,'Bought from');
+  var list=[],n=0;
+  var same=function(a,b){return String(a==null?'':a).replace(/[^A-Z0-9]/gi,'').toUpperCase()===String(b==null?'':b).replace(/[^A-Z0-9]/gi,'').toUpperCase()};
+  // Zink goes in first, so the invoice fills the gaps and only overrides where it is the better source
+  var put=function(id,val,label,rule){
+    if(val==null||val==='')return;
+    var cur=v(id);
+    if(!cur){$(id).value=val;n++;list.push(label+': '+val);return}
+    if(same(cur,val)){if(rule==='nicer')$(id).value=val;list.push(label+': '+val+', matches Zink');return}
+    if(rule==='keep'){list.push(label+': kept '+cur);return}
+    if(rule==='longer'){var A=String(cur).toUpperCase(),B=String(val).toUpperCase();if(A.indexOf(B)&gt;-1){list.push(label+': kept '+cur);return}if(B.indexOf(A)&gt;-1){$(id).value=val;n++;list.push(label+': '+val);return}}
+    if(rule==='quiet'){$(id).value=val;n++;list.push(label+': '+val);return}
+    $(id).value=val;n++;list.push('&lt;span class=&quot;bad&quot;&gt;'+esc(label)+': invoice says '+esc(val)+', Zink had '+esc(cur)+', using the invoice&lt;/span&gt;');
+  };
+  put('year',o.year,'Year');put('make',o.make,'Make','nicer');put('model',o.model,'Model','longer');
+  if(o.desc){var curD=v('desc');if(!curD){$('desc').value=o.desc;n++;list.push('Variant: '+o.desc)}else if(hintScore(o.desc)&gt;=hintScore(curD)){if(!same(curD,o.desc)){$('desc').value=o.desc;n++}list.push('Variant: '+o.desc)}else list.push('Variant: kept the Zink description, it says more')}
+  put('nvic',o.nvic,'NVIC');put('vin',o.vin,'VIN');
+  if(o.rego){var curR=v('rego');if(curR&amp;&amp;o._text&amp;&amp;new RegExp('\\b'+curR.replace(/[^A-Z0-9]/gi,'')+'\\b','i').test(o._text)){list.push('Rego: '+curR+', on the invoice too')}else put('rego',o.rego,'Rego')}
+  else if(v('rego')&amp;&amp;o._text&amp;&amp;new RegExp('\\b'+v('rego').replace(/[^A-Z0-9]/gi,'')+'\\b','i').test(o._text))list.push('Rego: '+v('rego')+', on the invoice too');
+  put('odo',o.odo,'Odometer');put('condition',o.condition,'Condition','keep');put('dealer',o.dealer,'Bought from','quiet');
+  if(o.build&amp;&amp;$('build')){$('build').value=o.build;list.push('Built: '+o.build)}
   if(o.price){
     var zp=+v('price')||0;
-    set('price',o.price,'Price');
+    $('price').value=o.price;n++;list.push('Price: '+o.price);
     if(o.carPrice&amp;&amp;o.total&amp;&amp;o.total!==o.carPrice)list.push('Car '+money(o.carPrice)+', total with on roads and extras '+money(o.total)+'. Loaded the car price, change the price box if you want the total insured.');
     if(zp&amp;&amp;Math.abs(zp-o.price)&gt;1)list.push('&lt;span class=&quot;bad&quot;&gt;Zink had '+money(zp)+', invoice says '+money(o.price)+', invoice wins&lt;/span&gt;');
     if(!v('agreed')||edited.agreedAuto){$('agreed').value=o.price;edited.agreedAuto=true}
@@ -4885,6 +4975,7 @@ function applyInvoice(o,how){
   if(o.tradeIn)list.push('Trade in: '+money(o.tradeIn));
   if(o.colour)list.push('Colour: '+o.colour);
   [['vin','VIN'],['rego','Rego'],['odo','Odometer'],['price','Price'],['year','Year'],['make','Make'],['model','Model']].forEach(function(p){if(!o[p[0]]&amp;&amp;!v(p[0]))list.push('&lt;span class=&quot;bad&quot;&gt;'+p[1]+': not found, type it in&lt;/span&gt;')});
+  // the answers panel and email read these straight away
   $('invStatus').textContent=n+' fields '+how+'. Check anything orange.';
   $('invList').innerHTML=list.map(function(l){return '&lt;div&gt;'+(l.indexOf('&lt;span')===0?l:esc(l))+'&lt;/div&gt;'}).join('');
   $('invResult').classList.remove('hide');

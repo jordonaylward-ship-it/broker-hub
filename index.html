@@ -10262,7 +10262,20 @@ async function fileToText(file,onStatus){
   }
   if(onStatus)onStatus(&quot;Reading the photo · about 20 seconds&quot;);
   await ensureOcr();
-  var rr=await Tesseract.recognize(file,&quot;eng&quot;);
+  var src=file;
+  try{
+    var bm=await createImageBitmap(file);
+    if(bm.width&lt;1800){
+      // screenshots come in small, Tesseract reads them far better at 2400 wide in grey with a touch of contrast
+      var kk=Math.min(3,2400/Math.max(1,bm.width));
+      var cvU=document.createElement(&quot;canvas&quot;);cvU.width=Math.round(bm.width*kk);cvU.height=Math.round(bm.height*kk);
+      var cxU=cvU.getContext(&quot;2d&quot;);cxU.imageSmoothingEnabled=true;cxU.imageSmoothingQuality=&quot;high&quot;;cxU.drawImage(bm,0,0,cvU.width,cvU.height);
+      var idU=cxU.getImageData(0,0,cvU.width,cvU.height),pU=idU.data;
+      for(var q=0;q&lt;pU.length;q+=4){var lq=0.299*pU[q]+0.587*pU[q+1]+0.114*pU[q+2];lq=(lq-128)*1.25+128;lq=lq&lt;0?0:lq&gt;255?255:lq;pU[q]=lq;pU[q+1]=lq;pU[q+2]=lq}
+      cxU.putImageData(idU,0,0);src=cvU;
+    }
+  }catch(eU){}
+  var rr=await Tesseract.recognize(src,&quot;eng&quot;);
   var t1=rr.data.text||&quot;&quot;;
   // Laminated cards: the coloured DOB/expiry band often defeats the first read.
   // Sparse photo with no 4-digit year -&gt; one high-contrast re-read, merge the text. Never replaces the first read.
@@ -10300,7 +10313,8 @@ function normDate(s){
   var t=new Date(y,mo-1,d).getTime();
   return{d:d,mo:mo,y:y,t:t,s:(&quot;0&quot;+d).slice(-2)+&quot;/&quot;+(&quot;0&quot;+mo).slice(-2)+&quot;/&quot;+y};
 }
-function moneyNum(s){var n=parseFloat(String(s).replace(/[^0-9.]/g,&quot;&quot;));return isNaN(n)?null:n}
+function moneyNum(s){var t=String(s).replace(/[^0-9.,]/g,&quot;&quot;);if(/^\d{1,3}(?:[.,]\d{3})+[.,]\d{2}$/.test(t))t=t.slice(0,-3).replace(/[.,]/g,&quot;&quot;)+&quot;.&quot;+t.slice(-2);else t=t.replace(/,/g,&quot;&quot;);var n=parseFloat(t);return isNaN(n)?null:n}
+function fmtMoney0(n){return n==null?null:&quot;$&quot;+Math.round(n).toLocaleString()}
 function fmtMoney(n){return n==null?null:&quot;$&quot;+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 function weeklyise(v,f){f=(f||&quot;&quot;).toUpperCase();if(v==null)return null;if(f.indexOf(&quot;WEEK&quot;)===0)return v;if(f.indexOf(&quot;FORT&quot;)===0)return v/2;if(f.indexOf(&quot;MONTH&quot;)===0)return v*12/52;return null}
 function normName(s){return(s||&quot;&quot;).toUpperCase().replace(/[^A-Z ]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim()}
@@ -10364,39 +10378,34 @@ function cardShapeOk(v,state){
 }
 /* Employers whose payslips carry no name, only a logo and an ABN. Keyed by ABN, checked against the ABR. */
 var KNOWN_ABN={&quot;40300173822&quot;:&quot;NSW DEPARTMENT OF EDUCATION&quot;};
+function pcState(pc){pc=+pc;if(pc&gt;=800&amp;&amp;pc&lt;=999)return&quot;NT&quot;;if((pc&gt;=2600&amp;&amp;pc&lt;=2618)||(pc&gt;=2900&amp;&amp;pc&lt;=2920))return&quot;ACT&quot;;if(pc&gt;=1000&amp;&amp;pc&lt;=2999)return&quot;NSW&quot;;if((pc&gt;=3000&amp;&amp;pc&lt;=3999)||(pc&gt;=8000&amp;&amp;pc&lt;=8999))return&quot;VIC&quot;;if((pc&gt;=4000&amp;&amp;pc&lt;=4999)||(pc&gt;=9000&amp;&amp;pc&lt;=9999))return&quot;QLD&quot;;if(pc&gt;=5000&amp;&amp;pc&lt;=5999)return&quot;SA&quot;;if(pc&gt;=6000&amp;&amp;pc&lt;=6999)return&quot;WA&quot;;if(pc&gt;=7000&amp;&amp;pc&lt;=7999)return&quot;TAS&quot;;return&quot;&quot;}
 function parseLicence(text){
   var up=text.toUpperCase();
   var o={type:&quot;licence&quot;};
   var g=function(re){var m=up.match(re);return m?m[1].trim():null};
   var cleanNum=function(s,min,max){if(!s)return null;var v=s.replace(/[^A-Z0-9]/gi,&quot;&quot;);return(v.length&gt;=min&amp;&amp;v.length&lt;=max)?v:null};
-  o.licenceNo=cleanNum(g(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?\s*[:\-]?\s*(?!04\d{8}\b)([0-9][0-9 ]{4,12}[0-9])\b/),6,10);
+  // licence number · labelled Licence No, Licence Number or CRN, often printed in groups like 030 847 410
+  var ln=up.match(/LICEN[CS]E\s*(?:NO|NUMBER|N0|#)?\.?(?:\s*\/\s*CRN)?[\s\S]{0,32}?(?:^|[^0-9])(\d(?: ?\d){5,9})(?![0-9])/)||up.match(/\bCRN\b[\s\S]{0,20}?(?:^|[^0-9])(\d(?: ?\d){5,9})(?![0-9])/);
+  if(ln){var lv=ln[1].replace(/ /g,&quot;&quot;);if(!/^04\d{8}$/.test(lv))o.licenceNo=lv}
   o.cardNo=cleanNum(g(/CARD\s*(?:NO|NUMBER|N0)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/),8,11);
   if(!o.cardNo){var fz=up.match(/\bC[A-Z]{2}D\s*(?:N[O0]|NUMBER)?\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9 ]{6,13}[A-Z0-9])\b/);if(fz)o.cardNo=cleanNum(fz[1],8,11)}
   o.state=licState(up);
   if(o.cardNo&amp;&amp;!cardShapeOk(o.cardNo,o.state)){o.cardRaw=o.cardNo;o.cardNo=null}
   o.dob=g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
         ||g(/(?:DOB|DATE OF BIRTH|BIRTH)[^0-9]{0,15}(\d{1,2}\s*(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*(?:19|20)\d{2})/);
-  o.expiry=g(/EXP(?:IRY|IRES)?\.?[^0-9]{0,15}(\d{1,2}[\/\-\. ]\d{1,2}[\/\-\. ](?:19|20)?\d{2})/)
-        ||g(/EXP(?:IRY|IRES)?\.?[^0-9]{0,15}(\d{1,2}\s*(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*(?:19|20)\d{2})/);
-  var dates=[];var dm;
-  var dre=/\b(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.]((?:19|20)\d{2})\b/g;
-  while((dm=dre.exec(up)))dates.push({d:+dm[1],mo:+dm[2],y:+dm[3],s:dm[0]});
+  // every date on the card · Queensland prints dd.mm.yy, others dd/mm/yyyy or 04 AUG 1970
+  var dates=[],dm;
+  var dre=/(?:^|[^0-9])(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4}|\d{2})(?![0-9])/g;
+  while((dm=dre.exec(up))){var nd=normDate(dm[1]+&quot;/&quot;+dm[2]+&quot;/&quot;+dm[3]);if(nd){nd.four=dm[3].length===4;dates.push(nd)}}
   var mre=/\b(\d{1,2})\s*(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*\.?\s*((?:19|20)\d{2})\b/g;
-  while((dm=mre.exec(up)))dates.push({d:+dm[1],mo:MONTHS.indexOf(dm[2])+1,y:+dm[3],s:dm[0]});
-  var now=new Date();
-  if(!o.dob){for(var i=0;i&lt;dates.length;i++){var x=dates[i];var age=now.getFullYear()-x.y;if(age&gt;=16&amp;&amp;age&lt;=90&amp;&amp;new Date(x.y,x.mo-1,x.d)&lt;now){o.dob=x.s;break}}}
-  if(!o.expiry){
-    // expiry = the LATEST date on the licence that is not the DOB · a past date is still the expiry (that is exactly the expired case)
-    var dobT=o.dob&amp;&amp;normDate(o.dob)?normDate(o.dob).t:null;
-    var best=null;
-    for(var k=0;k&lt;dates.length;k++){
-      var e2=dates[k];var t2=new Date(e2.y,e2.mo-1,e2.d).getTime();
-      if(dobT!=null&amp;&amp;t2===dobT)continue;
-      if(t2&lt;now.getTime()-15*365*86400000)continue; // ignore ancient dates (issue dates from long ago)
-      if(best==null||t2&gt;best.t){best={t:t2,s:e2.s}}
-    }
-    if(best){o.expiry=best.s;o.expiryLoose=true}
-  }
+  while((dm=mre.exec(up))){var nd2=normDate(dm[1]+&quot; &quot;+dm[2]+&quot; &quot;+dm[3]);if(nd2){nd2.four=true;dates.push(nd2)}}
+  var nowT=Date.now(),YR=365.25*86400000;
+  if(!o.dob){var old=null;dates.forEach(function(x){var age=(nowT-x.t)/YR;if(x.four&amp;&amp;age&gt;=16&amp;&amp;age&lt;=90&amp;&amp;(!old||x.t&lt;old.t))old=x});if(old)o.dob=old.s}
+  // expiry · the latest date on the card that is not the date of birth. Effective, issue and from dates always come before it
+  var dobN=o.dob?normDate(o.dob):null,best=null;
+  dates.forEach(function(x){if(dobN&amp;&amp;x.t===dobN.t)return;if(x.t&gt;nowT+15*YR||x.t&lt;nowT-15*YR)return;if(!best||x.t&gt;best.t)best=x});
+  if(best){o.expiry=best.s;if(!/\bEXP/.test(up))o.expiryLoose=true}
+  if(!o.licenceNo){var g3=up.match(/(?:^|[^0-9])(\d{3} \d{3} \d{3})(?![0-9])/);if(g3)o.licenceNo=g3[1].replace(/ /g,&quot;&quot;)}
   if(!o.licenceNo){var m2=up.match(/\b(?!04\d{7,8}\b)(\d{8,9})\b/);if(m2)o.licenceNo=m2[1]}
   if(!o.cardNo){
     // unlabelled: a 9-11 char near-numeric run that is not the licence number, a phone or a date · card prints near the bottom so take the last hit
@@ -10407,12 +10416,13 @@ function parseLicence(text){
       if(((v.match(/[A-Z]/g)||[]).length)&gt;2)continue;
       if(!cardShapeOk(v,o.state))continue;
       if(/^(04|05|61|00)/.test(v))continue;
-      if(o.licenceNo&amp;&amp;v===o.licenceNo)continue;
+      if(o.licenceNo&amp;&amp;v.indexOf(o.licenceNo)&gt;=0)continue;
       cands.push(v);
     }
     if(cands.length){o.cardNo=cands[cands.length-1];o.cardLoose=true}
   }
   var ad=g(/(\d+[A-Z0-9 ,\/\-]*?\b(?:ST|STREET|RD|ROAD|AVE|AVENUE|DR|DRIVE|CT|COURT|CRES|CRESCENT|WAY|PL|PLACE|PDE|PARADE|CL|CLOSE|TCE|TERRACE|BLVD|HWY|CCT|LOOP|ESP)\b[\s\S]{0,50}?(?:QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s*\d{4})/);
+  if(!ad){var ad2=up.match(/(\d+[A-Z]?(?:\/\d+)?\s+[A-Z][A-Z' ]{1,30}?\s(?:ST|STREET|RD|ROAD|AVE|AVENUE|DR|DRIVE|CT|COURT|CRES|CRESCENT|WAY|PL|PLACE|PDE|PARADE|CL|CLOSE|TCE|TERRACE|BLVD|BOULEVARD|HWY|HIGHWAY|CCT|CIRCUIT|LOOP|ESP|LANE|LN|GR|GROVE)\b)[\s,]+([A-Z][A-Z' ]{2,30}?)\s+(\d{4})\b/);if(ad2){var stP=pcState(ad2[3]);ad=ad2[1]+&quot;, &quot;+ad2[2].trim()+(stP?&quot; &quot;+stP:&quot;&quot;)+&quot; &quot;+ad2[3]}}
   if(ad)o.address=ad.replace(/\s+/g,&quot; &quot;).trim();
   return o;
 }
@@ -10437,6 +10447,9 @@ function parsePayslip(text){
   if(badEmp(emp))emp=null;
   // government employers · departments and state agencies have no Pty Ltd
   if(!emp){var dep=up.match(/\b(DEPARTMENT OF [A-Z][A-Z &amp;]{2,40})/);if(dep)emp=dep[1].trim()}
+  // councils, shires, cities · no Pty Ltd on these either
+  if(!emp){var ccm=up.match(/\b([A-Z]{3,}(?: [A-Z]{2,}){0,3} COUNCIL)\b/);if(ccm&amp;&amp;!badEmp(ccm[1]))emp=ccm[1]}
+  if(!emp){var cym=up.match(/\b((?:CITY|SHIRE|TOWN|MUNICIPALITY) OF [A-Z]{3,}(?: [A-Z]{3,}){0,2})\b/);if(cym&amp;&amp;!badEmp(cym[1]))emp=cym[1]}
   if(!emp){var gv=up.match(/\b(NSW|QLD|QUEENSLAND|VIC|VICTORIA|SA|WA|TAS|TASMANIA|NT|ACT)\b(?:[\s|]*GOVERNMENT)?[\s|\n]{0,6}(EDUCATION|HEALTH|TRANSPORT|POLICE|JUSTICE|COMMUNITIES|TREASURY|PLANNING|CUSTOMER SERVICE)\b/);if(gv)emp=gv[1]+&quot; &quot;+gv[2]}
   if(!emp){var lm=up.match(/^\s*([^\n]{0,70}\b(?:PTY\.?\s*LTD|PTY\s*LIMITED|LIMITED|LTD|PTY|CORPORATION|INCORPORATED|CO-?OPERATIVE|ASSOCIATION|FOUNDATION)\b\.?[^\n]{0,20})$/m);if(lm&amp;&amp;!badEmp(lm[1]))emp=lm[1].trim()}
   if(!emp&amp;&amp;o.abn){var idx=up.indexOf(&quot;ABN&quot;);var st0=up.lastIndexOf(&quot;\n&quot;,Math.max(0,idx-120));var before=up.slice(st0&lt;0?0:st0+1,idx).split(&quot;\n&quot;).map(function(s){return s.trim()}).filter(function(s){return !badEmp(s)});if(before.length)emp=before[before.length-1]}
@@ -10454,7 +10467,7 @@ function parsePayslip(text){
   }
   var YTD_RE=/YTD|YEAR TO DATE|Y\.T\.D/;
   function bestNonYtd(label){
-    var re=new RegExp(label+&quot;([^0-9\\-]{0,25})\\$?\\s*([\\d,]+\\.\\d{2})&quot;,&quot;g&quot;);
+    var re=new RegExp(label+&quot;([^0-9\\-]{0,25})\\$?\\s*([\\d,]+\\.\\d{2})(?![0-9])&quot;,&quot;g&quot;);
     var first=null,m;
     while((m=re.exec(up))){
       var pre=up.slice(Math.max(0,m.index-30),m.index).split(String.fromCharCode(10)).pop();
@@ -10476,7 +10489,7 @@ function parsePayslip(text){
   }
   o.gross=bestNonYtd(&quot;GROSS(?:\\s+(?:PAY|EARNINGS|INCOME|TOTAL))?\\b&quot;);
   o.net=bestNonYtd(&quot;NET(?:\\s+(?:PAY|INCOME))?\\b&quot;);
-  var ytd=[],ym,yre=/(?:YTD|YEAR TO DATE)[^0-9]{0,40}([\d,]+\.\d{2})/g;
+  var ytd=[],ym,yre=/(?:YTD|YEAR TO DATE)[^0-9]{0,40}([\d,]+\.\d{2})(?![0-9])/g;
   while((ym=yre.exec(up)))ytd.push(moneyNum(ym[1]));
   if(ytd.length)o.ytdGross=Math.max.apply(null,ytd);
   o.superAmt=bestNonYtd(&quot;SUPER(?:ANNUATION)?\\b&quot;);
@@ -10508,6 +10521,14 @@ function parsePayslip(text){
     if(!draws){var all=sec.match(/\$?\s*\d{1,4}(?:,\d{3})?\.\d{2}\b/g)||[];draws=all.length;total=all.reduce(function(a,x){return a+parseFloat(x.replace(/[^0-9.]/g,''))},0)}
     o.payAdvances=draws;o.payAdvanceTotal=Math.round(total*100)/100;
   }
+  // salary, start date and unpaid leave · the lender wants all three
+  var asm=up.match(/(?:ANNUAL\s*(?:SALARY|RATE)|SALARY\s*(?:P\.?\s?A\.?|PER ANNUM)|BASE SALARY)[^0-9\n]{0,15}(\d[\d,\. ]{2,12}\d{2})(?![0-9])/);
+  if(asm){var av=moneyNum(asm[1].replace(/ /g,&quot;&quot;));if(av&amp;&amp;av&gt;=10000&amp;&amp;av&lt;=600000)o.annualSalary=av}
+  o.hireDate=g(/(?:HIRE|START|COMMENCE(?:MENT)?|SERVICE)\s*DATE[^0-9\n]{0,12}(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.](?:19|20)?\d{2})/);
+  if(/\bUNPAID\b|LEAVE WITHOUT PAY|\bLWOP\b|WITHOUT PAY/.test(up))o.unpaidLeave=true;
+  // this pay and the year to date sit side by side on the summary line
+  var tg=up.match(/(?:TOT[A-Z]{0,2}\s*GROSS|TAXABLE\s*GROSS|GROSS\s*EARNINGS|GROSS\s*PAY)\s*\$?\s*([\d,\.]+\.\d{2})\s+\$?\s*([\d,\.]+\.\d{2})/);
+  if(tg){var tg1=moneyNum(tg[1]),tg2=moneyNum(tg[2]);if(tg1!=null&amp;&amp;tg2!=null&amp;&amp;tg2&gt;=tg1){o.ytdGross=tg2;if(o.gross==null)o.gross=tg1}}
   return o;
 }
 
@@ -10538,16 +10559,35 @@ function normPhone(s){return(s||&quot;&quot;).replace(/[^\d]/g,&quot;&quot;).rep
 var GENERIC_TOKENS={AND:1,THE:1,FOR:1,OF:1};
 function empTokens(s){return normEmp(s).split(&quot; &quot;).filter(function(t){return t.length&gt;=4&amp;&amp;!GENERIC_TOKENS[t]})}
 
+/* OCR mixes up 7 and T, 0 and O, 1 and I · codes are compared with those treated as the same */
+function ocrKey(s){return String(s||&quot;&quot;).toUpperCase().replace(/[^A-Z0-9]/g,&quot;&quot;).replace(/T/g,&quot;7&quot;).replace(/[IL]/g,&quot;1&quot;).replace(/O/g,&quot;0&quot;).replace(/S/g,&quot;5&quot;).replace(/B/g,&quot;8&quot;).replace(/Z/g,&quot;2&quot;).replace(/G/g,&quot;6&quot;)}
+function fuzzyFind(allText,want){
+  // the closest run of the same length anywhere in the text · d 0 is exact, d 1 is one character off, read is what the doc shows
+  var clean=String(want||&quot;&quot;).toUpperCase().replace(/[^A-Z0-9]/g,&quot;&quot;),W=ocrKey(clean),L=W.length;if(L&lt;6)return null;
+  var best=null;
+  String(allText||&quot;&quot;).toUpperCase().split(&quot;\n&quot;).forEach(function(line){
+    var raw=line.replace(/[^A-Z0-9]/g,&quot;&quot;),k=ocrKey(raw);
+    for(var i=0;i+L&lt;=k.length;i++){var d=0;for(var j=0;j&lt;L&amp;&amp;d&lt;=1;j++)if(k[i+j]!==W[j])d++;if(d&lt;=1&amp;&amp;(!best||d&lt;best.d)){var rd=&quot;&quot;;for(var j2=0;j2&lt;L;j2++)rd+=k[i+j2]===W[j2]?clean[j2]:raw[i+j2];best={d:d,read:rd}}}
+  });
+  return best;
+}
 function compare(cd,docs,raw){
   cd=cd||{};
   var zx=zinkExtras(raw);
   var rows=[],adds=[],warns=[];
   docs=docs.filter(function(d){return d.kind===&quot;licence&quot;||d.kind===&quot;payslip&quot;});
   var allText=docs.map(function(d){return(d.text||&quot;&quot;).toUpperCase()}).join(&quot;\n&quot;);
+  var allNoSp=allText.replace(/[\s\-]+/g,&quot;&quot;);
   var lic=null,pays=[];
-  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;!lic)lic=d.data;if(d.kind===&quot;payslip&quot;)pays.push(d.data)});
+  // a Claude read beats an OCR read, so it goes first and the others only fill gaps
+  var licDocs=docs.filter(function(d){return d.kind===&quot;licence&quot;}).sort(function(a,b){return((b.data&amp;&amp;b.data.byClaude)?1:0)-((a.data&amp;&amp;a.data.byClaude)?1:0)});
+  if(licDocs.length)lic=Object.assign({},licDocs[0].data);
+  docs=licDocs.concat(docs.filter(function(d){return d.kind!==&quot;licence&quot;}));
+  docs.forEach(function(d){if(d.kind===&quot;payslip&quot;)pays.push(d.data)});
+  // expiry across the two sides · the later date wins, an effective date is never the expiry
+  licDocs.slice(1).forEach(function(d){if(lic&amp;&amp;lic.expiry&amp;&amp;d.data&amp;&amp;d.data.expiry){var ea=normDate(lic.expiry),eb=normDate(d.data.expiry);if(ea&amp;&amp;eb&amp;&amp;eb.t&gt;ea.t){lic.expiry=d.data.expiry;lic.expiryLoose=d.data.expiryLoose}}});
   // merge licence fronts/backs: later licence docs fill gaps
-  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;d.data!==lic&amp;&amp;lic){[&quot;licenceNo&quot;,&quot;cardNo&quot;,&quot;dob&quot;,&quot;expiry&quot;,&quot;address&quot;,&quot;state&quot;,&quot;cardRaw&quot;].forEach(function(k){if(!lic[k]&amp;&amp;d.data[k])lic[k]=d.data[k]});
+  docs.forEach(function(d){if(d.kind===&quot;licence&quot;&amp;&amp;d!==licDocs[0]&amp;&amp;lic){[&quot;licenceNo&quot;,&quot;cardNo&quot;,&quot;dob&quot;,&quot;expiry&quot;,&quot;address&quot;,&quot;state&quot;,&quot;cardRaw&quot;].forEach(function(k){if(!lic[k]&amp;&amp;d.data[k])lic[k]=d.data[k]});
     // Front prints the full licence number, the back sticker drops the leading zero · prefer the fuller read when they agree otherwise.
     if(lic.licenceNo&amp;&amp;d.data.licenceNo&amp;&amp;lic.licenceNo!==d.data.licenceNo&amp;&amp;lic.licenceNo.replace(/^0+/,&quot;&quot;)===d.data.licenceNo.replace(/^0+/,&quot;&quot;)&amp;&amp;d.data.licenceNo.length&gt;lic.licenceNo.length)lic.licenceNo=d.data.licenceNo;
   }});
@@ -10568,7 +10608,7 @@ function compare(cd,docs,raw){
     var hit=toks.filter(function(t){return allText.indexOf(t)&gt;=0});
     var st=hit.length===toks.length?&quot;match&quot;:hit.length&gt;0?&quot;check&quot;:&quot;notfound&quot;;
     rows.push({field:&quot;Name&quot;,zink:cd.clientName,doc:st===&quot;match&quot;?&quot;Found on the docs&quot;:st===&quot;check&quot;?(&quot;Only found: &quot;+hit.join(&quot;, &quot;)):&quot;Not found on the docs&quot;,status:st===&quot;match&quot;?&quot;match&quot;:&quot;check&quot;,
-      note:st===&quot;match&quot;?null:&quot;Eyeball the name on the doc against Zink · could be OCR noise or a genuinely different name.&quot;});
+      note:st===&quot;match&quot;?null:&quot;Check the name on the doc against Zink.&quot;});
   }
 
   // DOB · doc value vs Zink, else presence-check the Zink DOB in the doc text
@@ -10578,82 +10618,89 @@ function compare(cd,docs,raw){
     if(zd){
       var same=dd&amp;&amp;dd.d===zd.d&amp;&amp;dd.mo===zd.mo&amp;&amp;dd.y===zd.y;
       rows.push({field:&quot;Date of birth&quot;,zink:zd.s,doc:dd?dd.s:lic.dob,status:same?&quot;match&quot;:&quot;mismatch&quot;,
-        note:same?null:&quot;Fix Zink to match the licence · lenders bounce apps on DOB mismatches.&quot;});
+        note:same?null:&quot;Fix Zink to the licence. Lenders bounce a DOB mismatch.&quot;});
       if(!same)warns.push(&quot;DOB mismatch · licence says &quot;+(dd?dd.s:lic.dob)+&quot;, Zink says &quot;+zd.s);
     }else if(cd.dob){
-      rows.push({field:&quot;Date of birth&quot;,zink:cd.dob,doc:dd?dd.s:lic.dob,status:&quot;check&quot;,note:&quot;Zink DOB could not be read as a date · eyeball both.&quot;});
+      rows.push({field:&quot;Date of birth&quot;,zink:cd.dob,doc:dd?dd.s:lic.dob,status:&quot;check&quot;,note:&quot;Zink's DOB isn't a date. Check both.&quot;});
     }else{
       rows.push({field:&quot;Date of birth&quot;,zink:&quot;— not in Zink&quot;,doc:dd?dd.s:lic.dob,status:&quot;add&quot;});
       adds.push(&quot;DOB: &quot;+(dd?dd.s:lic.dob));
     }
   }else if(lic&amp;&amp;zd){
     var fd=foundIn(allText,dateVariants(cd.dob));
-    rows.push({field:&quot;Date of birth&quot;,zink:zd.s,doc:fd?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fd?&quot;match&quot;:&quot;check&quot;,
-      note:fd?null:&quot;Open the licence and eyeball the DOB against Zink.&quot;});
+    rows.push({field:&quot;Date of birth&quot;,zink:zd.s,doc:fd?&quot;Found on the licence&quot;:&quot;Couldn't read it&quot;,status:fd?&quot;match&quot;:&quot;check&quot;,
+      note:fd?null:&quot;Check the date of birth on the licence by eye.&quot;});
   }
 
   // Licence number · Zink vs doc, both directions · never silent
   if(lic&amp;&amp;!lic.licenceNo&amp;&amp;!zx.licenceNo){
-    rows.push({field:&quot;Licence number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Type it into Zink off the card by eye.&quot;});
+    rows.push({field:&quot;Licence number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Couldn't read it&quot;,status:&quot;check&quot;,note:&quot;Type it into Zink off the card.&quot;});
   }
   if(lic&amp;&amp;(lic.licenceNo||zx.licenceNo)){
     if(lic.licenceNo&amp;&amp;zx.licenceNo){
       var sameL=lic.licenceNo===zx.licenceNo;
       var zeroL=!sameL&amp;&amp;lic.licenceNo.replace(/^0+/,&quot;&quot;)===zx.licenceNo.replace(/^0+/,&quot;&quot;);
       rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:lic.licenceNo,status:(sameL||zeroL)?&quot;match&quot;:&quot;mismatch&quot;,
-        note:sameL?null:zeroL?&quot;Same number · the card back prints it without the leading zero, Zink matches the front · no action.&quot;:&quot;Numbers differ · fix Zink to what is printed on the licence.&quot;});
+        note:sameL?null:zeroL?&quot;Same number, the back drops the leading zero.&quot;:&quot;Fix Zink to the licence.&quot;});
       if(!sameL&amp;&amp;!zeroL)warns.push(&quot;Licence number mismatch · doc &quot;+lic.licenceNo+&quot;, Zink &quot;+zx.licenceNo);
     }else if(lic.licenceNo){
       rows.push({field:&quot;Licence number&quot;,zink:&quot;— not in Zink&quot;,doc:lic.licenceNo,status:&quot;add&quot;});
       adds.push(&quot;Licence no: &quot;+lic.licenceNo);
     }else{
-      var fl=allText.indexOf(zx.licenceNo)&gt;=0||(zx.licenceNo.replace(/^0+/,&quot;&quot;).length&gt;=6&amp;&amp;allText.indexOf(zx.licenceNo.replace(/^0+/,&quot;&quot;))&gt;=0);
-      rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:fl?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fl?&quot;match&quot;:&quot;check&quot;,note:fl?null:&quot;Eyeball the licence number.&quot;});
+      var fl=allNoSp.indexOf(zx.licenceNo)&gt;=0||(zx.licenceNo.replace(/^0+/,&quot;&quot;).length&gt;=6&amp;&amp;allNoSp.indexOf(zx.licenceNo.replace(/^0+/,&quot;&quot;))&gt;=0);
+      var fzl=fl?null:fuzzyFind(allText,zx.licenceNo);
+      if(fl||(fzl&amp;&amp;fzl.d===0))rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:&quot;Found on the licence&quot;,status:&quot;match&quot;});
+      else if(fzl&amp;&amp;fzl.d===1){rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:fzl.read,status:&quot;mismatch&quot;,note:&quot;One digit is different. Check the card and fix Zink.&quot;});warns.push(&quot;Licence number · card reads &quot;+fzl.read+&quot;, Zink &quot;+zx.licenceNo)}
+      else rows.push({field:&quot;Licence number&quot;,zink:zx.licenceNo,doc:&quot;Couldn't read it&quot;,status:&quot;check&quot;,note:&quot;Check it against the card by eye.&quot;});
     }
   }
   // Card number · never silent
-  var looseC=lic&amp;&amp;lic.cardLoose?&quot; Read loosely off the doc · confirm against the card.&quot;:&quot;&quot;;
+  var looseC=lic&amp;&amp;lic.cardLoose?&quot; Read loosely, check the card.&quot;:&quot;&quot;;
   if(lic&amp;&amp;!lic.cardNo&amp;&amp;!zx.cardNo){
-    rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Type it off the card into Zink · lenders use it for ID verification.&quot;+(lic.cardRaw?&quot; The OCR saw &quot;+lic.cardRaw+&quot;, which is not a valid &quot;+(licSt||&quot;&quot;)+&quot; card number, so it was dropped.&quot;:&quot;&quot;)});
+    rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Couldn't read it&quot;,status:&quot;check&quot;,note:&quot;Type it into Zink off the card.&quot;+(lic.cardRaw?&quot; The read gave &quot;+lic.cardRaw+&quot;, which isn't a valid &quot;+(licSt||&quot;&quot;)+&quot; card number.&quot;:&quot;&quot;)});
     warns.push(&quot;Card number could not be read · type it off the card&quot;);
   }
   if(lic&amp;&amp;(lic.cardNo||zx.cardNo)){
     if(lic.cardNo&amp;&amp;zx.cardNo){
       var sameC=lic.cardNo.toUpperCase()===zx.cardNo.toUpperCase();
       rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:lic.cardNo,status:sameC?&quot;match&quot;:&quot;mismatch&quot;,
-        note:sameC?(looseC.trim()||null):(&quot;Card numbers differ · fix Zink to what is printed on the card.&quot;+looseC)});
+        note:sameC?(looseC.trim()||null):(&quot;Fix Zink to the card.&quot;+looseC)});
       if(!sameC)warns.push(&quot;Card number mismatch · doc &quot;+lic.cardNo+&quot;, Zink &quot;+zx.cardNo);
     }else if(lic.cardNo){
       rows.push({field:&quot;Card number&quot;,zink:&quot;— not in Zink&quot;,doc:lic.cardNo,status:&quot;add&quot;,note:looseC.trim()||null});
       adds.push(&quot;Card no: &quot;+lic.cardNo);
     }else{
-      var fc=allText.indexOf(zx.cardNo.toUpperCase())&gt;=0;
-      rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:fc?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fc?&quot;match&quot;:&quot;check&quot;,note:fc?null:&quot;Eyeball the card number · it is on the front of newer licences.&quot;});
+      var fc=allNoSp.indexOf(zx.cardNo.toUpperCase())&gt;=0;
+      var fzc=fc?null:fuzzyFind(allText,zx.cardNo);
+      if(fc||(fzc&amp;&amp;fzc.d===0))rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:&quot;Found on the licence&quot;,status:&quot;match&quot;});
+      else if(fzc&amp;&amp;fzc.d===1){rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:fzc.read,status:&quot;mismatch&quot;,note:&quot;One character is different. Check the card and fix Zink.&quot;});warns.push(&quot;Card number · card reads &quot;+fzc.read+&quot;, Zink &quot;+zx.cardNo)}
+      else rows.push({field:&quot;Card number&quot;,zink:zx.cardNo,doc:&quot;Couldn't read it&quot;,status:&quot;check&quot;,note:&quot;Check it against the card by eye.&quot;});
     }
   }
   // Expiry · never silent: known dates get the expired check, unknown gets an eyeball flag
   if(lic){
     var de=lic.expiry?normDate(lic.expiry):null;
     var ze=zx.licExpiry?normDate(zx.licExpiry):null;
-    var loose=lic.expiryLoose?&quot; Date was read loosely off the doc · confirm it against the card.&quot;:&quot;&quot;;
+    var loose=lic.expiryLoose?&quot; Read loosely, check the card.&quot;:&quot;&quot;;
     var use=de||ze;
     if(de&amp;&amp;ze){
       var sameE=de.d===ze.d&amp;&amp;de.mo===ze.mo&amp;&amp;de.y===ze.y;
-      rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:de.s,status:sameE?&quot;match&quot;:&quot;mismatch&quot;,note:sameE?(lic.expiryLoose?loose.trim():null):(&quot;Expiry dates differ · fix Zink to the licence.&quot;+loose)});
+      rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:de.s,status:sameE?&quot;match&quot;:&quot;mismatch&quot;,note:sameE?(lic.expiryLoose?loose.trim():null):(&quot;Fix Zink to the licence.&quot;+loose)});
     }else if(de){
       rows.push({field:&quot;Licence expiry&quot;,zink:&quot;— not in Zink&quot;,doc:de.s,status:&quot;add&quot;,note:lic.expiryLoose?loose.trim():null});
       adds.push(&quot;Licence expiry: &quot;+de.s);
     }else if(ze){
       var fe=foundIn(allText,dateVariants(zx.licExpiry));
-      rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:fe?&quot;Found on the licence&quot;:&quot;Could not read it off the licence&quot;,status:fe?&quot;match&quot;:&quot;check&quot;,note:fe?null:&quot;Eyeball the expiry date.&quot;});
+      rows.push({field:&quot;Licence expiry&quot;,zink:ze.s,doc:fe?&quot;Found on the licence&quot;:&quot;Couldn't read it&quot;,status:fe?&quot;match&quot;:&quot;check&quot;,note:fe?null:&quot;Check the expiry on the card by eye.&quot;});
     }else{
-      rows.push({field:&quot;Licence expiry&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Could not read it off the licence&quot;,status:&quot;check&quot;,note:&quot;Check the expiry by eye before you submit · an expired licence kills the application.&quot;});
+      rows.push({field:&quot;Licence expiry&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Couldn't read it&quot;,status:&quot;check&quot;,note:&quot;Check it by eye before you lodge. An expired licence is a decline.&quot;});
       warns.push(&quot;Licence expiry could not be read · check it by eye&quot;);
     }
     if(use){
       var daysE=Math.round((use.t-now.getTime())/86400000);
-      if(daysE&lt;0){warns.push(&quot;Licence EXPIRED &quot;+use.s);rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;mismatch&quot;,note:&quot;EXPIRED · lender will reject this ID, get the renewed licence.&quot;+loose})}
-      else if(daysE&lt;90){rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;check&quot;,note:&quot;Expires within 90 days · fine for now, flag it.&quot;+loose})}
+      if(daysE&lt;0&amp;&amp;lic.expiryLoose&amp;&amp;ze&amp;&amp;ze.t&gt;now.getTime()){rows.push({field:&quot;Expiry status&quot;,zink:ze.s,doc:use.s,status:&quot;check&quot;,note:&quot;The read says expired but Zink has a later date. Check the card.&quot;})}
+      else if(daysE&lt;0){warns.push(&quot;Licence EXPIRED &quot;+use.s);rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;mismatch&quot;,note:&quot;Expired. Get the renewed licence before you lodge.&quot;+loose})}
+      else if(daysE&lt;90){rows.push({field:&quot;Expiry status&quot;,zink:&quot;—&quot;,doc:use.s,status:&quot;check&quot;,note:&quot;Expires within 90 days. Fine for now.&quot;+loose})}
     }
   }
 
@@ -10664,7 +10711,7 @@ function compare(cd,docs,raw){
       var dp=(lic.address.match(/\b\d{4}\b/)||[])[0];
       var same2=zp&amp;&amp;dp&amp;&amp;zp===dp;
       rows.push({field:&quot;Address&quot;,zink:cd.location,doc:lic.address,status:same2?&quot;match&quot;:&quot;check&quot;,
-        note:same2?null:&quot;Postcodes differ or could not compare · licence address may be old, confirm current address with the client.&quot;});
+        note:same2?null:&quot;Different postcode. The licence may be old, confirm where they live now.&quot;});
     }else{
       rows.push({field:&quot;Address&quot;,zink:&quot;— not in Zink&quot;,doc:lic.address,status:&quot;add&quot;});
       adds.push(&quot;Address (licence): &quot;+lic.address);
@@ -10699,18 +10746,18 @@ function compare(cd,docs,raw){
       }
       if(strict||tokenMatch){
         rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc||(&quot;Zink employer name found in the payslip text&quot;),status:&quot;match&quot;,
-          note:strict?null:&quot;Wording differs but the Zink employer name appears in the payslip.&quot;});
+          note:strict?null:&quot;Zink's employer is on the payslip.&quot;});
       }else if(empDoc&amp;&amp;empLoose){
         rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc+&quot; (read loosely)&quot;,status:&quot;check&quot;,
           note:&quot;Letterhead read loosely after taking the client's name out.&quot;+(pay.abn?(&quot; The ABN &quot;+pay.abn+&quot; read cleanly · punch it into abr.business.gov.au and put the legal name in Zink.&quot;):&quot; Open the payslip and check the letterhead against Zink by eye.&quot;)});
         warns.push(&quot;Employer unclear on the payslip · reads &quot;+empDoc+&quot;, Zink says &quot;+cd.employer+(pay.abn?&quot; · verify via ABN &quot;+pay.abn:&quot;&quot;));
       }else if(empDoc){
         rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:empDoc+(knownEmp?&quot; (from the ABN)&quot;:&quot;&quot;),status:&quot;mismatch&quot;,
-          note:&quot;Payslip employer differs from Zink · fix Zink to the legal name on the payslip, that's what the lender verifies.&quot;});
+          note:&quot;Fix Zink to the name on the payslip. That's what the lender checks.&quot;});
         warns.push(&quot;Employer mismatch · payslip says &quot;+empDoc+&quot;, Zink says &quot;+cd.employer);
       }else{
-        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:&quot;Could not read the employer name off the payslip&quot;,status:&quot;check&quot;,
-          note:pay.abn?(&quot;The ABN &quot;+pay.abn+&quot; read cleanly · punch it into abr.business.gov.au and check the legal name against Zink.&quot;):&quot;Open the payslip and check the letterhead against Zink by eye.&quot;});
+        rows.push({field:&quot;Employer&quot;,zink:cd.employer,doc:&quot;Couldn't read the name&quot;,status:&quot;check&quot;,
+          note:pay.abn?(&quot;The ABN &quot;+pay.abn+&quot; is on it. Look it up on abr.business.gov.au and check it against Zink.&quot;):&quot;Check the letterhead against Zink by eye.&quot;});
         warns.push(&quot;Employer name unreadable on the payslip · verify&quot;+(pay.abn?&quot; via ABN &quot;+pay.abn:&quot; by eye&quot;));
       }
     }else if(empDoc){
@@ -10728,38 +10775,64 @@ function compare(cd,docs,raw){
     var casualish=(pay.empHints||[]).some(function(h){return /CASUAL|TEMP|SHORT TERM/.test(h)})||!!pay.loading;
     var permish=(pay.empHints||[]).some(function(h){return /PERMANENT|FULL TIME|PART TIME/.test(h)});
     if(zt&amp;&amp;/FULL|PART|PERM/.test(zt)&amp;&amp;casualish&amp;&amp;!permish){
-      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType,doc:etHints.join(&quot;, &quot;),status:&quot;check&quot;,note:&quot;Payslip reads as casual or temporary, Zink says &quot;+cd.employmentType+&quot;. Lenders price casuals and temps differently and some want 6 to 12 months in the job, confirm the basis before you pick a lender.&quot;});
+      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType,doc:etHints.join(&quot;, &quot;),status:&quot;check&quot;,note:&quot;Payslip reads casual or temp, Zink says &quot;+cd.employmentType+&quot;. Confirm it before you pick a lender.&quot;});
       warns.push(&quot;Employment type · Zink says &quot;+cd.employmentType+&quot;, payslip shows &quot;+etHints.join(&quot;, &quot;));
     }else if(zt&amp;&amp;/CASUAL/.test(zt)&amp;&amp;permish&amp;&amp;!casualish){
-      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType,doc:etHints.join(&quot;, &quot;),status:&quot;check&quot;,note:&quot;Payslip reads as permanent, Zink says casual. Confirm the basis, permanent opens up more lenders.&quot;});
+      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType,doc:etHints.join(&quot;, &quot;),status:&quot;check&quot;,note:&quot;Payslip reads permanent, Zink says casual. Permanent opens more lenders.&quot;});
     }else{
-      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType||&quot;—&quot;,doc:etHints.join(&quot;, &quot;),status:zt?&quot;match&quot;:&quot;check&quot;,note:zt?null:&quot;Zink has no employment type, set it from the payslip.&quot;});
+      rows.push({field:&quot;Employment type&quot;,zink:cd.employmentType||&quot;—&quot;,doc:etHints.join(&quot;, &quot;),status:zt?&quot;match&quot;:&quot;check&quot;,note:zt?null:&quot;Set it in Zink from the payslip.&quot;});
     }
   }
   if(pay&amp;&amp;pay.phone){
     var dph=normPhone(pay.phone),zph=normPhone(zx.empPhone);
     if(zph&amp;&amp;dph===zph){rows.push({field:&quot;Employer phone&quot;,zink:zx.empPhone,doc:pay.phone,status:&quot;match&quot;})}
-    else{rows.push({field:&quot;Employer phone&quot;,zink:zx.empPhone||&quot;—&quot;,doc:pay.phone,status:&quot;add&quot;,note:zph?&quot;Different number to the Zink contact · could be payroll vs HR, keep both.&quot;:null});adds.push(&quot;Employer phone (payslip): &quot;+pay.phone)}
+    else{rows.push({field:&quot;Employer phone&quot;,zink:zx.empPhone||&quot;—&quot;,doc:pay.phone,status:&quot;add&quot;,note:zph?&quot;Different to Zink, could be payroll. Keep both.&quot;:null});adds.push(&quot;Employer phone (payslip): &quot;+pay.phone)}
   }
 
-  // Income
-  if(pay&amp;&amp;(pay.net!=null||pay.gross!=null)){
-    if(pay.net!=null&amp;&amp;pay.gross!=null&amp;&amp;pay.net&gt;pay.gross){
-      rows.push({field:&quot;Net income&quot;,zink:&quot;—&quot;,doc:fmtMoney(pay.net)+&quot; net vs &quot;+fmtMoney(pay.gross)+&quot; gross&quot;,status:&quot;check&quot;,note:&quot;Read looks off · net came out above gross, open the payslip and check by eye.&quot;});
-    }else{
-      var docWk=weeklyise(pay.net!=null?pay.net:pay.gross,pay.frequency);
-      var basis=pay.net!=null?&quot;net&quot;:&quot;gross&quot;;
-      var zWk=weeklyise(cd.netIncome,cd.incomeFrequency);
-      if(zWk!=null&amp;&amp;docWk!=null&amp;&amp;basis===&quot;net&quot;){
-        var diff=Math.abs(docWk-zWk)/zWk;
-        rows.push({field:&quot;Net income&quot;,zink:fmtMoney(zWk)+&quot;/wk&quot;,doc:fmtMoney(docWk)+&quot;/wk (&quot;+(pay.frequency||&quot;?&quot;).toLowerCase()+&quot; payslip)&quot;,status:diff&lt;=0.15?&quot;match&quot;:&quot;check&quot;,
-          note:diff&lt;=0.15?null:&quot;More than 15% apart · one payslip can be off-cycle, check a second one before correcting Zink.&quot;});
+  // Income · every payslip as a weekly net, against the Zink figure
+  if(pays.length){
+    var zWk=weeklyise(cd.netIncome,cd.incomeFrequency);
+    var slips=pays.map(function(p){var wk=(p.net!=null&amp;&amp;p.frequency&amp;&amp;(p.gross==null||p.net&lt;=p.gross))?weeklyise(p.net,p.frequency):null;return{p:p,wk:wk,nd:p.payDate?normDate(p.payDate):null}}).filter(function(x){return x.wk!=null});
+    slips.sort(function(a,b){return(b.nd?b.nd.t:0)-(a.nd?a.nd.t:0)});
+    if(pay&amp;&amp;pay.net!=null&amp;&amp;pay.gross!=null&amp;&amp;pay.net&gt;pay.gross){
+      rows.push({field:&quot;Net pay&quot;,zink:zWk!=null?fmtMoney(zWk)+&quot; a week&quot;:&quot;—&quot;,doc:fmtMoney(pay.net)+&quot; net, &quot;+fmtMoney(pay.gross)+&quot; gross&quot;,status:&quot;check&quot;,note:&quot;Net came out above gross, so the read is off. Check the payslip by eye.&quot;});
+    }else if(slips.length){
+      var wks=slips.map(function(x){return x.wk}),mxW=Math.max.apply(null,wks),mnW=Math.min.apply(null,wks);
+      var docTxt=slips.map(function(x){return fmtMoney(x.wk)}).join(&quot; and &quot;)+&quot; a week&quot;;
+      var many=slips.length&gt;1?&quot;both payslips&quot;:&quot;the payslip&quot;;if(slips.length&gt;2)many=&quot;every payslip&quot;;
+      if(zWk!=null){
+        var hiZ=zWk&gt;mxW*1.15,loZ=zWk&lt;mnW*0.85;
+        rows.push({field:&quot;Net pay&quot;,zink:fmtMoney(zWk)+&quot; a week&quot;,doc:docTxt,status:(hiZ||loZ)?&quot;check&quot;:&quot;match&quot;,note:hiZ?(&quot;Zink is higher than &quot;+many+&quot;. Bring it down to what the payslips show.&quot;):loZ?(&quot;Zink is lower than &quot;+many+&quot;. You can put it up.&quot;):null});
+        if(hiZ)warns.push(&quot;Net pay in Zink &quot;+fmtMoney(zWk)+&quot; a week is higher than the payslips, &quot;+docTxt);
       }else{
-        rows.push({field:(basis===&quot;net&quot;?&quot;Net&quot;:&quot;Gross&quot;)+&quot; pay&quot;,zink:zWk!=null?fmtMoney(zWk)+&quot;/wk&quot;:&quot;— not comparable&quot;,doc:fmtMoney(pay.net!=null?pay.net:pay.gross)+(pay.frequency?&quot; &quot;+pay.frequency.toLowerCase():&quot;&quot;),status:&quot;add&quot;});
+        rows.push({field:&quot;Net pay&quot;,zink:&quot;— not in Zink&quot;,doc:docTxt,status:&quot;add&quot;});
+        adds.push(&quot;Net pay: &quot;+docTxt);
       }
+    }else if(pay&amp;&amp;(pay.net!=null||pay.gross!=null)){
+      rows.push({field:pay.net!=null?&quot;Net pay&quot;:&quot;Gross pay&quot;,zink:zWk!=null?fmtMoney(zWk)+&quot; a week&quot;:&quot;— not in Zink&quot;,doc:fmtMoney(pay.net!=null?pay.net:pay.gross)+&quot; this pay&quot;,status:&quot;check&quot;,note:&quot;Couldn't tell if it's weekly or fortnightly. Check the pay period on the slip.&quot;});
     }
-    if(pay.gross!=null)adds.push(&quot;Gross pay: &quot;+fmtMoney(pay.gross)+(pay.frequency?&quot; &quot;+pay.frequency.toLowerCase():&quot;&quot;));
-    if(pay.ytdGross!=null)adds.push(&quot;YTD gross: &quot;+fmtMoney(pay.ytdGross));
+    if(pay&amp;&amp;pay.gross!=null)adds.push(&quot;Gross pay: &quot;+fmtMoney(pay.gross)+(pay.frequency?&quot; &quot;+pay.frequency.toLowerCase():&quot;&quot;));
+    if(pay&amp;&amp;pay.ytdGross!=null)adds.push(&quot;YTD gross: &quot;+fmtMoney(pay.ytdGross));
+  }
+  if(pay&amp;&amp;pay.annualSalary){
+    rows.push({field:&quot;Salary&quot;,zink:&quot;—&quot;,doc:fmtMoney0(pay.annualSalary)+&quot; a year, &quot;+fmtMoney0(pay.annualSalary/52)+&quot; a week gross&quot;,status:&quot;add&quot;,note:&quot;On the latest payslip. Use it for the income, a short week doesn't change it.&quot;});
+    adds.push(&quot;Annual salary: &quot;+fmtMoney0(pay.annualSalary)+&quot; on the payslip&quot;);
+  }
+  if(pay&amp;&amp;pay.hireDate){
+    var hdN=normDate(pay.hireDate);
+    if(hdN){
+      var mthsT=Math.max(0,Math.round((now.getTime()-hdN.t)/(30.44*86400000))),yT=Math.floor(mthsT/12),mT=mthsT%12;
+      var tenTxt=(yT?yT+&quot; year&quot;+(yT&gt;1?&quot;s&quot;:&quot;&quot;):&quot;&quot;)+(yT&amp;&amp;mT?&quot; &quot;:&quot;&quot;)+(mT||!yT?mT+&quot; month&quot;+(mT===1?&quot;&quot;:&quot;s&quot;):&quot;&quot;);
+      var zM=(cd.empYears!=null||cd.empMonths!=null)?((cd.empYears||0)*12+(cd.empMonths||0)):null;
+      if(zM!=null){
+        var offT=Math.abs(zM-mthsT)&gt;6;
+        rows.push({field:&quot;Time in the job&quot;,zink:Math.floor(zM/12)+&quot; years &quot;+(zM%12)+&quot; months&quot;,doc:&quot;Started &quot;+hdN.s+&quot;, &quot;+tenTxt,status:offT?&quot;check&quot;:&quot;match&quot;,note:offT?&quot;Zink is out by more than 6 months. Fix it to the start date on the payslip.&quot;:null});
+      }else{rows.push({field:&quot;Time in the job&quot;,zink:&quot;— not in Zink&quot;,doc:&quot;Started &quot;+hdN.s+&quot;, &quot;+tenTxt,status:&quot;add&quot;});adds.push(&quot;Started: &quot;+hdN.s)}
+    }
+  }
+  if(pay&amp;&amp;pay.unpaidLeave){
+    rows.push({field:&quot;Unpaid leave&quot;,zink:&quot;—&quot;,doc:&quot;On the latest payslip&quot;,status:&quot;check&quot;,note:&quot;That week reads low. Use the salary or a normal week, and expect the lender to ask.&quot;});
+    warns.push(&quot;Unpaid leave on the latest payslip&quot;);
   }
 
   // Pay advances · Money3 knocks out more than one in a cycle, everyone else asks
@@ -10770,11 +10843,11 @@ function compare(cd,docs,raw){
   }
   // Income basis · the first slip of a financial year and back pay both make one slip read high
   if(pay&amp;&amp;pay.ytdGross!=null&amp;&amp;pay.gross!=null&amp;&amp;pay.gross&gt;0&amp;&amp;Math.abs(pay.ytdGross-pay.gross)&lt;=Math.max(1,pay.gross*0.01)){
-    rows.push({field:&quot;Income basis&quot;,zink:&quot;—&quot;,doc:&quot;YTD &quot;+fmtMoney(pay.ytdGross)+&quot; equals this pay&quot;,status:&quot;check&quot;,note:&quot;First pay of the financial year, the YTD proves nothing. Annualise off the last two or three slips, or get last year's income statement from myGov.&quot;});
+    rows.push({field:&quot;Income basis&quot;,zink:&quot;—&quot;,doc:&quot;YTD &quot;+fmtMoney(pay.ytdGross)+&quot; equals this pay&quot;,status:&quot;check&quot;,note:&quot;First pay of the financial year, so the YTD proves nothing. Use two or three slips or last year's myGov income statement.&quot;});
     warns.push(&quot;Payslip is the first of the financial year · YTD is one pay, do not annualise off it&quot;);
   }
   if(pay&amp;&amp;pay.priorAdj){
-    rows.push({field:&quot;Back pay&quot;,zink:&quot;—&quot;,doc:&quot;Prior period adjustments on this slip&quot;,status:&quot;check&quot;,note:&quot;This pay includes back pay for earlier days, so it reads high. Use the run rate across two or three slips.&quot;});
+    rows.push({field:&quot;Back pay&quot;,zink:&quot;—&quot;,doc:&quot;Prior period adjustments on this slip&quot;,status:&quot;check&quot;,note:&quot;Back pay makes this one read high. Use two or three slips.&quot;});
     warns.push(&quot;Payslip includes prior period adjustments · one slip reads high, use two or three&quot;);
   }
   // Payslip freshness
@@ -10782,7 +10855,7 @@ function compare(cd,docs,raw){
     var pd=normDate(pay.payDate);
     if(pd){
       var age2=Math.round((now.getTime()-pd.t)/86400000);
-      if(age2&gt;60){rows.push({field:&quot;Payslip date&quot;,zink:&quot;—&quot;,doc:pd.s,status:&quot;check&quot;,note:&quot;Over 60 days old · lenders want the last two payslips, ask for current ones.&quot;});warns.push(&quot;Payslip dated &quot;+pd.s+&quot; · stale, get current ones&quot;)}
+      if(age2&gt;60){rows.push({field:&quot;Payslip date&quot;,zink:&quot;—&quot;,doc:pd.s,status:&quot;check&quot;,note:&quot;Over 60 days old. Ask for the last two.&quot;});warns.push(&quot;Payslip dated &quot;+pd.s+&quot; · stale, get current ones&quot;)}
     }
   }
 
@@ -10847,8 +10920,8 @@ async function fileToJpg(file){
   if(!blob)throw new Error(&quot;Could not turn the file into a picture&quot;);
   return await blobToB64(blob);
 }
-var VIS_LIC=&quot;Read this Australian driver licence. Return ONLY a JSON object and nothing else, with these keys: licenceNo (the licence number, digits only, as a string), cardNo (the card number, usually printed small on the front or the back, letters and digits, as a string), dob (date of birth as DD/MM/YYYY), expiry (expiry date as DD/MM/YYYY), address (the full residential address on one line including state and postcode). Use null for anything you cannot read with confidence. Do not guess.&quot;;
-var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number), basis (any words on the slip that describe the employment basis such as CASUAL, TEMPORARY, SHORT TERM, PART TIME, FULL TIME or PERMANENT, plus any casual loading percentage, as one short string, else null), payAdvances (the number of pay advance or wage advance draws such as Wageflo, Beforepay or MyPayNow listed on this slip, else null), payAdvanceProvider (the provider name, else null). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
+var VIS_LIC=&quot;Read this Australian driver licence, front or back. Return ONLY a JSON object and nothing else, with these keys: licenceNo (the licence number, sometimes labelled Licence No or CRN, digits only, as a string), cardNo (the card number, letters and digits, as a string), dob (date of birth as DD/MM/YYYY), expiry (the date labelled Expiry or Expires as DD/MM/YYYY, never the Effective, Issue or From date), effective (the Effective or Issue date as DD/MM/YYYY), address (the full residential address on one line including state and postcode). Use null for anything not on this side or not readable with confidence. Do not guess.&quot;;
+var VIS_PAY=&quot;Read this Australian payslip. Return ONLY a JSON object and nothing else, with these keys: employer (the employer trading name), abn (the ABN as digits in a string), frequency (one of WEEKLY, FORTNIGHTLY, MONTHLY), gross (this pay gross as a plain number), net (this pay net as a plain number), superAmt (this pay superannuation as a plain number), ytdGross (year to date gross as a plain number), payDate (the pay date as DD/MM/YYYY), phone (the employer phone number), basis (any words on the slip that describe the employment basis such as CASUAL, TEMPORARY, SHORT TERM, PART TIME, FULL TIME or PERMANENT, plus any casual loading percentage, as one short string, else null), payAdvances (the number of pay advance or wage advance draws such as Wageflo, Beforepay or MyPayNow listed on this slip, else null), payAdvanceProvider (the provider name, else null), annualSalary (the annual salary if printed, as a plain number, else null), hireDate (the hire or start date as DD/MM/YYYY, else null), unpaidLeave (true if the slip shows unpaid leave or leave without pay this period, else false). Use null for anything you cannot read with confidence. Never put a year to date figure in gross or net, those two must be this pay period only.&quot;;
 async function visionRead(file,kind){
   var key=localStorage.getItem(&quot;claude_api_key&quot;);
   if(!key)throw new Error(&quot;no API key saved, add it in Settings first&quot;);
@@ -10881,6 +10954,7 @@ async function visionRead(file,kind){
     o.cardNo=alnum(j.cardNo);
     o.dob=str(j.dob);
     o.expiry=str(j.expiry);
+    var efv=str(j.effective);if(o.expiry&amp;&amp;efv){var e1=normDate(o.expiry),e2=normDate(efv);if(e1&amp;&amp;e2&amp;&amp;e2.t&gt;e1.t)o.expiry=efv}
     o.address=str(j.address);
   }else{
     o.employer=str(j.employer);
@@ -10893,6 +10967,7 @@ async function visionRead(file,kind){
     o.ytdGross=num(j.ytdGross);
     o.payDate=str(j.payDate);
     o.phone=str(j.phone);
+    o.annualSalary=num(j.annualSalary);o.hireDate=str(j.hireDate);if(j.unpaidLeave===true||String(j.unpaidLeave).toLowerCase()===&quot;true&quot;)o.unpaidLeave=true;
     var bs=str(j.basis);
     if(bs){o.empHints=[bs.toUpperCase()];var bl=bs.match(/(\d{1,2}(?:\.\d+)?)\s*%/);if(bl)o.loading=bl[1]+&quot;%&quot;}
     if(j.payAdvances!=null&amp;&amp;!isNaN(+j.payAdvances)&amp;&amp;+j.payAdvances&gt;0){o.payAdvances=+j.payAdvances;o.payAdvanceProvider=str(j.payAdvanceProvider)||&quot;Pay advance&quot;}
@@ -11447,23 +11522,6 @@ cue:&quot;Wait for 'yeah that's it' or 'exactly.' That's the trust lock.&quot;,
 autoScript:true,key:&quot;playbackConfirmed&quot;,responseLabel:&quot;Playback&quot;,
 options:[{text:&quot;Yeah that's it&quot;},{text:&quot;Exactly&quot;},{text:&quot;Pretty much&quot;}]},
 
-// ═══ STAGE 7 · COST OF INACTION ═══
-{id:&quot;cost&quot;,phase:&quot;COST&quot;,icon:&quot;⚠️&quot;,title:&quot;Cost of Inaction&quot;,hideForPath:[&quot;refinance&quot;],
-script:&quot;Here's one most people never stop and think about. If nothing changes {painRecap}· you're sitting in exactly the same spot in a month or two · does that actually make life harder for you, or is it no big deal?&quot;,
-cue:&quot;Five seconds of silence. Don't rescue. They have to answer this one themselves.&quot;,
-script2:&quot;IF THEY STALL · Most people tell me it's one of a few things · still bumming lifts off everyone, still holding your breath every time the car makes a noise, or just another few months of exactly the same. Which one's closest for you?&quot;,
-cue2:&quot;They have to say it out loud in their own words. Hearing themselves say it is what moves them · you saying it for them does nothing.&quot;,
-key:&quot;costInaction&quot;,responseLabel:&quot;Cost of Inaction&quot;,
-options:[{text:&quot;Same as now · stuck&quot;},{text:&quot;More stress&quot;},{text:&quot;Car finally dies on me&quot;},{text:&quot;Still bumming lifts · still on public transport&quot;},{text:&quot;Bills keep stacking&quot;},{text:&quot;Could lose work over it&quot;}],
-followUp:&quot;Right, so it does matter. That's exactly why I'll push you a bit on the documents and why I ask you to run everything past me first · the sooner I've got what I need, the sooner this is off your plate for good. Fair enough?&quot;,
-followUpCue:&quot;Ties the pain to their part in it. Get the yes, then move on. Don't labour it.&quot;},
-
-// ═══ STAGE 8 · PRESCRIPTION ═══
-{id:&quot;prescription&quot;,phase:&quot;PRESCRIPTION&quot;,icon:&quot;💊&quot;,title:&quot;The Prescription&quot;,noResponse:true,hideForPath:[&quot;refinance&quot;],
-script:&quot;Right. So based on all of that · here's where I'm landing.&quot;,
-cue:&quot;Brief pause. You're about to give them the answer they've been waiting 20 minutes for.&quot;,
-followUp:&quot;So we're on heads right now · the finance side. That's your resume to the lender, built out of how you've handled money in the past, and I put it together properly before it goes anywhere.\n\nAll I ask is that you let me lead this part. Don't apply anywhere else, don't let a dealership run your credit, and if anything comes up just ring me first. Every extra enquiry chips away at the profile I'm building for you, and I can't undo it once it's on there.\n\nYou do that and I'll make the rest as easy as it gets · I chase the lender, I handle the paperwork, and I keep you in the loop the whole way. Then we flip to tails and go get the car.&quot;},
-
 // ═══ STAGE 9.5 · AFFORDABILITY CHECK ═══
 {id:&quot;affordability&quot;,phase:&quot;AFFORDABILITY&quot;,icon:&quot;💳&quot;,title:&quot;Affordability Check&quot;,hideForPath:[&quot;refinance&quot;],
 script:&quot;Before I give you a number · what are you comfortable paying each week on a new loan? Not what you want, what you actually feel is realistic for your budget.\n\nI only ask because it sets expectations early. If I know your comfortable ceiling · then if you end up loving a slightly dearer car, I already know you can service it. If we need to fit a warranty in, I know there's room. Saves any surprises later.&quot;,
@@ -11759,50 +11817,86 @@ const copyBlock=()=&gt;{
   const ok=()=&gt;{setCopied(true);setTimeout(()=&gt;setCopied(false),1600)};
   if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText)navigator.clipboard.writeText(block).then(ok,()=&gt;{});
 };
-const STC={match:{bg:&quot;#12341f&quot;,bd:&quot;#2ea043&quot;,fg:&quot;#34d399&quot;,t:&quot;Match&quot;},mismatch:{bg:&quot;#2d1515&quot;,bd:&quot;#fb7185&quot;,fg:&quot;#fb7185&quot;,t:&quot;MISMATCH&quot;},check:{bg:&quot;#2b1d0e&quot;,bd:&quot;#bb8009&quot;,fg:&quot;#f0a500&quot;,t:&quot;Check&quot;},add:{bg:&quot;#101c2c&quot;,bd:&quot;#1f6feb&quot;,fg:&quot;#4a9eff&quot;,t:&quot;Add to Zink&quot;}};
-
+const [showOk,setShowOk]=useState(false);
+const GROUPS=[{k:&quot;mismatch&quot;,t:&quot;Fix in Zink&quot;,c:&quot;#ff453a&quot;},{k:&quot;check&quot;,t:&quot;Check by eye&quot;,c:&quot;#ff9f0a&quot;},{k:&quot;add&quot;,t:&quot;Add to Zink&quot;,c:&quot;#0a84ff&quot;},{k:&quot;match&quot;,t:&quot;Matches Zink&quot;,c:&quot;#30d158&quot;}];
+const rowsBy=(k)=&gt;((result&amp;&amp;result.rows)||[]).filter(r=&gt;(r.status||&quot;add&quot;)===k);
+const box={background:&quot;#1c1c1e&quot;,borderRadius:12,overflow:&quot;hidden&quot;,marginBottom:12};
+const sep=&quot;1px solid #2c2c2e&quot;;
+const dot=(c)=&gt;({width:8,height:8,borderRadius:4,background:c,flex:&quot;none&quot;,display:&quot;inline-block&quot;});
+const muted=(v)=&gt;/^(Found on|Couldn't|Could not|Only found|Not found|— )/.test(String(v||&quot;&quot;));
+const niceName=(x)=&gt;{
+  if(x.kind===&quot;licence&quot;){const d=x.data||{};return &quot;Licence&quot;+((d.dob||d.licenceNo)?&quot; front&quot;:(d.address||d.cardNo)?&quot; back&quot;:&quot;&quot;)}
+  if(x.kind===&quot;payslip&quot;){const pd=x.data&amp;&amp;x.data.payDate?window.DocsEngine.normDate(x.data.payDate):null;return &quot;Payslip&quot;+(pd?&quot;, paid &quot;+pd.s:&quot;&quot;)}
+  return String(x.name||&quot;&quot;).replace(/^\d+[\s_]*\d?[\s_]*-[\s_]*/,&quot;&quot;).replace(/[\s_]*-[\s_]*\d{5,}[\s_]*-[\s_]*/,&quot; · &quot;).replace(/_/g,&quot; &quot;);
+};
+const shortMsg=(x)=&gt;{
+  if(x.status===&quot;reading&quot;)return x.msg||&quot;Reading&quot;;
+  if(x.status===&quot;error&quot;||x.status===&quot;skipped&quot;)return x.msg;
+  if(x.data&amp;&amp;x.data.byClaude)return &quot;Read by Claude&quot;;
+  return x.ocr?&quot;Read from the photo&quot;:&quot;Read&quot;;
+};
+const matchVal=(r)=&gt;muted(r.doc)?(r.zink||&quot;&quot;):(r.doc||r.zink||&quot;&quot;);
+const pill={background:&quot;#2c2c2e&quot;,color:&quot;#0a84ff&quot;,border:&quot;none&quot;,borderRadius:999,padding:&quot;5px 11px&quot;,fontSize:12,fontWeight:600,cursor:&quot;pointer&quot;,whiteSpace:&quot;nowrap&quot;,fontFamily:&quot;inherit&quot;};
+const okRows=rowsBy(&quot;match&quot;);
 return(
-&lt;div style={{marginTop:8,padding:16,background:&quot;#161b22&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:10}}&gt;
-&lt;div className=&quot;sl&quot; style={{color:&quot;#4a9eff&quot;,marginBottom:4}}&gt;Stage 14 · Docs check&lt;/div&gt;
-&lt;div style={{fontSize:11,color:&quot;#6e7681&quot;,marginBottom:10,lineHeight:1.5}}&gt;Drop the licence and payslips. Read on this machine first, nothing is sent anywhere. If a read comes back thin, tap Read with Claude on that one file and only that file gets sent. Cross-checks against Zink and builds the update list.&lt;/div&gt;
+&lt;div style={{marginTop:8,padding:16,background:&quot;#111214&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:14,fontFamily:&quot;-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Inter,Roboto,sans-serif&quot;}}&gt;
+&lt;div style={{fontSize:17,fontWeight:600,color:&quot;#f5f5f7&quot;}}&gt;Docs check&lt;/div&gt;
+&lt;div style={{fontSize:12.5,color:&quot;#8e8e93&quot;,margin:&quot;2px 0 12px&quot;,lineHeight:1.5}}&gt;Drop the licence and payslips. They're read here and checked against Zink.&lt;/div&gt;
 &lt;div
   onClick={()=&gt;fileRef.current&amp;&amp;fileRef.current.click()}
   onDragOver={e=&gt;{e.preventDefault();setDragOn(true)}}
   onDragLeave={()=&gt;setDragOn(false)}
   onDrop={e=&gt;{e.preventDefault();setDragOn(false);addFiles(e.dataTransfer.files)}}
-  style={{padding:&quot;16px 12px&quot;,textAlign:&quot;center&quot;,background:dragOn?&quot;#101c2c&quot;:&quot;#0d1117&quot;,border:`2px dashed ${dragOn?&quot;#1f6feb&quot;:&quot;#242a4a&quot;}`,borderRadius:8,cursor:&quot;pointer&quot;,marginBottom:10}}&gt;
-&lt;div style={{fontSize:12.5,fontWeight:600,color:&quot;#eef0ff&quot;}}&gt;Drop ID and payslips here or tap to attach&lt;/div&gt;
-&lt;div style={{fontSize:10.5,color:&quot;#6e7681&quot;,marginTop:3}}&gt;PDF payslips read best. Licence photos get an OCR pass · always verify the read. Thin read? Tap Read with Claude on that file.&lt;/div&gt;
+  style={{padding:&quot;18px 12px&quot;,textAlign:&quot;center&quot;,border:`1.5px dashed ${dragOn?&quot;#0a84ff&quot;:&quot;#48484a&quot;}`,borderRadius:12,cursor:&quot;pointer&quot;,color:dragOn?&quot;#0a84ff&quot;:&quot;#8e8e93&quot;,fontSize:13.5,marginBottom:12}}&gt;
+Drop files here or tap to add
 &lt;/div&gt;
 &lt;input ref={fileRef} type=&quot;file&quot; accept=&quot;.pdf,image/*&quot; multiple hidden onChange={e=&gt;{addFiles(e.target.files);e.target.value=&quot;&quot;}}/&gt;
 {items.length&gt;0&amp;&amp;(
-&lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:5,marginBottom:10}}&gt;
-{items.map(x=&gt;(
-&lt;div key={x.id} style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:8,padding:&quot;6px 10px&quot;,background:&quot;#0d1117&quot;,border:&quot;1px solid #181c36&quot;,borderRadius:7,fontSize:11.5}}&gt;
-&lt;span style={{fontSize:13}}&gt;{x.status===&quot;reading&quot;?&quot;⏳&quot;:x.status===&quot;error&quot;?&quot;❌&quot;:x.status===&quot;skipped&quot;?&quot;⏭️&quot;:x.kind===&quot;licence&quot;?&quot;🪪&quot;:&quot;💰&quot;}&lt;/span&gt;
-&lt;span style={{color:&quot;#eef0ff&quot;,fontWeight:600,maxWidth:150,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;,whiteSpace:&quot;nowrap&quot;}}&gt;{x.name}&lt;/span&gt;
-&lt;span style={{color:x.status===&quot;error&quot;?&quot;#fb7185&quot;:&quot;#8b949e&quot;,flex:1}}&gt;{x.msg}&lt;/span&gt;
-{aiOn(x)&amp;&amp;&lt;span onClick={()=&gt;{if(aiBusy!==x.id)escalate(x.id)}} title=&quot;Sends this one file to Claude to read. Nothing else leaves the machine.&quot; style={{fontSize:9.5,fontWeight:700,color:aiBusy===x.id?&quot;#7f86ad&quot;:&quot;#4a9eff&quot;,border:&quot;1px solid &quot;+(aiBusy===x.id?&quot;#242a4a&quot;:&quot;#1f6feb&quot;),borderRadius:5,padding:&quot;2px 7px&quot;,cursor:aiBusy===x.id?&quot;default&quot;:&quot;pointer&quot;,whiteSpace:&quot;nowrap&quot;}}&gt;{aiBusy===x.id?&quot;Reading…&quot;:&quot;Read with Claude&quot;}&lt;/span&gt;}
-&lt;span style={{color:&quot;#4a5280&quot;,cursor:&quot;pointer&quot;,fontSize:11}} onClick={()=&gt;removeItem(x.id)}&gt;✕&lt;/span&gt;
+&lt;div style={box}&gt;
+{items.map((x,i)=&gt;(
+&lt;div key={x.id} style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:10,padding:&quot;10px 14px&quot;,borderTop:i?sep:&quot;none&quot;}}&gt;
+&lt;span style={dot(x.status===&quot;error&quot;?&quot;#ff453a&quot;:x.status===&quot;reading&quot;?&quot;#ff9f0a&quot;:x.status===&quot;skipped&quot;?&quot;#48484a&quot;:&quot;#30d158&quot;)}/&gt;
+&lt;div style={{flex:1,minWidth:0}}&gt;
+&lt;div style={{fontSize:13.5,color:&quot;#f5f5f7&quot;,whiteSpace:&quot;nowrap&quot;,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;}}&gt;{niceName(x)}&lt;/div&gt;
+&lt;div style={{fontSize:12,color:x.status===&quot;error&quot;?&quot;#ff453a&quot;:&quot;#8e8e93&quot;,marginTop:1}}&gt;{shortMsg(x)}&lt;/div&gt;
+&lt;/div&gt;
+{aiOn(x)&amp;&amp;&lt;button onClick={()=&gt;{if(aiBusy!==x.id)escalate(x.id)}} title=&quot;Sends this one file to Claude to read. Nothing else leaves the machine.&quot; style={{...pill,color:aiBusy===x.id?&quot;#8e8e93&quot;:&quot;#0a84ff&quot;}}&gt;{aiBusy===x.id?&quot;Reading&quot;:&quot;Read with Claude&quot;}&lt;/button&gt;}
+&lt;span onClick={()=&gt;removeItem(x.id)} style={{color:&quot;#636366&quot;,cursor:&quot;pointer&quot;,fontSize:13,padding:&quot;0 2px&quot;}}&gt;✕&lt;/span&gt;
 &lt;/div&gt;))}
 &lt;/div&gt;)}
-{result&amp;&amp;result.rows.length&gt;0&amp;&amp;(
-&lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:6,marginBottom:12}}&gt;
-{result.rows.map((r,i)=&gt;{const s=STC[r.status]||STC.add;return(
-&lt;div key={i} style={{padding:&quot;8px 10px&quot;,background:s.bg,border:`1px solid ${s.bd}55`,borderLeft:`3px solid ${s.bd}`,borderRadius:7}}&gt;
-&lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:8,marginBottom:2}}&gt;
-&lt;span style={{fontSize:11.5,fontWeight:700,color:&quot;#eef0ff&quot;}}&gt;{r.field}&lt;/span&gt;
-&lt;span style={{fontSize:9.5,fontWeight:700,color:s.fg,border:`1px solid ${s.bd}`,borderRadius:4,padding:&quot;1px 6px&quot;,letterSpacing:.4}}&gt;{s.t}&lt;/span&gt;
+{result&amp;&amp;result.rows.length&gt;0&amp;&amp;(&lt;&gt;
+&lt;div style={{display:&quot;flex&quot;,gap:16,flexWrap:&quot;wrap&quot;,fontSize:13,color:&quot;#8e8e93&quot;,margin:&quot;0 4px 12px&quot;}}&gt;
+{GROUPS.map(g=&gt;{const n=rowsBy(g.k).length;return n?(&lt;span key={g.k} style={{display:&quot;inline-flex&quot;,alignItems:&quot;center&quot;,gap:6}}&gt;&lt;span style={dot(g.c)}/&gt;{n} {({mismatch:&quot;to fix&quot;,check:&quot;to check&quot;,add:&quot;to add&quot;,match:&quot;match&quot;})[g.k]}&lt;/span&gt;):null})}
 &lt;/div&gt;
-&lt;div style={{fontSize:11,color:&quot;#8b949e&quot;,lineHeight:1.5}}&gt;Doc: &lt;span style={{color:&quot;#eef0ff&quot;}}&gt;{r.doc}&lt;/span&gt;{r.zink&amp;&amp;&lt;&gt; · Zink: &lt;span style={{color:&quot;#eef0ff&quot;}}&gt;{r.zink}&lt;/span&gt;&lt;/&gt;}&lt;/div&gt;
-{r.note&amp;&amp;&lt;div style={{fontSize:10.5,color:s.fg,marginTop:3,lineHeight:1.45}}&gt;{r.note}&lt;/div&gt;}
+{GROUPS.filter(g=&gt;g.k!==&quot;match&quot;).map(g=&gt;{const rs=rowsBy(g.k);if(!rs.length)return null;return(
+&lt;div key={g.k}&gt;
+&lt;div style={{fontSize:12,fontWeight:600,color:&quot;#8e8e93&quot;,textTransform:&quot;uppercase&quot;,letterSpacing:&quot;.06em&quot;,margin:&quot;4px 4px 6px&quot;}}&gt;{g.t}&lt;/div&gt;
+&lt;div style={box}&gt;
+{rs.map((r,i)=&gt;(
+&lt;div key={i} style={{padding:&quot;12px 14px&quot;,borderTop:i?sep:&quot;none&quot;}}&gt;
+&lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:8}}&gt;&lt;span style={dot(g.c)}/&gt;&lt;span style={{fontSize:14.5,fontWeight:600,color:&quot;#f5f5f7&quot;}}&gt;{r.field}&lt;/span&gt;&lt;/div&gt;
+&lt;div style={{display:&quot;grid&quot;,gridTemplateColumns:&quot;auto 1fr&quot;,columnGap:16,rowGap:3,marginTop:7,fontSize:13.5}}&gt;
+{r.doc&amp;&amp;&lt;&gt;&lt;span style={{color:&quot;#8e8e93&quot;}}&gt;On the doc&lt;/span&gt;&lt;span style={{color:muted(r.doc)?&quot;#8e8e93&quot;:&quot;#f5f5f7&quot;,textAlign:&quot;right&quot;,wordBreak:&quot;break-word&quot;}}&gt;{r.doc}&lt;/span&gt;&lt;/&gt;}
+{r.zink&amp;&amp;r.zink!==&quot;—&quot;&amp;&amp;&lt;&gt;&lt;span style={{color:&quot;#8e8e93&quot;}}&gt;In Zink&lt;/span&gt;&lt;span style={{color:/not in Zink/.test(r.zink)?&quot;#8e8e93&quot;:&quot;#f5f5f7&quot;,textAlign:&quot;right&quot;,wordBreak:&quot;break-word&quot;}}&gt;{String(r.zink).replace(/^— not in Zink$/,&quot;Not in Zink&quot;)}&lt;/span&gt;&lt;/&gt;}
+&lt;/div&gt;
+{r.note&amp;&amp;&lt;div style={{fontSize:12.5,color:&quot;#c7c7cc&quot;,marginTop:7,lineHeight:1.45}}&gt;{r.note}&lt;/div&gt;}
+&lt;/div&gt;))}
+&lt;/div&gt;
 &lt;/div&gt;)})}
+{okRows.length&gt;0&amp;&amp;(&lt;div&gt;
+&lt;div onClick={()=&gt;setShowOk(!showOk)} style={{...box,padding:&quot;12px 14px&quot;,display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:8,cursor:&quot;pointer&quot;,marginBottom:showOk?6:12}}&gt;
+&lt;span style={dot(&quot;#30d158&quot;)}/&gt;&lt;span style={{fontSize:14.5,color:&quot;#f5f5f7&quot;,flex:1}}&gt;{okRows.length} match Zink&lt;/span&gt;&lt;span style={{color:&quot;#8e8e93&quot;,fontSize:13}}&gt;{showOk?&quot;Hide&quot;:&quot;Show&quot;}&lt;/span&gt;
+&lt;/div&gt;
+{showOk&amp;&amp;&lt;div style={box}&gt;{okRows.map((r,i)=&gt;(&lt;div key={i} style={{display:&quot;flex&quot;,justifyContent:&quot;space-between&quot;,gap:12,padding:&quot;10px 14px&quot;,borderTop:i?sep:&quot;none&quot;,fontSize:13.5}}&gt;&lt;span style={{color:&quot;#8e8e93&quot;}}&gt;{r.field}&lt;/span&gt;&lt;span style={{color:&quot;#f5f5f7&quot;,textAlign:&quot;right&quot;,wordBreak:&quot;break-word&quot;}}&gt;{matchVal(r)}&lt;/span&gt;&lt;/div&gt;))}&lt;/div&gt;}
 &lt;/div&gt;)}
+&lt;/&gt;)}
 {block&amp;&amp;(
 &lt;div&gt;
-&lt;div className=&quot;sl&quot; style={{color:&quot;#4a5280&quot;,fontSize:9,marginBottom:4}}&gt;Zink update · edit before you copy if needed&lt;/div&gt;
-&lt;textarea value={block} onChange={e=&gt;setBlock(e.target.value)} style={{width:&quot;100%&quot;,minHeight:110,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,color:&quot;#eef0ff&quot;,fontSize:11.5,fontFamily:&quot;'SF Mono',monospace&quot;,padding:10,lineHeight:1.55,resize:&quot;vertical&quot;,boxSizing:&quot;border-box&quot;}}/&gt;
-&lt;button className=&quot;btn bz&quot; onClick={copyBlock} style={{width:&quot;100%&quot;,marginTop:6}}&gt;{copied?&quot;Copied ✓&quot;:&quot;📋 Copy Zink update&quot;}&lt;/button&gt;
+&lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,justifyContent:&quot;space-between&quot;,margin:&quot;4px 4px 6px&quot;}}&gt;
+&lt;span style={{fontSize:12,fontWeight:600,color:&quot;#8e8e93&quot;,textTransform:&quot;uppercase&quot;,letterSpacing:&quot;.06em&quot;}}&gt;Note for Zink&lt;/span&gt;
+&lt;button onClick={copyBlock} style={pill}&gt;{copied?&quot;Copied&quot;:&quot;Copy&quot;}&lt;/button&gt;
+&lt;/div&gt;
+&lt;textarea value={block} onChange={e=&gt;setBlock(e.target.value)} style={{width:&quot;100%&quot;,minHeight:110,background:&quot;#1c1c1e&quot;,border:&quot;none&quot;,borderRadius:12,color:&quot;#f5f5f7&quot;,fontSize:13,fontFamily:&quot;inherit&quot;,padding:12,lineHeight:1.55,resize:&quot;vertical&quot;,boxSizing:&quot;border-box&quot;,outline:&quot;none&quot;}}/&gt;
 &lt;/div&gt;)}
 &lt;/div&gt;
 );
@@ -13123,6 +13217,83 @@ function autoPasteToMatch(){
 }
 
 // ═══ LENDER MATCHING (Opus 4.6 with structured output) ═══
+/* ── reading the AI's JSON · strict first, then a forgiving read that copes with a quote left inside a reason,
+   a missing comma, a stray note after the JSON, or an answer that ran out of room ── */
+function lmLenient(src){
+  var s=String(src),i=0,n=s.length,NONE={};
+  function ws(){for(;;){while(i&lt;n&amp;&amp;/\s/.test(s[i]))i++;if(s[i]==='/'&amp;&amp;s[i+1]==='/'){while(i&lt;n&amp;&amp;s[i]!=='\n')i++;continue}if(s[i]==='/'&amp;&amp;s[i+1]==='*'){var e=s.indexOf('*/',i+2);i=e&lt;0?n:e+2;continue}return}}
+  function str(){
+    var q=s[i];i++;var out='';
+    while(i&lt;n){
+      var ch=s[i];
+      if(ch==='\\'){var nx=s[i+1];if(nx==='u'){out+=String.fromCharCode(parseInt(s.substr(i+2,4),16)||63);i+=6;continue}var mp={n:'\n',t:'\t',r:'\r',b:'\b',f:'\f'};out+=(mp[nx]!=null?mp[nx]:(nx||''));i+=2;continue}
+      if(ch===q){
+        // a real closing quote is followed by a comma, a bracket, a colon or the line end · otherwise the quote is part of the text
+        var j=i+1;while(j&lt;n&amp;&amp;(s[j]===' '||s[j]==='\t'))j++;
+        var nc=s[j];
+        if(j&gt;=n||nc===','||nc==='}'||nc===']'||nc===':'||nc==='\n'||nc==='\r'){i++;return out}
+        out+=ch;i++;continue;
+      }
+      out+=ch;i++;
+    }
+    return out;
+  }
+  function val(){
+    ws();if(i&gt;=n)return NONE;
+    var ch=s[i];
+    if(ch==='{')return obj();
+    if(ch==='[')return arr();
+    if(ch==='&quot;'||ch===&quot;'&quot;)return str();
+    var m=s.slice(i,i+40).match(/^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(?![\w%$.])/);
+    if(m){i+=m[0].length;return +m[0]}
+    if(s.startsWith('true',i)){i+=4;return true}
+    if(s.startsWith('false',i)){i+=5;return false}
+    if(s.startsWith('null',i)){i+=4;return null}
+    var st=i;while(i&lt;n&amp;&amp;!/[,\]\}\n]/.test(s[i]))i++;
+    var t=s.slice(st,i).trim();
+    return t?t:NONE;
+  }
+  function arr(){
+    i++;var a=[];
+    for(;;){ws();if(i&gt;=n)return a;var ch=s[i];if(ch===']'){i++;return a}if(ch===','){i++;continue}if(ch==='}'){return a}
+      var at=i,v=val();if(v!==NONE)a.push(v);if(i===at)i++}
+  }
+  function obj(){
+    i++;var o={};
+    for(;;){ws();if(i&gt;=n)return o;var ch=s[i];if(ch==='}'){i++;return o}if(ch===','){i++;continue}if(ch===']'){return o}
+      var k=null;
+      if(ch==='&quot;'||ch===&quot;'&quot;)k=str();
+      else{var m=s.slice(i,i+60).match(/^[A-Za-z_$][\w$]*/);if(!m){i++;continue}k=m[0];i+=k.length}
+      ws();if(s[i]===':')i++;else{continue}
+      var v=val();if(v!==NONE)o[k]=v;
+    }
+  }
+  var out=val();
+  return out===NONE?null:out;
+}
+function lmShapeOk(o){return !!(o&amp;&amp;typeof o==='object'&amp;&amp;!Array.isArray(o)&amp;&amp;(o.clientSnapshot||Array.isArray(o.strongMatches)||Array.isArray(o.maybeMatches)||Array.isArray(o.notAFit)))}
+function lmNormalize(o){
+  var arrOf=function(x){return Array.isArray(x)?x:(x==null?[]:[x])};
+  var fixL=function(L){if(typeof L==='string')return{lender:L,reasons:[]};L=L&amp;&amp;typeof L==='object'?L:{};return{lender:String(L.lender||L.name||'Lender'),reasons:arrOf(L.reasons).map(String)}};
+  o.clientSnapshot=o.clientSnapshot&amp;&amp;typeof o.clientSnapshot==='object'?o.clientSnapshot:{};
+  o.clientSnapshot.redFlags=arrOf(o.clientSnapshot.redFlags).map(String);
+  ['strongMatches','maybeMatches','notAFit'].forEach(function(k){o[k]=arrOf(o[k]).map(fixL)});
+  o.recommendedOrder=arrOf(o.recommendedOrder).map(String);
+  o.keyRisks=arrOf(o.keyRisks).map(String);
+  if(o.submitOrderRationale!=null)o.submitOrderRationale=String(o.submitOrderRationale);
+  if(o.rateRange!=null)o.rateRange=String(o.rateRange);
+  return o;
+}
+function lmParseJSON(raw){
+  var t=String(raw||'').replace(/```(?:json)?/gi,'');
+  var a=t.indexOf('{');if(a&lt;0)return null;
+  // the outermost object, found by matching brackets so a note after it can't break the read
+  var depth=0,inS=false,escp=false,end=-1;
+  for(var k=a;k&lt;t.length;k++){var ch=t[k];if(inS){if(escp)escp=false;else if(ch==='\\')escp=true;else if(ch==='&quot;')inS=false;continue}if(ch==='&quot;')inS=true;else if(ch==='{')depth++;else if(ch==='}'){depth--;if(depth===0){end=k;break}}}
+  if(end&gt;0){try{var o=JSON.parse(t.slice(a,end+1));if(lmShapeOk(o))return lmNormalize(o)}catch(e){}}
+  try{var o2=lmLenient(t.slice(a));if(lmShapeOk(o2))return lmNormalize(o2)}catch(e2){}
+  return null;
+}
 async function doMatch(){
   const input=document.getElementById('matchInput').value.trim();
   if(!input){toast('Paste a client summary first');return}
@@ -13228,25 +13399,32 @@ Be direct and Australian-market specific. Reasons should be SHORT (max 14 words 
 If the loan amount is missing from the data, don't flag it as red · just note it once in the snapshot.`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:(localStorage.getItem('anthropic_model')||'claude-opus-5'),max_tokens:4000,system:systemPrompt,messages:[{role:'user',content:input+(aiEngine?'\n\nRULES ENGINE VERDICTS, built from the same guides. Treat these as ground truth on hard policy:\n'+aiEngine:'')}]})
-    });
-    const data=await resp.json();
-    if(data.error)throw new Error(data.error.message||'API error');
-    let text=data.content.map(c=&gt;c.text||'').join('');
-    text=text.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim();
-    // Find JSON object
-    const start=text.indexOf('{');
-    const end=text.lastIndexOf('}');
-    if(start&gt;=0&amp;&amp;end&gt;start)text=text.substring(start,end+1);
-    const result=JSON.parse(text);
+    const userMsg=input+(aiEngine?'\n\nRULES ENGINE VERDICTS, built from the same guides. Treat these as ground truth on hard policy:\n'+aiEngine:'');
+    const ask=async(content)=&gt;{
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:(localStorage.getItem('anthropic_model')||'claude-opus-5'),max_tokens:8000,system:systemPrompt,messages:[{role:'user',content:content}]})
+      });
+      const data=await resp.json();
+      if(data.error)throw new Error(data.error.message||'API error');
+      return{text:(data.content||[]).map(c=&gt;c.type==='text'||c.type==null?(c.text||''):'').join(''),stop:data.stop_reason};
+    };
+    // the AI sometimes breaks its own JSON or runs out of room · read it forgivingly, and ask once more if it is still broken
+    let got=await ask(userMsg);
+    let result=lmParseJSON(got.text);
+    if(!result||got.stop==='max_tokens'){
+      btn.textContent='Checking again...';
+      const again=await ask(userMsg+'\n\nKeep every reason under 10 words. Reply with one valid JSON object only.');
+      const r2=lmParseJSON(again.text);
+      if(r2&amp;&amp;(again.stop!=='max_tokens'||!result))result=r2;
+    }
+    if(!result)throw new Error('LM_PARSE');
     window._lastMatchResult=result;
     window._lastMatchInput=input;
     renderResults(result);
   }catch(e){
-    document.getElementById('matchResultsArea').innerHTML='&lt;div style=&quot;background:rgba(255,107,129,.1);border:1px solid var(--neg);border-radius:8px;padding:14px;color:var(--neg);font-size:13px&quot;&gt;Error: '+esc(e.message)+'&lt;br&gt;&lt;br&gt;If this looks like a JSON parse error, the AI may have returned unexpected formatting. Try again.&lt;/div&gt;';
+    document.getElementById('matchResultsArea').innerHTML='&lt;div style=&quot;background:rgba(255,107,129,.1);border:1px solid var(--neg);border-radius:8px;padding:14px;color:var(--neg);font-size:13px&quot;&gt;'+(e.message==='LM_PARSE'?'The answer came back scrambled twice. Tap Match Lenders to run it again.':'Error: '+esc(e.message))+'&lt;/div&gt;';
     document.getElementById('matchResultsArea').style.display='block';
     var em2=document.getElementById('resultsEmpty'); if(em2)em2.style.display='none';
     var rt2=document.querySelector('[data-pane=results]'); if(rt2)switchPane('results',rt2);
@@ -14849,7 +15027,8 @@ window.quoteAI=function(){
       messages:[{role:'user',content:brief}]})})
   .then(function(r){return r.json()})
   .then(function(j){
-    var txt=(j&amp;&amp;j.content&amp;&amp;j.content[0]&amp;&amp;j.content[0].text)?j.content[0].text:'No answer came back.';
+    if(j&amp;&amp;j.error){out.textContent='Error: '+(j.error.message||'API error');out.style.display='block';return}
+    var txt=((j&amp;&amp;j.content)||[]).map(function(c){return c&amp;&amp;c.type!=='thinking'?(c.text||''):''}).join('').trim()||'No answer came back.';
     out.innerHTML=txt.replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/\n/g,'&lt;br&gt;');
     out.style.display='block';
   })
@@ -22932,7 +23111,7 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
 &lt;div class=&quot;saved&quot; id=&quot;savedToast&quot;&gt;Saved ✓&lt;/div&gt;
 
 &lt;script&gt;
-const DEFAULTS=[{&quot;id&quot;:&quot;handover&quot;,&quot;title&quot;:&quot;Notes-Aware Opener&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Hey {clientName}, it's Jordon from Ausloans. How's your {dayPart} treating you?&quot;,&quot;followUp&quot;:&quot;Good to put a voice to the name. So {setter} sent me through everything, I've had a good look already. I'm a senior broker here at Ausloans and I've been doing this for over 7 years · so you're in good hands.&quot;}},{&quot;id&quot;:&quot;frame&quot;,&quot;title&quot;:&quot;Soft Frame&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I'll just ask you a few things {setter} wouldn't have gotten into, then I'll talk you through where I reckon we land. Basically · by the end of this five minute call with me, we'll know exactly where you stand and I can get some terms together for you. Easy?&quot;}},{&quot;id&quot;:&quot;recon&quot;,&quot;title&quot;:&quot;Confirm the Situation&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I can see here in the description · you're looking at {vehicleDesc}. Have you already found this at a dealership or online, or is it something you're still looking for at this point in time?&quot;,&quot;script2&quot;:&quot;And honestly, don't stress if you haven't locked a car in yet · that's not the part that matters right now. The way I run every file, and I've done a lot of these, is finance first. Think of it like a coin. Heads is your finance side, tails is the car. We get heads sorted and pre-approved first, then flipping to tails is the easy bit · you go shopping knowing your exact budget, and the car just slots into an approval that's already done. Doing it the other way round is where people come unstuck · they fall in love with a car, then find out what they can actually borrow.&quot;}},{&quot;id&quot;:&quot;personalSecuredDetail&quot;,&quot;title&quot;:&quot;Secured PL Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What's the loan for, and what are you offering up as security?&quot;}},{&quot;id&quot;:&quot;marineDetail&quot;,&quot;title&quot;:&quot;Marine Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Tell me about the boat · what are you looking at, new or used, dealer or private?&quot;}},{&quot;id&quot;:&quot;leisureDetail&quot;,&quot;title&quot;:&quot;Leisure Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Caravan, camper, motorhome? New or used?&quot;}},{&quot;id&quot;:&quot;commReason&quot;,&quot;title&quot;:&quot;What's it for?&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What are you looking to finance through the business?&quot;}},{&quot;id&quot;:&quot;commUse&quot;,&quot;title&quot;:&quot;Use of Funds&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Walk me through what the money's actually for · and how it's going to help the business.&quot;}},{&quot;id&quot;:&quot;situation&quot;,&quot;title&quot;:&quot;Why Now&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff · just curious, how come you're looking to get a car now and not before? Has something happened with your current vehicle, or is this more of an upgrade?&quot;,&quot;followUp&quot;:&quot;Yeah, and what's that been like day to day for you?&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff · just curious, how come you're looking to refinance now and not three months ago?&quot;}}},{&quot;id&quot;:&quot;outcome&quot;,&quot;title&quot;:&quot;Desired Outcome&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;So say we get you approved and it all settles · you've got the car, it's done. What does that actually sort out for you?&quot;,&quot;script2&quot;:&quot;IF THEY STALL OR SAY 'DUNNO' · For some people it's just getting to work without the stress, for others it's finally having something they're proud of · what's it for you?&quot;,&quot;followUp&quot;:&quot;Yeah, makes sense. Appreciate you sharing that · it actually helps me put you with the right lender, not just any lender.&quot;}},{&quot;id&quot;:&quot;refiRate&quot;,&quot;title&quot;:&quot;Current Rate&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Righto. So what rate are you paying on it at the moment · do you know off the top of your head?&quot;,&quot;followUp&quot;:&quot;Good · that gives me a number to work against.&quot;}},{&quot;id&quot;:&quot;barrier&quot;,&quot;title&quot;:&quot;What's been in the way&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And what's been stopping you from getting the finance · have you been trying, or is this the first time enquiring?&quot;}},{&quot;id&quot;:&quot;refiRepay&quot;,&quot;title&quot;:&quot;Current Repayments&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And what are the repayments on it right now · per month?\n\nReason I ask · there's no point me doing any of this unless I'm putting you in a better spot than you're already in. So I need to know exactly what you're paying before I go anywhere near a lender.&quot;,&quot;followUp&quot;:&quot;Good. So that's the number I've got to beat then.&quot;}},{&quot;id&quot;:&quot;priority&quot;,&quot;title&quot;:&quot;Priority&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Quick one before I run the numbers. Out of these three · the lowest weekly repayment, the lowest interest rate, or the fastest approval · which one matters most to you? Just pick one.\n\nIf you're wondering why I ask · you can get low repayments with a higher rate, and you can get a lower rate with higher repayments. They pull against each other. So I want one clear goal from you · because I'm working for you here, not the lender.&quot;}},{&quot;id&quot;:&quot;cost&quot;,&quot;title&quot;:&quot;Cost of Inaction&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And if nothing changes for the next month or two {painRecap}· what does that look like?&quot;,&quot;script2&quot;:&quot;IF THEY STALL · Most people tell me it's one of a few things · still bumming lifts off everyone, still holding your breath every time the car makes a noise, or just another few months of exactly the same. Which one's closest for you?&quot;,&quot;followUp&quot;:&quot;Yeah. Makes sense to just get it sorted then.&quot;}},{&quot;id&quot;:&quot;prescription&quot;,&quot;title&quot;:&quot;The Prescription&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Right. So based on all of that · here's where I'm landing.&quot;,&quot;followUp&quot;:&quot;I've got one lender in mind that's the right fit for you · strong on {priority1}, realistic about your situation, and I've placed a few files just like yours with them lately. Getting the lender right first time matters · the wrong one means a decline, and that's a credit hit you don't need.\n\nSo we're on heads right now · the finance side. That's your resume to the lender, built out of how you've handled money in the past, and I put it together properly before it goes anywhere.\n\nAll I ask is that you let me lead this part. Don't apply anywhere else, don't let a dealership run your credit, and if anything comes up just ring me first. Every extra enquiry chips away at the profile I'm building for you, and I can't undo it once it's on there.\n\nYou do that and I'll make the rest as easy as it gets · I chase the lender, I handle the paperwork, and I keep you in the loop the whole way. Then we flip to tails and go get the car.&quot;}},{&quot;id&quot;:&quot;affordability&quot;,&quot;title&quot;:&quot;Affordability Check&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Before I give you a number · what are you comfortable paying each week on a new loan? Not what you want, what you actually feel is realistic for your budget.\n\nI only ask because it sets expectations early. If I know your comfortable ceiling · then if you end up loving a slightly dearer car, I already know you can service it. If we need to fit a warranty in, I know there's room. Saves any surprises later.&quot;,&quot;followUp&quot;:&quot;Good to know. Let me run the numbers against that and see what makes sense.&quot;}},{&quot;id&quot;:&quot;quote&quot;,&quot;title&quot;:&quot;Quote&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Based on your numbers and what matters most to you, I'm looking at around {realNumber} a week.&quot;,&quot;followUp&quot;:&quot;That's not a guess · it's based on your actual numbers. When I submit, I'm confident the lender comes back on or very near that.&quot;}},{&quot;id&quot;:&quot;close&quot;,&quot;title&quot;:&quot;Close&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Cool. Here's what happens next. I'll review everything you've told me, match you with the right lender for your situation, and get the application submitted. One submission, one approval, clean file. Sound good?&quot;,&quot;script2&quot;:&quot;Beautiful. Give me about 15 minutes. In that time I'll send you a text and an email with my credentials so you know I'm a real person · then I'll come back and go through your terms once I've spoken to a lender or two and made sure your documents are all in order. From there it's usually 4 to 8 business hours for an answer · sometimes longer if it's a more complicated file, and I'll tell you straight up if that's the case.&quot;,&quot;confirm&quot;:&quot;Done. Stay close to your phone · I'll be back to you in 15 minutes. Anything you want to ask before I let you go?&quot;,&quot;cred&quot;:&quot;For what it's worth · I've been doing finance for over 7 years and Ausloans has been at it for more than 25, so we know a thing or two · and we look after everything for you from start to finish.&quot;,&quot;docs&quot;:&quot;I'll just do a quick look over your documents in my system to make sure I've got everything I need from you · give me one sec here. → CHECK THE CRM NOW: ID, bank statements, payslips, anything still outstanding. Tell them what's missing before you let them go.&quot;,&quot;comms&quot;:&quot;Would you prefer call, email, or text for communication?&quot;,&quot;creditWarn&quot;:&quot;One thing before I go · your credit file is looking okay right now, and we don't want any enquiries going on it while I'm working on this. So no rate shopping, no going to dealerships or banks. The amount of times I've had people come back to me with a decline after they went and enquired somewhere else · and then I can't get those good rates for them anymore because they went off being silly. Just sit tight and let me do my thing.&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;Cool. So here's what happens next · I'll start making some calls to a lender and get some quotes, and once I've got everything lined up I'll present it to you and we can get it submitted.\n\nFor what it's worth · I've been doing finance for over 7 years and Ausloans has been at it for more than 25, so we know a thing or two · and we look after everything for you from start to finish.\n\nI'll just do a quick look over your documents to make sure I have everything.&quot;,&quot;script2&quot;:&quot;Beautiful. Give me about 15 minutes. In that time I'll send you a text and an email with my credentials so you know I'm a real person · then I'll come back and go through your terms once I've spoken to a lender or two and made sure your documents are all in order. From there it's usually 4 to 8 business hours for an answer · sometimes longer if it's a more complicated file, and I'll tell you straight up if that's the case.&quot;,&quot;confirm&quot;:&quot;Done. Stay close to your phone · I'll be back to you in 15 minutes. Anything you want to ask before I let you go?&quot;}}}];
+const DEFAULTS=[{&quot;id&quot;:&quot;handover&quot;,&quot;title&quot;:&quot;Notes-Aware Opener&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Hey {clientName}, it's Jordon from Ausloans. How's your {dayPart} treating you?&quot;,&quot;followUp&quot;:&quot;Good to put a voice to the name. So {setter} sent me through everything, I've had a good look already. I'm a senior broker here at Ausloans and I've been doing this for over 7 years · so you're in good hands.&quot;}},{&quot;id&quot;:&quot;frame&quot;,&quot;title&quot;:&quot;Soft Frame&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I'll just ask you a few things {setter} wouldn't have gotten into, then I'll talk you through where I reckon we land. Basically · by the end of this five minute call with me, we'll know exactly where you stand and I can get some terms together for you. Easy?&quot;}},{&quot;id&quot;:&quot;recon&quot;,&quot;title&quot;:&quot;Confirm the Situation&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I can see here in the description · you're looking at {vehicleDesc}. Have you already found this at a dealership or online, or is it something you're still looking for at this point in time?&quot;,&quot;script2&quot;:&quot;And honestly, don't stress if you haven't locked a car in yet · that's not the part that matters right now. The way I run every file, and I've done a lot of these, is finance first. Think of it like a coin. Heads is your finance side, tails is the car. We get heads sorted and pre-approved first, then flipping to tails is the easy bit · you go shopping knowing your exact budget, and the car just slots into an approval that's already done. Doing it the other way round is where people come unstuck · they fall in love with a car, then find out what they can actually borrow.&quot;}},{&quot;id&quot;:&quot;personalSecuredDetail&quot;,&quot;title&quot;:&quot;Secured PL Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What's the loan for, and what are you offering up as security?&quot;}},{&quot;id&quot;:&quot;marineDetail&quot;,&quot;title&quot;:&quot;Marine Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Tell me about the boat · what are you looking at, new or used, dealer or private?&quot;}},{&quot;id&quot;:&quot;leisureDetail&quot;,&quot;title&quot;:&quot;Leisure Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Caravan, camper, motorhome? New or used?&quot;}},{&quot;id&quot;:&quot;commReason&quot;,&quot;title&quot;:&quot;What's it for?&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What are you looking to finance through the business?&quot;}},{&quot;id&quot;:&quot;commUse&quot;,&quot;title&quot;:&quot;Use of Funds&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Walk me through what the money's actually for · and how it's going to help the business.&quot;}},{&quot;id&quot;:&quot;situation&quot;,&quot;title&quot;:&quot;Why Now&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff · just curious, how come you're looking to get a car now and not before? Has something happened with your current vehicle, or is this more of an upgrade?&quot;,&quot;followUp&quot;:&quot;Yeah, and what's that been like day to day for you?&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff · just curious, how come you're looking to refinance now and not three months ago?&quot;}}},{&quot;id&quot;:&quot;outcome&quot;,&quot;title&quot;:&quot;Desired Outcome&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;So say we get you approved and it all settles · you've got the car, it's done. What does that actually sort out for you?&quot;,&quot;script2&quot;:&quot;IF THEY STALL OR SAY 'DUNNO' · For some people it's just getting to work without the stress, for others it's finally having something they're proud of · what's it for you?&quot;,&quot;followUp&quot;:&quot;Yeah, makes sense. Appreciate you sharing that · it actually helps me put you with the right lender, not just any lender.&quot;}},{&quot;id&quot;:&quot;refiRate&quot;,&quot;title&quot;:&quot;Current Rate&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Righto. So what rate are you paying on it at the moment · do you know off the top of your head?&quot;,&quot;followUp&quot;:&quot;Good · that gives me a number to work against.&quot;}},{&quot;id&quot;:&quot;barrier&quot;,&quot;title&quot;:&quot;What's been in the way&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And what's been stopping you from getting the finance · have you been trying, or is this the first time enquiring?&quot;}},{&quot;id&quot;:&quot;refiRepay&quot;,&quot;title&quot;:&quot;Current Repayments&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And what are the repayments on it right now · per month?\n\nReason I ask · there's no point me doing any of this unless I'm putting you in a better spot than you're already in. So I need to know exactly what you're paying before I go anywhere near a lender.&quot;,&quot;followUp&quot;:&quot;Good. So that's the number I've got to beat then.&quot;}},{&quot;id&quot;:&quot;priority&quot;,&quot;title&quot;:&quot;Priority&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Quick one before I run the numbers. Out of these three · the lowest weekly repayment, the lowest interest rate, or the fastest approval · which one matters most to you? Just pick one.\n\nIf you're wondering why I ask · you can get low repayments with a higher rate, and you can get a lower rate with higher repayments. They pull against each other. So I want one clear goal from you · because I'm working for you here, not the lender.&quot;}},{&quot;id&quot;:&quot;affordability&quot;,&quot;title&quot;:&quot;Affordability Check&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Before I give you a number · what are you comfortable paying each week on a new loan? Not what you want, what you actually feel is realistic for your budget.\n\nI only ask because it sets expectations early. If I know your comfortable ceiling · then if you end up loving a slightly dearer car, I already know you can service it. If we need to fit a warranty in, I know there's room. Saves any surprises later.&quot;,&quot;followUp&quot;:&quot;Good to know. Let me run the numbers against that and see what makes sense.&quot;}},{&quot;id&quot;:&quot;quote&quot;,&quot;title&quot;:&quot;Quote&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Based on your numbers and what matters most to you, I'm looking at around {realNumber} a week.&quot;,&quot;followUp&quot;:&quot;That's not a guess · it's based on your actual numbers. When I submit, I'm confident the lender comes back on or very near that.&quot;}},{&quot;id&quot;:&quot;close&quot;,&quot;title&quot;:&quot;Close&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Cool. Here's what happens next. I'll review everything you've told me, match you with the right lender for your situation, and get the application submitted. One submission, one approval, clean file. Sound good?&quot;,&quot;script2&quot;:&quot;Beautiful. Give me about 15 minutes. In that time I'll send you a text and an email with my credentials so you know I'm a real person · then I'll come back and go through your terms once I've spoken to a lender or two and made sure your documents are all in order. From there it's usually 4 to 8 business hours for an answer · sometimes longer if it's a more complicated file, and I'll tell you straight up if that's the case.&quot;,&quot;confirm&quot;:&quot;Done. Stay close to your phone · I'll be back to you in 15 minutes. Anything you want to ask before I let you go?&quot;,&quot;cred&quot;:&quot;For what it's worth · I've been doing finance for over 7 years and Ausloans has been at it for more than 25, so we know a thing or two · and we look after everything for you from start to finish.&quot;,&quot;docs&quot;:&quot;I'll just do a quick look over your documents in my system to make sure I've got everything I need from you · give me one sec here. → CHECK THE CRM NOW: ID, bank statements, payslips, anything still outstanding. Tell them what's missing before you let them go.&quot;,&quot;comms&quot;:&quot;Would you prefer call, email, or text for communication?&quot;,&quot;creditWarn&quot;:&quot;One thing before I go · your credit file is looking okay right now, and we don't want any enquiries going on it while I'm working on this. So no rate shopping, no going to dealerships or banks. The amount of times I've had people come back to me with a decline after they went and enquired somewhere else · and then I can't get those good rates for them anymore because they went off being silly. Just sit tight and let me do my thing.&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;Cool. So here's what happens next · I'll start making some calls to a lender and get some quotes, and once I've got everything lined up I'll present it to you and we can get it submitted.\n\nFor what it's worth · I've been doing finance for over 7 years and Ausloans has been at it for more than 25, so we know a thing or two · and we look after everything for you from start to finish.\n\nI'll just do a quick look over your documents to make sure I have everything.&quot;,&quot;script2&quot;:&quot;Beautiful. Give me about 15 minutes. In that time I'll send you a text and an email with my credentials so you know I'm a real person · then I'll come back and go through your terms once I've spoken to a lender or two and made sure your documents are all in order. From there it's usually 4 to 8 business hours for an answer · sometimes longer if it's a more complicated file, and I'll tell you straight up if that's the case.&quot;,&quot;confirm&quot;:&quot;Done. Stay close to your phone · I'll be back to you in 15 minutes. Anything you want to ask before I let you go?&quot;}}}];
 const FIELD_LABELS={script:&quot;Main script&quot;,script2:&quot;Second beat&quot;,followUp:&quot;Follow-up line&quot;,confirm:&quot;Confirm / wrap line&quot;,cred:&quot;Credentials line&quot;,docs:&quot;Documents line&quot;,comms:&quot;Comms preference line&quot;,creditWarn:&quot;Credit-shopping warning&quot;};
 function S(){try{return JSON.parse(localStorage.getItem('hub_settings_v1'))||{};}catch(e){return {};}}
 function ovKeyBase(st,variant){return variant?st.id+'.variants.'+variant+'.':st.id+'.';}

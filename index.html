@@ -204,6 +204,7 @@ body{background:#000000;color:#eef0ff}
       <button class="nav-tab" data-tool="warranty" data-label="Warranty" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="lbl">Warranty</span></button>
       <button class="nav-tab" data-tool="insurance" data-label="Insurance" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M8 13l1.2-3.2A1.5 1.5 0 0 1 10.6 9h2.8a1.5 1.5 0 0 1 1.4.8L16 13"/><rect x="7.5" y="13" width="9" height="3.5" rx="1"/></svg></span><span class="lbl">Insurance</span></button>
       <button class="nav-tab" data-tool="drive" data-label="Drive Tracker" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l1.5-5A2 2 0 0 1 8.4 6.5h7.2a2 2 0 0 1 1.9 1.5L19 13"/><rect x="3" y="13" width="18" height="6" rx="2"/><path d="M6 19v1.5M18 19v1.5"/><path d="M7 16h.01M17 16h.01"/></svg></span><span class="lbl">Drive Tracker</span></button>
+      <button class="nav-tab" data-tool="leadbot" data-label="Lead Bot" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span><span class="lbl">Lead Bot</span></button>
       <button class="nav-tab" data-tool="dealers" data-label="Dealer Hub" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span><span class="lbl">Dealer Hub</span></button>
       <button class="nav-tab" data-tool="partners" data-label="Partners" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 15.5a5 5 0 0 1 5.5 4.5"/></svg></span><span class="lbl">Partners</span></button>
       <button class="nav-tab" data-tool="replydeck" data-label="ReplyDeck" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M13 7.5l-2.5 3.5H14l-2.5 3.5"/></svg></span><span class="lbl">ReplyDeck</span></button>
@@ -5537,6 +5538,441 @@ load(); render();
   window.paintAttach=paintAttach;
   window.addEventListener('storage',function(e){if(e&amp;&amp;e.key==='hub_attach_v1')paintAttach();});
 })();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe></template>
+    <template id="tpl-leadbot"><iframe id="frame-leadbot" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Broker HUB · Lead Bot&lt;/title&gt;
+&lt;link href=&quot;https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;style&gt;
+@media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%;}}
+:root{--bg:#000000;--card:#1a1f2c;--card2:#1a1e2a;--bdr:#242a4a;--bdr2:#333a4d;--txt:#eef0ff;--dim:#8b91b8;--mut:#5a6075;--blue:#4e8cff;--green:#2dd4a0;--red:#f06060;--amber:#f0b040;--purple:#a78bfa;--cyan:#20d0e8;--teal:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.5}
+.app{max-width:1440px;margin:0 auto;padding:24px 20px}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--bdr);flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:24px;font-weight:700}.hdr h1 span{color:var(--teal)}
+.hdr p{font-size:13px;color:var(--dim);margin-top:2px}
+.hdr-r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.live-txt{font-size:12px;color:var(--dim)}
+.tabs{display:flex;gap:4px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px}
+.tab{padding:9px 20px;border:1px solid var(--bdr);background:transparent;color:var(--dim);font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab:hover{background:var(--card);color:var(--txt)}.tab.on{background:var(--teal);color:#0a0c16;border-color:var(--teal)}
+.btn{padding:9px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-p{background:var(--teal);color:#0a0c16}.btn-p:hover{opacity:.85}
+.btn-s{background:transparent;border:1px solid var(--bdr);color:var(--dim)}.btn-s:hover{background:var(--card);color:var(--txt)}
+.btn-sm{font-size:12px;padding:6px 12px}
+.mg{display:grid;gap:14px;margin-bottom:24px}
+.mg5{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.mg4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.mg3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.mg2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.mc{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;transition:all .2s;position:relative}
+.mc:hover{border-color:var(--bdr2);background:var(--card2)}
+.mc-l{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.mc-v{font-size:22px;font-weight:600}
+.mc-s{font-size:11px;color:var(--mut);margin-top:3px}
+.hist-chart{padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--bdr2);border-radius:10px;margin-bottom:14px}
+.hist-title{font-size:13px;color:var(--dim);font-weight:600;margin-bottom:8px;letter-spacing:0.3px;text-transform:uppercase}
+.hist-badge{display:inline-block;background:rgba(79,107,255,.18);color:#9db1ff;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px}
+.ring-card{background:#12141f;border-radius:16px;padding:16px 18px;position:relative}
+.ring-title{font-size:13px;font-weight:700;color:#eef0ff;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ring-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#22d3ee;background:rgba(34,211,238,.12);padding:3px 8px;border-radius:999px}
+.ring-body{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-svg{flex:0 0 150px}
+.ring-legs{display:flex;flex-direction:column;gap:7px;min-width:150px;flex:1}
+.ring-leg{display:flex;align-items:center;gap:8px;font-size:12px;color:#b4b9d9}
+.ring-leg i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+.ring-leg b{margin-left:auto;color:#eef0ff;font-weight:700;font-size:12.5px}
+.ring-note{font-size:11.5px;color:#7f86ad;margin-top:8px;line-height:1.5}
+.ring-empty{font-size:12.5px;color:#7f86ad;padding:14px 0}
+.ring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:0 0 20px}
+.tw{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.ts{overflow-x:auto;max-height:65vh;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:#12151e;padding:10px 12px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);white-space:nowrap;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:1}
+tbody td{padding:10px 12px;border-bottom:1px solid rgba(37,42,56,.6);white-space:nowrap}
+tbody tr:hover{background:var(--card2)}
+.sec{display:none}.sec.on{display:block}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.sh h2{font-size:17px;font-weight:600}
+.badge{font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(47,214,165,.15);color:var(--teal)}
+.c-pos{color:var(--green)}.c-neg{color:var(--red)}.c-warn{color:var(--amber)}.c-dim{color:var(--dim)}.c-teal{color:var(--teal)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600}
+.p-won{background:rgba(45,212,160,.15);color:var(--green)}.p-lost{background:rgba(240,96,96,.15);color:var(--red)}.p-pass{background:rgba(139,145,184,.15);color:var(--dim)}.p-dry{background:rgba(240,176,64,.15);color:var(--amber)}
+.insight{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(255,180,84,.04));border:1px solid rgba(251,191,36,.35);border-left:3px solid var(--amber);border-radius:10px;padding:16px 20px;margin:0 0 20px;display:flex;gap:14px;align-items:flex-start}
+.insight-icon{font-size:20px;flex-shrink:0}
+.insight-body{flex:1;font-size:13px;line-height:1.6}
+.insight-label{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.insight-body ul{margin:4px 0 0 18px}.insight-body li{margin:2px 0}
+.drop{border:1.5px dashed var(--bdr2);border-radius:12px;padding:26px 16px;text-align:center;color:var(--dim);font-size:13px;cursor:pointer;margin-bottom:20px;transition:all .2s}
+.drop.on,.drop:hover{border-color:var(--teal);color:var(--txt);background:rgba(139,92,246,.06)}
+.drop b{color:var(--txt)}
+.hint{font-size:11.5px;color:var(--mut);line-height:1.55}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid rgba(37,42,56,.4);text-align:center;color:var(--mut);font-size:12px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#1c1c1e;color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;opacity:0;transition:all .2s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.moves{font-size:11.5px;color:var(--dim)}.moves b{color:var(--txt)}
+.mrow{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.mrow .btn{padding:6px 12px}
+.mtitle{font-size:15px;font-weight:600;min-width:150px;text-align:center}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;app&quot;&gt;
+  &lt;div class=&quot;hdr&quot;&gt;
+    &lt;div&gt;&lt;h1&gt;LEAD &lt;span&gt;BOT&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;ZBot · every live lead fight, what it cost and who you were up against&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;hdr-r&quot;&gt;
+      &lt;span class=&quot;live-txt&quot; id=&quot;liveTxt&quot;&gt;&lt;/span&gt;
+      &lt;button class=&quot;btn btn-p btn-sm&quot; onclick=&quot;document.getElementById('file').click()&quot;&gt;Load bot log&lt;/button&gt;
+      &lt;button class=&quot;btn btn-s btn-sm&quot; onclick=&quot;clearAll()&quot;&gt;Clear&lt;/button&gt;
+      &lt;input type=&quot;file&quot; id=&quot;file&quot; accept=&quot;.csv,.json,text/csv,application/json&quot; multiple hidden&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;drop&quot; id=&quot;drop&quot; onclick=&quot;document.getElementById('file').click()&quot;&gt;&lt;b&gt;Drop the bot's log here&lt;/b&gt; · zink-bot-log-YYYY-MM-DD.csv, and the trace json if you have it&lt;br&gt;&lt;span class=&quot;hint&quot;&gt;New logs merge with what's already here, nothing is counted twice.&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;tabs&quot; id=&quot;tabs&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec on&quot; id=&quot;sec-all&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot; id=&quot;sec-month&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot; id=&quot;sec-enemies&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot; id=&quot;sec-fights&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;foot&quot;&gt;Lead Bot · the numbers come from the bot's own log · times shown in your local time&lt;/div&gt;
+&lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+/* ═══ storage ═══ */
+var KEY='hub_leadbot_v1';
+var S={rows:{},traces:{},loadedAt:null};
+var activeTab='all',monthYm=null,fightFilter='bid';
+function load(){try{var o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&amp;&amp;o.rows)S=o}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save, storage is full')}}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+function esc(s){return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;')}
+function money(n){return '$'+Math.round(n).toLocaleString()}
+function money0(n){return n==null?'·':'$'+Math.round(n).toLocaleString()}
+function pct(a,b){return b?Math.round(a/b*100)+'%':'·'}
+function avg(a){return a.length?a.reduce(function(x,y){return x+y},0)/a.length:0}
+function sum(a){return a.reduce(function(x,y){return x+y},0)}
+
+/* ═══ csv ═══ */
+function parseCSV(text){
+  var rows=[],row=[],cell='',q=false;text=String(text).replace(/^\uFEFF/,'');
+  for(var i=0;i&lt;text.length;i++){var c=text[i];
+    if(q){if(c==='&quot;'){if(text[i+1]==='&quot;'){cell+='&quot;';i++}else q=false}else cell+=c}
+    else if(c==='&quot;')q=true;else if(c===','){row.push(cell);cell=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&amp;&amp;text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell=''}
+    else cell+=c}
+  if(cell.length||row.length){row.push(cell);rows.push(row)}
+  rows=rows.filter(function(r){return r.length&gt;1||(r.length===1&amp;&amp;r[0].trim())});
+  if(!rows.length)return [];
+  var head=rows[0].map(function(h){return h.trim().toLowerCase()});
+  return rows.slice(1).map(function(r){var o={};head.forEach(function(h,i){o[h]=(r[i]||'').trim()});return o});
+}
+function ingestCSV(text){
+  var rows=parseCSV(text),n=0,upd=0;
+  rows.forEach(function(r){if(!r.id||!r.timestamp)return;var had=!!S.rows[r.id];S.rows[r.id]=r;if(had)upd++;else n++});
+  return {added:n,updated:upd,total:rows.length};
+}
+function ingestTrace(text){
+  var arr;try{arr=JSON.parse(text)}catch(e){return {added:0,bad:true}}
+  if(!Array.isArray(arr))arr=arr&amp;&amp;arr.traces?arr.traces:[];
+  var n=0;
+  arr.forEach(function(t){
+    var m=String(t.meta||'').match(/id=(\d+)/);if(!m)return;
+    var L=(t.lines||[]),o={};
+    L.forEach(function(l){
+      var a;
+      if((a=l.match(/sent (\d+)ms \/ answered (\d+)ms before reported bell/))){o.sent=+a[1];o.ans=+a[2]}
+      if((a=l.match(/land confirmed \(land (\d+)ms\)/)))o.land=+a[1];
+      if((a=l.match(/cap \$(\d+)/)))o.cap=+a[1];
+      if((a=l.match(/Live presets found: (.+)$/)))o.presets=a[1].match(/\d+/g).map(Number);
+      if((a=l.match(/clock skew median (-?\d+)ms/)))o.skew=+a[1];
+      if(/Buzzer armed/.test(l))o.buzzer=true;
+      if(/verdict popup: win/.test(l))o.confirmed=true;
+    });
+    S.traces[m[1]]=o;n++;
+  });
+  return {added:n};
+}
+
+/* ═══ reading a fight ═══ */
+var SKIP_LABEL=[[/Employment=&quot;Self Employed&quot;/,'Self employed'],[/AssetType=&quot;Personal Unsecured&quot;/,'Personal loan'],[/Employment=&quot;Part Time&quot;/,'Part time'],[/Employment=&quot;Pensioner&quot;/,'Pensioner'],[/Visa=&quot;Working Visa&quot;/,'Working visa'],[/Veda=\d+ \(need/,'Credit score under 650'],[/AssetType=&quot;Leisure&quot;/,'Leisure asset'],[/LoanType=&quot;Sole Trader&quot;/,'Sole trader'],[/Employment=&quot;Casual&quot;/,'Casual'],[/AssetType=&quot;([^&quot;]+)&quot;/,'$1'],[/Employment=&quot;([^&quot;]+)&quot;/,'$1'],[/Visa=&quot;([^&quot;]+)&quot;/,'$1'],[/LoanType=&quot;([^&quot;]+)&quot;/,'$1']];
+function fight(r){
+  var st=r.status||'',f={id:r.id,raw:r,ts:new Date(String(r.timestamp).replace(' ','T')+'Z'),mode:r.mode,gs:+r.gs||0,naf:+r.naf||0,postcode:r.postcode,veda:+r.veda||0,employment:r.employment,visa:r.visa,residency:r.residency,start:+r.starting||0,status:st,bids:[],enemyBids:[],ourBid:null,final:null,landMs:null,intel:1,intelSure:true,shot:'last shot'};
+  if(isNaN(f.ts.getTime()))f.ts=new Date(r.timestamp);
+  var m,re=/(them|you|WOULD-BID)\s+\$(\d+)\s+@(\d+)s/g;
+  while((m=re.exec(st)))f.bids.push({who:m[1]==='them'?'them':'you',amt:+m[2],s:+m[3],would:m[1]==='WOULD-BID'});
+  f.enemyBids=f.bids.filter(function(b){return b.who==='them'});
+  var ours=f.bids.filter(function(b){return b.who==='you'});
+  if(ours.length)f.ourBid=ours[ours.length-1];
+  if((m=st.match(/land (\d+)ms/)))f.landMs=+m[1];
+  if((m=st.match(/intel:\s*([^}]+)/))){f.intel=(m[1].match(/N\d/g)||['N1']).length;f.intelSure=m[1].indexOf('?')&lt;0}
+  if(/buzzer/.test(st))f.shot='buzzer';
+  if(/^won-live/.test(st)){f.outcome='won';var lm=st.match(/leading at \$(\d+)/);f.final=lm?+lm[1]:(f.ourBid?f.ourBid.amt:null);f.confirmed=/confirmed/.test(st)}
+  else if(/priced-out/.test(st)){f.outcome='lost';f.lossWhy='They went past the cap';f.final=null}
+  else if(/^(lost|outbid)/.test(st)||/lost-live|outbid/.test(st)){f.outcome='lost';f.lossWhy='Outbid';var lm2=st.match(/leading at \$(\d+)|at \$(\d+)/);f.final=null}
+  else if(/^dry-watch/.test(st)){var last=f.bids[f.bids.length-1];f.outcome=(last&amp;&amp;last.who==='you')?'dry-won':'dry-lost';f.dry=true}
+  else if(/^live-skipped/.test(st)){f.outcome='pass';for(var i=0;i&lt;SKIP_LABEL.length;i++){var mm=st.match(SKIP_LABEL[i][0]);if(mm){f.reason=SKIP_LABEL[i][1].replace('$1',mm[1]||'');break}}if(!f.reason)f.reason=st.replace(/^live-skipped:\s*/,'').slice(0,40)}
+  else {f.outcome='other'}
+  if(f.mode==='dry-run'&amp;&amp;f.outcome==='pass'){f.outcome='pass'}
+  f.enemyTop=f.enemyBids.length?Math.max.apply(null,f.enemyBids.map(function(b){return b.amt})):null;
+  f.enemyLastS=f.enemyBids.length?Math.min.apply(null,f.enemyBids.map(function(b){return b.s})):null;
+  f.over=(f.final!=null&amp;&amp;f.start)?f.final-f.start:null;
+  f.enemy=enemyType(f);
+  var tr=S.traces[f.id];if(tr){f.tr=tr;if(f.landMs==null&amp;&amp;tr.land)f.landMs=tr.land}
+  return f;
+}
+function enemyType(f){
+  if(f.outcome==='pass'||f.outcome==='other')return null;
+  var n=f.enemyBids.length;
+  if(f.outcome==='lost'&amp;&amp;/cap/.test(f.lossWhy||''))return 'Deep pockets';
+  if(n===0)return 'No show';
+  if(f.enemyLastS&lt;=3&amp;&amp;n&gt;=3)return 'Bully sniper';
+  if(f.enemyLastS&lt;=3)return 'Sniper';
+  if(n&gt;=3)return 'Pusher';
+  if(n===2)return 'Two shot';
+  return 'Opener';
+}
+var ENEMY_NOTE={'Opener':'One bid at the open, then nothing. Cheapest fight there is.','Two shot':'Opens, comes back once, then folds.','Pusher':'Keeps raising through the fight but stops before the bell.','Sniper':'Waits and fires inside the last 3 seconds. Only the bell shot beats them.','Bully sniper':'Raises all the way through and still fires late. The dearest wins.','Deep pockets':'Went past your cap. The bot let it go, and that was the right call.','No show':'Nobody else bid. Bought at the start price.'};
+var ENEMY_COL={'Opener':'#2dd4bf','Two shot':'#38bdf8','Pusher':'#4f6bff','Sniper':'#a78bfa','Bully sniper':'#fb7185','Deep pockets':'#fbbf24','No show':'#22d3ee'};
+function allFights(){return Object.keys(S.rows).map(function(k){return fight(S.rows[k])}).sort(function(a,b){return a.ts-b.ts})}
+function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function ymLabel(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,1).toLocaleDateString('en-AU',{month:'long',year:'numeric'})}
+function dstr(d){return d.toLocaleDateString('en-AU',{day:'2-digit',month:'short'})}
+function tstr(d){return d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}).replace(' ','').toLowerCase()}
+function weekKey(d){var x=new Date(d);x.setHours(0,0,0,0);var day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);return x}
+
+/* ═══ numbers ═══ */
+function stats(F){
+  var seen=F.filter(function(f){return !f.dry}),dry=F.filter(function(f){return f.dry});
+  var bid=seen.filter(function(f){return f.outcome==='won'||f.outcome==='lost'}),won=bid.filter(function(f){return f.outcome==='won'}),lost=bid.filter(function(f){return f.outcome==='lost'}),pass=seen.filter(function(f){return f.outcome==='pass'});
+  var prices=won.map(function(f){return f.final}),overs=won.filter(function(f){return f.over!=null}).map(function(f){return f.over}),lands=bid.filter(function(f){return f.landMs}).map(function(f){return f.landMs});
+  var best=null,dearest=null,biggest=null,fastest=null;
+  won.forEach(function(f){if(!best||f.over&lt;best.over)best=f;if(!dearest||f.final&gt;dearest.final)dearest=f;if(!biggest||f.enemyBids.length&gt;biggest.enemyBids.length)biggest=f;if(f.landMs&amp;&amp;(!fastest||f.landMs&lt;fastest.landMs))fastest=f});
+  var reasons={};pass.forEach(function(f){reasons[f.reason]=(reasons[f.reason]||0)+1});
+  var enemies={};bid.forEach(function(f){var e=enemies[f.enemy]||(enemies[f.enemy]={n:0,won:0,lost:0,paid:[],top:[]});e.n++;if(f.outcome==='won'){e.won++;e.paid.push(f.final)}else e.lost++;if(f.enemyTop!=null)e.top.push(f.enemyTop)});
+  return {seen:seen,dry:dry,bid:bid,won:won,lost:lost,pass:pass,spent:sum(prices),avgPrice:avg(prices),avgOver:avg(overs),naf:sum(won.map(function(f){return f.naf})),avgVeda:avg(won.map(function(f){return f.veda}).filter(Boolean)),avgLand:avg(lands),best:best,dearest:dearest,biggest:biggest,fastest:fastest,reasons:reasons,enemies:enemies,
+    twoOnOne:bid.filter(function(f){return f.intel&gt;1}).length,enemyBidsAvg:avg(bid.map(function(f){return f.enemyBids.length})),ourSecs:avg(won.filter(function(f){return f.ourBid}).map(function(f){return f.ourBid.s})),
+    tr:(function(){var t=bid.filter(function(f){return f.tr&amp;&amp;f.tr.sent!=null});return {n:t.length,sent:avg(t.map(function(f){return f.tr.sent})),ans:avg(t.map(function(f){return f.tr.ans})),cap:(t.length&amp;&amp;t[t.length-1].tr.cap)||null}})()};
+}
+
+/* ═══ charts, in the dashboard's style ═══ */
+var RING_COLS=['#8b5cf6','#4f6bff','#22d3ee','#2dd4bf','#38bdf8','#a78bfa','#fbbf24','#fb7185','#34d399'];
+function ringChart(o){
+  var allSegs=(o.segs||[]),segs=allSegs.filter(function(s){return s.value&gt;0}),total=sum(segs.map(function(s){return s.value}));
+  var fmt=o.fmt||function(v){return String(Math.round(v))};
+  var head='&lt;div class=&quot;ring-card&quot;&gt;&lt;div class=&quot;ring-title&quot;&gt;'+o.title+(o.badge?'&lt;span class=&quot;ring-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;';
+  if(!total)return head+'&lt;div class=&quot;ring-empty&quot;&gt;'+(o.empty||'Nothing to show yet.')+'&lt;/div&gt;&lt;/div&gt;';
+  var R=52,W=18,C=2*Math.PI*R,gap=segs.length&gt;1?C*3/360:0,start=0,paths='',labels='';
+  segs.forEach(function(s,i){var col=s.color||RING_COLS[i%RING_COLS.length],frac=s.value/total,len=Math.max(0,C*frac-gap);
+    paths+='&lt;circle r=&quot;'+R+'&quot; cx=&quot;70&quot; cy=&quot;70&quot; fill=&quot;none&quot; stroke=&quot;'+col+'&quot; stroke-width=&quot;'+W+'&quot; stroke-dasharray=&quot;'+len.toFixed(2)+' '+(C-len).toFixed(2)+'&quot; stroke-dashoffset=&quot;'+(-(start+gap/2)).toFixed(2)+'&quot; transform=&quot;rotate(-90 70 70)&quot;&gt;&lt;title&gt;'+esc(s.label)+' · '+fmt(s.value)+' · '+Math.round(frac*100)+'%&lt;/title&gt;&lt;/circle&gt;';
+    if(frac&gt;=0.09){var mid=(start+C*frac/2)/C*2*Math.PI-Math.PI/2,lx=70+R*Math.cos(mid),ly=70+R*Math.sin(mid),lab=Math.round(frac*100)+'%',lw=lab.length*5.6+8;labels+='&lt;rect x=&quot;'+(lx-lw/2).toFixed(1)+'&quot; y=&quot;'+(ly-6.5).toFixed(1)+'&quot; width=&quot;'+lw.toFixed(1)+'&quot; height=&quot;13&quot; rx=&quot;6.5&quot; fill=&quot;rgba(10,12,22,.72)&quot;/&gt;&lt;text x=&quot;'+lx.toFixed(1)+'&quot; y=&quot;'+(ly+3.3).toFixed(1)+'&quot; font-size=&quot;8.5&quot; font-weight=&quot;700&quot; fill=&quot;#eef0ff&quot; text-anchor=&quot;middle&quot;&gt;'+lab+'&lt;/text&gt;'}
+    start+=C*frac});
+  var legend=segs.map(function(s,i){var col=s.color||RING_COLS[i%RING_COLS.length];return '&lt;span class=&quot;ring-leg&quot;&gt;&lt;i style=&quot;background:'+col+'&quot;&gt;&lt;/i&gt;'+esc(s.label)+'&lt;b&gt;'+fmt(s.value)+'&lt;/b&gt;&lt;/span&gt;'}).join('');
+  return head+'&lt;div class=&quot;ring-body&quot;&gt;&lt;svg viewBox=&quot;0 0 140 140&quot; width=&quot;150&quot; height=&quot;150&quot; class=&quot;ring-svg&quot;&gt;'+paths+labels+'&lt;text x=&quot;70&quot; y=&quot;'+(o.small?66:74)+'&quot; font-size=&quot;18&quot; font-weight=&quot;800&quot; fill=&quot;#eef0ff&quot; text-anchor=&quot;middle&quot;&gt;'+(o.big||fmt(total))+'&lt;/text&gt;'+(o.small?'&lt;text x=&quot;70&quot; y=&quot;82&quot; font-size=&quot;8.5&quot; fill=&quot;#b4b9d9&quot; text-anchor=&quot;middle&quot;&gt;'+esc(o.small)+'&lt;/text&gt;':'')+'&lt;/svg&gt;&lt;div class=&quot;ring-legs&quot;&gt;'+legend+'&lt;/div&gt;&lt;/div&gt;'+(o.note?'&lt;div class=&quot;ring-note&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+function niceMax(v){if(v&lt;=0)return 1;var p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;var s=n&lt;=1?1:n&lt;=2?2:n&lt;=2.5?2.5:n&lt;=5?5:10;return s*p}
+function barChart(o){
+  /* o.groups [{label,vals:[..]}] o.series [{name,col}] o.fmt o.title o.badge o.note */
+  var w=800,h=210,pL=46,pR=12,pT=14,pB=30,iw=w-pL-pR,ih=h-pT-pB,G=o.groups,S=o.series;
+  if(!G.length)return '&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;'+o.title+'&lt;/div&gt;&lt;div class=&quot;ring-empty&quot;&gt;Nothing to show yet.&lt;/div&gt;&lt;/div&gt;';
+  var max=niceMax(Math.max.apply(null,G.map(function(g){return Math.max.apply(null,g.vals)}))*1.08);
+  var gw=iw/G.length,bw=Math.min(26,gw*0.8/S.length),fmt=o.fmt||function(v){return String(Math.round(v))};
+  var yAt=function(v){return pT+ih-(v/max)*ih};
+  var grid=[max/2,max].map(function(v){return '&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+yAt(v)+'&quot; y2=&quot;'+yAt(v)+'&quot; stroke=&quot;rgba(148,163,255,.12)&quot;/&gt;'}).join('');
+  var yT=[0,max/2,max].map(function(v){return '&lt;text x=&quot;'+(pL-8)+'&quot; y=&quot;'+(yAt(v)+4)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--mut)&quot; text-anchor=&quot;end&quot;&gt;'+fmt(v)+'&lt;/text&gt;'}).join('');
+  var bars='',xT='',step=Math.max(1,Math.ceil(G.length/10));
+  G.forEach(function(g,gi){var cx=pL+gw*gi+gw/2,x0=cx-bw*S.length/2;
+    S.forEach(function(s,si){var v=g.vals[si]||0,x=x0+bw*si,y=yAt(v);bars+='&lt;rect x=&quot;'+x.toFixed(1)+'&quot; y=&quot;'+y.toFixed(1)+'&quot; width=&quot;'+(bw-2).toFixed(1)+'&quot; height=&quot;'+(pT+ih-y).toFixed(1)+'&quot; rx=&quot;3&quot; fill=&quot;'+s.col+'&quot; fill-opacity=&quot;'+(si===0?0.9:0.75)+'&quot;&gt;&lt;title&gt;'+esc(g.full||g.label)+' · '+esc(s.name)+': '+fmt(v)+'&lt;/title&gt;&lt;/rect&gt;'});
+    if(gi%step===0||gi===G.length-1)xT+='&lt;text x=&quot;'+cx+'&quot; y=&quot;'+(h-10)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--mut)&quot; text-anchor=&quot;middle&quot;&gt;'+esc(g.label)+'&lt;/text&gt;'});
+  var legend='&lt;div style=&quot;display:flex;gap:16px;font-size:10.5px;color:var(--mut);margin-top:6px;flex-wrap:wrap&quot;&gt;'+S.map(function(s){return '&lt;span&gt;&lt;i style=&quot;display:inline-block;width:10px;height:10px;border-radius:3px;background:'+s.col+';vertical-align:-1px;margin-right:6px&quot;&gt;&lt;/i&gt;'+esc(s.name)+'&lt;/span&gt;'}).join('')+'&lt;span style=&quot;margin-left:auto&quot;&gt;hover for the number&lt;/span&gt;&lt;/div&gt;';
+  return '&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;'+o.title+(o.badge?' &lt;span class=&quot;hist-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; preserveAspectRatio=&quot;none&quot; style=&quot;width:100%;height:210px&quot;&gt;'+grid+'&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+yAt(0)+'&quot; y2=&quot;'+yAt(0)+'&quot; stroke=&quot;rgba(148,163,255,.25)&quot;/&gt;'+yT+bars+xT+'&lt;/svg&gt;'+legend+(o.note?'&lt;div class=&quot;hint&quot; style=&quot;margin-top:6px&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+function lineChart(o){
+  var w=800,h=210,pL=52,pR=14,pT=16,pB=32,iw=w-pL-pR,ih=h-pT-pB,D=o.data,fmt=o.fmt||function(v){return String(Math.round(v))};
+  if(!D.length)return '&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;'+o.title+'&lt;/div&gt;&lt;div class=&quot;ring-empty&quot;&gt;Nothing to show yet.&lt;/div&gt;&lt;/div&gt;';
+  var max=niceMax(Math.max.apply(null,D.map(function(d){return d.value}))*1.06);
+  var xAt=function(i){return pL+(D.length&lt;2?iw/2:i*iw/(D.length-1))},yAt=function(v){return pT+ih-(v/max)*ih};
+  var pts=D.map(function(d,i){return [xAt(i),yAt(d.value)]});
+  var path='M '+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);
+  for(var i=0;i&lt;pts.length-1;i++){var p0=pts[i&gt;0?i-1:i],p1=pts[i],p2=pts[i+1],p3=pts[i+2&lt;pts.length?i+2:i+1];path+=' C '+(p1[0]+(p2[0]-p0[0])/6).toFixed(1)+' '+(p1[1]+(p2[1]-p0[1])/6).toFixed(1)+', '+(p2[0]-(p3[0]-p1[0])/6).toFixed(1)+' '+(p2[1]-(p3[1]-p1[1])/6).toFixed(1)+', '+p2[0].toFixed(1)+' '+p2[1].toFixed(1)}
+  var id='lg'+Math.random().toString(36).slice(2,8),baseY=yAt(0);
+  var area=path+' L '+xAt(D.length-1).toFixed(1)+' '+baseY+' L '+xAt(0).toFixed(1)+' '+baseY+' Z';
+  var grid=[max/2,max].map(function(v){return '&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+yAt(v)+'&quot; y2=&quot;'+yAt(v)+'&quot; stroke=&quot;rgba(148,163,255,.12)&quot;/&gt;'}).join('');
+  var yT=[0,max/2,max].map(function(v){return '&lt;text x=&quot;'+(pL-8)+'&quot; y=&quot;'+(yAt(v)+4)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--mut)&quot; text-anchor=&quot;end&quot;&gt;'+fmt(v)+'&lt;/text&gt;'}).join('');
+  var step=Math.max(1,Math.ceil(D.length/8)),last=D.length-1;
+  var xT=D.map(function(d,i){return ((i%step===0&amp;&amp;(last-i)&gt;=step/2)||i===last)?'&lt;text x=&quot;'+xAt(i)+'&quot; y=&quot;'+(h-10)+'&quot; font-size=&quot;10&quot; fill=&quot;var(--mut)&quot; text-anchor=&quot;'+(i===0?'start':i===last?'end':'middle')+'&quot;&gt;'+esc(d.label)+'&lt;/text&gt;':''}).join('');
+  var dots=D.map(function(d,i){return '&lt;circle cx=&quot;'+xAt(i)+'&quot; cy=&quot;'+yAt(d.value)+'&quot; r=&quot;3.2&quot; fill=&quot;'+o.col+'&quot;/&gt;&lt;circle cx=&quot;'+xAt(i)+'&quot; cy=&quot;'+yAt(d.value)+'&quot; r=&quot;9&quot; fill=&quot;transparent&quot;&gt;&lt;title&gt;'+esc(d.full||d.label)+': '+fmt(d.value)+'&lt;/title&gt;&lt;/circle&gt;'}).join('');
+  return '&lt;div class=&quot;hist-chart&quot;&gt;&lt;div class=&quot;hist-title&quot;&gt;'+o.title+(o.badge?' &lt;span class=&quot;hist-badge&quot;&gt;'+o.badge+'&lt;/span&gt;':'')+'&lt;/div&gt;&lt;svg viewBox=&quot;0 0 '+w+' '+h+'&quot; preserveAspectRatio=&quot;none&quot; style=&quot;width:100%;height:210px&quot;&gt;&lt;defs&gt;&lt;linearGradient id=&quot;'+id+'&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;0&quot; y2=&quot;1&quot;&gt;&lt;stop offset=&quot;0%&quot; stop-color=&quot;'+o.col+'&quot; stop-opacity=&quot;0.6&quot;/&gt;&lt;stop offset=&quot;100%&quot; stop-color=&quot;'+o.col+'&quot; stop-opacity=&quot;0.03&quot;/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;'+grid+'&lt;line x1=&quot;'+pL+'&quot; x2=&quot;'+(pL+iw)+'&quot; y1=&quot;'+baseY+'&quot; y2=&quot;'+baseY+'&quot; stroke=&quot;rgba(148,163,255,.25)&quot;/&gt;'+yT+'&lt;path d=&quot;'+area+'&quot; fill=&quot;url(#'+id+')&quot;/&gt;&lt;path d=&quot;'+path+'&quot; fill=&quot;none&quot; stroke=&quot;'+o.col+'&quot; stroke-width=&quot;2.4&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;/&gt;'+dots+xT+'&lt;/svg&gt;'+(o.note?'&lt;div class=&quot;hint&quot; style=&quot;margin-top:6px&quot;&gt;'+o.note+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+function mc(l,v,s,cls){return '&lt;div class=&quot;mc&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;'+l+'&lt;/div&gt;&lt;div class=&quot;mc-v'+(cls?' '+cls:'')+'&quot;&gt;'+v+'&lt;/div&gt;'+(s?'&lt;div class=&quot;mc-s&quot;&gt;'+s+'&lt;/div&gt;':'')+'&lt;/div&gt;'}
+function moves(f){
+  if(!f.bids.length)return '&lt;span class=&quot;moves c-dim&quot;&gt;no bids logged&lt;/span&gt;';
+  return '&lt;span class=&quot;moves&quot;&gt;'+f.bids.map(function(b){return (b.who==='you'?'&lt;b&gt;'+(b.would?'would bid ':'you ')+money(b.amt)+'&lt;/b&gt;':'them '+money(b.amt))+' @'+b.s+'s'}).join(' → ')+'&lt;/span&gt;';
+}
+function outcomePill(f){
+  if(f.outcome==='won')return '&lt;span class=&quot;pill p-won&quot;&gt;Won&lt;/span&gt;';
+  if(f.outcome==='lost')return '&lt;span class=&quot;pill p-lost&quot;&gt;Lost&lt;/span&gt;';
+  if(f.outcome==='dry-won')return '&lt;span class=&quot;pill p-dry&quot;&gt;Dry run, would have won&lt;/span&gt;';
+  if(f.outcome==='dry-lost')return '&lt;span class=&quot;pill p-dry&quot;&gt;Dry run, would have lost&lt;/span&gt;';
+  if(f.outcome==='pass')return '&lt;span class=&quot;pill p-pass&quot;&gt;Passed&lt;/span&gt;';
+  return '&lt;span class=&quot;pill p-pass&quot;&gt;'+esc(f.outcome)+'&lt;/span&gt;';
+}
+
+/* ═══ sections ═══ */
+function kpis(T,label){
+  var wr=T.bid.length?Math.round(T.won.length/T.bid.length*100):null;
+  var h='&lt;div class=&quot;mg mg5&quot;&gt;';
+  h+=mc('Fights seen',T.seen.length,T.pass.length+' passed on policy');
+  h+=mc('Bid on',T.bid.length,T.dry.length?T.dry.length+' more in dry run':'when the lead fit');
+  h+=mc('Won',T.won.length,wr!=null?wr+'% of the fights you bid on':'',T.won.length?'c-pos':'');
+  h+=mc('Lost',T.lost.length,T.lost.length?T.lost.map(function(f){return f.lossWhy}).filter(function(v,i,a){return a.indexOf(v)===i}).join(', '):'none',T.lost.length?'c-neg':'');
+  h+=mc('Spent',money(T.spent),T.won.length?money(T.avgPrice)+' a lead':'');
+  h+='&lt;/div&gt;&lt;div class=&quot;mg mg5&quot;&gt;';
+  h+=mc('Over the start price',T.won.length?money(T.avgOver):'·','what a fight costs you on average, per lead');
+  h+=mc('Loan value bought',money(T.naf),T.won.length?money(T.naf/T.won.length)+' a lead':'');
+  h+=mc('Avg score of wins',T.avgVeda?Math.round(T.avgVeda):'·','Veda on the leads you bought');
+  h+=mc('Two on one fights',T.twoOnOne,'bot thought a second bidder was in');
+  h+=mc('Bid lands',T.avgLand?Math.round(T.avgLand)+'ms':'·',T.tr.n?'sent '+Math.round(T.tr.sent)+'ms before the bell':'from the bell shot to Zink saying yes');
+  h+='&lt;/div&gt;';
+  return h;
+}
+function insights(T,F){
+  var L=[];
+  var snipes=T.won.filter(function(f){return f.enemyLastS!=null&amp;&amp;f.enemyLastS&lt;=3}).length;
+  if(T.won.length)L.push('You have won &lt;b&gt;'+T.won.length+' of '+T.bid.length+'&lt;/b&gt; fights you bid on. '+(snipes?'In &lt;b&gt;'+snipes+'&lt;/b&gt; of the wins the other bidder fired inside the last 3 seconds and still lost to the bell shot.':''));
+  if(T.won.length){var oneRung=T.won.filter(function(f){return f.over!=null&amp;&amp;f.over&lt;=30}).length;L.push('&lt;b&gt;'+oneRung+'&lt;/b&gt; wins cost one rung over the start price. The dearest was &lt;b&gt;'+money(T.dearest.final)+'&lt;/b&gt; and the best bargain &lt;b&gt;'+money(T.best.final)+'&lt;/b&gt;, '+money(T.best.over)+' over the start.')}
+  if(T.lost.length)T.lost.forEach(function(f){L.push('Lost on '+dstr(f.ts)+': '+esc(f.lossWhy)+(f.enemyTop?', they went to &lt;b&gt;'+money(f.enemyTop)+'&lt;/b&gt;':'')+'. '+(f.lossWhy&amp;&amp;/cap/.test(f.lossWhy)?'Your cap held.':''))});
+  if(T.dry.length){var dl=T.dry.filter(function(f){return f.outcome==='dry-lost'}).length;if(dl)L.push('In dry run the bot would have lost &lt;b&gt;'+dl+'&lt;/b&gt;, the other side came back inside the last second. That is why it now fires at the bell.')}
+  var rk=Object.keys(T.reasons).sort(function(a,b){return T.reasons[b]-T.reasons[a]});
+  if(rk.length)L.push('Most fights are passed for &lt;b&gt;'+esc(rk[0])+'&lt;/b&gt; ('+T.reasons[rk[0]]+')'+(rk[1]?' then &lt;b&gt;'+esc(rk[1])+'&lt;/b&gt; ('+T.reasons[rk[1]]+')':'')+'. That is the bot doing what you told it.');
+  var ek=Object.keys(T.enemies).sort(function(a,b){return T.enemies[b].n-T.enemies[a].n});
+  if(ek.length)L.push('The most common enemy is the &lt;b&gt;'+esc(ek[0])+'&lt;/b&gt; ('+T.enemies[ek[0]].n+' fights, '+T.enemies[ek[0]].won+' won). '+esc(ENEMY_NOTE[ek[0]]||''));
+  var hours={};T.bid.forEach(function(f){var hh=f.ts.getHours();hours[hh]=(hours[hh]||0)+1});var hk=Object.keys(hours).sort(function(a,b){return hours[b]-hours[a]});
+  if(hk.length)L.push('Fights you bid on land most around &lt;b&gt;'+hourLabel(+hk[0])+'&lt;/b&gt; your time.');
+  if(T.tr.cap)L.push('Cap on the bot is &lt;b&gt;'+money(T.tr.cap)+'&lt;/b&gt;.');
+  if(!L.length)return '';
+  return '&lt;div class=&quot;insight&quot;&gt;&lt;div class=&quot;insight-icon&quot;&gt;🎯&lt;/div&gt;&lt;div class=&quot;insight-body&quot;&gt;&lt;div class=&quot;insight-label&quot;&gt;What the numbers say&lt;/div&gt;&lt;ul&gt;'+L.map(function(x){return '&lt;li&gt;'+x+'&lt;/li&gt;'}).join('')+'&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;';
+}
+function hourLabel(h){return (h%12||12)+(h&lt;12?'am':'pm')}
+function weekly(F){
+  if(!F.length)return [];
+  var by={};F.forEach(function(f){if(f.dry)return;var k=weekKey(f.ts).getTime();var e=by[k]||(by[k]={t:k,seen:0,bid:0,won:0,spent:0});e.seen++;if(f.outcome==='won'||f.outcome==='lost')e.bid++;if(f.outcome==='won'){e.won++;e.spent+=f.final||0}});
+  var ks=Object.keys(by).map(Number).sort(function(a,b){return a-b});
+  var out=[];for(var t=ks[0];t&lt;=ks[ks.length-1];t+=7*86400000){var k=String(t);out.push(by[k]||{t:t,seen:0,bid:0,won:0,spent:0})}
+  return out;
+}
+function charts(T,F,badge){
+  var W=weekly(F);
+  var h='&lt;div class=&quot;mg mg2&quot; style=&quot;margin-bottom:14px&quot;&gt;';
+  h+=barChart({title:'Fights by week',badge:badge,groups:W.map(function(w){return {label:dstr(new Date(w.t)),full:'Week of '+dstr(new Date(w.t)),vals:[w.seen,w.bid,w.won]}}),series:[{name:'seen',col:'#4f6bff'},{name:'bid on',col:'#a78bfa'},{name:'won',col:'#2dd4a0'}]});
+  h+=lineChart({title:'Spend by week',badge:badge,col:'#fbbf24',fmt:function(v){return '$'+Math.round(v)},data:W.map(function(w){return {label:dstr(new Date(w.t)),full:'Week of '+dstr(new Date(w.t)),value:w.spent}}),note:'What the won leads cost that week.'});
+  h+='&lt;/div&gt;';
+  var rk=Object.keys(T.reasons).sort(function(a,b){return T.reasons[b]-T.reasons[a]});
+  var ek=Object.keys(T.enemies).sort(function(a,b){return T.enemies[b].n-T.enemies[a].n});
+  h+='&lt;div class=&quot;ring-grid&quot;&gt;';
+  h+=ringChart({title:'Why the bot passed',badge:badge,segs:rk.map(function(k){return {label:k,value:T.reasons[k]}}),big:String(T.pass.length),small:'passed',note:'Your rules. The bot never bids on these.'});
+  h+=ringChart({title:'Who you are up against',badge:badge,segs:ek.map(function(k){return {label:k,value:T.enemies[k].n,color:ENEMY_COL[k]}}),big:String(T.bid.length),small:'fights',note:'Read off how the other side bid. Details in the Enemies tab.'});
+  h+=ringChart({title:'How fights end',badge:badge,segs:[{label:'Won',value:T.won.length,color:'#2dd4a0'},{label:'Lost',value:T.lost.length,color:'#fb7185'},{label:'Passed',value:T.pass.length,color:'#5a6075'}],big:String(T.seen.length),small:'seen'});
+  h+='&lt;/div&gt;';
+  var hours=[];for(var i=0;i&lt;24;i++)hours.push({h:i,seen:0,won:0});
+  T.seen.forEach(function(f){var hh=f.ts.getHours();hours[hh].seen++;if(f.outcome==='won')hours[hh].won++});
+  var hs=hours.filter(function(x){return x.seen});
+  var priceG=T.won.map(function(f){return {label:dstr(f.ts),full:dstr(f.ts)+' '+tstr(f.ts)+' · '+esc(f.enemy),vals:[f.start,f.final]}});
+  h+='&lt;div class=&quot;mg mg2&quot; style=&quot;margin-bottom:14px&quot;&gt;';
+  h+=barChart({title:'What you paid, fight by fight',badge:badge,groups:priceG,series:[{name:'start price',col:'#4f6bff'},{name:'what you paid',col:'#2dd4a0'}],fmt:function(v){return '$'+Math.round(v)},note:'The gap is the fight. A small gap means the other side gave up early.'});
+  h+=barChart({title:'When fights happen',badge:badge,groups:hours.map(function(x){return {label:hourLabel(x.h),vals:[x.seen,x.won]}}),series:[{name:'seen',col:'#4f6bff'},{name:'won',col:'#2dd4a0'}],note:'Your local time. Passed fights count as seen.'});
+  h+='&lt;/div&gt;';
+  return h;
+}
+function rAll(){
+  var F=allFights(),T=stats(F);
+  var el=document.getElementById('sec-all');
+  if(!F.length){el.innerHTML='&lt;div class=&quot;ring-empty&quot;&gt;Load the bot log to see the fights.&lt;/div&gt;';return}
+  el.innerHTML=kpis(T)+insights(T,F)+charts(T,F,'all time')+wonTable(T.won,'Leads you bought');
+}
+function rMonth(){
+  var F=allFights(),el=document.getElementById('sec-month');
+  if(!F.length){el.innerHTML='&lt;div class=&quot;ring-empty&quot;&gt;Load the bot log to see the fights.&lt;/div&gt;';return}
+  var months=[];F.forEach(function(f){var k=ym(f.ts);if(months.indexOf(k)&lt;0)months.push(k)});months.sort();
+  if(!monthYm||months.indexOf(monthYm)&lt;0)monthYm=months[months.length-1];
+  var i=months.indexOf(monthYm);
+  var Fm=F.filter(function(f){return ym(f.ts)===monthYm}),T=stats(Fm);
+  var h='&lt;div class=&quot;mrow&quot;&gt;&lt;button class=&quot;btn btn-s&quot; onclick=&quot;stepMonth(-1)&quot; '+(i&lt;=0?'disabled':'')+'&gt;‹&lt;/button&gt;&lt;span class=&quot;mtitle&quot;&gt;'+ymLabel(monthYm)+'&lt;/span&gt;&lt;button class=&quot;btn btn-s&quot; onclick=&quot;stepMonth(1)&quot; '+(i&gt;=months.length-1?'disabled':'')+'&gt;›&lt;/button&gt;&lt;/div&gt;';
+  h+=kpis(T)+insights(T,Fm)+charts(T,Fm,ymLabel(monthYm));
+  h+='&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;Month by month&lt;/h2&gt;&lt;/div&gt;&lt;div class=&quot;tw&quot;&gt;&lt;div class=&quot;ts&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Month&lt;/th&gt;&lt;th&gt;Seen&lt;/th&gt;&lt;th&gt;Bid on&lt;/th&gt;&lt;th&gt;Won&lt;/th&gt;&lt;th&gt;Lost&lt;/th&gt;&lt;th&gt;Win rate&lt;/th&gt;&lt;th&gt;Spent&lt;/th&gt;&lt;th&gt;A lead&lt;/th&gt;&lt;th&gt;Over start&lt;/th&gt;&lt;th&gt;Loan value bought&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+  months.slice().reverse().forEach(function(k){var Tm=stats(F.filter(function(f){return ym(f.ts)===k}));h+='&lt;tr'+(k===monthYm?' style=&quot;background:rgba(139,92,246,.08)&quot;':'')+'&gt;&lt;td&gt;'+ymLabel(k)+'&lt;/td&gt;&lt;td&gt;'+Tm.seen.length+'&lt;/td&gt;&lt;td&gt;'+Tm.bid.length+'&lt;/td&gt;&lt;td class=&quot;c-pos&quot;&gt;'+Tm.won.length+'&lt;/td&gt;&lt;td class=&quot;'+(Tm.lost.length?'c-neg':'')+'&quot;&gt;'+Tm.lost.length+'&lt;/td&gt;&lt;td&gt;'+pct(Tm.won.length,Tm.bid.length)+'&lt;/td&gt;&lt;td&gt;'+money(Tm.spent)+'&lt;/td&gt;&lt;td&gt;'+(Tm.won.length?money(Tm.avgPrice):'·')+'&lt;/td&gt;&lt;td&gt;'+(Tm.won.length?money(Tm.avgOver):'·')+'&lt;/td&gt;&lt;td&gt;'+money(Tm.naf)+'&lt;/td&gt;&lt;/tr&gt;'});
+  h+='&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;';
+  h+=wonTable(T.won,'Leads bought in '+ymLabel(monthYm));
+  el.innerHTML=h;
+}
+function stepMonth(d){var F=allFights(),months=[];F.forEach(function(f){var k=ym(f.ts);if(months.indexOf(k)&lt;0)months.push(k)});months.sort();var i=months.indexOf(monthYm)+d;if(i&gt;=0&amp;&amp;i&lt;months.length){monthYm=months[i];rMonth()}}
+function wonTable(W,title){
+  if(!W.length)return '';
+  var h='&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;'+title+'&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+W.length+'&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;tw&quot;&gt;&lt;div class=&quot;ts&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;When&lt;/th&gt;&lt;th&gt;Paid&lt;/th&gt;&lt;th&gt;Start&lt;/th&gt;&lt;th&gt;Over&lt;/th&gt;&lt;th&gt;Enemy&lt;/th&gt;&lt;th&gt;Their moves, then yours&lt;/th&gt;&lt;th&gt;Bidders&lt;/th&gt;&lt;th&gt;Landed&lt;/th&gt;&lt;th&gt;Loan&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;th&gt;Job&lt;/th&gt;&lt;th&gt;Living&lt;/th&gt;&lt;th&gt;Postcode&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+  W.slice().reverse().forEach(function(f){h+='&lt;tr&gt;&lt;td&gt;'+dstr(f.ts)+' '+tstr(f.ts)+'&lt;/td&gt;&lt;td class=&quot;c-pos&quot;&gt;&lt;b&gt;'+money(f.final)+'&lt;/b&gt;&lt;/td&gt;&lt;td&gt;'+money(f.start)+'&lt;/td&gt;&lt;td&gt;'+(f.over!=null?money(f.over):'·')+'&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pill&quot; style=&quot;background:'+(ENEMY_COL[f.enemy]||'#333')+'22;color:'+(ENEMY_COL[f.enemy]||'#ccc')+'&quot;&gt;'+esc(f.enemy)+'&lt;/span&gt;&lt;/td&gt;&lt;td&gt;'+moves(f)+'&lt;/td&gt;&lt;td&gt;'+(f.intel&gt;1?'2'+(f.intelSure?'':'?'):'1')+'&lt;/td&gt;&lt;td&gt;'+(f.landMs?f.landMs+'ms':'·')+'&lt;/td&gt;&lt;td&gt;'+money(f.naf)+'&lt;/td&gt;&lt;td&gt;'+(f.veda||'·')+'&lt;/td&gt;&lt;td&gt;'+esc(f.employment)+'&lt;/td&gt;&lt;td&gt;'+esc(f.residency)+'&lt;/td&gt;&lt;td&gt;'+esc(f.postcode)+'&lt;/td&gt;&lt;/tr&gt;'});
+  return h+'&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;';
+}
+function rEnemies(){
+  var F=allFights(),T=stats(F),el=document.getElementById('sec-enemies');
+  if(!T.bid.length&amp;&amp;!T.dry.length){el.innerHTML='&lt;div class=&quot;ring-empty&quot;&gt;No fights bid on yet.&lt;/div&gt;';return}
+  var ek=Object.keys(T.enemies).sort(function(a,b){return T.enemies[b].n-T.enemies[a].n});
+  var h='&lt;div class=&quot;hint&quot; style=&quot;margin-bottom:14px&quot;&gt;Zink never shows who the other bidder is, so the bot reads them off how they bid. Each fight gets one enemy type from the moves the other side made.&lt;/div&gt;';
+  h+='&lt;div class=&quot;mg mg3&quot;&gt;';
+  ek.forEach(function(k){var e=T.enemies[k];h+='&lt;div class=&quot;mc&quot; style=&quot;border-left:3px solid '+(ENEMY_COL[k]||'#666')+'&quot;&gt;&lt;div class=&quot;mc-l&quot;&gt;'+esc(k)+'&lt;/div&gt;&lt;div class=&quot;mc-v&quot;&gt;'+e.won+' &lt;span class=&quot;c-dim&quot; style=&quot;font-size:14px&quot;&gt;won&lt;/span&gt; · '+e.lost+' &lt;span class=&quot;c-dim&quot; style=&quot;font-size:14px&quot;&gt;lost&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mc-s&quot;&gt;'+e.n+' fight'+(e.n&gt;1?'s':'')+(e.paid.length?' · you paid '+money(avg(e.paid))+' on average':'')+(e.top.length?' · they topped out at '+money(Math.max.apply(null,e.top)):'')+'&lt;/div&gt;&lt;div class=&quot;hint&quot; style=&quot;margin-top:8px&quot;&gt;'+esc(ENEMY_NOTE[k]||'')+'&lt;/div&gt;&lt;/div&gt;'});
+  h+='&lt;/div&gt;';
+  var eb={};T.bid.forEach(function(f){var n=f.enemyBids.length;eb[n]=(eb[n]||0)+1});
+  var secs={};T.bid.forEach(function(f){if(f.enemyLastS==null)return;var b=f.enemyLastS&lt;=1?'last second':f.enemyLastS&lt;=3?'2 to 3s':f.enemyLastS&lt;=8?'4 to 8s':'9s or more';secs[b]=(secs[b]||0)+1});
+  h+='&lt;div class=&quot;ring-grid&quot;&gt;';
+  h+=ringChart({title:'How many times they bid',segs:Object.keys(eb).sort().map(function(k){return {label:k+' bid'+(k==='1'?'':'s'),value:eb[k]}}),big:String(T.bid.length),small:'fights'});
+  h+=ringChart({title:'When they fired last',segs:['last second','2 to 3s','4 to 8s','9s or more'].filter(function(k){return secs[k]}).map(function(k){return {label:k+' left',value:secs[k]}}),big:String(T.bid.length),small:'fights',note:'Seconds left on the clock at their final bid.'});
+  h+=ringChart({title:'Your winning shot',segs:[{label:'@1s',value:T.won.filter(function(f){return f.ourBid&amp;&amp;f.ourBid.s&lt;=1}).length},{label:'@2s',value:T.won.filter(function(f){return f.ourBid&amp;&amp;f.ourBid.s===2}).length},{label:'later',value:T.won.filter(function(f){return f.ourBid&amp;&amp;f.ourBid.s&gt;2}).length}],big:String(T.won.length),small:'wins',note:(T.avgLand?'Lands in '+Math.round(T.avgLand)+'ms on average.':'')});
+  h+='&lt;/div&gt;';
+  var B=T.bid.concat(T.dry).sort(function(a,b){return b.ts-a.ts});
+  h+='&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;Every fight, move by move&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+B.length+'&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;tw&quot;&gt;&lt;div class=&quot;ts&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;When&lt;/th&gt;&lt;th&gt;Result&lt;/th&gt;&lt;th&gt;Enemy&lt;/th&gt;&lt;th&gt;Their moves, then yours&lt;/th&gt;&lt;th&gt;They topped at&lt;/th&gt;&lt;th&gt;You paid&lt;/th&gt;&lt;th&gt;Bidders&lt;/th&gt;&lt;th&gt;Shot&lt;/th&gt;&lt;th&gt;Landed&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+  B.forEach(function(f){h+='&lt;tr&gt;&lt;td&gt;'+dstr(f.ts)+' '+tstr(f.ts)+'&lt;/td&gt;&lt;td&gt;'+outcomePill(f)+'&lt;/td&gt;&lt;td&gt;'+(f.enemy?'&lt;span class=&quot;pill&quot; style=&quot;background:'+(ENEMY_COL[f.enemy]||'#333')+'22;color:'+(ENEMY_COL[f.enemy]||'#ccc')+'&quot;&gt;'+esc(f.enemy)+'&lt;/span&gt;':'·')+'&lt;/td&gt;&lt;td&gt;'+moves(f)+'&lt;/td&gt;&lt;td&gt;'+money0(f.enemyTop)+'&lt;/td&gt;&lt;td&gt;'+(f.final!=null?'&lt;b class=&quot;c-pos&quot;&gt;'+money(f.final)+'&lt;/b&gt;':'·')+'&lt;/td&gt;&lt;td&gt;'+(f.intel&gt;1?'2'+(f.intelSure?'':'?'):'1')+'&lt;/td&gt;&lt;td&gt;'+esc(f.shot)+'&lt;/td&gt;&lt;td&gt;'+(f.landMs?f.landMs+'ms':'·')+'&lt;/td&gt;&lt;/tr&gt;'});
+  h+='&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;';
+  el.innerHTML=h;
+}
+function rFights(){
+  var F=allFights().slice().reverse(),el=document.getElementById('sec-fights');
+  if(!F.length){el.innerHTML='&lt;div class=&quot;ring-empty&quot;&gt;Load the bot log to see the fights.&lt;/div&gt;';return}
+  var sel=F.filter(function(f){return fightFilter==='all'||(fightFilter==='bid'&amp;&amp;(f.outcome==='won'||f.outcome==='lost'||f.dry))||(fightFilter==='won'&amp;&amp;f.outcome==='won')||(fightFilter==='pass'&amp;&amp;f.outcome==='pass')});
+  var h='&lt;div class=&quot;mrow&quot;&gt;'+[['bid','Bid on'],['won','Won'],['pass','Passed'],['all','Everything']].map(function(p){return '&lt;button class=&quot;tab'+(fightFilter===p[0]?' on':'')+'&quot; onclick=&quot;fightFilter=\''+p[0]+'\';rFights()&quot;&gt;'+p[1]+'&lt;/button&gt;'}).join('')+'&lt;span class=&quot;badge&quot;&gt;'+sel.length+'&lt;/span&gt;&lt;/div&gt;';
+  h+='&lt;div class=&quot;tw&quot;&gt;&lt;div class=&quot;ts&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;When&lt;/th&gt;&lt;th&gt;Result&lt;/th&gt;&lt;th&gt;Why&lt;/th&gt;&lt;th&gt;Start&lt;/th&gt;&lt;th&gt;Paid&lt;/th&gt;&lt;th&gt;Loan&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;th&gt;Job&lt;/th&gt;&lt;th&gt;Visa&lt;/th&gt;&lt;th&gt;Living&lt;/th&gt;&lt;th&gt;Postcode&lt;/th&gt;&lt;th&gt;Moves&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+  sel.forEach(function(f){h+='&lt;tr&gt;&lt;td&gt;'+dstr(f.ts)+' '+tstr(f.ts)+'&lt;/td&gt;&lt;td&gt;'+outcomePill(f)+'&lt;/td&gt;&lt;td&gt;'+esc(f.outcome==='pass'?f.reason:(f.lossWhy||(f.enemy||'')))+'&lt;/td&gt;&lt;td&gt;'+money(f.start)+'&lt;/td&gt;&lt;td&gt;'+(f.final!=null?'&lt;b class=&quot;c-pos&quot;&gt;'+money(f.final)+'&lt;/b&gt;':'·')+'&lt;/td&gt;&lt;td&gt;'+money(f.naf)+'&lt;/td&gt;&lt;td class=&quot;'+(f.veda&amp;&amp;f.veda&lt;650?'c-neg':'')+'&quot;&gt;'+(f.veda||'·')+'&lt;/td&gt;&lt;td&gt;'+esc(f.employment)+'&lt;/td&gt;&lt;td&gt;'+esc(f.visa)+'&lt;/td&gt;&lt;td&gt;'+esc(f.residency)+'&lt;/td&gt;&lt;td&gt;'+esc(f.postcode)+'&lt;/td&gt;&lt;td&gt;'+(f.bids.length?moves(f):'·')+'&lt;/td&gt;&lt;/tr&gt;'});
+  h+='&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;';
+  el.innerHTML=h;
+}
+
+/* ═══ shell ═══ */
+var TABS=[{k:'all',l:'All time'},{k:'month',l:'Monthly'},{k:'enemies',l:'Enemies'},{k:'fights',l:'Fights'}];
+function renderTabs(){document.getElementById('tabs').innerHTML=TABS.map(function(t){return '&lt;button class=&quot;tab'+(t.k===activeTab?' on':'')+'&quot; onclick=&quot;switchTab(\''+t.k+'\')&quot;&gt;'+t.l+'&lt;/button&gt;'}).join('')}
+function switchTab(k){activeTab=k;renderTabs();document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on')});document.getElementById('sec-'+k).classList.add('on');render()}
+function render(){
+  var F=allFights();
+  var lt=document.getElementById('liveTxt');
+  lt.textContent=F.length?(F.length+' fights · up to '+dstr(F[F.length-1].ts)+' '+tstr(F[F.length-1].ts)):'no log loaded';
+  document.getElementById('drop').style.display=F.length?'none':'';
+  ({all:rAll,month:rMonth,enemies:rEnemies,fights:rFights})[activeTab]();
+}
+function clearAll(){if(!confirm('Clear the Lead Bot data from this browser? Load the log again to bring it back.'))return;S={rows:{},traces:{},loadedAt:null};save();render();toast('Cleared')}
+function handleFiles(files){
+  var list=Array.prototype.slice.call(files||[]),done=0,msg=[];
+  if(!list.length)return;
+  list.forEach(function(f){var rd=new FileReader();rd.onload=function(){var t=String(rd.result||'');var r;
+    if(/\.json$/i.test(f.name)||/^\s*[\[{]/.test(t)){r=ingestTrace(t);msg.push(r.bad?f.name+': could not read':r.added+' traces')}
+    else{r=ingestCSV(t);msg.push(r.added+' new fight'+(r.added===1?'':'s')+(r.updated?', '+r.updated+' updated':''))}
+    done++;if(done===list.length){S.loadedAt=Date.now();save();render();toast(msg.join(' · '))}};rd.readAsText(f)});
+}
+document.getElementById('file').addEventListener('change',function(e){handleFiles(e.target.files);e.target.value=''});
+(function(){var d=document.getElementById('drop');d.addEventListener('dragover',function(e){e.preventDefault();d.classList.add('on')});d.addEventListener('dragleave',function(){d.classList.remove('on')});d.addEventListener('drop',function(e){e.preventDefault();d.classList.remove('on');handleFiles(e.dataTransfer.files)});
+  document.body.addEventListener('dragover',function(e){e.preventDefault()});document.body.addEventListener('drop',function(e){e.preventDefault();handleFiles(e.dataTransfer.files)})})();
+load();renderTabs();render();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -23373,7 +23809,7 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
   // ═══ LAZY TOOL BOOT ═══
   // Call Script / Lender / Serviceability live in inert <template> tags so their
   // CDN payloads (Babel, React, pdf.js, tesseract, xlsx) only download on first open.
-  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",tradeup:"Trade-up Calc",warranty:"Warranty Matcher",insurance:"Insurance Quote",replydeck:"ReplyDeck",crm:"CRM Note",drive:"Drive Tracker",dealers:"Dealer Hub",partners:"Partner Manager"};
+  var TOOL_LABELS={closer:"Call Script",lender:"Lender Matcher",serviceability:"Serviceability Calculator",tradeup:"Trade-up Calc",warranty:"Warranty Matcher",insurance:"Insurance Quote",replydeck:"ReplyDeck",crm:"CRM Note",drive:"Drive Tracker",leadbot:"Lead Bot",dealers:"Dealer Hub",partners:"Partner Manager"};
   function setBoot(on,label){
     var ov=document.getElementById("bootOverlay"),bb=document.getElementById("bootbar"),lb=document.getElementById("bootLabel");
     if(lb&&label)lb.textContent="Loading "+label+"…";

@@ -22626,9 +22626,9 @@ function renderStructureOptions(s, liveResults) {
     structures.push({ key:'C', label:'C · Partner covers half the living costs, rent in full', needs: need + 'Lender has to accept a living cost share.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:true, splitRent:false, splitLiving:true } });
     structures.push({ key:'D', label:'D · Everything shared 50/50', needs: need + 'Liberty and Azora push back when the partner earns much less than the applicant.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:true, splitRent:true, splitLiving:true } });
     if (partnerIncome) structures.push({ key:'E', label:'E · Partner income counted, nothing split', needs: need + 'Firstmac style non applicant partner income, full rent and full HEM stay on the file.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:false, splitRent:false, splitLiving:false } });
-    if (partnerIncome) structures.push({ key:'F', label:'F · Joint application, partner on the loan', needs: need + 'Both incomes count at every lender, rent and living in full, both sign. No sharing rules to argue.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:true, splitExpenses:false, splitRent:false, splitLiving:false } });
+    structures.push({ key:'F', label:'F · Joint application, partner goes on the loan and their income counts', needs: (partnerIncome ? need + 'Both incomes count at every lender, rent and living in full, both sign. No sharing rules to argue.' : 'Type the partner\'s income into the spouse card first, then this row runs with both incomes.'), needsIncome: !partnerIncome, over:{ includeSpouse:true, spouseEvidenced:true, jointApp:true, splitExpenses:false, splitRent:false, splitLiving:false } });
   }
-  structures.forEach(st =&gt; { st.res = runStructure(s, st.over); });
+  structures.forEach(st =&gt; { st.res = st.needsIncome ? {} : runStructure(s, st.over); });
   const cell = r =&gt; {
     if (!r) return '&lt;td style=&quot;padding:6px 8px;border-bottom:1px solid var(--line);text-align:center;color:var(--muted);&quot;&gt;·&lt;/td&gt;';
     const ok = r.eligible &amp;&amp; r.services, ko = !r.eligible;
@@ -22642,7 +22642,8 @@ function renderStructureOptions(s, liveResults) {
   html += '&lt;thead&gt;&lt;tr&gt;&lt;th style=&quot;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600;&quot;&gt;Structure&lt;/th&gt;' + order.map(k =&gt; '&lt;th style=&quot;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:600;white-space:nowrap;&quot;&gt;' + names[k] + '&lt;/th&gt;').join('') + '&lt;th style=&quot;border-bottom:1px solid var(--line);&quot;&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
   structures.forEach(st =&gt; {
     const passes = order.filter(k =&gt; st.res[k] &amp;&amp; st.res[k].eligible &amp;&amp; st.res[k].services);
-    html += '&lt;tr&gt;&lt;td style=&quot;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top;min-width:220px;&quot;&gt;&lt;div style=&quot;font-weight:700;color:var(--text);&quot;&gt;' + st.label + '&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;&quot;&gt;' + st.needs + '&lt;/div&gt;&lt;/td&gt;' + order.map(k =&gt; cell(st.res[k])).join('') + '&lt;td style=&quot;padding:6px 8px;border-bottom:1px solid var(--line);&quot;&gt;&lt;button class=&quot;btn-ghost&quot; style=&quot;font-size:11px;padding:4px 9px;white-space:nowrap;&quot; onclick=&quot;useStructure(\'' + st.key + '\')&quot;&gt;Use this&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;';
+    const body = st.needsIncome ? '&lt;td colspan=&quot;' + order.length + '&quot; style=&quot;padding:8px 10px;border-bottom:1px solid var(--line);color:var(--muted);font-size:11.5px;&quot;&gt;No partner income entered yet. Tick Include spouse, put their gross or take home in, and this row fills in.&lt;/td&gt;' : order.map(k =&gt; cell(st.res[k])).join('');
+    html += '&lt;tr&gt;&lt;td style=&quot;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top;min-width:220px;&quot;&gt;&lt;div style=&quot;font-weight:700;color:var(--text);&quot;&gt;' + st.label + '&lt;/div&gt;&lt;div style=&quot;font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;&quot;&gt;' + st.needs + '&lt;/div&gt;&lt;/td&gt;' + body + '&lt;td style=&quot;padding:6px 8px;border-bottom:1px solid var(--line);&quot;&gt;&lt;button class=&quot;btn-ghost&quot; style=&quot;font-size:11px;padding:4px 9px;white-space:nowrap;&quot; onclick=&quot;useStructure(\'' + st.key + '\')&quot;&gt;Use this&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;';
     st.passes = passes;
   });
   html += '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;';
@@ -23105,11 +23106,30 @@ function bhfFreqMonthly(amount,freq){
   if(f.startsWith('fort'))return Math.round(amount*26/12);
   return Math.round(amount);
 }
+function bhfTopUpSpouse(h){
+  // the spouse card came later than the handoff · fill it once for a client already loaded, never over something typed
+  if(localStorage.getItem('hub_handoff_spouse_sv')===String(h.at))return;
+  localStorage.setItem('hub_handoff_spouse_sv',String(h.at));
+  if(!$('includeSpouse')||$('includeSpouse').checked||(+($('spouseGross')&amp;&amp;$('spouseGross').value)||0)&gt;0)return;
+  let d=h.d||{};if(!d||!Object.keys(d).length){try{d=bhfParseZink(h.raw||'')||{};}catch(e){d={};}}
+  if(!(d.spouse&amp;&amp;d.spouse.net&gt;0))return;
+  const _nm=bhfFreqMonthly(d.spouse.net,d.spouse.freq),_g=_nm&gt;0?bhfGrossUpAnnual(_nm):0,_t=String(d.spouse.type||'').toLowerCase();
+  $('includeSpouse').checked=true;if(typeof toggleSpouseFields==='function')toggleSpouseFields();
+  if(_g&gt;0&amp;&amp;$('spouseGross'))$('spouseGross').value=_g;
+  if($('spouseNetOverride'))$('spouseNetOverride').value=Math.round(_nm);
+  if($('spouseEmpType'))$('spouseEmpType').value=/self/.test(_t)?'self_employed':/casual/.test(_t)?'casual':/part/.test(_t)?'part_time':/full/.test(_t)?'full_time':'none';
+  const _base=+($('baseGross')&amp;&amp;$('baseGross').value)||0;
+  if($('jointApp')&amp;&amp;_nm*12&gt;_base*0.78)$('jointApp').checked=true;
+  const _n=$('brokerNotes');if(_n){_n.value=(_n.value?_n.value+'\n':'')+'Partner from Zink: '+(d.spouse.name||'not named')+' · '+(d.spouse.type||'?')+(d.spouse.employer?' at '+d.spouse.employer:'')+' · net $'+d.spouse.net+' '+String(d.spouse.freq).toLowerCase()+' · PREFILLED gross ≈ $'+_g.toLocaleString()+' · counts nowhere until you tick the evidence box';}
+  if(typeof markDirty==='function')markDirty();
+  if(typeof calcAll==='function')try{calcAll();}catch(e){}
+}
 function bhfApplyHandoff(){
   let h=null;try{h=JSON.parse(localStorage.getItem('hub_handoff_v1'));}catch(e){}
   if(!h||!h.at)return false;
-  if(localStorage.getItem('hub_handoff_done_sv')===String(h.at))return false;
+  if(localStorage.getItem('hub_handoff_done_sv')===String(h.at)){try{bhfTopUpSpouse(h);}catch(e){}return false;}
   localStorage.setItem('hub_handoff_done_sv',String(h.at));
+  localStorage.setItem('hub_handoff_spouse_sv',String(h.at));
   let d=h.d||{};
   if(!d||!Object.keys(d).length){try{d=bhfParseZink(h.raw||'')||{};}catch(e){d={};}}
   newClient(true);

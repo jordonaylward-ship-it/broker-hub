@@ -17226,9 +17226,16 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
           &lt;div style=&quot;margin-top:12px;padding:10px 14px;background:#132a1f;border:1px solid #1f5c46;border-radius:8px;&quot;&gt;
             &lt;label style=&quot;display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;font-size:13px;&quot;&gt;
               &lt;input type=&quot;checkbox&quot; id=&quot;spouseEvidenced&quot; style=&quot;width:18px;height:18px;cursor:pointer;&quot;&gt;
-              Partner income is backed by payslips in the file
+              Partner income is evidenced in the file
             &lt;/label&gt;
-            &lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;&quot;&gt;Until this is ticked the partner's income is not counted and the expense split stays off. Azora and most lenders will not share living costs with a partner who cannot show income. A stay at home partner is a No, and loading their $300 a week with nothing behind it gets the file bounced.&lt;/div&gt;
+            &lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;&quot;&gt;Payslips, or two years of tax returns with the NOA plus BAS and statements if they are self employed. Until this is ticked the partner's income is not counted and the expense split stays off. A stay at home partner is a No, and loading their $300 a week with nothing behind it gets the file bounced.&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style=&quot;margin-top:12px;padding:10px 14px;background:#12203a;border:1px solid #2a4a8a;border-radius:8px;&quot;&gt;
+            &lt;label style=&quot;display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;font-size:13px;&quot;&gt;
+              &lt;input type=&quot;checkbox&quot; id=&quot;jointApp&quot; style=&quot;width:18px;height:18px;cursor:pointer;&quot;&gt;
+              Partner is going on the loan, joint application
+            &lt;/label&gt;
+            &lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;&quot;&gt;Both incomes count at every lender with no sharing rules to argue about, and both sign the contract. Rent and living costs run in full against the two incomes. Money3 moves to its joint table. Usual shape when the partner earns more than the applicant.&lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -19458,8 +19465,8 @@ function generateQueries(c) {
   const _deps = valInt('dependents') || 0;
   if (_incSp &amp;&amp; !_evid) {
     queries.push({
-      text: 'Partner income is not backed by payslips · left out of every lender and the expense split is off',
-      impact: 'Do not load a partner\'s income unless payslips back it. Azora bounces the file, share on Yes needs the partner\'s own income. Either get the payslips and tick the box, or untick Include spouse and run it as one income.'
+      text: 'Partner income not evidenced yet · left out of every lender and the expense split is off',
+      impact: 'Do not count a partner\'s income until the evidence is in, payslips or returns and BAS if self employed. Azora bounces the file, share on Yes needs the partner\'s own income. Either get the evidence and tick the box, or untick Include spouse and run it as one income.'
     });
   }
   if ((_hh === 'couple_deps' || _hh === 'couple') &amp;&amp; !(_incSp &amp;&amp; _evid)) {
@@ -19468,6 +19475,12 @@ function generateQueries(c) {
       text: 'One income household' + (_deps &gt; 0 ? ' with ' + _deps + ' dependant' + (_deps &gt; 1 ? 's' : '') : '') + ' · full couple HEM lands on the applicant',
       impact: 'Every lender runs the full household living cost on the one income' + (_rent &gt; 0 ? ', on top of $' + Math.round(_rent).toLocaleString() + ' a month rent' : '') + '. That is the problem, not the split. If it is short, drop the loan, every $1,000 off is about $22 a month back. Money3 is the exception, it assesses the applicant alone on its own floor table.'
     });
+  }
+  if (window.BHF_DIRECTOR) {
+    queries.push({ text: 'Directorship on the bureau · ' + window.BHF_DIRECTOR, impact: 'Ask what the company is and whether it trades. Lenders treat a director as self employed until the returns say otherwise. If it is the partner\'s business, she may be on the ABN and that changes the income story.' });
+  }
+  if ($('jointApp') &amp;&amp; $('jointApp').checked &amp;&amp; !_evid) {
+    queries.push({ text: 'Joint application ticked, partner income not evidenced yet', impact: 'Nothing counts for the partner until their evidence is in. Payslips, or returns and BAS if self employed. Once it is, tick the box and every lender runs both incomes.' });
   }
   const _pa = valInt('payAdvances') || 0;
   if (_pa &gt; 0) {
@@ -19901,6 +19914,7 @@ function snapshotState() {
     spouseNetOverride: val('spouseNetOverride'),
     splitExpenses: $('splitExpenses') ? $('splitExpenses').checked : false,
     spouseEvidenced: $('spouseEvidenced') ? $('spouseEvidenced').checked : false,
+    jointApp: $('jointApp') ? $('jointApp').checked : false,
     splitScope: valStr('splitScope') || 'both',
 
     genLiving: val('genLiving'),
@@ -21047,7 +21061,7 @@ function calcLiberty(s, base) {
   // Liberty spouse policy · refuses the joint split when partner income is too low
   // to justify household assessment. Threshold based on historical Liberty decisions
   // (~$15k/yr partner income or less = treated as single income, no split).
-  if (s.includeSpouse &amp;&amp; s.splitExpenses) {
+  if (s.includeSpouse &amp;&amp; s.splitExpenses &amp;&amp; !s.jointApp) {
     if ((s.spouseGrossRaw || 0) &lt; 15000) {
       warnings.push(`Liberty likely to REFUSE 50/50 expense split · partner gross ${fmt(s.spouseGrossRaw || 0)}/yr too low. Liberty typically reassesses as single-income with FULL housing &amp; HEM, which would drop surplus by roughly ${fmt((base.housingPayRawFull || 0) * 0.5 + (liv.coreFull || 0) * 0.5)}/mo.`);
     } else {
@@ -21420,12 +21434,13 @@ function calcMoney3(s, base) {
   // CASUAL: × 1.0 (Money3 most flexible · 52-week basis, apprentices treated as full-time continuity)
   // Money3 assesses the applicant on their own. A partner only counts as a co-applicant, and this calc has none,
   // so partner income is off and the living floor is the single applicant table with dependants.
-  const sM3 = Object.assign({}, s, { includeSpouse: false, splitExpenses: false });
+  const m3Joint = !!(s.jointApp &amp;&amp; s.includeSpouse &amp;&amp; s.spouseEvidenced);
+  const sM3 = m3Joint ? Object.assign({}, s, { splitExpenses: false, splitRent: false, splitLiving: false }) : Object.assign({}, s, { includeSpouse: false, splitExpenses: false });
   const inc = calcIncomeGeneric(sM3, { base: 1, ot: 0.8, comm: 0.8, car: 0.8, casualFactor: 1.0 });
-  // Money3 minimum living expenses, weekly, top income band, 2025 Q2 HEM release · single 0 to 3 dependants, +$100 each extra
+  // Money3 minimum living expenses, weekly, top income band, 2025 Q2 HEM release · single or joint, 0 to 3 dependants, +$100 each extra
   const m3Deps = s.dependents || 0;
-  const m3Single = [366, 464, 575, 687];
-  const m3Weekly = m3Deps &lt;= 3 ? m3Single[m3Deps] : m3Single[3] + 100 * (m3Deps - 3);
+  const m3Table = m3Joint ? [638, 728, 794, 859] : [366, 464, 575, 687];
+  const m3Weekly = m3Deps &lt;= 3 ? m3Table[m3Deps] : m3Table[3] + 100 * (m3Deps - 3);
   const m3Floor = m3Weekly * 52 / 12;
   const livGen = livingExpenses(sM3, inc.grossIncome);
   const m3Core = Math.max(livGen.statedCore, m3Floor, livGen.observedFloor);
@@ -21488,7 +21503,7 @@ function calcMoney3(s, base) {
   if (tier === null) knockouts.push('Credit score required to tier this file');
   if (s.loanAmt &gt; 0 &amp;&amp; s.loanAmt &lt; 5000) knockouts.push('Below Money3 minimum $5,000');
   if (tier &amp;&amp; s.loanAmt &gt; maxLoan) knockouts.push(`Loan exceeds tier ${tier} max of $${maxLoan.toLocaleString()}`);
-  if (inc.netMonthly &gt; 0 &amp;&amp; m3NetWeekly &lt; 480) knockouts.push(`Net income $${Math.round(m3NetWeekly)} a week · Money3 minimum is $480 for a single applicant`);
+  if (inc.netMonthly &gt; 0 &amp;&amp; m3NetWeekly &lt; (m3Joint ? 720 : 480)) knockouts.push(`Net income $${Math.round(m3NetWeekly)} a week · Money3 minimum is ${m3Joint ? '$720 for joint applicants' : '$480 for a single applicant'}`);
   if (s.payAdvances &gt; 1) knockouts.push(`${s.payAdvances} pay advances in the current pay cycle · Money3 knocks out more than one. One full clean cycle without Wageflo or the like, then apply with that payslip`);
   if (s.saccCount &gt; 2) knockouts.push(`${s.saccCount} current SACC loans · Money3 knocks out more than 2`);
   if (inc.netMonthly &gt; 0 &amp;&amp; m3CommitShare &gt; 0.35) knockouts.push(`Commitments including this loan are ${Math.round(m3CommitShare * 100)}% of net income · Money3 caps at 35%`);
@@ -21512,7 +21527,7 @@ function calcMoney3(s, base) {
   if (tier &amp;&amp; surplus &lt; 0) warnings.push(`Monthly surplus is ${fmt(surplus)} · won't service`);
   if (s.loanTerm &gt; m3TermCap) warnings.push(`Term capped at ${m3TermCap} months on a $${Math.round(s.loanAmt).toLocaleString()} loan · repayment shown on ${m3TermCap} months`);
   if (s.payAdvances === 1) warnings.push('One pay advance this cycle · allowed, the fees get loaded into capacity and the statements will show it');
-  if (s.includeSpouse) warnings.push('Partner income left out · Money3 only counts a partner as a co-applicant. Living costs run on the single applicant table with dependants, which is why this one often passes where the HEM lenders fail');
+  if (s.includeSpouse &amp;&amp; !m3Joint) warnings.push('Partner income left out · Money3 only counts a partner as a co-applicant. Living costs run on the single applicant table with dependants, which is why this one often passes where the HEM lenders fail');
   if (s.vehicleAgeEnd &gt; 18) warnings.push(`Vehicle age ${s.vehicleAgeEnd.toFixed(1)}y at EOT · Money3 will accept but expect detailed mechanical inspection requirement`);
   if (s.empType === 'permanent_ft' &amp;&amp; s.monthsCurrent &lt; 6) {
     warnings.push('FT under 6mo · Money3 generally OK if industry continuity (apprenticeship counts), but Credit may want manager letter');
@@ -21529,7 +21544,7 @@ function calcMoney3(s, base) {
 
   return {
     name: 'Money3', color: '#be185d',
-    incomeMethod: `Applicant assessed alone. Living floor $${m3Weekly} a week for ${m3Deps &gt; 0 ? 'a single with ' + m3Deps + ' dependant' + (m3Deps &gt; 1 ? 's' : '') : 'a single applicant'}, or verified spend if higher. Rent floor $150 a week. Casuals: 6mo current OR previous same industry. Term caps by loan size.`,
+    incomeMethod: `${m3Joint ? 'Joint application, both incomes.' : 'Applicant assessed alone.'} Living floor $${m3Weekly} a week for ${m3Joint ? 'a couple' : 'a single'}${m3Deps &gt; 0 ? ' with ' + m3Deps + ' dependant' + (m3Deps &gt; 1 ? 's' : '') : ''}, or verified spend if higher. Rent floor $150 a week. Casuals: 6mo current OR previous same industry. Term caps by loan size.`,
     tier: tierDesc, rate, maxLoan, maxTerm: m3TermCap, termUsed: m3Term,
     grossIncome: inc.grossIncome, netMonthly: inc.netMonthly,
     ndi, repayment, commitments, surplus,
@@ -22431,7 +22446,7 @@ function incomeSanityGates(s) {
 }
 
 function renderAllLenders() {
-  const s = snapshotState();
+  const s = jointShape(snapshotState());
   const base = baseCommitments(s);
   const lenderFns = {
     firstmac: calcFirstmacEdge,
@@ -22571,8 +22586,12 @@ function renderAllLenders() {
 // STRUCTURE OPTIONS · runs the file under every household split and shows where each one lands.
 // Born of the Kataraina file · hours spent flipping toggles to learn what this table says in one look.
 // ============================================================================
+function jointShape(s) {
+  if (!s.jointApp) return s;
+  return Object.assign({}, s, { includeSpouse: true, splitExpenses: false, splitRent: false, splitLiving: false });
+}
 function runStructure(s, over) {
-  const sv = Object.assign({}, s, over);
+  const sv = jointShape(Object.assign({}, s, over));
   const base = baseCommitments(sv);
   const fns = { firstmac: calcFirstmacEdge, firstmacstd: calcFirstmacStd, azora: calcAzora, now: calcNow, moneyme: calcMoneyMe, liberty: calcLiberty, pepper: calcPepper, wisr: calcWisr, money3: calcMoney3, c1: calcC1 };
   const out = {};
@@ -22599,14 +22618,15 @@ function renderStructureOptions(s, liveResults) {
   const names = { firstmac:'Firstmac Edge', firstmacstd:'Firstmac Std', azora:'Azora', now:'NOW', moneyme:'MoneyMe', liberty:'Liberty', pepper:'Pepper', wisr:'Wisr', money3:'Money3', c1:'C1' };
   const order = Object.keys(names);
   const structures = [
-    { key:'A', label:'A · Applicant alone, rent and living in full', needs:'Nothing extra. This is what every lender runs when the partner has no evidenced income.', over:{ includeSpouse:false, splitExpenses:false, splitRent:false, splitLiving:false } }
+    { key:'A', label:'A · Applicant alone, rent and living in full', needs:'Nothing extra. This is what every lender runs when the partner has no evidenced income.', over:{ includeSpouse:false, jointApp:false, splitExpenses:false, splitRent:false, splitLiving:false } }
   ];
   if (hasPartner) {
     const need = (evidenced ? 'Partner payslips are in the file. ' : 'Partner payslips, none in the file yet. ') + (partnerIncome ? '' : 'No partner income entered, so this is only worth anything once they have some. ');
-    structures.push({ key:'B', label:'B · Partner covers half the rent, living in full', needs: need + 'Lender has to accept the rent share.', over:{ includeSpouse:true, spouseEvidenced:true, splitExpenses:true, splitRent:true, splitLiving:false } });
-    structures.push({ key:'C', label:'C · Partner covers half the living costs, rent in full', needs: need + 'Lender has to accept a living cost share.', over:{ includeSpouse:true, spouseEvidenced:true, splitExpenses:true, splitRent:false, splitLiving:true } });
-    structures.push({ key:'D', label:'D · Everything shared 50/50', needs: need + 'Liberty and Azora push back when the partner earns much less than the applicant.', over:{ includeSpouse:true, spouseEvidenced:true, splitExpenses:true, splitRent:true, splitLiving:true } });
-    if (partnerIncome) structures.push({ key:'E', label:'E · Partner income counted, nothing split', needs: need + 'Firstmac style non applicant partner income, full rent and full HEM stay on the file.', over:{ includeSpouse:true, spouseEvidenced:true, splitExpenses:false, splitRent:false, splitLiving:false } });
+    structures.push({ key:'B', label:'B · Partner covers half the rent, living in full', needs: need + 'Lender has to accept the rent share.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:true, splitRent:true, splitLiving:false } });
+    structures.push({ key:'C', label:'C · Partner covers half the living costs, rent in full', needs: need + 'Lender has to accept a living cost share.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:true, splitRent:false, splitLiving:true } });
+    structures.push({ key:'D', label:'D · Everything shared 50/50', needs: need + 'Liberty and Azora push back when the partner earns much less than the applicant.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:true, splitRent:true, splitLiving:true } });
+    if (partnerIncome) structures.push({ key:'E', label:'E · Partner income counted, nothing split', needs: need + 'Firstmac style non applicant partner income, full rent and full HEM stay on the file.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:false, splitExpenses:false, splitRent:false, splitLiving:false } });
+    if (partnerIncome) structures.push({ key:'F', label:'F · Joint application, partner on the loan', needs: need + 'Both incomes count at every lender, rent and living in full, both sign. No sharing rules to argue.', over:{ includeSpouse:true, spouseEvidenced:true, jointApp:true, splitExpenses:false, splitRent:false, splitLiving:false } });
   }
   structures.forEach(st =&gt; { st.res = runStructure(s, st.over); });
   const cell = r =&gt; {
@@ -22632,8 +22652,8 @@ function renderStructureOptions(s, liveResults) {
   const perThousand = (() =&gt; { try { return pmtWithBalloon(1000, s.loanRate || 12, s.loanTerm || 60, 0); } catch (e) { return 22; } })();
   if (A.passes.length) notes.push('&lt;b&gt;A works&lt;/b&gt; at ' + A.passes.map(k =&gt; names[k]).join(', ') + '. No partner paperwork needed. Lodge on that basis unless a split gets a sharper rate.');
   else {
-    const opener = structures.slice(1).find(st =&gt; st.passes.length);
-    if (opener) notes.push('&lt;b&gt;Nothing services alone.&lt;/b&gt; ' + opener.key + ' opens ' + opener.passes.map(k =&gt; names[k]).join(', ') + ', but it needs the partner\'s payslips' + (evidenced ? '' : ' which are not in the file') + ' and the lender accepting the share. Get them before you promise anything.');
+    const opener = ((s.spouseGrossRaw || 0) &gt; (s.baseRaw || 0) ? structures.slice(1).filter(st =&gt; st.key === 'F').concat(structures.slice(1)) : structures.slice(1)).find(st =&gt; st.passes.length);
+    if (opener) notes.push('&lt;b&gt;Nothing services alone.&lt;/b&gt; ' + opener.key + ' opens ' + opener.passes.map(k =&gt; names[k]).join(', ') + ', but it needs the partner\'s income evidence' + (evidenced ? '' : ' which is not in the file yet') + (opener.key === 'F' ? ' and both names on the contract.' : ' and the lender accepting the share.') + ' Get it before you promise anything.');
     else notes.push('&lt;b&gt;Nothing services in any structure.&lt;/b&gt; The income is the wall, not the split.');
   }
   const bestA = order.map(k =&gt; A.res[k]).filter(r =&gt; r &amp;&amp; r.servicingMax &gt; 0).sort((a, b) =&gt; b.servicingMax - a.servicingMax)[0];
@@ -22642,18 +22662,20 @@ function renderStructureOptions(s, liveResults) {
   const m3 = A.res.money3;
   if (m3 &amp;&amp; m3.eligible &amp;&amp; m3.services &amp;&amp; A.passes.length &lt;= 2 &amp;&amp; hasPartner) notes.push('&lt;b&gt;Money3 is the odd one out on purpose.&lt;/b&gt; It assesses the applicant alone on its own floor table, so one income with kids passes there while the HEM lenders fail.');
   if (m3 &amp;&amp; !m3.eligible &amp;&amp; s.payAdvances &gt; 1) notes.push('&lt;b&gt;Money3 is off until the pay advances stop.&lt;/b&gt; One full clean pay cycle, then lodge with that payslip.');
-  if (hasPartner &amp;&amp; !evidenced) notes.push('&lt;b&gt;Get the partner\'s payslips before anything else.&lt;/b&gt; Rows B to E are hypothetical until they are in the file' + (partnerIncome ? '' : ', and a partner with no income cannot share anything') + '.');
+  if (hasPartner &amp;&amp; !evidenced) notes.push('&lt;b&gt;Get the partner\'s income evidence before anything else.&lt;/b&gt; Rows B to F are hypothetical until it is in the file' + (partnerIncome ? '' : ', and a partner with no income cannot share anything') + '.');
+  if (hasPartner &amp;&amp; partnerIncome &amp;&amp; (s.spouseGrossRaw || 0) &gt; (s.baseRaw || 0)) notes.push('&lt;b&gt;The partner is the main earner.&lt;/b&gt; A joint application, row F, is the natural shape here. The household costs are the same either way, so it comes down to whose name goes on the contract.');
   if ((s.loanTerm || 60) &lt; 84) { try { const now = pmtWithBalloon(s.loanAmt, s.loanRate || 12, s.loanTerm || 60, 0), longer = pmtWithBalloon(s.loanAmt, s.loanRate || 12, 84, 0); if (now - longer &gt; 20) notes.push('&lt;b&gt;Term.&lt;/b&gt; 84 months where the lender allows it drops the repayment by about ' + fmt(Math.round(now - longer)) + ' a month at the rate entered.'); } catch (e) {} }
   html += '&lt;div style=&quot;margin-top:12px;font-size:12.5px;line-height:1.7;color:var(--text);&quot;&gt;' + notes.map(n =&gt; '&lt;div style=&quot;padding:6px 0;border-top:1px solid var(--line);&quot;&gt;' + n + '&lt;/div&gt;').join('') + '&lt;/div&gt;';
-  html += '&lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;&quot;&gt;Cells show the monthly surplus and the biggest loan that services. Use this sets the spouse card the same way so the rest of the calc follows. Rows B to E always count the partner as if payslips were in the file, the note under each row says whether they are.&lt;/div&gt;';
+  html += '&lt;div class=&quot;hint&quot; style=&quot;margin-top:6px;&quot;&gt;Cells show the monthly surplus and the biggest loan that services. Use this sets the spouse card the same way so the rest of the calc follows. Rows B to F always count the partner as if the evidence were in the file, the note under each row says whether it is.&lt;/div&gt;';
   body.innerHTML = html;
   card.style.display = '';
 }
 function useStructure(key) {
   const inc = document.getElementById('includeSpouse'), sp = document.getElementById('splitExpenses'), sc = document.getElementById('splitScope');
   if (!inc || !sp) return;
-  if (key === 'A') { inc.checked = false; sp.checked = false; }
-  else { inc.checked = true; sp.checked = key !== 'E'; if (sc) sc.value = key === 'B' ? 'rent' : key === 'C' ? 'living' : 'both'; }
+  const ja = document.getElementById('jointApp');
+  if (key === 'A') { inc.checked = false; sp.checked = false; if (ja) ja.checked = false; }
+  else { inc.checked = true; sp.checked = key !== 'E' &amp;&amp; key !== 'F'; if (ja) ja.checked = key === 'F'; if (sc) sc.value = key === 'B' ? 'rent' : key === 'C' ? 'living' : 'both'; }
   if (typeof toggleSpouseFields === 'function') toggleSpouseFields();
   if (typeof markDirty === 'function') markDirty();
   calcAll();
@@ -22939,6 +22961,20 @@ function bhfParseZink(raw){
     const spouseAlt=raw.match(/Spouses (?:Details &amp; )?Employment[\s\S]{0,300}?Net Income[^]*?\$\s*\n?\s*([0-9,.]+)[\s\S]{0,60}?(Weekly|Fortnightly|Monthly)/i);
     if(spouseAlt){const amt=parseFloat(spouseAlt[1].replace(/,/g,&quot;&quot;));if(amt&gt;0)otherTypes.push(`Spouse income: $${spouseAlt[1]} ${spouseAlt[2]}`)}
   }
+  // Structured spouse · name, job, tenure and declared net, for the spouse card
+  {
+    const blk=(raw.match(/Spouses Employment[\s\S]{0,700}/i)||[''])[0];
+    const g=(re)=&gt;{const m=blk.match(re);return m?m[1].trim():''};
+    const spType=g(/Spouses Employment\s*\n\s*([^\n]+)\s*\n\s*Type\b/i);
+    const spNet=parseFloat(g(/Net Income[^\n]*\n\s*\$\s*\n\s*([0-9,.]+)/i).replace(/,/g,''))||0;
+    if(spType||spNet){
+      d.spouse={type:spType,employer:g(/Employer\s*\n\s*(?!Years\b)([^\n]+)\s*\n/i),years:parseInt(g(/Years\s*\n\s*(\d+)/i)||'0',10),months:parseInt(g(/Months\s*\n\s*(\d+)/i)||'0',10),net:spNet,freq:g(/\$[0-9,.]+\/m\s*\n\s*(Weekly|Fortnightly|Monthly)/i)||g(/(Weekly|Fortnightly|Monthly)\s*\n\s*Frequency/i)||'Weekly'};
+      const nm=raw.match(/Spouses Name\s*\n\s*First Name\s*\n\s*([^\n]+)\s*\n\s*Middle Name\s*\n\s*(?:([^\n]*)\n\s*)?Last Name\s*\n\s*([^\n]+)/i);
+      if(nm&amp;&amp;!/^(Last Name|Mobile)/i.test(nm[1]))d.spouse.name=(nm[1].trim()+' '+nm[3].trim()).trim();
+    }
+  }
+  // Directorships on the bureau · a director reads as self employed until shown otherwise
+  {const dm=raw.match(/Directorships\s*\n\s*(Yes|No)\s*\n\s*(\d+)\s*Directorships/i);d.directorships=dm&amp;&amp;/yes/i.test(dm[1])?parseInt(dm[2],10)||1:0}
   // Detect partner/spouse from marital status
   d.maritalStatus=grab([/(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)\s*\n\s*Marital Status/i,/Marital Status\s*\*?\s*\n?\s*(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)/i]);
   d.hasPartner=d.maritalStatus&amp;&amp;/married|de.?facto/i.test(d.maritalStatus);
@@ -23136,7 +23172,27 @@ function bhfApplyHandoff(){
     const _tmap={'mortgage':'mortgage','home loan':'mortgage','credit card':'credit_card','store card':'credit_card','personal loan':'personal_loan','car loan':'car_loan','vehicle loan':'car_loan','bnpl':'bnpl','afterpay':'bnpl','after pay':'bnpl','zip':'bnpl','zip pay':'bnpl'};
     d.liabilities.forEach(li=&gt;{try{addLiability({type:_tmap[String(li.type||'').toLowerCase()]||'other',creditor:li.provider||'',balance:li.outstanding||0,limit:li.limit||0,monthly_payment:li.repayMonthly||0,applicant_share:100});}catch(e){}});
   }
+  // Partner · Zink's spouse block fills the spouse card. Counted nowhere until the evidence box is ticked, that is on you.
+  let _spNote='';
+  if(d.spouse&amp;&amp;d.spouse.net&gt;0&amp;&amp;$('includeSpouse')){
+    const _spNm=bhfFreqMonthly(d.spouse.net,d.spouse.freq);
+    const _spGross=_spNm&gt;0?bhfGrossUpAnnual(_spNm):0;
+    const _t=String(d.spouse.type||'').toLowerCase();
+    $('includeSpouse').checked=true;if(typeof toggleSpouseFields==='function')toggleSpouseFields();
+    if(_spGross&gt;0)set('spouseGross',_spGross);
+    set('spouseNetOverride',Math.round(_spNm));
+    set('spouseEmpType',/self/.test(_t)?'self_employed':/casual/.test(_t)?'casual':/part/.test(_t)?'part_time':/full/.test(_t)?'full_time':'none');
+    if($('spouseEvidenced'))$('spouseEvidenced').checked=false;
+    if($('jointApp'))$('jointApp').checked=false;
+    const _mainEarner=_spNm*12&gt;(_grossEst||0)*0.78;
+    if($('jointApp')&amp;&amp;_mainEarner){$('jointApp').checked=true;}
+    _spNote='Partner: '+(d.spouse.name||'not named')+' · '+(d.spouse.type||'?')+(d.spouse.employer?' at '+d.spouse.employer:'')+' · '+d.spouse.years+'y '+d.spouse.months+'m · net $'+d.spouse.net+' '+String(d.spouse.freq).toLowerCase()+' declared · PREFILLED gross ≈ $'+_spGross.toLocaleString()+' · counts nowhere until you tick the evidence box · needs '+(/self/.test(_t)?'2 years tax returns with the NOA, or BAS and statements, Uber style income is 12 months of statements at best':'their payslips')+(_mainEarner?' · partner earns more than the applicant, joint application ticked, untick it if they are not going on the loan':'');
+  }
+  window.BHF_DIRECTOR=d.directorships||0;
   const noteBits=['--- ZINK HANDOFF · '+(d.clientName||'client')+' · '+new Date(h.at).toLocaleString('en-AU')+' ---'];
+  if(_spNote)noteBits.push(_spNote);
+  if(d.directorships)noteBits.push('Bureau shows '+d.directorships+' directorship'+(d.directorships&gt;1?'s':'')+' · ask what company. A director reads as self employed to the lender until the returns say otherwise, and if it is the partner\'s business she may be on the ABN');
+  if(d.condition&amp;&amp;/new|demo/i.test(String(d.condition))&amp;&amp;d.vehicleYear&amp;&amp;(new Date().getFullYear()-parseInt(d.vehicleYear,10))&gt;=2)noteBits.push('Zink says New/Demo on a '+d.vehicleYear+' build · run as used, fix Zink');
   if(d.netIncome)noteBits.push('Income: net $'+d.netIncome+' '+(d.incomeFrequency||'')+' declared · base gross PREFILLED ≈ $'+(_grossEst?_grossEst.toLocaleString():'?')+' (2025-26 resident gross-up estimate) · VERIFY against payslips before quoting'+(/casual/i.test(String(d.employmentType||''))?' · CASUAL, the Zink net is usually rounded up, annualise off the payslip YTD and put the YTD and weeks in Statements &amp; Conduct so the gate checks it':''));
   if(d.otherIncome)noteBits.push('Other income: '+d.otherIncome);
   if(_oiKids)noteBits.push('CHECK: Parenting Payment or FTB is on the file but Zink shows 0 dependants. Fix the dependants and household type, then enter the youngest child age for the runway check.');

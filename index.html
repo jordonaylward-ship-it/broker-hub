@@ -10562,7 +10562,7 @@ textarea::placeholder{color:var(--mut)}
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
   &lt;div class=&quot;hdr&quot;&gt;
-    &lt;div&gt;&lt;h1&gt;Cipher&lt;/h1&gt;&lt;p&gt;Your two words from Settings turn anything into junk, and back.&lt;/p&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;h1&gt;Cipher&lt;/h1&gt;&lt;/div&gt;
     &lt;div class=&quot;words&quot; id=&quot;words&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class=&quot;warn&quot; id=&quot;warn&quot; style=&quot;display:none&quot;&gt;&lt;/div&gt;
@@ -10570,22 +10570,20 @@ textarea::placeholder{color:var(--mut)}
   &lt;div class=&quot;grid&quot;&gt;
     &lt;div class=&quot;card&quot;&gt;
       &lt;div class=&quot;ch&quot;&gt;&lt;h2 id=&quot;inTitle&quot;&gt;Plain&lt;/h2&gt;&lt;span class=&quot;st&quot; id=&quot;inStatus&quot;&gt;&lt;/span&gt;&lt;/div&gt;
-      &lt;textarea id=&quot;in&quot; placeholder=&quot;Type or paste here. A screenshot pastes too.&quot;&gt;&lt;/textarea&gt;
-      &lt;div class=&quot;drop&quot; id=&quot;drop&quot;&gt;Drop a screenshot, photo, text file or PDF here&lt;/div&gt;
+      &lt;textarea id=&quot;in&quot; placeholder=&quot;Paste here&quot;&gt;&lt;/textarea&gt;
+      &lt;div class=&quot;drop&quot; id=&quot;drop&quot;&gt;Drop a file&lt;/div&gt;
       &lt;input type=&quot;file&quot; id=&quot;file&quot; accept=&quot;image/*,.txt,.pdf,text/plain,application/pdf&quot; multiple hidden&gt;
       &lt;div class=&quot;foot&quot;&gt;&lt;span id=&quot;inCount&quot;&gt;&lt;/span&gt;&lt;span&gt;&lt;button class=&quot;pill ghost&quot; onclick=&quot;clearIn()&quot;&gt;Clear&lt;/button&gt;&lt;/span&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;card&quot;&gt;
       &lt;div class=&quot;ch&quot;&gt;&lt;h2 id=&quot;outTitle&quot;&gt;Coded&lt;/h2&gt;&lt;span class=&quot;st&quot; id=&quot;outStatus&quot;&gt;&lt;/span&gt;&lt;/div&gt;
-      &lt;textarea id=&quot;out&quot; readonly placeholder=&quot;Comes out here as you type.&quot;&gt;&lt;/textarea&gt;
+      &lt;textarea id=&quot;out&quot; readonly placeholder=&quot;&quot;&gt;&lt;/textarea&gt;
       &lt;div class=&quot;foot&quot;&gt;&lt;span id=&quot;outCount&quot;&gt;&lt;/span&gt;&lt;span&gt;&lt;button class=&quot;pill ghost&quot; onclick=&quot;swap()&quot;&gt;Swap sides&lt;/button&gt; &lt;button class=&quot;pill&quot; onclick=&quot;copyOut()&quot;&gt;Copy&lt;/button&gt;&lt;/span&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-  &lt;div class=&quot;note&quot;&gt;Letters come out as lowercase letters, numbers and symbols like $ , . % come out as capitals. Spaces and line breaks stay where they are. Nothing leaves this browser, the picture reading runs here too.&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
-/* ═══ the words · set in Settings, read here ═══ */
 var KEY='hub_cipher_v1';
 function words(){try{var o=JSON.parse(localStorage.getItem(KEY)||'null')||{};return {num:normWord(o.numWord),key:normWord(o.keyWord)}}catch(e){return {num:'',key:''}}}
 function normWord(w){return String(w||'').toUpperCase().replace(/[^A-Z]/g,'')}
@@ -10593,11 +10591,6 @@ function numOk(w){return w.length===10&amp;&amp;new Set(w.split('')).size===10}
 var SYMS='$,.%-/:@()#&amp;+=?!';
 function symLetters(num){var out='';for(var i=65;i&lt;=90;i++){var c=String.fromCharCode(i);if(num.indexOf(c)&lt;0)out+=c}return out}
 
-/* ═══ the cipher ═══
-   numbers · each digit becomes the matching letter of the number word, in capitals
-   symbols next to a number · $ , . % and friends become the capitals the number word did not use
-   letters · slide each one forward by the key word, A is 0, B is 1, out as lowercase
-   everything else · spaces, new lines, ordinary punctuation, stays as it is */
 function encode(text,W){
   var num=W.num,key=W.key,sl=symLetters(num),out='',ki=0,chars=Array.from(String(text||''));
   for(var i=0;i&lt;chars.length;i++){
@@ -10620,7 +10613,6 @@ function decode(text,W){
   }
   return caps(out);
 }
-/* capitals are lost on the way through, so the sentence starts and the word I come back on their own */
 function caps(t){
   t=t.replace(/(^|[.!?]\s+|\n\s*)([a-z])/g,function(m,a,b){return a+b.toUpperCase()});
   return t.replace(/\bi\b/g,'I').replace(/\bi'([md]|ll|ve)\b/g,&quot;I'$1&quot;);
@@ -10633,11 +10625,11 @@ function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');setTi
 function mask(w){return w?w[0]+'\u2022'.repeat(Math.max(1,w.length-2))+w[w.length-1]:'\u2014'}
 function ready(){
   var W=words(),bad=[];
-  if(!numOk(W.num))bad.push(W.num?'the number word needs 10 different letters, yours has '+W.num.length+(new Set(W.num.split('')).size&lt;W.num.length?' with a repeat':''):'no number word yet');
+  if(!numOk(W.num))bad.push(W.num?'the number word is not right':'no number word yet');
   if(!W.key)bad.push('no key word yet');
   $('words').innerHTML=W.num||W.key?('Numbers &lt;b&gt;'+mask(W.num)+'&lt;/b&gt; &amp;nbsp;·&amp;nbsp; Letters &lt;b&gt;'+mask(W.key)+'&lt;/b&gt;'):'';
   var wn=$('warn');
-  if(bad.length){wn.style.display='';wn.innerHTML='&lt;b&gt;Set your words in Settings first.&lt;/b&gt; '+bad.join(', ')+'. A word with 10 different letters for the numbers, like BLACKHORSE, and any short word for the letters, like BED.';return null}
+  if(bad.length){wn.style.display='';wn.innerHTML='&lt;b&gt;Set your two words in Settings.&lt;/b&gt; '+bad.join(', ')+'.';return null}
   wn.style.display='none';return W;
 }
 function run(){
@@ -10650,14 +10642,13 @@ function run(){
 function setMode(m){
   mode=m;$('segEnc').className=m==='enc'?'on':'';$('segDec').className=m==='dec'?'on':'';
   $('inTitle').textContent=m==='enc'?'Plain':'Coded';$('outTitle').textContent=m==='enc'?'Coded':'Plain';
-  $('in').placeholder=m==='enc'?'Type or paste here. A screenshot pastes too.':'Paste the coded message here.';
+  $('in').placeholder='Paste here';
   run();
 }
 function swap(){var o=$('out').value;setMode(mode==='enc'?'dec':'enc');$('in').value=o;run()}
 function clearIn(){$('in').value='';run();$('in').focus()}
 function copyOut(){var v=$('out').value;if(!v)return;var done=function(){toast('Copied')};if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText)navigator.clipboard.writeText(v).then(done,function(){$('out').select();document.execCommand('copy');done()});else{$('out').select();document.execCommand('copy');done()}}
 
-/* ═══ pictures and files · read here, nothing sent anywhere ═══ */
 function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 async function ensureOcr(){if(window.Tesseract)return;await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js')}
 async function ensurePdf(){if(window.pdfjsLib)return;await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
@@ -23735,10 +23726,10 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
 &lt;details class=&quot;card&quot; id=&quot;cardCipher&quot; open&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;Cipher&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot; id=&quot;cipherSummary&quot;&gt;the two words&lt;/span&gt;&lt;/summary&gt;
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;row&quot;&gt;
-      &lt;div&gt;&lt;label&gt;Number word · 10 different letters&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;sCipherNum&quot; placeholder=&quot;like BLACKHORSE&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot; style=&quot;text-transform:uppercase;letter-spacing:.08em&quot;&gt;&lt;/div&gt;
-      &lt;div&gt;&lt;label&gt;Key word · any word, short is easier&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;sCipherKey&quot; placeholder=&quot;like BED&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot; style=&quot;text-transform:uppercase;letter-spacing:.08em&quot;&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;label&gt;Number word&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;sCipherNum&quot; placeholder=&quot;&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot; style=&quot;text-transform:uppercase;letter-spacing:.08em&quot;&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;label&gt;Key word&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;sCipherKey&quot; placeholder=&quot;&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot; style=&quot;text-transform:uppercase;letter-spacing:.08em&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;hint&quot; id=&quot;cipherHint&quot;&gt;The number word stands for 1 to 9 then 0, so with BLACKHORSE 2,500 becomes LKEE. The key word slides each letter along, A is 0, B is 1. Change either word any time, anything coded with the old words needs the old words to read.&lt;/div&gt;
+    &lt;div class=&quot;hint&quot; id=&quot;cipherHint&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/details&gt;
 
@@ -23860,10 +23851,10 @@ function resetAll(){
 function cipherPaint(){
   var num=document.getElementById('sCipherNum').value.toUpperCase().replace(/[^A-Z]/g,''),key=document.getElementById('sCipherKey').value.toUpperCase().replace(/[^A-Z]/g,'');
   var uniq=new Set(num.split('')).size,ok=num.length===10&amp;&amp;uniq===10;
-  var msg=!num?'No number word yet.':ok?'Number word is good.':(num.length!==10?'Needs 10 letters, that is '+num.length+'.':'Two letters repeat, every letter has to be different.');
-  msg+=key?' Key word set.':' No key word yet.';
+  var msg=!num?'No number word yet.':ok?'':(num.length!==10?'Number word needs 10 letters, that is '+num.length+'.':'Two letters repeat in the number word.');
+  if(!key)msg+=' No key word yet.';
   var sm=document.getElementById('cipherSummary');if(sm)sm.textContent=ok&amp;&amp;key?'set':'not set';
-  var h=document.getElementById('cipherHint');if(h)h.textContent=msg+' The number word stands for 1 to 9 then 0, so with BLACKHORSE 2,500 becomes LKEE. The key word slides each letter along, A is 0, B is 1. Change either word any time, anything coded with the old words needs the old words to read.';
+  var h=document.getElementById('cipherHint');if(h)h.textContent=msg.trim();
 }
 document.getElementById('sCipherNum').addEventListener('input',cipherPaint);document.getElementById('sCipherKey').addEventListener('input',cipherPaint);
 (function boot(){

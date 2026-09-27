@@ -8879,7 +8879,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
         &lt;button class=&quot;btn&quot; id=&quot;btnQkDialpad&quot; title=&quot;Keeps the blank lines when Dialpad would eat them&quot;&gt;Copy for Dialpad&lt;/button&gt;
         &lt;button class=&quot;btn ghost&quot; id=&quot;btnQkEdit&quot;&gt;Edit in Library&lt;/button&gt;
       &lt;/div&gt;
-      &lt;p class=&quot;hint&quot;&gt;Copy message pastes with proper paragraphs in Outlook and Gmail. Copy for Dialpad keeps the gaps between paragraphs in a Dialpad text. Subject goes in on its own.&lt;/p&gt;
+      &lt;p class=&quot;hint&quot;&gt;Copy message pastes with proper paragraphs in Outlook and Gmail. Copy for Dialpad slips an invisible mark into each blank line so Dialpad keeps the gaps. Subject goes in on its own.&lt;/p&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
@@ -9673,11 +9673,12 @@ function tokenContext(body, tok){
   return (a &gt; 0 ? '...' : '') + body.slice(a, z).replace(/\s+/g, ' ').trim() + (z &lt; body.length ? '...' : '');
 }
 function ahkParam(x){ return String(x).replace(/`/g,'``').replace(/,/g,'`,').replace(/%/g,'`%').replace(/;/g,'`;'); }
+const GAP = '\u200B';
 function ahkBodyLines(body, sms){
   /* A line starting with &quot;)&quot; would end the AHK continuation section early,
      so it gets padded with one leading space. Same trick, same output.
      A text for Dialpad gets a space on each blank line so the gaps survive the paste. */
-  return body.split('\n').map(line =&gt; (sms &amp;&amp; line.trim() === '') ? ' ' : line.trimStart().startsWith(')') ? ' ' + line : line);
+  return body.split('\n').map(line =&gt; (sms &amp;&amp; line.trim() === '') ? GAP : line.trimStart().startsWith(')') ? ' ' + line : line);
 }
 function ahkTemplateBlock(t, label){
   const out = [];
@@ -9944,10 +9945,10 @@ function renderDiagram(){
 function textToHtml(text){
   return String(text).replace(/\r\n?/g, '\n').split('\n').map(l =&gt; l.trim() === '' ? '&lt;div&gt;&lt;br&gt;&lt;/div&gt;' : '&lt;div&gt;' + esc(l) + '&lt;/div&gt;').join('');
 }
-/* Dialpad collapses empty lines when you paste. A line holding one space is not empty, so the gap survives,
-   and a space is safe in an SMS, it costs nothing extra. */
+/* Dialpad throws away empty lines when you paste, spaces included. A zero width space is invisible but not
+   empty, so the gap survives and the text reads on the other phone with its paragraphs. */
 function forDialpad(text){
-  return String(text).replace(/\r\n?/g, '\n').split('\n').map(l =&gt; l.trim() === '' ? ' ' : l).join('\n');
+  return String(text).replace(/\r\n?/g, '\n').split('\n').map(l =&gt; l.trim() === '' ? GAP : l).join('\n');
 }
 function copyText(text, okMsg, plainOnly){
   const done = () =&gt; toast(okMsg || 'Copied.', 'ok');

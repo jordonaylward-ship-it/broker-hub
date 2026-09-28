@@ -8799,6 +8799,7 @@ window.goCheckin=goCheckin;window.goQuarterly=goQuarterly;window.openDrawer=open
 ::-webkit-scrollbar-thumb:hover{background:#2e3445}
 input,select,textarea{color-scheme:dark}
 .qsubj{font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.12)}.qsubj span{font-weight:600;opacity:.6;margin-right:6px}
+.docpick{display:flex;flex-direction:column;gap:6px;margin-top:4px}.docopt{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer;color:inherit}.docopt input{width:16px;height:16px;accent-color:#6a7dff;margin:0}
 &lt;/style&gt;
 &lt;style id=&quot;nightglass&quot;&gt;
 :root,[data-theme=&quot;dark&quot;],html[data-theme=&quot;dark&quot;],[data-theme=&quot;light&quot;],html[data-theme=&quot;light&quot;]{
@@ -8879,7 +8880,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
         &lt;button class=&quot;btn&quot; id=&quot;btnQkDialpad&quot; title=&quot;Keeps the blank lines when Dialpad would eat them&quot;&gt;Copy for Dialpad&lt;/button&gt;
         &lt;button class=&quot;btn ghost&quot; id=&quot;btnQkEdit&quot;&gt;Edit in Library&lt;/button&gt;
       &lt;/div&gt;
-      &lt;p class=&quot;hint&quot;&gt;Copy message pastes with proper paragraphs in Outlook and Gmail. Copy for Dialpad slips an invisible mark into each blank line so Dialpad keeps the gaps. Subject goes in on its own.&lt;/p&gt;
+      &lt;p class=&quot;hint&quot;&gt;Copy message pastes with proper paragraphs in Outlook and Gmail. Copy for Dialpad keeps the gaps between paragraphs. Subject goes in on its own.&lt;/p&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
@@ -9009,7 +9010,7 @@ const BRAND = {
 /* ================= STARTER TEMPLATES (shipped set) ================= */
 /* All example content. Rewrite everything in your own voice. */
 const STARTER = [
-{name:&quot;Intro, first contact&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;intro&quot;, hotkeys:[&quot;^`&quot;], body:&quot;Hi {First name},\n\nIt's Jordy from Ausloans. I'm one of the senior brokers here at Ausloans and been doing this a long time, so you're in good hands.\n\nI'll be looking after you moving forward to get you the finance you need.\n\nThe process can be fiddly, my job is to make it easier for you. Thank you for completing the links earlier with our admin team.\n\nI will give you a call shortly to see if you're able to get a loan.\n\nOutstanding documents:\n\nSpeak soon\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
+{name:&quot;Intro, first contact&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;intro&quot;, hotkeys:[&quot;^`&quot;], body:&quot;Hi {First name},\n\nIt's Jordy from Ausloans. I'm one of the senior brokers here at Ausloans and been doing this a long time, so you're in good hands.\n\nI'll be looking after you moving forward to get you the finance you need.\n\nThe process can be fiddly, my job is to make it easier for you. Thank you for completing the links earlier with our admin team.\n\nI will give you a call shortly to see if you're able to get a loan.\n\nOutstanding documents:\n{Documents}\n\nSpeak soon\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
 {name:&quot;Follow up 1, checklist&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu1&quot;, hotkeys:[&quot;^1&quot;], body:&quot;Hi, just a quick follow-up on the checklist I sent.\n\nOnce received, I'll start your assessment right away.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
 {name:&quot;Follow up 2, checking in&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu2&quot;, hotkeys:[&quot;^2&quot;], body:&quot;Just checking in. Have you had a chance to see the outstanding in the last message?\n\nA quick update or ETA is fine. If you need a hand, I can help.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
 {name:&quot;Follow up 3, no response&quot;, cat:&quot;Ausloans&quot;, ch:&quot;email&quot;, grp:&quot;fu3&quot;, hotkeys:[&quot;^3&quot;], body:&quot;I haven't had much response, and that's okay. I'm here when you need me.\n\nI understand life can get in the way. Let me know if you need more time and I'll check back when it suits you.\n\nSay N if you no longer need the finance\n\nJordy\nAusloans\njordon.aylward@ausloans.com.au\nAustralian Credit License 383999&quot;},
@@ -9324,28 +9325,53 @@ function renderQuickFields(){
   const t = quickTemplate(); if(!t){ $('#qkFields').innerHTML = ''; return; }
   const toks = tokensOf(t.body + ' ' + (t.subject || ''));
   $('#qkFields').innerHTML = toks.length ? toks.map((tok,i) =&gt; {
+    if(tok === 'Documents'){
+      const picked = docPicked(t);
+      return '&lt;div&gt;&lt;label&gt;Documents to ask for&lt;/label&gt;&lt;div class=&quot;docpick&quot;&gt;' + DOC_CHOICES.map((d, di) =&gt; '&lt;label class=&quot;docopt&quot;&gt;&lt;input type=&quot;checkbox&quot; data-doc=&quot;' + di + '&quot;' + (picked.has(d) ? ' checked' : '') + '&gt;&lt;span&gt;' + esc(d) + '&lt;/span&gt;&lt;/label&gt;').join('') +
+        '&lt;input type=&quot;text&quot; id=&quot;qkDocOther&quot; placeholder=&quot;Anything else, one per line is fine&quot; value=&quot;' + esc(qv()['Documents other'] || '') + '&quot;&gt;&lt;/div&gt;&lt;/div&gt;';
+    }
     const numeric = /(amount|price|qty|quantity|days|number|no\b)/i.test(tok);
     return '&lt;div&gt;&lt;label for=&quot;qkTok' + i + '&quot;&gt;' + esc(tok.replace(/_/g,' ')) + '&lt;/label&gt;' +
       '&lt;input type=&quot;text&quot; id=&quot;qkTok' + i + '&quot; data-token=&quot;' + esc(tok) + '&quot;' +
       (numeric ? ' inputmode=&quot;decimal&quot;' : '') +
       ' value=&quot;' + esc(qv()[tok] || '') + '&quot; placeholder=&quot;' + esc(tok.replace(/_/g,' ')) + '\u2026&quot;&gt;&lt;/div&gt;';
   }).join('') : '&lt;p class=&quot;hint&quot; style=&quot;margin-top:2px&quot;&gt;This one has no blanks. Copy it as-is, or add {blanks} to it in the Library.&lt;/p&gt;';
-  document.querySelectorAll('#qkFields input').forEach(inp =&gt; {
+  document.querySelectorAll('#qkFields input[data-token]').forEach(inp =&gt; {
     inp.addEventListener('input', () =&gt; { qv()[inp.dataset.token] = inp.value; markDirty(); renderQuickPreview(); renderJourney(); });
   });
+  document.querySelectorAll('#qkFields input[data-doc]').forEach(cb =&gt; {
+    cb.addEventListener('change', () =&gt; { docCompose(t); markDirty(); renderQuickPreview(); renderJourney(); });
+  });
+  const other = $('#qkDocOther');
+  if(other) other.addEventListener('input', () =&gt; { qv()['Documents other'] = other.value; docCompose(t); markDirty(); renderQuickPreview(); renderJourney(); });
+}
+/* the ticked documents become the lines that sit under Outstanding documents */
+function docPicked(t){
+  const raw = qv()['Documents picked'];
+  const arr = Array.isArray(raw) ? raw : (typeof raw === 'string' &amp;&amp; raw ? raw.split('\u0001') : []);
+  return new Set(arr);
+}
+function docCompose(t){
+  const ticked = Array.from(document.querySelectorAll('#qkFields input[data-doc]:checked')).map(cb =&gt; DOC_CHOICES[+cb.dataset.doc]);
+  const extra = String(qv()['Documents other'] || '').split(/\n|,\s*/).map(s =&gt; s.trim()).filter(Boolean);
+  const lines = ticked.concat(extra);
+  qv()['Documents picked'] = ticked.join('\u0001');
+  qv()['Documents'] = lines.length ? lines.map(l =&gt; '\u00B7 ' + l).join('\n') : '';
 }
 function filledBody(t){
-  return t.body.replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; (qv()[tok] || '').trim() || m);
+  return t.body.replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; String(qv()[tok] || '').trim() || m);
 }
 function filledSubject(t){
   return String(t.subject || '').replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; (qv()[tok] || '').trim() || m);
 }
+const DOC_CHOICES = [&quot;Driver licence, front and back&quot;, &quot;Medicare card&quot;, &quot;Two most recent payslips&quot;, &quot;Two most recent payslips for your partner&quot;, &quot;Your last payslip from June this year, it shows the year to date income&quot;, &quot;Your current lease&quot;, &quot;Three months of bank statements, the link is above&quot;, &quot;Rates notice or mortgage statement&quot;, &quot;Centrelink income statement from myGov&quot;, &quot;Latest tax return and notice of assessment&quot;];
 const DEFAULT_SUBJECTS = {&quot;intro&quot;: &quot;Your car finance with Ausloans, next steps&quot;, &quot;fu1&quot;: &quot;Quick follow up on your checklist&quot;, &quot;fu2&quot;: &quot;Following up, your finance application&quot;, &quot;fu3&quot;: &quot;Still keen on the car? Following up&quot;, &quot;fu4&quot;: &quot;Closing your file unless I hear from you&quot;, &quot;approved&quot;: &quot;Approved, one last form to sign&quot;, &quot;submitted&quot;: &quot;Your application is with the lender&quot;, &quot;preapproval&quot;: &quot;GREAT NEWS, you are pre approved with Ausloans&quot;, &quot;insurance&quot;: &quot;Insurance for your new car, 2 ways to do it&quot;, &quot;suncorp&quot;: &quot;Suncorp insurance quotes for your new car&quot;, &quot;settlement&quot;: &quot;Your loan documents, please read before signing&quot;, &quot;coc&quot;: &quot;Your insurance documents, please read through&quot;, &quot;remittance&quot;: &quot;Settled, remittance attached, {Client name}&quot;, &quot;settled&quot;: &quot;Congratulations {First name}, it is all done&quot;, &quot;decline&quot;: &quot;Your application, where it landed and what is next&quot;};
 /* a subject line typed at the top of an old template moves into the subject field · nothing else changes */
 function rdMigrateSubjects(){
   let changed = false;
   state.templates.forEach(t =&gt; {
     if(t.subject == null) t.subject = '';
+    if(/Outstanding documents:\s*\n/i.test(t.body) &amp;&amp; !/\{Documents\}/.test(t.body)){ t.body = t.body.replace(/(Outstanding documents:)[ \t]*\n+/i, '$1\n{Documents}\n\n'); changed = true; }
     const m = t.body.match(/^\s*Subject:\s*([^\n]+)\n+/i);
     if(m){ if(!t.subject) t.subject = m[1].trim(); t.body = t.body.slice(m[0].length); changed = true; }
     if(!t.subject &amp;&amp; chOf(t) === 'email' &amp;&amp; DEFAULT_SUBJECTS[t.grp]){ t.subject = DEFAULT_SUBJECTS[t.grp]; changed = true; }
@@ -9355,9 +9381,9 @@ function rdMigrateSubjects(){
 function renderQuickPreview(){
   const t = quickTemplate(); if(!t) return;
   const toks = tokensOf(t.body);
-  const nFilled = toks.filter(tok =&gt; (qv()[tok] || '').trim()).length;
+  const nFilled = toks.filter(tok =&gt; String(qv()[tok] || '').trim()).length;
   const html = esc(t.body).replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; {
-    const v = (qv()[tok] || '').trim();
+    const v = String(qv()[tok] || '').trim();
     return v ? '&lt;b&gt;' + esc(v) + '&lt;/b&gt;' : '&lt;span class=&quot;tok&quot;&gt;{' + esc(tok) + '}&lt;/span&gt;';
   });
   const subj = chOf(t) === 'email' &amp;&amp; (t.subject || '').trim() ? '&lt;div class=&quot;qsubj&quot;&gt;&lt;span&gt;Subject&lt;/span&gt; ' + esc(filledSubject(t)).replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; '&lt;span class=&quot;tok&quot;&gt;{' + esc(tok) + '}&lt;/span&gt;') + '&lt;/div&gt;' : '';
@@ -9673,7 +9699,7 @@ function tokenContext(body, tok){
   return (a &gt; 0 ? '...' : '') + body.slice(a, z).replace(/\s+/g, ' ').trim() + (z &lt; body.length ? '...' : '');
 }
 function ahkParam(x){ return String(x).replace(/`/g,'``').replace(/,/g,'`,').replace(/%/g,'`%').replace(/;/g,'`;'); }
-const GAP = '\u200B';
+const GAP = '\u2800';
 function ahkBodyLines(body, sms){
   /* A line starting with &quot;)&quot; would end the AHK continuation section early,
      so it gets padded with one leading space. Same trick, same output.
@@ -9945,8 +9971,8 @@ function renderDiagram(){
 function textToHtml(text){
   return String(text).replace(/\r\n?/g, '\n').split('\n').map(l =&gt; l.trim() === '' ? '&lt;div&gt;&lt;br&gt;&lt;/div&gt;' : '&lt;div&gt;' + esc(l) + '&lt;/div&gt;').join('');
 }
-/* Dialpad throws away empty lines when you paste, spaces included. A zero width space is invisible but not
-   empty, so the gap survives and the text reads on the other phone with its paragraphs. */
+/* Dialpad throws away empty lines when you paste, spaces included, invisible characters too. A braille blank
+   looks like nothing but counts as a real character, so the gap survives and the paragraphs land. */
 function forDialpad(text){
   return String(text).replace(/\r\n?/g, '\n').split('\n').map(l =&gt; l.trim() === '' ? GAP : l).join('\n');
 }

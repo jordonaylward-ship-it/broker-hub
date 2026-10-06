@@ -5733,6 +5733,8 @@ function fight(r){
   else if(/priced-out/.test(st)){f.outcome='lost';f.lossWhy='They went past the cap';f.final=null}
   else if(/^(lost|outbid)/.test(st)||/lost-live|outbid/.test(st)){f.outcome='lost';f.lossWhy='Outbid';var lm2=st.match(/leading at \$(\d+)|at \$(\d+)/);f.final=null}
   else if(/^dry-watch/.test(st)){var last=f.bids[f.bids.length-1];f.outcome=(last&amp;&amp;last.who==='you')?'dry-won':'dry-lost';f.dry=true}
+  else if(/live-bid-LOST/i.test(st)){f.outcome='lost';f.lossWhy=/never landed/.test(st)?'Your bid never landed':'Outbid';var lb=st.match(/current \$(\d+)/);f.final=null;f.theirFinal=lb?+lb[1]:null}
+  else if(/live-bid-inconclusive/.test(st)){f.outcome='check';var cm=st.match(/final bid \$(\d+), current \$(\d+)/);f.final=cm?+cm[1]:null;f.lossWhy='Ended level at $'+(cm?cm[2]:'?')+', check Zink'}
   else if(/^live-skipped/.test(st)){f.outcome='pass';for(var i=0;i&lt;SKIP_LABEL.length;i++){var mm=st.match(SKIP_LABEL[i][0]);if(mm){f.reason=SKIP_LABEL[i][1].replace('$1',mm[1]||'');break}}if(!f.reason)f.reason=st.replace(/^live-skipped:\s*/,'').slice(0,40)}
   else {f.outcome='other'}
   if(f.mode==='dry-run'&amp;&amp;f.outcome==='pass'){f.outcome='pass'}
@@ -5845,7 +5847,8 @@ function render(){
   var prices=won.map(function(f){return f.final}),spent=sum(prices);
   h+='&lt;div class=&quot;tiles&quot;&gt;';
   h+=tile('Wins',won.length,bid.length?won.length+' of '+bid.length+' bid on':'none bid on');
-  h+=tile('Lost',lost.length,lost.length?lost.map(function(f){return f.lossWhy}).filter(function(v,i,a){return a.indexOf(v)===i}).join(', '):'');
+  var check=sel.filter(function(f){return f.outcome==='check'});
+  h+=tile('Lost',lost.length,(lost.length?lost.map(function(f){return f.lossWhy}).filter(function(v,i,a){return a.indexOf(v)===i}).join(', '):'')+(check.length?(lost.length?' · ':'')+check.length+' ended level, check Zink':''));
   h+=tile('Spent',money(spent),won.length?'on '+won.length+' lead'+(won.length&gt;1?'s':''):'');
   h+=tile('Per lead',won.length?money(avg(prices)):'·',won.length?money(Math.min.apply(null,prices))+' to '+money(Math.max.apply(null,prices)):'');
   h+='&lt;/div&gt;';

@@ -602,12 +602,12 @@ const ADVANCE_LEDGER={
   // Fixed monthly RCTI overhead estimate · used by the &quot;Net to Bank&quot; forecast.
   // Tuned against April 2026 RCTI actuals. Adjust as PI dispute resolves and patterns settle.
   fixedOverheads:{
-    equifax:115,           // April actual: One Score $101.58 + Veda $13.98
-    bankStatements:15,     // Trending down: June $23.84, July $11.92, Aug $8.94
-    docusign:85,           // April actual: $79.20 + $4.95 = $84.15
+    equifax:60,            // Sept actual $16.93, Aug $109.66, Jul $13.98 · swings with how many files get scored
+    bankStatements:12,     // June $23.84, July $11.92, Aug $8.94, Sept $11.92
+    docusign:110,          // Jul $108.90, Aug $74.25, Sept $138.60 (28 envelopes) · climbs with volume
     piInsurance:0,         // Charged once in April, never since (May to Aug clean). The April $580 refund is still owed · keep chasing, but stop forecasting it as a cost.
     otherOverhead:50,      // contingency for ad-hoc adjustments
-    gstCredit:-550         // GST added on the RCTI: May $432, June $410, July $634, Aug $541
+    gstCredit:-800         // GST added on the RCTI: May $432, June $410, July $634, Aug $692, Sept $1,486 · it is 10% of the sub total, so it grows with the month
   },
   months:{
     &quot;2026-03&quot;:{
@@ -689,11 +689,24 @@ const ADVANCE_LEDGER={
       notes:&quot;Reissued at the 80% floor on 9 Sept, floor covers everything. $1,663 more to bank than the first cut, $3,616 lands mid September. 6 deals, insurance sold on 4. Seek ad $600 was your own broker ad on Seek, legit. The $89.67 MVI gap is a Suncorp clawback on a cancelled policy, netted into the summary and not printed on the statement, per Arianne 10 Sept. Lise Opelu is a September settlement on their side.&quot;
     },
     &quot;2026-09&quot;:{
-      received:1000,                   // The sheet overlays this each week · $1,000 landed 3 Sept. 4 Fridays this month if it keeps running. Get the stop date from Ivan.
+      received:4000,                   // 4 Fridays: 03,10,17,24 Sept · CONFIRMED by the RCTI line &quot;Less Advances $4,000&quot;. The $1k/wk kept running through September.
+      repaid:4000,
+      rctiPaidOut:12350.10,            // Balance to Pay on the RCTI created 6 Oct · lands about 14 Oct. Biggest payout so far, more than July and August together.
+      rctiProcessed:true,
+      rctiCommEarned:25089.39,         // Total Income at the 80% floor: Marketing $24,721.26 + MVI $299.02 + Self-gen MVI $69.11. Gross before split $31,361.73 ex GST ($33,991.73 incl GST on the 8 deals).
+      rctiDeductions:10225.66, adjOther:119.45, mviDrips:368.13,          // Live Auction $6,642 (18 leads · matches the bot log to the dollar) + Docusign $89.10 + Bank Stmts $11.92 + One Score $16.93 + Adjustments $3,465.71 (Remove Insurance Income $3,346.26 at 80%, $4,182.83 gross across the Suncorp policies, comes back as MVI drips · Docusign x10 $49.50 · Dialpad $69.95)
+      rctiGst:1486.37,
+      rctiAdvanceRecouped:4000,
+      rctiBalanceToPay:12350.10,
+      negativeCarryforward:0,
+      notes:&quot;Best month. 8 deals, $30,902 gross ex GST, all at the 80% floor, $12,350 to bank mid October. Two things to query: the MVI statement lines add to $549.86 incl GST but the summary pays on $506.18, a $43.68 gap, same shape as August's cancelled policy clawback, ask Arianne which one. And the insurance removal is $836 a policy against $530 in August, ask for the per policy split. Mason Brinsley is Money3 on the RCTI, Azora in the sheet, fix the sheet.&quot;
+    },
+    &quot;2026-10&quot;:{
+      received:0,                      // The sheet overlays this each week if the advance keeps running. Confirm the stop date with Ivan.
       repaid:0,
       rctiPaidOut:0,
       rctiProcessed:false,
-      notes:&quot;Lise Opelu ($3,333 gross) lands here. Expect the July straggler lead plus the 14 August leads ($5,183) on this bill. The 80% floor is confirmed, August was reissued at it.&quot;
+      notes:&quot;October in progress. The 80% floor applies to everything.&quot;
     }
   }
 };

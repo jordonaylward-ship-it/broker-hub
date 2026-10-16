@@ -13477,6 +13477,12 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 #pane-extract .cr-btn.q{background:transparent;color:var(--dim)}
 #pane-extract .cr-btn.q:hover{color:var(--txt);background:rgba(148,163,255,.08)}
 #pane-extract .cr-btn.r{margin-left:auto}
+#pane-extract .cr-flags{display:flex;flex-direction:column;gap:8px}
+#pane-extract .cr-flag{display:flex;gap:12px;align-items:flex-start;background:rgba(251,113,133,.07);border-radius:14px;padding:11px 14px;font-size:13px;line-height:1.5;color:var(--txt)}
+#pane-extract .cr-flag .n{flex:none;width:24px;height:24px;border-radius:8px;background:rgba(251,113,133,.18);color:#fda4af;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+#pane-extract .cr-flag.ok{background:rgba(52,211,153,.07)}
+#pane-extract .cr-flag.ok .n{background:rgba(52,211,153,.18);color:#6ee7b7}
+#pane-extract .cr-stat .bad{color:#fda4af}
 #pane-extract .cr-rem{display:flex;flex-direction:column;gap:10px}
 #pane-extract .cr-rem .cat{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:12.5px}
 #pane-extract .cr-rem .cat b{min-width:140px;color:var(--txt)}
@@ -13557,22 +13563,18 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 &lt;button class=&quot;cr-pill&quot; data-opt=&quot;keepEmployer&quot; onclick=&quot;CRoom.toggle('keepEmployer',this)&quot;&gt;Employer name&lt;/button&gt;
 &lt;button class=&quot;cr-pill&quot; data-opt=&quot;keepBank&quot; onclick=&quot;CRoom.toggle('keepBank',this)&quot;&gt;Bank name&lt;/button&gt;
 &lt;/div&gt;
-&lt;div class=&quot;cr-lbl&quot; style=&quot;margin-top:16px&quot;&gt;Also remove&lt;/div&gt;
-&lt;input class=&quot;cr-in&quot; id=&quot;crExtra&quot; placeholder=&quot;Anything else, comma separated&quot; onchange=&quot;CRoom.extraChanged()&quot;&gt;
 &lt;/div&gt;
 &lt;div&gt;
-&lt;div class=&quot;cr-lbl&quot;&gt;What to ask&lt;/div&gt;
-&lt;select class=&quot;cr-in&quot; id=&quot;crAsk&quot; onchange=&quot;CRoom.askChanged()&quot;&gt;&lt;/select&gt;
-&lt;div class=&quot;cr-ask&quot; id=&quot;crAskBox&quot;&gt;&lt;textarea class=&quot;cr-in&quot; id=&quot;crAskTa&quot; placeholder=&quot;Write your own question&quot; oninput=&quot;CRoom.schedule()&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
-&lt;div class=&quot;cr-lbl&quot; style=&quot;margin-top:16px&quot;&gt;The deal&lt;/div&gt;
-&lt;input class=&quot;cr-in&quot; id=&quot;crDeal&quot; placeholder=&quot;2019 Hilux, $38,000, 60 months, $2,000 deposit&quot; oninput=&quot;CRoom.schedule()&quot;&gt;
+&lt;div class=&quot;cr-lbl&quot;&gt;Also remove&lt;/div&gt;
+&lt;input class=&quot;cr-in&quot; id=&quot;crExtra&quot; placeholder=&quot;Anything else, comma separated&quot; onchange=&quot;CRoom.extraChanged()&quot;&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;cr-card&quot; id=&quot;crOutCard&quot; style=&quot;display:none&quot;&gt;
 &lt;div class=&quot;cr-head&quot;&gt;
 &lt;div class=&quot;cr-seg&quot; id=&quot;crSeg&quot;&gt;
-&lt;button class=&quot;on&quot; data-v=&quot;claude&quot; onclick=&quot;CRoom.view('claude',this)&quot;&gt;For Claude&lt;/button&gt;
+&lt;button class=&quot;on&quot; data-v=&quot;ai&quot; onclick=&quot;CRoom.view('ai',this)&quot;&gt;For Super Intelligence&lt;/button&gt;
+&lt;button data-v=&quot;flags&quot; onclick=&quot;CRoom.view('flags',this)&quot;&gt;Red flags&lt;span class=&quot;n&quot; id=&quot;crFlagN&quot;&gt;&lt;/span&gt;&lt;/button&gt;
 &lt;button data-v=&quot;brief&quot; onclick=&quot;CRoom.view('brief',this)&quot;&gt;Brief&lt;/button&gt;
 &lt;button data-v=&quot;clean&quot; onclick=&quot;CRoom.view('clean',this)&quot;&gt;Clean text&lt;/button&gt;
 &lt;button data-v=&quot;removed&quot; onclick=&quot;CRoom.view('removed',this)&quot;&gt;Removed&lt;span class=&quot;n&quot; id=&quot;crRemN&quot;&gt;&lt;/span&gt;&lt;/button&gt;
@@ -13581,9 +13583,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 &lt;/div&gt;
 &lt;div class=&quot;cr-out&quot; id=&quot;crOut&quot;&gt;&lt;/div&gt;
 &lt;div class=&quot;cr-foot&quot;&gt;
-&lt;button class=&quot;cr-btn p&quot; onclick=&quot;CRoom.copy()&quot;&gt;Copy for Claude&lt;/button&gt;
-&lt;button class=&quot;cr-btn&quot; onclick=&quot;CRoom.openClaude()&quot;&gt;Copy and open Claude&lt;/button&gt;
-&lt;button class=&quot;cr-btn&quot; onclick=&quot;CRoom.toMatch()&quot;&gt;Send to step 2&lt;/button&gt;
+&lt;button class=&quot;cr-btn p&quot; onclick=&quot;CRoom.copy()&quot;&gt;Copy for Super Intelligence&lt;/button&gt;
 &lt;button class=&quot;cr-btn q r&quot; onclick=&quot;CRoom.reset()&quot;&gt;Start again&lt;/button&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -13594,7 +13594,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 
 &lt;!-- PANE 2: MATCH --&gt;
 &lt;div class=&quot;pane&quot; id=&quot;pane-match&quot;&gt;
-&lt;p style=&quot;font-size:13px;color:var(--dim);margin-bottom:12px&quot;&gt;Paste the cleaned file below, drop files directly, or send it across from step 1. AI will assess against major Australian lenders.&lt;/p&gt;
+&lt;p style=&quot;font-size:13px;color:var(--dim);margin-bottom:12px&quot;&gt;Paste the cleaned file from step 1 or drop files directly. AI will assess against major Australian lenders.&lt;/p&gt;
 &lt;div style=&quot;background:var(--card);border:2px dashed var(--bdr2);border-radius:10px;padding:14px;margin-bottom:10px;text-align:center;cursor:pointer;transition:all .2s&quot; id=&quot;matchUploadZone&quot; onclick=&quot;document.getElementById('matchFileInput').click()&quot; ondragover=&quot;event.preventDefault();this.style.borderColor='#8b5cf6'&quot; ondragleave=&quot;this.style.borderColor='#242a4a'&quot; ondrop=&quot;handleDropMatch(event)&quot;&gt;
 &lt;div style=&quot;font-size:13px;color:var(--txt);margin-bottom:4px&quot;&gt;📎 Drop client files here or click to browse&lt;/div&gt;
 &lt;div style=&quot;font-size:11px;color:var(--mut)&quot;&gt;PDFs, JPG, PNG. Multiple OK. Text extracted in your browser.&lt;/div&gt;
@@ -13780,20 +13780,22 @@ var CR=(function(){
     if(o.opening==null){o.opening=num(grab(t,/Opening Balance\s*:?\s*(-?\$?[\d,]+\.\d{2})/i));o.closing=num(grab(t,/Closing Balance\s*:?\s*(-?\$?[\d,]+\.\d{2})/i));o.credits=num(grab(t,/Total Credits\s*:?\s*(-?\$?[\d,]+\.\d{2})/i));o.debits=num(grab(t,/Total Debits\s*:?\s*(-?\$?[\d,]+\.\d{2})/i))}
     // transactions · prefer the dated table with balances, infer direction from the balance moving
     var refYear=(o.periodTo||new Date()).getFullYear(),rows=[],inTable=false;
-    L.forEach(function(l){if(/^Transaction Data|^Date\s+Category\s+Description|^Date\s+Description\s+Debit/i.test(l))inTable=true;var m=l.trim().match(TXN_RE);if(m)rows.push({date:parseDate(m[1],refYear),desc:m[2].trim(),amt:num(m[3]),bal:m[4]!=null?num(m[4]):null,cr:/\(CR\)/.test(l),table:inTable})});
+    L.forEach(function(l){if(/^Transaction Data|^Date\s+Category\s+Description|^Date\s+Description\s+Debit/i.test(l))inTable=true;var m=l.trim().match(TXN_RE);if(m)rows.push({date:parseDate(m[1],refYear),desc:m[2].trim(),amt:num(m[3]),rawAmt:m[3],bal:m[4]!=null?num(m[4]):null,cr:/\(CR\)/.test(l),table:inTable})});
     var tab=rows.filter(function(r){return r.table&amp;&amp;r.bal!=null});
+    function kwSign(desc){return (/\bFROM\b|\bCREDIT\b|\bDEPOSIT\b|SALARY|\bWAGES?\b|PAYROLL|\bPAY\b|REFUND|INTEREST|CENTRELINK|REBATE|REVERSAL|\bCR\b/i.test(desc)&amp;&amp;!/\bTO\b/i.test(desc)&amp;&amp;!GAMBLE.test(desc)&amp;&amp;!BNPL.test(desc)&amp;&amp;!ADVANCE.test(desc)&amp;&amp;!SACC.test(desc))?1:-1}
     if(tab.length&gt;=3){
-      for(var k=0;k&lt;tab.length;k++){var r=tab[k],nx=tab[k+1],sign=null;if(nx&amp;&amp;nx.bal!=null){var d=r.bal-nx.bal;if(Math.abs(Math.abs(d)-Math.abs(r.amt))&lt;0.011)sign=d&lt;0?-1:1}if(sign==null){sign=/\bFROM\b|CREDIT|DEPOSIT|SALARY|WAGE|PAY\b|REFUND|INTEREST|CENTRELINK/i.test(r.desc)&amp;&amp;!/\bTO\b/i.test(r.desc)?1:-1}r.amt=Math.abs(r.amt)*sign}
-      o.txns=tab.slice().reverse();
+      var chrono=!!(tab[0].date&amp;&amp;tab[tab.length-1].date&amp;&amp;tab[0].date&lt;tab[tab.length-1].date);
+      for(var k=0;k&lt;tab.length;k++){var r=tab[k],sign=null;var prevBal=chrono?(k&gt;0?tab[k-1].bal:(o.opening!=null?o.opening:null)):(k&lt;tab.length-1?tab[k+1].bal:(o.opening!=null?o.opening:null));if(prevBal!=null){var d=r.bal-prevBal;if(Math.abs(Math.abs(d)-Math.abs(r.amt))&lt;0.011)sign=d&lt;0?-1:1}if(sign==null)sign=r.cr?1:(/^-/.test(String(r.rawAmt||''))?-1:kwSign(r.desc));r.amt=Math.abs(r.amt)*sign}
+      o.txns=chrono?tab.slice():tab.slice().reverse();
     }else{
-      var seen={};rows.forEach(function(r){var key=(r.date?r.date.getTime():0)+'|'+r.desc+'|'+Math.abs(r.amt);if(seen[key])return;seen[key]=1;var s=r.cr||(!/^-/.test(String(r.amt))&amp;&amp;r.amt&gt;0&amp;&amp;/\bFROM\b|CREDIT|DEPOSIT|SALARY|WAGE|REFUND|INTEREST/i.test(r.desc))?1:(r.amt&lt;0?-1:(/\bTO\b|PAYMENT|PURCHASE|WITHDRAW|FEE|DEBIT/i.test(r.desc)?-1:1));r.amt=Math.abs(r.amt)*s;o.txns.push(r)});
+      var seen={};rows.forEach(function(r){var key=(r.date?r.date.getTime():0)+'|'+r.desc+'|'+Math.abs(r.amt);if(seen[key])return;seen[key]=1;var s=r.cr?1:(/^-/.test(String(r.rawAmt||''))?-1:kwSign(r.desc));r.amt=Math.abs(r.amt)*s;o.txns.push(r)});
       o.txns.sort(function(a,b){return (a.date||0)-(b.date||0)});
     }
     o.txnCount=o.txns.length;
     var cr=o.txns.filter(function(r){return r.amt&gt;0}),db=o.txns.filter(function(r){return r.amt&lt;0});
     o.creditCount=cr.length;o.debitCount=db.length;o.creditSum=cr.reduce(function(s,r){return s+r.amt},0);o.debitSum=db.reduce(function(s,r){return s+r.amt},0);
     function flag(name,re,dir){var hits=o.txns.filter(function(r){return re.test(r.desc)&amp;&amp;(dir==null||(dir&gt;0?r.amt&gt;0:r.amt&lt;0))});if(hits.length){var dates=hits.map(function(r){return r.date}).filter(Boolean).sort(function(a,b){return a-b});o.flags[name]={count:hits.length,total:hits.reduce(function(s,r){return s+Math.abs(r.amt)},0),first:dates[0],last:dates[dates.length-1],examples:uniq(hits.map(function(r){return r.desc.replace(/\d{5,}/g,'').replace(/\s+/g,' ').trim()})).slice(0,4)}}}
-    flag('gambling',GAMBLE,-1);flag('bnpl',BNPL,-1);flag('advance',ADVANCE,null);flag('sacc',SACC,null);flag('dishonours',DISHONOUR,-1);flag('wages',WAGES,1);flag('rent',RENT,-1);flag('loans',LOAN,-1);flag('insurance',INSURANCE,-1);flag('centrelink',CENTRELINK,1);flag('cash',CASH,-1);
+    flag('gambling',GAMBLE,-1);flag('bnpl',BNPL,-1);flag('advance',ADVANCE,null);flag('sacc',SACC,null);flag('dishonours',DISHONOUR,-1);flag('wages',WAGES,1);flag('rent',RENT,-1);flag('loans',LOAN,-1);flag('insurance',INSURANCE,-1);flag('centrelink',CENTRELINK,1);flag('cash',CASH,-1);flag('fines',FINES,-1);
     // where the money comes from · the credits grouped by their cleaned description
     var groups={};o.txns.forEach(function(r){var g=r.desc.replace(/\b\d{4,}\b/g,'').replace(/\s+/g,' ').replace(/\b(TO|FROM)\s+[A-Za-z][A-Za-z'\- ]+$/,'$1 a person').trim();var key=(r.amt&gt;0?'in':'out')+'|'+g;groups[key]=groups[key]||{dir:r.amt&gt;0?'in':'out',desc:g,count:0,total:0,min:null,max:null};var G=groups[key];G.count++;G.total+=Math.abs(r.amt);G.min=G.min==null?Math.abs(r.amt):Math.min(G.min,Math.abs(r.amt));G.max=G.max==null?Math.abs(r.amt):Math.max(G.max,Math.abs(r.amt))});
     o.groups=Object.keys(groups).map(function(k){return groups[k]}).sort(function(a,b){return b.total-a.total});
@@ -13920,7 +13922,9 @@ var CR=(function(){
   var GAMBLE=/sportsbet|ladbrokes|\btab\b|tabcorp|tabtouch|bet365|pointsbet|\bneds\b|\bbetr\b|unibet|bluebet|palmerbet|dabble|picklebet|lotter|\blotto\b|\bkeno\b|pokies|casino|\bcrown\b|skycity|betfair|topsport|playup|betright|boombet|thelott|oz ?lotteries|jackpot/i;
   var BNPL=/afterpay|zip ?pay|zip ?money|zipco|\bzip\b|\bhumm\b|klarna|latitude ?pay|openpay|bundll|pay in 4|splitit|paypal credit/i;
   var ADVANCE=/wageflo|beforepay|my ?pay ?now|wagetap|\bearnd\b|nine25|\bcashd\b|instapay|paytime|wagestream|cashdeck|wage advance|pay advance/i;
-  var SACC=/nimble|wallet wizard|cash ?converters|sunshine loans|jacaranda|swoosh|\bfundo\b|credit24|cash train|\bcigno\b|cash direct|ferratum|spotter|pocket cash|cash stop|payday|quick cash|moneyspot|cash lady|gday loans|ezi ?finance|good to go|\bmoola\b|cash on your mobile|cashpal|safe financial|rapid loans/i;
+  var SACC=/\bnimble\b|wallet wizard|cash ?converters|sunshine loans|\bjacaranda\b|\bswoosh\b|\bfundo\b|credit24|cash train|\bcigno\b|cash direct|\bferratum\b|\bspotter\b|pocket cash|cash stop|\bpayday\b|quick cash|money ?spot|cash lady|gday loans|ezi ?finance|good to go|\bmoola\b|cash on your mobile|\bcashpal\b|safe financial|rapid loans|fair go fin|perfect payday|\bzebra\b|cash ?n ?go|\bmyozmoney\b|\bcashify\b|\bcash ?doctors\b|\bsmart ?cash\b/i;
+  var FINES=/\bSPER\b|state penalt|revenue nsw|fines vic|infringement|traffic fine|court fine|fines? enforcement|penalty notice|\bfines\b/i;
+  var VENUE=/hotel|tavern|\bpub\b|\bclub\b|\brsl\b|bowls|leagues|casino|sports bar|\binn\b|brewery|\bbar\b|\bbottle|\bliquor|\bbws\b|dan murphy|cellarbrations/i;
   var DISHONOUR=/dishonour|dishonor|reversal fee|overdrawn|honour fee|\bnsf\b|insufficient funds|payment declined|declined fee|unpaid fee/i;
   var WAGES=/salary|wages|\bpay\b|payroll|\bpayrun\b|wage/i;
   var RENT=/\brent\b|\brental\b|real estate|\brealty\b|property m|ray white|lj hooker|\bharcourts\b|\braine\b|\bmcgrath\b|belle prop|century 21|\brentpay\b|\bailo\b|property me|\bbond\b|\bremax\b|first national|\belders\b|\bprd\b/i;
@@ -14013,6 +14017,83 @@ var CR=(function(){
   function brief(docs,opts,asAt,ctx){
     var b=briefRaw(docs,opts,asAt);if(ctx){try{b=scrub(b,ctx,Object.assign({},opts,{keepPostcode:true})).clean}catch(e){}}return applyExtras(b,opts);
   }
+
+  /* ─── red flags · the things a lender's assessor would circle, in plain words ─── */
+  function roundTo(n,step){return Math.round(n/step)*step}
+  function about(n){if(n&gt;=1000)return money(roundTo(n,50));if(n&gt;=200)return money(roundTo(n,10));return money(roundTo(n,5))}
+  function shortDate(d){return d?d.getDate()+' '+MONN[d.getMonth()]:''}
+  function redFlags(X){
+    var out=[],lic=X.lic||{},z=X.z,cr=X.cr,pays=X.pays||[],banks=X.banks||[],asAt=X.asAt||new Date(),docs=X.docs||[];
+    // the applicant's own name words, so transfers from their own accounts can be told apart from other people
+    var own=[];docs.forEach(function(d){((d.fields||{}).names||[]).forEach(function(n){var w=n.trim().split(/\s+/);var last=w[w.length-1].replace(/[^A-Za-z'\-]/g,'');if(last.length&gt;=3&amp;&amp;!NAME_STOP.test(last))own.push(last.toLowerCase())})});
+    function isOwn(s){var w=String(s||'').toLowerCase().split(/\s+/);return w.some(function(x){return own.indexOf(x.replace(/[^a-z'\-]/g,''))&gt;-1})}
+    var supplied=banks.map(function(b){return String(b.accountNo||'').replace(/\D/g,'')}).filter(function(x){return x.length&gt;=6});
+    function isSupplied(num){num=String(num).replace(/\D/g,'');return supplied.some(function(a){var t=a.slice(-6);return num.slice(-6)===t||num.indexOf(a)&gt;-1||a.indexOf(num)&gt;-1})}
+    // credit file
+    if(cr){
+      (cr.defaults||[]).forEach(function(d){var paid=/paid|settled/i.test(d.status||'')&amp;&amp;!/outstanding|unpaid/i.test(d.status||'');out.push(money(d.amount)+' '+(paid?'paid':'unpaid')+' default'+(d.date?' from '+MONN[d.date.getMonth()]+' '+d.date.getFullYear():'')+(d.provider?' with '+d.provider:'')+' on the credit file')});
+      if(cr.score&amp;&amp;cr.score&lt;500)out.push('Credit score '+cr.score+', under 500');
+      if(cr.enq3m&gt;=3)out.push(cr.enq3m+' credit enquiries in the last 3 months');
+      if(cr.hardship&amp;&amp;/yes/i.test(cr.hardship))out.push('Financial hardship flag on the credit file');
+      if(cr.insolvencies&gt;0)out.push(cr.insolvencies+' court action'+(cr.insolvencies===1?'':'s')+' or insolvenc'+(cr.insolvencies===1?'y':'ies')+' on the credit file');
+      if(cr.worstRhi&amp;&amp;/[1-9X]/.test(cr.worstRhi))out.push('Missed repayments on the credit file in the last 24 months, worst status '+cr.worstRhi);
+    }else if(z&amp;&amp;z.defaults&amp;&amp;(z.defaults.unpaid||z.defaults.paid)){out.push((z.defaults.unpaid?z.defaults.unpaid+' unpaid default'+(z.defaults.unpaid===1?'':'s')+' ('+money(z.defaults.unpaidAmt)+')':'')+(z.defaults.unpaid&amp;&amp;z.defaults.paid?' and ':'')+(z.defaults.paid?z.defaults.paid+' paid default'+(z.defaults.paid===1?'':'s')+' ('+money(z.defaults.paidAmt)+')':'')+' in Zink')}
+    if(z&amp;&amp;z.paydayEnquiries&amp;&amp;/yes/i.test(z.paydayEnquiries))out.push('Payday lender enquiries on the credit file');
+    if(z&amp;&amp;z.hardship&amp;&amp;/yes/i.test(z.hardship)&amp;&amp;!cr)out.push('Financial hardship flag in Zink');
+    // banking · everything rolled together across the statements
+    if(banks.length){
+      var spanMin=null,spanMax=null,days=0,gam={c:0,t:0},cash={c:0,t:0,venue:0},sacc={c:0,t:0,names:{}},dis={c:0,t:0,dates:[]},fines={c:0,t:0},bnpl={c:0,t:0,names:{}},adv={c:0,t:0,names:{}},pin={c:0,t:0,names:{}},pout={c:0,t:0,names:{}},ownIn={c:0,t:0,big:[]},wages={c:0,t:0},credits=0,rent=false,mortgage=false,neg=0,minBal=null,loanNames={},anyTx=false;
+      banks.forEach(function(b){
+        var ds=(b.txns||[]).map(function(r){return r.date}).filter(Boolean);if(b.periodFrom)ds.push(b.periodFrom);if(b.periodTo)ds.push(b.periodTo);ds.forEach(function(x){var t=x.getTime();if(spanMin==null||t&lt;spanMin)spanMin=t;if(spanMax==null||t&gt;spanMax)spanMax=t});
+        if(b.credits)credits+=b.credits;if(b.daysNegative)neg+=b.daysNegative;else if(b.negativeDays)neg+=b.negativeDays;if(b.minBalance!=null)minBal=minBal==null?b.minBalance:Math.min(minBal,b.minBalance);if(b.minTxnBalance!=null)minBal=minBal==null?b.minTxnBalance:Math.min(minBal,b.minTxnBalance);
+        (b.txns||[]).forEach(function(r){anyTx=true;var d=r.desc||'',a=Math.abs(r.amt),outg=r.amt&lt;0;
+          if(outg&amp;&amp;GAMBLE.test(d)){gam.c++;gam.t+=a}
+          if(outg&amp;&amp;CASH.test(d)){cash.c++;cash.t+=a;if(VENUE.test(d))cash.venue++}
+          if(SACC.test(d)&amp;&amp;!DISHONOUR.test(d)){sacc.c++;if(outg)sacc.t+=a;var nm=(d.match(SACC)||[''])[0].toUpperCase().replace(/\s+/g,'');if(nm){sacc.names[nm]=sacc.names[nm]||{};sacc.names[nm][d.replace(/\d+/g,'').replace(/\s+/g,' ').trim()+'|'+a]=1}}
+          if(outg&amp;&amp;DISHONOUR.test(d)){dis.c++;dis.t+=a;if(r.date)dis.dates.push(r.date)}
+          if(outg&amp;&amp;FINES.test(d)){fines.c++;fines.t+=a}
+          if(outg&amp;&amp;BNPL.test(d)){bnpl.c++;bnpl.t+=a;var bn=(d.match(BNPL)||[''])[0].toUpperCase();if(bn)bnpl.names[bn]=1}
+          if(ADVANCE.test(d)){adv.c++;if(outg)adv.t+=a;var an=(d.match(ADVANCE)||[''])[0].toUpperCase();if(an)adv.names[an]=1}
+          if(!outg&amp;&amp;WAGES.test(d)){wages.c++;wages.t+=a}
+          if(outg&amp;&amp;RENT.test(d))rent=true;if(outg&amp;&amp;/mortgage|home loan|\bhomeloan\b/i.test(d))mortgage=true;
+          if(outg&amp;&amp;LOAN.test(d)&amp;&amp;!SACC.test(d)&amp;&amp;!BNPL.test(d)){var ln=(d.match(LOAN)||[''])[0].toUpperCase();if(ln&amp;&amp;!/LOAN|REPAYMENT|FINANCE/.test(ln))loanNames[ln]=1}
+          var pm=d.match(/\b(TO|FROM)\s+((?:(?:MR|MRS|MS|MISS|DR)\.?\s+)?[A-Z][A-Za-z'\-]*(?:\s+(?:[A-Z][A-Za-z'\-]*|[A-Z]\.?)){1,3})\s*$/);
+          if(pm&amp;&amp;!isBiz(pm[2])&amp;&amp;!/\d/.test(pm[2])){var who=pm[2].replace(/^(?:MR|MRS|MS|MISS|DR)\.?\s+/,'');if(isOwn(who)){if(!outg){ownIn.c++;ownIn.t+=a;if(a&gt;=500)ownIn.big.push(a)}}else if(outg){pout.c++;pout.t+=a;pout.names[who.toUpperCase()]=1}else{pin.c++;pin.t+=a;pin.names[who.toUpperCase()]=1}}
+          else if(!outg&amp;&amp;/\bFROM\s+\d{6,}\b/.test(d)){var acct=(d.match(/\bFROM\s+(\d{6,})\b/)||[])[1];if(!isSupplied(acct)){ownIn.c++;ownIn.t+=a;if(a&gt;=500)ownIn.big.push(a)}}
+        });
+      });
+      days=spanMin!=null&amp;&amp;spanMax!=null?Math.max(1,Math.round((spanMax-spanMin)/86400000)+1):90;
+      var months=Math.max(1,days/30.4),weeks=Math.max(1,days/7),monthsTxt=Math.round(months)&lt;=1?'month':Math.round(months)+' months';
+      var payBase=wages.t||0;
+      if(gam.c){var pm2=gam.t/months;var share=payBase?gam.t/payBase:(credits?gam.t/credits:0);var st=share&gt;=0.9?', about all of the pay':share&gt;=0.55?', more than half the pay':share&gt;=0.4?', nearly half the pay':share&gt;=0.2?', about '+Math.round(share*100)+'% of the pay':share&gt;=0.05?', about '+Math.round(share*100)+'% of '+(payBase?'pay':'money in'):'';out.push('Gambling of about '+about(pm2)+' a month'+st+' ('+gam.c+' transactions, '+money(gam.t)+' over '+monthsTxt+')')}
+      if(cash.c&amp;&amp;cash.t/months&gt;=300)out.push('Cash withdrawals of about '+about(cash.t/months)+' a month'+(cash.venue?', '+(cash.venue===1?'one of them':'some of them')+' at pubs or clubs':''));
+      if(sacc.c){var sn=Object.keys(sacc.names);var loans=sn.reduce(function(t,k){return t+Object.keys(sacc.names[k]).length},0);var wk=sacc.t/weeks;var bounced=dis.c?', '+dis.c+' payment'+(dis.c===1?'':'s')+' bounced'+(dis.dates.length?' on '+uniq(dis.dates.map(shortDate)).slice(0,3).join(' and '):''):'';var NICE={MONEYSPOT:'Money Spot',WALLETWIZARD:'Wallet Wizard',CASHCONVERTERS:'Cash Converters',SUNSHINELOANS:'Sunshine Loans',CASHTRAIN:'Cash Train',QUICKCASH:'Quick Cash',GDAYLOANS:'Gday Loans',FAIRGOFIN:'Fair Go Finance',PERFECTPAYDAY:'Perfect Payday',RAPIDLOANS:'Rapid Loans',EZIFINANCE:'Ezi Finance',POCKETCASH:'Pocket Cash',CASHDIRECT:'Cash Direct',CASHSTOP:'Cash Stop',CASHLADY:'Cash Lady',GOODTOGO:'Good To Go',SAFEFINANCIAL:'Safe Financial',CASHONYOURMOBILE:'Cash On Your Mobile',SMARTCASH:'Smart Cash',CASHDOCTORS:'Cash Doctors',CASHNGO:'Cash N Go',CREDIT24:'Credit24',MYOZMONEY:'MyOzMoney'};var who=sn.map(function(k){return NICE[k]||cap(k.toLowerCase())}).join(' and ');out.push((loans&gt;1?loans+' ':'A ')+(sn.length===1?who+' loan'+(loans&gt;1?'s':''):'payday loan'+(loans&gt;1?'s':'')+' ('+who+')')+' taking about '+about(wk)+' a week'+bounced+(neg?' and the account going into the negative':''))}
+      else if(dis.c)out.push(dis.c+' dishonour'+(dis.c===1?'':'s')+' or overdrawn fee'+(dis.c===1?'':'s')+(dis.dates.length?' ('+uniq(dis.dates.map(shortDate)).slice(0,3).join(', ')+')':'')+(neg?', account went into the negative':''));
+      else if(neg&gt;=3)out.push('Account went into the negative on '+neg+' days'+(minBal!=null&amp;&amp;minBal&lt;0?', lowest '+money(minBal,1):''));
+      if(fines.c)out.push('SPER or fines payments of about '+about(fines.t/weeks)+' a week ('+fines.c+' payments, '+money(fines.t)+')');
+      if(adv.c)out.push('Pay advance apps ('+Object.keys(adv.names).map(cap).join(', ')+') used '+(adv.c===1?'once':adv.c+' times')+', '+money(adv.t)+' repaid over '+monthsTxt);
+      if(bnpl.c&amp;&amp;bnpl.t/months&gt;=100)out.push('Buy now pay later ('+Object.keys(bnpl.names).map(cap).join(', ')+') about '+about(bnpl.t/months)+' a month');
+      var pinOk=pin.t&gt;=2000||pin.c&gt;=6,poutOk=pout.t&gt;=2000||pout.c&gt;=6;
+      if(pinOk||poutOk){var bits=[];if(pinOk)bits.push('over '+money(Math.floor(pin.t/1000)*1000||pin.t)+' coming in from '+Object.keys(pin.names).length+' different people');if(poutOk)bits.push('over '+money(Math.floor(pout.t/1000)*1000||pout.t)+' going out to '+Object.keys(pout.names).length+' people');out.push(bits.join(' and ').replace(/^o/,'O')+' in the last '+monthsTxt)}
+      var supplied=banks.map(function(b){return String(b.accountNo||'').replace(/\D/g,'')}).filter(Boolean);
+      if(ownIn.c){if(ownIn.c&lt;=5){var am=uniq(ownIn.big.length?ownIn.big.map(function(v){return money(v)}):[money(ownIn.t)]);out.push(ownIn.c+' payment'+(ownIn.c===1?'':'s')+' of '+am.slice(0,3).join(', ')+' from '+(ownIn.c===1?'an account':'accounts')+' in the applicant\'s name not in the file')}else out.push(ownIn.c+' transfers in ('+money(ownIn.t)+') from an account in the applicant\'s name that is not in the file')}
+      if(anyTx&amp;&amp;!rent&amp;&amp;!mortgage){var renting=!z||!z.ownership||/rent|board/i.test(z.ownership||'');out.push(renting?'Rent is not showing clearly on the statements':'No housing payment showing on the statements')}
+      if(anyTx&amp;&amp;!wages.c)out.push('No wages landing on the statements supplied');
+      var ln2=Object.keys(loanNames);if(ln2.length&amp;&amp;z&amp;&amp;z.liabilities&amp;&amp;!z.liabilities.length)out.push('Loan repayments on the bank ('+ln2.map(cap).join(', ')+') with no liabilities declared in Zink');
+    }
+    // payslips
+    var pp=pays[pays.length-1];
+    if(pp){if(pp.payAdvances&amp;&amp;pp.payAdvances.length)out.push('Pay advances deducted on the payslip, '+money(pp.payAdvances.reduce(function(s2,v){return s2+v},0),1)+' this period');
+      if(pp.employmentType==='Casual'&amp;&amp;pp.ytdGross&amp;&amp;pp.periodEnd){var wk2=Math.max(1,daysBetween(new Date(pp.periodEnd.getFullYear()-(pp.periodEnd.getMonth()&lt;6?1:0),6,1),pp.periodEnd)/7);if(wk2&lt;26&amp;&amp;!pp.hireDate)out.push('Casual with only '+Math.round(wk2)+' weeks of pay shown since 1 July, start date not confirmed')}
+      if(pp.hireDate&amp;&amp;daysBetween(pp.hireDate,asAt)&lt;180)out.push('In the job less than 6 months (started '+fmtDate(pp.hireDate)+')')}
+    if(pays.length&amp;&amp;z&amp;&amp;z.net&amp;&amp;pp.net){var pw=wkly(pp.net,(function(p){var d=p.periodStart&amp;&amp;p.periodEnd?daysBetween(p.periodStart,p.periodEnd)+1:7;return d&lt;=8?'weekly':d&lt;=15?'fortnightly':'monthly'})(pp));var zw=wkly(z.net,z.netFreq);if(pw&amp;&amp;zw&amp;&amp;Math.abs(pw-zw)/zw&gt;0.15)out.push('Income in Zink ('+money(zw)+' a week net) does not match the payslip ('+money(pw)+' a week net)')}
+    if(pp&amp;&amp;pp.employmentType&amp;&amp;z&amp;&amp;z.empType&amp;&amp;pp.employmentType.toLowerCase().indexOf(z.empType.toLowerCase().split(' ')[0])&lt;0)out.push('Payslip reads as '+pp.employmentType.toLowerCase()+' but Zink says '+z.empType);
+    // licence and zink
+    var exp=lic.expiry||(z&amp;&amp;z.licExpiry);if(exp){var dl=daysBetween(asAt,exp);if(dl&lt;0)out.push('Licence expired '+fmtDate(exp));else if(dl&lt;90)out.push('Licence expires '+fmtDate(exp)+', inside 3 months')}
+    if(z&amp;&amp;z.lowExpenseTag)out.push('Living expenses declared below the benchmark, lender will use HEM');
+    if(z&amp;&amp;cr&amp;&amp;z.score&amp;&amp;cr.score&amp;&amp;Math.abs(z.score-cr.score)&gt;30)out.push('Zink score '+z.score+' and the credit file '+cr.score+' do not match');
+    return out;
+  }
   function briefRaw(docs,opts,asAt){
     asAt=asAt||new Date();var S=[],F={};docs.forEach(function(d){(F[d.fields.kind]=F[d.fields.kind]||[]).push(d.fields)});
     var lic=(F.licence||[]).reduce(function(a,b){return Object.assign(a,Object.keys(b).reduce(function(o,k){if(b[k]!=null&amp;&amp;b[k]!==''&amp;&amp;!(Array.isArray(b[k])&amp;&amp;!b[k].length)&amp;&amp;!(typeof b[k]==='object'&amp;&amp;!(b[k] instanceof Date)&amp;&amp;!Array.isArray(b[k])&amp;&amp;!Object.keys(b[k]).length))o[k]=b[k];return o},{}))},{});
@@ -14026,6 +14107,8 @@ var CR=(function(){
     if(addr.state)a.push(addr.state+(keepP&amp;&amp;addr.postcode?' '+addr.postcode:''));
     if(z&amp;&amp;z.residency)a.push(z.residency);if(z&amp;&amp;z.marital)a.push(z.marital+(z.dependants?', '+z.dependants+' dependant'+(z.dependants&gt;1?'s':'')+(z.dependantAges&amp;&amp;z.dependantAges.length?' aged '+z.dependantAges.join(', '):''):', no dependants'));
     if(a.length)S.push('APPLICANT\n'+a.join(' · '));
+    var rf=redFlags({lic:lic,z:z,cr:cr,pays:pays,banks:banks,docs:docs,asAt:asAt,opts:opts});
+    S.push('RED FLAGS\n'+(rf.length?rf.map(function(x,i){return (i+1)+'. '+x}).join('\n'):'Nothing flagged in the documents supplied. Check the ones that are missing.'));
     var l=[];
     if(lic.licType||z&amp;&amp;z.licType){l.push(((lic.state||z&amp;&amp;z.licState||'')+' '+(lic.licType||z.licType)).trim()+' licence'+(lic.licClass?', class '+lic.licClass.replace(/\s+/g,' '):''))}
     var exp=lic.expiry||(z&amp;&amp;z.licExpiry);if(exp){var dl=daysBetween(asAt,exp);l.push('expires '+fmtDate(exp)+(dl&lt;0?' · EXPIRED':dl&lt;90?' · expires inside 3 months':''))}
@@ -14071,6 +14154,7 @@ var CR=(function(){
       if(f.dishonours)h.push('DISHONOURS OR OVERDRAWN FEES: '+f.dishonours.count+', '+money(f.dishonours.total));
       if(f.insurance)h.push('Insurance: '+f.insurance.count+' payments, '+money(f.insurance.total));
       if(f.cash)h.push('Cash out: '+f.cash.count+', '+money(f.cash.total));
+      if(f.fines)h.push('FINES OR SPER: '+f.fines.count+' payments, '+money(f.fines.total));
       if(!f.gambling&amp;&amp;!f.bnpl&amp;&amp;!f.advance&amp;&amp;!f.sacc&amp;&amp;!f.dishonours)h.push('No gambling, BNPL, pay advance, payday lender or dishonour lines found on this account');
       if(b.peoplePaid&amp;&amp;b.peoplePaid.length)h.push('Payments out to '+b.peoplePaid.length+' different people, '+b.peoplePaidCount+' payments, '+money(b.peoplePaidTotal)+' in total · worth asking what they are');
       var top=b.groups.filter(function(g){return g.count&gt;=3}).slice(0,6);if(top.length)h.push('Biggest patterns: '+top.map(function(g){return g.desc+' · '+g.count+'× '+(g.dir==='in'?'in':'out')+' '+money(g.total)+(g.count&gt;1?' ('+money(g.min)+' to '+money(g.max)+')':'')}).join(' | '));
@@ -14089,41 +14173,26 @@ var CR=(function(){
       var h=[];if(z.ownership)h.push(z.ownership+(z.rent?', '+money(z.rent)+' '+String(z.rentFreq||'').toLowerCase()+(z.rentMonthly?' ('+money(z.rentMonthly)+' a month)':''):'')+(z.yearsAtAddress!=null?' · '+z.yearsAtAddress+' yrs '+(z.monthsAtAddress||0)+' mths at this address':''));if(z.livingTotal)h.push('Declared living expenses '+money(z.livingTotal)+' a month'+(z.capIncome?' against '+money(z.capIncome)+' income, Zink surplus '+money(z.capSurplus)+' a month':'')+(z.lowExpenseTag?' · ZINK FLAGS EXPENSES AS BELOW BENCHMARK, lender will use HEM':''));
       if(z.assets&amp;&amp;z.assets.length)h.push('Assets declared: '+z.assets.filter(function(a){return a.value}).map(function(a){return a.type.toLowerCase()+' '+money(a.value)+(a.desc?' ('+a.desc+')':'')}).join(', '));
       z.liabilities.forEach(function(li){h.push('Liability: '+li.type+(li.desc?' ('+li.desc+')':'')+' · owing '+money(li.outstanding)+' · '+money(li.repay)+' '+String(li.freq||'').toLowerCase())});if(!z.liabilities.length)h.push('No liabilities declared');if(h.length)S.push('HOUSEHOLD\n'+h.join('\n'))}
-    // cross checks
-    var x=[];
-    if(z&amp;&amp;cr&amp;&amp;z.score&amp;&amp;cr.score&amp;&amp;Math.abs(z.score-cr.score)&gt;30)x.push('Zink score '+z.score+' and the credit file '+cr.score+' do not match, one is stale.');
-    if(lic.expiry&amp;&amp;daysBetween(asAt,lic.expiry)&lt;0)x.push('Licence is expired. A lender will bounce the ID.');
-    if(pays.length&amp;&amp;z&amp;&amp;pays[pays.length-1].employmentType&amp;&amp;z.empType&amp;&amp;pays[pays.length-1].employmentType.toLowerCase().indexOf(z.empType.toLowerCase().split(' ')[0])&lt;0)x.push('Payslip reads as '+pays[pays.length-1].employmentType.toLowerCase()+' but Zink says '+z.empType+'. Fix Zink.');
-    if(pays.length&amp;&amp;(pays[pays.length-1].employmentType==='Casual')){var pp=pays[pays.length-1];if(pp.ytdGross&amp;&amp;pp.periodEnd){var wk2=Math.max(1,daysBetween(new Date(pp.periodEnd.getFullYear()-(pp.periodEnd.getMonth()&lt;6?1:0),6,1),pp.periodEnd)/7);if(wk2&lt;26)x.push('Casual with only '+Math.round(wk2)+' weeks of YTD. Lenders want 6 to 12 months in the job, check the start date.')}}
-    if(x.length)S.push('THINGS TO WATCH\n'+x.join('\n'));
     return S.join('\n\n');
   }
 
-  var ASKS={
-    fit:{label:'Which lenders fit',text:'Which Australian consumer car loan lenders would take this file, at what tier and roughly what rate, and why. Call out anything that knocks it back and what would fix it. The lenders I use: Firstmac, Azora, NOW Finance, MoneyMe, Liberty, Pepper, Wisr, Money3, Finance One, Plenti, ACL, C1, Branded, Dynamoney, CarStart, Gamma, Moneyplace, Rapid, RACV. Finish with the one lender you would lodge with first and the two questions I should ask the client before I do.'},
-    conduct:{label:'Bank conduct review',text:'Go through the bank statement the way a lender\'s assessor would. Tell me about gambling, pay advance apps, buy now pay later, payday loans, dishonours, overdrawing, undeclared loans or rent, large transfers to people, and whether the income on the payslip actually lands in this account. Give me a conduct verdict in plain words and anything I should ask the client about.'},
-    service:{label:'Serviceability',text:'Work out the monthly surplus after living costs (use an HEM style benchmark if the declared figure looks low), rent and every repayment you can see, then the biggest car loan that services at 60 and 84 months at 11% and 15%. Show the working in a short table.'},
-    all:{label:'Full assessment',text:'Give me a full file assessment: 1. the income and how a lender would annualise it, 2. bank conduct and any red flags, 3. the credit file and what it means for tiering, 4. which lenders fit and in what order, 5. the five things I should sort out before lodging. Plain English, short, numbers where they matter.'}
-  };
-  function forClaude(docs,opts,ask,deal,ctx){
+  function forAI(docs,opts,ctx){
     var b=brief(docs,opts,null,ctx);
-    var head='You are helping an Australian car and personal loan broker assess an applicant. Everything that identifies the person has been removed on purpose: name, date of birth, licence and card numbers, addresses, account and reference numbers, other people\'s names. Do not ask for them and do not try to work them out. Age, state'+(!opts||opts.keepPostcode!==false?', postcode':'')+', dates, money and scores are real.';
+    var head='You are helping an Australian car and personal loan broker assess an applicant. Everything that identifies the person has been removed on purpose: name, date of birth, licence and card numbers, addresses, account and reference numbers, other people\'s names. Do not ask for them and do not try to work them out. Age, state'+(!opts||opts.keepPostcode!==false?', postcode':'')+', dates, money and scores are real. Read the red flags first.';
     var parts=[head];
-    if(deal&amp;&amp;deal.trim())parts.push('THE DEAL\n'+deal.trim());
-    parts.push('WHAT I NEED\n'+(ask||ASKS.fit.text));
     if(b)parts.push('WHAT MY TOOLS ALREADY WORKED OUT\n'+b);
     var ds=docs.map(function(d,i){var label=KIND_LABEL[d.fields.kind]||'Document';var same=docs.filter(function(x){return x.fields.kind===d.fields.kind});var n=same.length&gt;1?' '+(same.indexOf(d)+1):'';return '=== '+label+n+' ===\n'+(d.clean||'').trim()});
     if(ds.length)parts.push('THE DOCUMENTS, CLEANED\n'+ds.join('\n\n'));
     return applyExtras(parts.join('\n\n'),opts);
   }
   /* the leftover check · what still looks like a name or a number after the scrub */
-  var OK_CAPS=/^(?:Hourly|Rates|Notice|Regional|Property|Amount|Due|Employee|Smart|Required|Centerlink|Request|Recent|Contract|Benefits|Toyota|Kia|Hyundai|Mazda|Ford|Holden|Nissan|Mitsubishi|Honda|Subaru|Volkswagen|Isuzu|Suzuki|BMW|Mercedes|Benz|Audi|Jeep|Lexus|Tesla|LDV|GWM|Haval|Ram|Chevrolet|Volvo|Skoda|Peugeot|Renault|Land|Rover|Range|Mini|Porsche|Fiat|Alfa|Romeo|Jaguar|Chery|BYD|Polestar|Cupra|Genesis|Ssangyong|Great|Wall|Hilux|Ranger|Navara|Triton|Sportage|Tucson|Corolla|Camry|Rav4|Outlander|Prado|Landcruiser|Kluger|Mustang|Everest|Colorado|Amarok|Pajero|Forester|Outback|Impreza|Civic|Accord|Golf|Polo|Tiguan|Swift|Vitara|Jimny|Santa|Fe|Kona|Cerato|Seltos|Carnival|Sorento|Stinger|Picanto|Rio|Mazda3|Mazda6|Territory|Falcon|Commodore|Captiva|Trailblazer|Cruze|Barina|Astra|Yaris|Hiace|Fortuner|Landcruiser|Granvia|Patrol|Qashqai|Pathfinder|Xtrail|Juke|Pulsar|Driver|Period|Starting|Ending|Per|Hour|Holder|Nickname|Submission|Referral|Code|Limit|Remaining|Extracted|Transactions|Minimum|Day|End|Charge|Back|Identities|Enquirer|Relationship|Statement|Nothing|Unknown|Cleaned|Documents|What|Need|Know|Deal|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December|Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Pty|Ltd|Limited|Group|Bank|Australia|Australian|Queensland|Government|Department|Transport|Main|Roads|Equifax|Apply|Comprehensive|Score|Credit|Report|Consumer|Commercial|Personal|Loan|Loans|Account|Accounts|Statement|Internal|External|Transfer|Transfers|Funds|Mobile|Banking|Payment|Payments|Progress|Saver|Savings|Everyday|Access|Total|Opening|Closing|Balance|Available|Minimum|Days|Negative|Period|Date|Category|Description|Debit|Credit|Debits|Credits|Interest|Rate|Overdraft|Bonus|Next|Type|Frequency|Open|Current|Previous|Enquiries|Enquiry|Defaults|Default|Insolvencies|Court|Actions|Business|Relationships|Identity|Details|Summary|Headlines|Adverse|Financial|Hardship|Information|Disq|Directorships|Worst|Status|Real|Estate|Mortgages|Cards|Auto|Equipment|Hire|Rental|Telco|Utilities|BNPL|Primary|Drivers|Licence|License|Gender|Male|Female|File|Addresses|Possible|Match|Not|Present|Data|Level|Table|Contents|Scores|Key|Factors|Historical|Application|Pattern|Length|History|About|Disclaimer|Research|Bureau|Please|Individuals|Trading|Time|Number|Value|Role|Reference|Principal|Sole|Outstanding|Paid|Latest|Original|Start|Cease|Other|Method|Term|Fixed|Revolving|Amount|Association|Source|Names|First|Last|Reported|Pay|Slip|Components|Hours|Units|This|Year|To|Wages|Earnings|Casual|Ordinary|Allowance|Travel|Taxes|PAYG|Superannuation|Breakdown|SG|Member|Contributions|Super|Guarantee|Brighter|Base|Hours|Gross|Net|Age|Over|Class|Automatic|Car|Provisional|Expiry|Conditions|Issuing|Country|Authority|Card|Signature|Address|Home|Wallet|Show|Scan|Messages|Back|ANZ|CBA|NAB|Westpac|Suncorp|Bendigo|ING|Macquarie|Zip|ZipPay|Afterpay|Humm|Centrelink|Medicare|ATO|QLD|NSW|VIC|WA|SA|TAS|NT|ACT|AU|AUS|CR|DR|CA|P2|P1|Mr|Mrs|Ms|Miss|Dr|Dob|DoB|DOB|Applicant|APPLICANT|Person|Zink|Making|Finance|Easy|Menu|Reporting|Dashboard|Work|Basket|Assess|Submit|Settlement|Deal|Incomes|Compliance|Documents|Communication|Tools|Services|Support|Email|Search|Auction|Alerts|Referrer|Marketing|Lead|Progress|Owners|Applicant|Contact|Employment|Spouses|Document|Requests|Living|Expenses|Assets|Liabilities|Capacity|Analysis|References|Ownerships|Pod|Assistant|Officer|Agent|Broker|Loan|Asset|Sale|Dealership|Supplier|Phone|Abn|Condition|Used|New|Demo|Make|Model|Year|NVIC|Glass|Retail|Engine|Build|Compliance|Registration|State|VIN|Odometer|Purchase|Cost|Extras|Deposit|Requested|Unsecured|Cashflow|Middle|Citizen|Marital|Dependants|Under|Passport|Issue|Search|Unit|Street|Suburb|Postcode|Years|Months|Rented|Ownership|Rent|Privacy|Consent|Digital|Insolvency|None|One|Payday|In|Paid|Unpaid|Non|Judgements|Worst|CCR|Shopping|Hardship|Evident|Landlord|Agency|Name|Title|Industry|Occupation|Probation|Employer|Net|Income|After|Tax|Weekly|Fortnightly|Monthly|Quarterly|Yearly|Yes|No|Upload|Link|Comment|Fuel|Groceries|Telecommunications|Medical|Health|Entertainment|Insurance|Transport|Utilities|Education|Childcare|Trade|Savings|Contents|Superannuation|Car|Van|Liability|Provider|Original|Repayments|Employment|Spouse|Assets|Declared|Tag|Low|Comments|Notes|Income|Expenses|Uncommitted|Family|Benefits|JobSeeker|Debt|Collection|Consolidation|Fine|Still|looking|for|the|at|this|stage|All|Accounted|For|Full|Part|Self|Employed|Pensioner|Retired|Student|Unemployed|Permanent|Resident|Visa|Working|Holiday|Single|De|facto|Married|Separated|Divorced|Widowed|Boarded|Boarding|Owned|Mortgaged|Living|with|parents|Opening|Closing|Available|Interest|Payment|Days|Since|Last|Transaction|Average|Count|Dates|Jul|Aug|Sep|Oct)$/;
+  var OK_CAPS=/^(?:Access|Advantage|Everyday|Complete|Freedom|Choice|Offset|Netbank|Saver|Spend|Flags|Spot|Money|Lenders?|Payday|Buy|Now|Later|Advance|Apps|Bounced|Negative|Cash|Withdrawals|Gambling|Pubs|Clubs|Statements|Hourly|Rates|Notice|Regional|Property|Amount|Due|Employee|Smart|Required|Centerlink|Request|Recent|Contract|Benefits|Toyota|Kia|Hyundai|Mazda|Ford|Holden|Nissan|Mitsubishi|Honda|Subaru|Volkswagen|Isuzu|Suzuki|BMW|Mercedes|Benz|Audi|Jeep|Lexus|Tesla|LDV|GWM|Haval|Ram|Chevrolet|Volvo|Skoda|Peugeot|Renault|Land|Rover|Range|Mini|Porsche|Fiat|Alfa|Romeo|Jaguar|Chery|BYD|Polestar|Cupra|Genesis|Ssangyong|Great|Wall|Hilux|Ranger|Navara|Triton|Sportage|Tucson|Corolla|Camry|Rav4|Outlander|Prado|Landcruiser|Kluger|Mustang|Everest|Colorado|Amarok|Pajero|Forester|Outback|Impreza|Civic|Accord|Golf|Polo|Tiguan|Swift|Vitara|Jimny|Santa|Fe|Kona|Cerato|Seltos|Carnival|Sorento|Stinger|Picanto|Rio|Mazda3|Mazda6|Territory|Falcon|Commodore|Captiva|Trailblazer|Cruze|Barina|Astra|Yaris|Hiace|Fortuner|Landcruiser|Granvia|Patrol|Qashqai|Pathfinder|Xtrail|Juke|Pulsar|Driver|Period|Starting|Ending|Per|Hour|Holder|Nickname|Submission|Referral|Code|Limit|Remaining|Extracted|Transactions|Minimum|Day|End|Charge|Back|Identities|Enquirer|Relationship|Statement|Nothing|Unknown|Cleaned|Documents|What|Need|Know|Deal|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December|Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Pty|Ltd|Limited|Group|Bank|Australia|Australian|Queensland|Government|Department|Transport|Main|Roads|Equifax|Apply|Comprehensive|Score|Credit|Report|Consumer|Commercial|Personal|Loan|Loans|Account|Accounts|Statement|Internal|External|Transfer|Transfers|Funds|Mobile|Banking|Payment|Payments|Progress|Saver|Savings|Everyday|Access|Total|Opening|Closing|Balance|Available|Minimum|Days|Negative|Period|Date|Category|Description|Debit|Credit|Debits|Credits|Interest|Rate|Overdraft|Bonus|Next|Type|Frequency|Open|Current|Previous|Enquiries|Enquiry|Defaults|Default|Insolvencies|Court|Actions|Business|Relationships|Identity|Details|Summary|Headlines|Adverse|Financial|Hardship|Information|Disq|Directorships|Worst|Status|Real|Estate|Mortgages|Cards|Auto|Equipment|Hire|Rental|Telco|Utilities|BNPL|Primary|Drivers|Licence|License|Gender|Male|Female|File|Addresses|Possible|Match|Not|Present|Data|Level|Table|Contents|Scores|Key|Factors|Historical|Application|Pattern|Length|History|About|Disclaimer|Research|Bureau|Please|Individuals|Trading|Time|Number|Value|Role|Reference|Principal|Sole|Outstanding|Paid|Latest|Original|Start|Cease|Other|Method|Term|Fixed|Revolving|Amount|Association|Source|Names|First|Last|Reported|Pay|Slip|Components|Hours|Units|This|Year|To|Wages|Earnings|Casual|Ordinary|Allowance|Travel|Taxes|PAYG|Superannuation|Breakdown|SG|Member|Contributions|Super|Guarantee|Brighter|Base|Hours|Gross|Net|Age|Over|Class|Automatic|Car|Provisional|Expiry|Conditions|Issuing|Country|Authority|Card|Signature|Address|Home|Wallet|Show|Scan|Messages|Back|ANZ|CBA|NAB|Westpac|Suncorp|Bendigo|ING|Macquarie|Zip|ZipPay|Afterpay|Humm|Centrelink|Medicare|ATO|QLD|NSW|VIC|WA|SA|TAS|NT|ACT|AU|AUS|CR|DR|CA|P2|P1|Mr|Mrs|Ms|Miss|Dr|Dob|DoB|DOB|Applicant|APPLICANT|Person|Zink|Making|Finance|Easy|Menu|Reporting|Dashboard|Work|Basket|Assess|Submit|Settlement|Deal|Incomes|Compliance|Documents|Communication|Tools|Services|Support|Email|Search|Auction|Alerts|Referrer|Marketing|Lead|Progress|Owners|Applicant|Contact|Employment|Spouses|Document|Requests|Living|Expenses|Assets|Liabilities|Capacity|Analysis|References|Ownerships|Pod|Assistant|Officer|Agent|Broker|Loan|Asset|Sale|Dealership|Supplier|Phone|Abn|Condition|Used|New|Demo|Make|Model|Year|NVIC|Glass|Retail|Engine|Build|Compliance|Registration|State|VIN|Odometer|Purchase|Cost|Extras|Deposit|Requested|Unsecured|Cashflow|Middle|Citizen|Marital|Dependants|Under|Passport|Issue|Search|Unit|Street|Suburb|Postcode|Years|Months|Rented|Ownership|Rent|Privacy|Consent|Digital|Insolvency|None|One|Payday|In|Paid|Unpaid|Non|Judgements|Worst|CCR|Shopping|Hardship|Evident|Landlord|Agency|Name|Title|Industry|Occupation|Probation|Employer|Net|Income|After|Tax|Weekly|Fortnightly|Monthly|Quarterly|Yearly|Yes|No|Upload|Link|Comment|Fuel|Groceries|Telecommunications|Medical|Health|Entertainment|Insurance|Transport|Utilities|Education|Childcare|Trade|Savings|Contents|Superannuation|Car|Van|Liability|Provider|Original|Repayments|Employment|Spouse|Assets|Declared|Tag|Low|Comments|Notes|Income|Expenses|Uncommitted|Family|Benefits|JobSeeker|Debt|Collection|Consolidation|Fine|Still|looking|for|the|at|this|stage|All|Accounted|For|Full|Part|Self|Employed|Pensioner|Retired|Student|Unemployed|Permanent|Resident|Visa|Working|Holiday|Single|De|facto|Married|Separated|Divorced|Widowed|Boarded|Boarding|Owned|Mortgaged|Living|with|parents|Opening|Closing|Available|Interest|Payment|Days|Since|Last|Transaction|Average|Count|Dates|Jul|Aug|Sep|Oct)$/;
   function leftovers(clean){
     var hits=[];var re=/\b([A-Z][a-z]{2,}(?:[ \t]+[A-Z][a-z]{2,}){1,3})\b|\b([A-Z]{3,}(?:[ \t]+[A-Z]{3,}){1,3})\b|(?&lt;![\d$.,])\d{5,}(?![\d.,])|[^\s@]+@[^\s@]+\.[a-z]{2,}/g,m;
     while((m=re.exec(clean))){var s=m[0];if(/^[A-Z][a-z]|^[A-Z]{3,}/.test(s)){var words=s.split(/\s+/);if(words.every(function(w){return OK_CAPS.test(w)}))continue;if(BIZ.test(s)||isBiz(s))continue}hits.push({text:s,at:m.index})}
     var seen={};return hits.filter(function(h){if(seen[h.text])return false;seen[h.text]=1;return true});
   }
-  return {kind:kind,KIND_LABEL:KIND_LABEL,personish:personish,read:read,context:context,scrub:scrub,brief:brief,forClaude:forClaude,ASKS:ASKS,leftovers:leftovers,parseDate:parseDate,fmtDate:fmtDate,money:money,ageAt:ageAt};
+  return {kind:kind,KIND_LABEL:KIND_LABEL,personish:personish,read:read,context:context,scrub:scrub,brief:brief,forAI:forAI,redFlags:function(docs,opts,asAt){var F={};docs.forEach(function(d){(F[d.fields.kind]=F[d.fields.kind]||[]).push(d.fields)});var pays=(F.payslip||[]).slice().sort(function(a,b){return (a.periodEnd||0)-(b.periodEnd||0)});return redFlags({lic:(F.licence||[])[0]||{},z:(F.zink||[])[0],cr:(F.credit||[])[0],pays:pays,banks:F.bank||[],docs:docs,asAt:asAt,opts:opts})},leftovers:leftovers,parseDate:parseDate,fmtDate:fmtDate,money:money,ageAt:ageAt};
 })();
 
 
@@ -14131,14 +14200,13 @@ var CR=(function(){
 &lt;script&gt;
 /* ═══ CLEAN ROOM UI ═══ */
 var CRoom=(function(){
-  var docs=[],seq=0,opts=load(),extra=[],curView='claude',out={claude:'',brief:''},timer=null,selText='';
+  var docs=[],seq=0,opts=load(),extra=[],curView='ai',out={ai:'',brief:'',flags:[]},timer=null,selText='';
   var ICON={licence:'🪪',payslip:'💵',bank:'🏦',credit:'📊',zink:'🧩',medicare:'💳',other:'📄'};
   function $(id){return document.getElementById(id)}
-  function load(){var o={};try{o=JSON.parse(localStorage.getItem('hub_cleanroom_opts')||'{}')||{}}catch(e){}return Object.assign({keepPostcode:true,keepSuburb:false,keepEmployer:false,keepBank:true,ask:'fit'},o)}
-  function save(){try{localStorage.setItem('hub_cleanroom_opts',JSON.stringify({keepPostcode:opts.keepPostcode,keepSuburb:opts.keepSuburb,keepEmployer:opts.keepEmployer,keepBank:opts.keepBank,ask:opts.ask}))}catch(e){}}
+  function load(){var o={};try{o=JSON.parse(localStorage.getItem('hub_cleanroom_opts')||'{}')||{}}catch(e){}return Object.assign({keepPostcode:true,keepSuburb:false,keepEmployer:false,keepBank:true},o)}
+  function save(){try{localStorage.setItem('hub_cleanroom_opts',JSON.stringify({keepPostcode:opts.keepPostcode,keepSuburb:opts.keepSuburb,keepEmployer:opts.keepEmployer,keepBank:opts.keepBank}))}catch(e){}}
   function escH(s){return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;')}
   function init(){
-    var sel=$('crAsk');if(sel){var h='';Object.keys(CR.ASKS).forEach(function(k){h+='&lt;option value=&quot;'+k+'&quot;&gt;'+escH(CR.ASKS[k].label)+'&lt;/option&gt;'});h+='&lt;option value=&quot;custom&quot;&gt;Write my own&lt;/option&gt;';sel.innerHTML=h;sel.value=opts.ask||'fit';askChanged(true)}
     paintOpts();
     var pane=$('pane-extract');
     if(pane){pane.addEventListener('paste',function(e){var t=e.target;if(t&amp;&amp;(t.tagName==='TEXTAREA'||t.tagName==='INPUT'))return;var cd=e.clipboardData;if(!cd)return;if(cd.files&amp;&amp;cd.files.length){e.preventDefault();addFiles(cd.files);return}var txt=cd.getData('text/plain');if(txt&amp;&amp;txt.trim().length&gt;40){e.preventDefault();addText(txt,'Pasted text')}})}
@@ -14147,9 +14215,6 @@ var CRoom=(function(){
   }
   function paintOpts(){document.querySelectorAll('#crOpts .cr-pill').forEach(function(b){b.classList.toggle('on',!!opts[b.getAttribute('data-opt')])})}
   function toggle(k,el){opts[k]=!opts[k];save();paintOpts();run()}
-  function askChanged(quiet){var sel=$('crAsk');opts.ask=sel.value;save();$('crAskBox').style.display=sel.value==='custom'?'block':'none';if(!quiet)run()}
-  function askText(){if(opts.ask==='custom'){var t=($('crAskTa').value||'').trim();return t||CR.ASKS.fit.text}return (CR.ASKS[opts.ask]||CR.ASKS.fit).text}
-  function schedule(){clearTimeout(timer);timer=setTimeout(run,350)}
   function togglePaste(){var b=$('crPasteBox');var on=b.style.display!=='block';b.style.display=on?'block':'none';if(on)setTimeout(function(){$('crPasteTa').focus()},30)}
   function addPasted(){var ta=$('crPasteTa');var t=(ta.value||'').trim();if(!t){toast('Nothing to add');return}addText(t,'Pasted text');ta.value='';$('crPasteBox').style.display='none'}
   function extraChanged(){var v=($('crExtra').value||'');extra=v.split(/[,\n;]+/).map(function(x){return x.trim()}).filter(function(x){return x.length&gt;=2});run()}
@@ -14209,21 +14274,23 @@ var CRoom=(function(){
     var o={keepPostcode:!!opts.keepPostcode,keepSuburb:!!opts.keepSuburb,keepEmployer:!!opts.keepEmployer,keepBank:!!opts.keepBank,extraNames:names,extraKill:kill};
     var ctx=CR.context(ds,o);
     ds.forEach(function(d){var r=CR.scrub(d.text,ctx,o);d.clean=r.clean;d.removed=r.removed;d.left=CR.leftovers(d.clean)});
-    out.brief=CR.brief(ds,o,null,ctx);out.claude=CR.forClaude(ds,o,askText(),($('crDeal').value||'').trim(),ctx);
-    window._lastExtracted=out.claude;
+    out.brief=CR.brief(ds,o,null,ctx);out.ai=CR.forAI(ds,o,ctx);
+    var fm=out.brief.match(/RED FLAGS\n([\s\S]*?)(?:\n\n|$)/);out.flags=fm?fm[1].split('\n').map(function(l){return l.replace(/^\d+\.\s*/,'').trim()}).filter(Boolean):[];if(out.flags.length===1&amp;&amp;/^Nothing flagged/.test(out.flags[0]))out.flags=[];
+    window._lastExtracted=out.ai;
     card.style.display='block';paint();
   }
   function paint(){
     var ds=ready(),o=$('crOut');if(!ds.length)return;
     var removed=0,left=0;ds.forEach(function(d){removed+=d.removed.length;left+=d.left.length});
-    $('crRemN').textContent=removed?removed.toLocaleString():'';
-    $('crStat').innerHTML='&lt;span&gt;&lt;b&gt;'+ds.length+'&lt;/b&gt; document'+(ds.length===1?'':'s')+'&lt;/span&gt;&lt;span&gt;&lt;b&gt;'+removed.toLocaleString()+'&lt;/b&gt; removed&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;cr-dot'+(left?' amber':'')+'&quot;&gt;&lt;/span&gt;'+(left?'&lt;b&gt;'+left+'&lt;/b&gt; to check':'nothing left to check')+'&lt;/span&gt;';
+    $('crRemN').textContent=removed?removed.toLocaleString():'';$('crFlagN').textContent=out.flags.length?out.flags.length:'';
+    $('crStat').innerHTML='&lt;span&gt;&lt;b&gt;'+ds.length+'&lt;/b&gt; document'+(ds.length===1?'':'s')+'&lt;/span&gt;&lt;span&gt;&lt;b&gt;'+removed.toLocaleString()+'&lt;/b&gt; removed&lt;/span&gt;'+(out.flags.length?'&lt;span class=&quot;bad&quot;&gt;&lt;b&gt;'+out.flags.length+'&lt;/b&gt; red flag'+(out.flags.length===1?'':'s')+'&lt;/span&gt;':'')+'&lt;span&gt;&lt;span class=&quot;cr-dot'+(left?' amber':'')+'&quot;&gt;&lt;/span&gt;'+(left?'&lt;b&gt;'+left+'&lt;/b&gt; to check':'nothing left to check')+'&lt;/span&gt;';
     document.querySelectorAll('#crSeg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===curView)});
     if(curView==='removed'){o.innerHTML=removedHtml(ds);return}
+    if(curView==='flags'){o.innerHTML=out.flags.length?'&lt;div class=&quot;cr-flags&quot;&gt;'+out.flags.map(function(f,i){return '&lt;div class=&quot;cr-flag&quot;&gt;&lt;span class=&quot;n&quot;&gt;'+(i+1)+'&lt;/span&gt;&lt;span&gt;'+escH(f)+'&lt;/span&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;':'&lt;div class=&quot;cr-flags&quot;&gt;&lt;div class=&quot;cr-flag ok&quot;&gt;&lt;span class=&quot;n&quot;&gt;✓&lt;/span&gt;&lt;span&gt;Nothing flagged in the documents supplied. Check the ones that are missing.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;';return}
     if(curView==='brief'){o.innerHTML=out.brief?fmt(out.brief,[]):'&lt;div class=&quot;cr-empty&quot;&gt;Nothing I could pull out of these ones. The cleaned text still works.&lt;/div&gt;';return}
     var allLeft=[].concat.apply([],ds.map(function(d){return d.left.map(function(x){return x.text})}));
     if(curView==='clean'){o.innerHTML=ds.map(function(d){return '&lt;span class=&quot;doc&quot;&gt;'+escH(CR.KIND_LABEL[d.kind]||'Document')+(d.meta?' · '+escH(d.meta):'')+'&lt;/span&gt;'+fmt(d.clean,allLeft)}).join('');return}
-    o.innerHTML=fmt(out.claude,allLeft);
+    o.innerHTML=fmt(out.ai,allLeft);
   }
   function fmt(text,left){
     var h=escH(text);
@@ -14246,12 +14313,10 @@ var CRoom=(function(){
   function hideFloat(){var f=$('crFloat');if(f)f.style.display='none'}
   function redactSel(){var t=selText;hideFloat();try{window.getSelection().removeAllRanges()}catch(e){}if(t)addExtra(t)}
   function copyText(t,msg){if(!t){toast('Nothing to copy yet');return Promise.resolve(false)}var p=navigator.clipboard&amp;&amp;navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject();return p.then(function(){toast(msg||'Copied');return true}).catch(function(){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);toast(ok?(msg||'Copied'):'Copy failed, select the text and copy it');return ok})}
-  function copy(){copyText(out.claude,'Copied, paste it into Claude')}
-  function openClaude(){copyText(out.claude,'Copied, paste it into the new chat').then(function(){window.open('https://claude.ai/new','_blank')})}
-  function toMatch(){if(!out.claude){toast('Nothing to send yet');return}var mi=$('matchInput');if(mi)mi.value=out.claude;var tb=document.querySelector('[data-pane=match]');if(tb&amp;&amp;typeof switchPane==='function')switchPane('match',tb);toast('In step 2')}
-  function reset(){docs=[];extra=[];out={claude:'',brief:''};window._lastExtracted='';var e=$('crExtra');if(e)e.value='';var d=$('crDeal');if(d)d.value='';var ri=$('rawInput');if(ri)ri.value='';renderChips();$('crOutCard').style.display='none';hideFloat();toast('Cleared')}
+  function copy(){copyText(out.ai,'Copied')}
+  function reset(){docs=[];extra=[];out={ai:'',brief:'',flags:[]};window._lastExtracted='';var e=$('crExtra');if(e)e.value='';var ri=$('rawInput');if(ri)ri.value='';renderChips();$('crOutCard').style.display='none';hideFloat();toast('Cleared')}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-  return {addFiles:addFiles,addText:addText,addPasted:addPasted,togglePaste:togglePaste,toggle:toggle,askChanged:askChanged,extraChanged:extraChanged,schedule:schedule,view:view,flag:flag,redactSel:redactSel,copy:copy,openClaude:openClaude,toMatch:toMatch,reset:reset,remove:remove,run:run,docs:function(){return docs}};
+  return {addFiles:addFiles,addText:addText,addPasted:addPasted,togglePaste:togglePaste,toggle:toggle,extraChanged:extraChanged,view:view,flag:flag,redactSel:redactSel,copy:copy,reset:reset,remove:remove,run:run,docs:function(){return docs},out:function(){return out}};
 })();
 &lt;/script&gt;
 &lt;script&gt;

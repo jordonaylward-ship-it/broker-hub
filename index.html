@@ -635,6 +635,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .filter-btn:focus{outline:none!important}
 .filter-btn:focus-visible{outline:2px solid #9db1ff!important;outline-offset:2px!important}
 &lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix2&quot;&gt;@media(max-width:640px){.tabs{flex-wrap:wrap;overflow-x:visible;gap:6px}.tabs .tab{flex:1 1 auto;text-align:center;padding:9px 12px;white-space:nowrap}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
@@ -6238,6 +6239,7 @@ td.chev{width:22px;color:var(--mut);text-align:right;font-size:18px;line-height:
 @media(prefers-reduced-motion:reduce){.panel{transition:none}}
 &lt;/style&gt;
 &lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix2&quot;&gt;@media(max-width:640px){.nav .tab-btn{padding:8px 8px!important;font-size:14px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;shell&quot;&gt;
@@ -8385,6 +8387,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 
 &lt;/style&gt;
 &lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix2&quot;&gt;@media(max-width:640px){.tabs{border-radius:16px!important;flex-wrap:nowrap!important;gap:4px!important}.tabs .tab{flex:1 1 0;min-width:0;padding:9px 4px!important;font-size:13px!important;white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap app&quot;&gt;
@@ -10052,7 +10055,7 @@ function tidy(raw){
   return t.replace(/\n{3,}/g,&quot;\n\n&quot;).trim();
 }
 function hubKey(){return (localStorage.getItem('claude_api_key')||'').trim();}
-function hubModel(){const m=localStorage.getItem('anthropic_model');return ['claude-opus-4-7','claude-opus-4-6','claude-sonnet-4-6','claude-haiku-4-5-20251001'].includes(m)?m:'claude-opus-4-7';}
+function hubModel(){return localStorage.getItem('anthropic_model')||'claude-opus-5';}
 async function aiPolish(text,instruction,btn){
   const key=hubKey();
   if(!key){toast('No API key \u00b7 using local tidy');return null;}
@@ -17396,12 +17399,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
             &lt;/div&gt;
             &lt;div class=&quot;field&quot;&gt;
               &lt;label&gt;Model&lt;/label&gt;
-              &lt;select id=&quot;model&quot;&gt;
-                &lt;option value=&quot;claude-opus-4-7&quot; selected&gt;Claude Opus 4.7&lt;/option&gt;
-                &lt;option value=&quot;claude-opus-4-6&quot;&gt;Claude Opus 4.6&lt;/option&gt;
-                &lt;option value=&quot;claude-sonnet-4-6&quot;&gt;Claude Sonnet 4.6&lt;/option&gt;
-                &lt;option value=&quot;claude-haiku-4-5-20251001&quot;&gt;Claude Haiku 4.5&lt;/option&gt;
-              &lt;/select&gt;
+              &lt;select id=&quot;model&quot;&gt;&lt;option value=&quot;claude-opus-5&quot;&gt;Claude Opus 5&lt;/option&gt;&lt;option value=&quot;claude-opus-5-5&quot;&gt;Claude Opus 5.5&lt;/option&gt;&lt;option value=&quot;claude-sonnet-5-5&quot;&gt;Claude Sonnet 5.5&lt;/option&gt;&lt;option value=&quot;claude-haiku-5-5&quot;&gt;Claude Haiku 5.5&lt;/option&gt;&lt;option value=&quot;claude-fable-5-1&quot;&gt;Claude Fable 5.1&lt;/option&gt;&lt;/select&gt;
             &lt;/div&gt;
           &lt;/div&gt;
           &lt;div style=&quot;margin-top:10px;display:flex;gap:8px;&quot;&gt;
@@ -18354,13 +18352,10 @@ function toast(msg, type='info', ms=3500) {
 function loadApiKey() {
   const k = localStorage.getItem('claude_api_key');
   if (k) $('apiKey').value = k;
-  const m = localStorage.getItem('anthropic_model');
-  // Always default to Opus 4.7 unless user has explicitly saved a different model
-  if (m &amp;&amp; ['claude-opus-4-7','claude-opus-4-6','claude-sonnet-4-6'].includes(m)) {
-    $('model').value = m;
-  } else {
-    $('model').value = 'claude-opus-4-7';
-  }
+  const m = localStorage.getItem('anthropic_model') || 'claude-opus-5';
+  // one model for the whole hub, set in Settings
+  if (![...$('model').options].some(o =&gt; o.value === m)) { const o = document.createElement('option'); o.value = m; o.textContent = m; $('model').appendChild(o); }
+  $('model').value = m;
 }
 
 function saveApiKey() {
@@ -24161,7 +24156,7 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
 &lt;/head&gt;
 &lt;body&gt;
 &lt;h1&gt;Settings&lt;/h1&gt;
-&lt;div class=&quot;sub&quot;&gt;Saves to this browser · applies across the Call Script, Serviceability and Lender Matcher instantly. AI keys stay where they were: Serviceability’s API card and the Lender Matcher’s Settings pane.&lt;/div&gt;
+&lt;div class=&quot;sub&quot;&gt;Saves to this browser · applies across the Call Script, Serviceability and Lender Matcher instantly.&lt;/div&gt;
 
 &lt;div id=&quot;setBar&quot;&gt;&lt;button onclick=&quot;setAll(true)&quot;&gt;Expand all&lt;/button&gt;&lt;button onclick=&quot;setAll(false)&quot;&gt;Collapse all&lt;/button&gt;&lt;/div&gt;
 
@@ -24178,7 +24173,7 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
   &lt;div class=&quot;cb&quot;&gt;
     &lt;div class=&quot;row&quot;&gt;
       &lt;div&gt;&lt;label&gt;App zoom · desktop only&lt;/label&gt;&lt;select id=&quot;sZoom&quot;&gt;
-        &lt;option value=&quot;65&quot; selected&gt;65% · default (Wix embed)&lt;/option&gt;
+        &lt;option value=&quot;65&quot; selected&gt;65% · default&lt;/option&gt;
         &lt;option value=&quot;75&quot;&gt;75%&lt;/option&gt;
         &lt;option value=&quot;85&quot;&gt;85%&lt;/option&gt;
         &lt;option value=&quot;100&quot;&gt;100% · big&lt;/option&gt;
@@ -24207,10 +24202,12 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
 
 &lt;details class=&quot;card&quot; id=&quot;cardAI&quot; open&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;AI&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot; id=&quot;aiSummary&quot;&gt;&lt;/span&gt;&lt;/summary&gt;
   &lt;div class=&quot;cb&quot;&gt;
-    &lt;div class=&quot;ai-now&quot;&gt;The Lender Matcher and Serviceability are using &lt;b id=&quot;aiNow&quot;&gt;&amp;hellip;&lt;/b&gt;&lt;span id=&quot;aiKeyPill&quot;&gt;&lt;/span&gt;&lt;/div&gt;
-    &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;Model&lt;/label&gt;&lt;select id=&quot;sModel&quot;&gt;&lt;option value=&quot;claude-opus-5&quot;&gt;Claude Opus 5 · sharpest, best for lender assessments&lt;/option&gt;&lt;option value=&quot;claude-sonnet-5&quot;&gt;Claude Sonnet 5 · faster and cheaper, still strong&lt;/option&gt;&lt;option value=&quot;claude-haiku-4-5-20251001&quot;&gt;Claude Haiku 4.5 · quickest, for simple checks&lt;/option&gt;&lt;option value=&quot;claude-fable-5&quot;&gt;Claude Fable 5&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;ai-now&quot;&gt;Every AI button in the hub uses &lt;b id=&quot;aiNow&quot;&gt;&amp;hellip;&lt;/b&gt;&lt;span id=&quot;aiKeyPill&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;API key&lt;/label&gt;&lt;input type=&quot;password&quot; id=&quot;sApiKey&quot; placeholder=&quot;sk-ant-...&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;hint&quot; id=&quot;sApiKeyRow&quot; style=&quot;margin:6px 0 12px&quot;&gt;&lt;a href=&quot;#&quot; id=&quot;sApiKeyRm&quot; onclick=&quot;rmKey();return false&quot; style=&quot;color:var(--mut)&quot;&gt;Remove the saved key&lt;/a&gt;&lt;/div&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;Model&lt;/label&gt;&lt;select id=&quot;sModel&quot;&gt;&lt;option value=&quot;claude-opus-5&quot;&gt;Claude Opus 5 · default, what your assessments run on&lt;/option&gt;&lt;option value=&quot;claude-opus-5-5&quot;&gt;Claude Opus 5.5 · newest Opus&lt;/option&gt;&lt;option value=&quot;claude-sonnet-5-5&quot;&gt;Claude Sonnet 5.5 · faster and cheaper&lt;/option&gt;&lt;option value=&quot;claude-haiku-5-5&quot;&gt;Claude Haiku 5.5 · quickest, simple checks&lt;/option&gt;&lt;option value=&quot;claude-fable-5-1&quot;&gt;Claude Fable 5.1&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;hint&quot;&gt;Opus is the default and what your lender assessments have been running on. Sonnet is noticeably faster and cheaper if you are doing a lot of files in a day. The change applies the moment you save.&lt;/div&gt;
-    &lt;div class=&quot;hint&quot; style=&quot;margin-top:10px&quot;&gt;&lt;b&gt;What actually leaves this machine.&lt;/b&gt; The extraction, the quick quoter, Docs Check and every calculator run in your browser and send nothing anywhere. Only the Lender Matcher assessment and the Serviceability AI read go to Anthropic, and the client data is sanitised first. Your API key is stored in this browser only and is never shown here.&lt;/div&gt;
+    &lt;div class=&quot;hint&quot; style=&quot;margin-top:10px&quot;&gt;The key is saved in this browser only, never in the sheet. On another phone or computer, paste it in once there too.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/details&gt;
 
@@ -24270,10 +24267,11 @@ function defaultFor(k){
 }
 
 /* ── Settings layout · remember which sections are open, show the model in use ── */
-const SET_MODELS={'claude-opus-5':'Claude Opus 5','claude-sonnet-5':'Claude Sonnet 5','claude-haiku-4-5-20251001':'Claude Haiku 4.5','claude-fable-5':'Claude Fable 5'};
+const SET_MODELS={'claude-opus-5':'Claude Opus 5','claude-opus-5-5':'Claude Opus 5.5','claude-sonnet-5-5':'Claude Sonnet 5.5','claude-haiku-5-5':'Claude Haiku 5.5','claude-fable-5-1':'Claude Fable 5.1','claude-sonnet-5':'Claude Sonnet 5','claude-fable-5':'Claude Fable 5','claude-opus-4-7':'Claude Opus 4.7','claude-opus-4-6':'Claude Opus 4.6','claude-sonnet-4-6':'Claude Sonnet 4.6','claude-haiku-4-5-20251001':'Claude Haiku 4.5'};
 function setAll(open){document.querySelectorAll('details.card').forEach(function(d){d.open=open});setRemember()}
 function setRemember(){try{var o={};document.querySelectorAll('details.card').forEach(function(d,i){o[d.id||('c'+i)]=d.open});localStorage.setItem('hub_settings_v1_setopen',JSON.stringify(o))}catch(e){}}
 function setRestore(){try{var o=JSON.parse(localStorage.getItem('hub_settings_v1_setopen')||'null');if(!o)return;document.querySelectorAll('details.card').forEach(function(d,i){var k=d.id||('c'+i);if(k in o)d.open=!!o[k]})}catch(e){}}
+function rmKey(){try{localStorage.removeItem('claude_api_key')}catch(e){}aiPaint();var ls=document.getElementById('lastSaved');if(ls)ls.textContent='Key removed'}
 function aiPaint(){
   var m='claude-opus-5';try{m=localStorage.getItem('anthropic_model')||'claude-opus-5'}catch(e){}
   var sel=document.getElementById('sModel');
@@ -24283,6 +24281,8 @@ function aiPaint(){
   var nm=SET_MODELS[m]||m;
   var now=document.getElementById('aiNow');if(now)now.textContent=nm;
   var hasKey=false;try{hasKey=!!(localStorage.getItem('claude_api_key')||'').trim()}catch(e){}
+  var kin=document.getElementById('sApiKey');if(kin)kin.placeholder=hasKey?'Saved. Paste a new key to replace it':'sk-ant-...';
+  var krm=document.getElementById('sApiKeyRow');if(krm)krm.style.display=hasKey?'':'none';
   var pill=document.getElementById('aiKeyPill');
   if(pill)pill.innerHTML=hasKey?'&lt;span class=&quot;pill-ok&quot;&gt;API key set&lt;/span&gt;':'&lt;span class=&quot;pill-no&quot;&gt;No API key yet&lt;/span&gt;';
   var s=document.getElementById('aiSummary');if(s)s.textContent=nm;
@@ -24305,6 +24305,7 @@ function saveAll(){
   try{localStorage.setItem('hub_cipher_v1',JSON.stringify({numWord:document.getElementById('sCipherNum').value.trim().toUpperCase(),keyWord:document.getElementById('sCipherKey').value.trim().toUpperCase()}))}catch(e){}
   cipherPaint();
   try{var mm=document.getElementById('sModel');if(mm&amp;&amp;mm.value)localStorage.setItem('anthropic_model',mm.value)}catch(e){}
+  try{var kk=document.getElementById('sApiKey');if(kk&amp;&amp;kk.value.trim()){localStorage.setItem('claude_api_key',kk.value.trim());kk.value=''}}catch(e){}
   aiPaint();ovPaint();
   try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*');}catch(e){}
   document.getElementById('lastSaved').textContent='Saved '+new Date().toLocaleTimeString('en-AU');

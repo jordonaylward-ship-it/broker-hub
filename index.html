@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a0c16">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -62,22 +62,84 @@ body.locked .shell{display:none}
 }
 
 /* PASSWORD GATE */
-#gate{position:absolute;top:0;left:0;right:0;bottom:0;min-height:100vh;min-height:100dvh;background:#000000;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;overflow-y:auto}
+#gate{position:absolute;top:0;left:0;right:0;bottom:0;min-height:100vh;min-height:100dvh;background:#000000;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;padding-top:calc(20px + env(safe-area-inset-top));overflow-y:auto}
 #gate.hidden{display:none}
-.gate-card{background:#151823;border:1px solid #242a4a;border-radius:14px;padding:32px 36px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.gate-card .gate-logo{font-size:14px;font-weight:700;letter-spacing:.5px;color:#8b5cf6;margin-bottom:6px;text-transform:uppercase}
-.gate-card h1{font-size:22px;font-weight:700;color:#eef0ff;margin-bottom:6px}
-.gate-card .gate-sub{font-size:13px;color:#8b91b8;margin-bottom:24px;line-height:1.5}
-.gate-card label{font-size:11px;color:#8b91b8;text-transform:uppercase;letter-spacing:.5px;font-weight:600;display:block;margin-bottom:6px}
-.gate-card input[type=password]{width:100%;padding:12px 14px;background:#000000;border:1px solid #242a4a;border-radius:8px;color:#eef0ff;font-family:'Poppins',sans-serif;font-size:14px;margin-bottom:14px}
+.gate-card{background:#151823;border:1px solid #242a4a;border-radius:20px;padding:28px 28px 22px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+.gate-card .gate-logo{font-size:12px;font-weight:700;letter-spacing:.14em;color:#8b5cf6;margin-bottom:6px;text-transform:uppercase}
+.gate-card h1{font-size:21px;font-weight:700;color:#eef0ff;margin-bottom:14px;letter-spacing:-.01em}
+.gate-card .g-msg{font-size:13px;color:#8b91b8;line-height:1.5;min-height:18px;margin-bottom:10px}
+.gate-card label{font-size:11px;color:#8b91b8;text-transform:uppercase;letter-spacing:.5px;font-weight:600;display:block;margin-bottom:6px;text-align:left}
+.gate-card input[type=password]{width:100%;padding:13px 14px;background:#000000;border:1px solid #242a4a;border-radius:10px;color:#eef0ff;font-family:'Poppins',sans-serif;font-size:16px;margin-bottom:12px}
 .gate-card input[type=password]:focus{outline:none;border-color:#8b5cf6}
-.gate-card button{width:100%;padding:12px;background:#8b5cf6;color:#0a0c16;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
-.gate-card button:hover{filter:brightness(1.15)}
+.gate-card button{width:100%;padding:13px;background:#8b5cf6;color:#0a0c16;border:none;border-radius:12px;font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.gate-card button:hover{filter:brightness(1.12)}
 .gate-card button:disabled{opacity:.5;cursor:wait}
-.gate-error{color:#fb7185;font-size:12px;margin-top:10px;min-height:16px}
-.gate-card .gate-remember{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:#8b91b8}
-.gate-card .gate-remember input{accent-color:#8b5cf6}
-.gate-card .gate-foot{margin-top:18px;padding-top:18px;border-top:1px solid #242a4a;font-size:10px;color:#6f7689;line-height:1.6}
+.gate-card .g-link{background:none;color:#8b91b8;font-size:13px;font-weight:500;padding:10px;width:auto;margin-top:4px}
+.gate-card .g-link:hover{color:#eef0ff;filter:none}
+.gate-error{color:#fb7185;font-size:12.5px;margin-top:8px;min-height:18px}
+.gate-card .gate-foot{margin-top:14px;padding-top:12px;border-top:1px solid #242a4a;font-size:10.5px;color:#6f7689;line-height:1.6}
+/* Face ID */
+.g-facebtn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px!important;font-size:16px!important;background:linear-gradient(135deg,#8b5cf6,#5aa7f0)!important;color:#fff!important;border-radius:16px!important}
+.g-facebtn svg{width:28px;height:28px}
+.g-face.busy .g-facebtn{opacity:.6}
+/* PIN pad */
+.g-dots{display:flex;justify-content:center;gap:16px;margin:4px 0 18px}
+.g-dots i{width:14px;height:14px;border-radius:50%;border:2px solid #4b5283;background:transparent;transition:all .12s}
+.g-dots i.on{background:#eef0ff;border-color:#eef0ff}
+.g-dots.shake{animation:gShake .4s}
+.g-dots.ok i{background:#34d399;border-color:#34d399}
+@keyframes gShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+.g-pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center;margin:0 auto}
+.g-pad button{width:72px;height:72px;border-radius:50%;background:#1d2140;color:#eef0ff;font-size:26px;font-weight:500;padding:0;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .1s}
+.g-pad button:active{background:#3b82f6;transform:scale(.96)}
+.g-pad button:hover{filter:none;background:#262b52}
+.g-pad button[data-k=del]{font-size:22px;background:transparent}
+.g-pad button[data-k=none]{background:transparent;cursor:default}
+.g-pad button.g-pad-face{background:transparent;color:#a78bfa;display:none}
+.g-pad button.g-pad-face.show{display:flex}
+.g-pad button.g-pad-face svg{width:30px;height:30px}
+@media(max-height:700px){.g-pad{grid-template-columns:repeat(3,64px);gap:9px}.g-pad button{width:64px;height:64px;font-size:23px}.gate-card{padding:20px 22px 16px}.gate-card h1{margin-bottom:8px}}
+/* set up cards */
+.g-setup{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.g-setup[hidden]{display:none}
+
+/* ── phone navigation · bottom bar + all tools sheet ── */
+#mobtop,#mobbar,#mobsheet{display:none}
+.nav-lock{display:flex;align-items:center;justify-content:center;width:44px;height:36px;margin:6px auto 0;border:0;border-radius:10px;background:transparent;color:#6f7689;cursor:pointer}
+.nav-lock:hover{color:#eef0ff;background:#1a1f2c}
+.nav-lock svg{width:18px;height:18px}
+@media(max-width:640px){
+  .topnav,.topnav.wide{display:none!important}
+  .shell{flex-direction:column;min-height:100vh;min-height:100dvh}
+  .frame-wrap{min-height:0;margin-bottom:calc(64px + env(safe-area-inset-bottom))}
+  #mobtop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(8px + env(safe-area-inset-top)) 14px 8px;background:#0a0c16;border-bottom:1px solid rgba(148,163,255,.12);flex-shrink:0}
+  #mobtop .mt-name{font-size:17px;font-weight:700;letter-spacing:-.01em;color:#eef0ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #mobtop .mt-brand{font-size:10px;letter-spacing:.12em;color:#8b5cf6;text-transform:uppercase;font-weight:700}
+  #mobtop .mt-lock{flex:none;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;border-radius:12px;background:#151823;color:#8b91b8}
+  #mobtop .mt-lock svg{width:18px;height:18px}
+  #mobbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(10,12,22,.96);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid rgba(148,163,255,.14);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  #mobbar button{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:#8b91b8;font-family:'Poppins',system-ui,sans-serif;font-size:10.5px;font-weight:600;padding:4px 2px 2px;border-radius:12px;-webkit-tap-highlight-color:transparent}
+  #mobbar button .ico{display:flex;align-items:center;justify-content:center;width:44px;height:30px;border-radius:11px;transition:background .15s,color .15s}
+  #mobbar button .ico svg{width:22px;height:22px}
+  #mobbar button span.l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  #mobbar button.on{color:#eef0ff}
+  #mobbar button.on .ico{background:#3b82f6;color:#0a0c16}
+  #mobbar button.more.open .ico{background:#8b5cf6;color:#0a0c16}
+  #mobsheet{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  #mobsheet.on{display:block}
+  #mobsheet .pane{position:absolute;left:0;right:0;bottom:0;background:#12151e;border-radius:24px 24px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));max-height:88vh;max-height:88dvh;overflow-y:auto;animation:sheetUp .22s ease}
+  @keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  #mobsheet .ph{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 12px}
+  #mobsheet .ph b{font-size:16px;color:#eef0ff}
+  #mobsheet .ph button{border:0;background:#1d2140;color:#eef0ff;border-radius:10px;padding:8px 14px;font-family:'Poppins',system-ui,sans-serif;font-size:13px;font-weight:600}
+  #mobsheet .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  #mobsheet .tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:16px 6px 13px;border-radius:18px;background:#181c2c;border:1px solid rgba(148,163,255,.1);color:#eef0ff;font-family:'Poppins',system-ui,sans-serif;font-size:12px;font-weight:600;text-align:center;line-height:1.2;-webkit-tap-highlight-color:transparent}
+  #mobsheet .tile .ico{display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;background:#0f1220;color:#a78bfa}
+  #mobsheet .tile .ico svg{width:24px;height:24px}
+  #mobsheet .tile.on{border-color:#3b82f6;background:#1a2340}
+  #mobsheet .tile.on .ico{background:#3b82f6;color:#0a0c16}
+  #mobsheet .hint{font-size:11.5px;color:#6f7689;text-align:center;padding:12px 6px 2px}
+}
 
 @media(hover:hover) and (pointer:fine){body,.shell,#gate{min-height:153.85vh;min-height:153.85dvh}html.lockscroll,html.lockscroll body{overflow:hidden;height:153.85vh;height:153.85dvh}html.lockscroll .shell{height:153.85vh;height:153.85dvh}}
 .nav-tab[data-tool=dashboard].on{background:#8b5cf6;border-color:#8b5cf6;color:#0a0c16}
@@ -183,15 +245,67 @@ body{background:#000000;color:#eef0ff}
   <div class="gate-card">
     <div class="gate-logo">Ausloans</div>
     <h1>Jordon's Broker Suite</h1>
-    <div class="gate-sub">Restricted access. Enter your password to continue.</div>
-    <label for="gpw">Password</label>
-    <input type="password" id="gpw" autocomplete="current-password" autofocus>
-    <button id="gate-go">Unlock</button>
-    <div class="gate-error" id="gate-err"></div>
-    <div class="gate-remember"><input type="checkbox" id="gate-remember" checked><label for="gate-remember" style="margin:0;text-transform:none;letter-spacing:0;font-weight:400;color:#8b91b8">Remember me on this device for 30 days</label></div>
-    <div class="gate-foot">This is a private internal tool. Unauthorised access is prohibited. Sessions auto-expire after 30 days of inactivity.</div>
+
+    <div id="g-face" class="g-face" hidden>
+      <button id="g-face-btn" class="g-facebtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9v4h-1"/><path d="M9 15.5c.8.9 1.8 1.3 3 1.3s2.2-.4 3-1.3"/></svg><span>Unlock with Face ID</span></button>
+      <div class="g-msg" id="g-face-msg"></div>
+      <button class="g-link" id="g-usepin" type="button">Use PIN instead</button>
+    </div>
+
+    <div id="g-pin" class="g-pin">
+      <div class="g-msg" id="g-pin-title">Enter your PIN</div>
+      <div class="g-dots" id="g-dots"><i></i><i></i><i></i><i></i></div>
+      <div class="g-pad" id="g-pad">
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+        <button type="button" data-k="face" id="g-pad-face" class="g-pad-face" aria-label="Face ID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9v4h-1"/><path d="M9 15.5c.8.9 1.8 1.3 3 1.3s2.2-.4 3-1.3"/></svg></button><button type="button" data-k="0">0</button><button type="button" data-k="del" aria-label="Delete">⌫</button>
+      </div>
+      <div class="gate-error" id="gate-err"></div>
+      <button class="g-link" id="g-usepw" type="button">Use the password instead</button>
+    </div>
+
+    <div id="g-pw" class="g-pw" hidden>
+      <div class="g-msg" id="g-pw-msg"></div>
+      <label for="gpw">Password</label>
+      <input type="password" id="gpw" autocomplete="current-password">
+      <button id="gate-go" type="button">Unlock</button>
+      <div class="gate-error" id="gate-err2"></div>
+      <button class="g-link" id="g-backpin" type="button">Back to the PIN</button>
+    </div>
+
+    <div class="gate-foot">Private tool. Stays unlocked on this device for 30 days.</div>
   </div>
 </div>
+
+<!-- First run cards: set a PIN, turn on Face ID -->
+<div id="g-setup" class="g-setup" hidden>
+  <div class="gate-card">
+    <div id="gs-pin" hidden>
+      <div class="gate-logo">One off</div>
+      <h1 id="gs-pin-h">Set your 4 digit PIN</h1>
+      <div class="g-msg" id="gs-pin-sub">This is what you type when Face ID is not available. It works on every device.</div>
+      <div class="g-dots" id="gs-dots"><i></i><i></i><i></i><i></i></div>
+      <div class="g-pad" id="gs-pad">
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+        <button type="button" data-k="none" disabled></button><button type="button" data-k="0">0</button><button type="button" data-k="del" aria-label="Delete">⌫</button>
+      </div>
+      <div class="gate-error" id="gs-err"></div>
+      <button class="g-link" id="gs-pin-later" type="button">Not now</button>
+    </div>
+    <div id="gs-face" hidden>
+      <div class="gate-logo">Faster next time</div>
+      <h1>Use Face ID on this phone?</h1>
+      <div class="g-msg">Next time you open the hub it checks your face and lets you straight in. The PIN still works if it can't see you.</div>
+      <button id="gs-face-on" type="button">Turn on Face ID</button>
+      <button class="g-link" id="gs-face-no" type="button">Not on this device</button>
+      <div class="gate-error" id="gs-face-err"></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="shell" id="appShell">
   <div class="topnav" id="topnav"><button class="nav-burger" id="navBurger" aria-label="Show or hide menu names"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="brand-mini">J</div><div class="brand">JORDON'S <span>BROKER SUITE</span></div>
@@ -212,6 +326,7 @@ body{background:#000000;color:#eef0ff}
       <button class="nav-tab" data-tool="cipher" data-label="Cipher" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.3"/></svg></span><span class="lbl">Cipher</span></button>
       
       <button class="nav-tab" data-tool="settings" data-label="Settings" title=""><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><span class="lbl">Settings</span></button>
+      <button class="nav-lock" id="navLock" title="Lock, PIN and Face ID" onclick="window.hubLockMenu&&window.hubLockMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
     </div>
   </div>
   <div class="frame-wrap">
@@ -225,7 +340,7 @@ body{background:#000000;color:#eef0ff}
 &lt;title&gt;Broker HUB · Dashboard&lt;/title&gt;
 &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=Poppins:wght@400;500;600&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
 &lt;style&gt;
-@media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%;}}
+html{-webkit-text-size-adjust:100%}
 :root{--bg:#000000;--card:#1a1f2c;--card2:#1a1e2a;--bdr:#242a4a;--bdr2:#333a4d;--txt:#eef0ff;--dim:#8b91b8;--mut:#5a6075;--blue:#4e8cff;--green:#2dd4a0;--red:#f06060;--amber:#f0b040;--purple:#a78bfa;--cyan:#20d0e8;--teal:#8b5cf6}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.5}
@@ -519,7 +634,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .filter-btn.on .count{opacity:.68}
 .filter-btn:focus{outline:none!important}
 .filter-btn:focus-visible{outline:2px solid #9db1ff!important;outline-offset:2px!important}
-&lt;/style&gt;&lt;/head&gt;
+&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
   &lt;div class=&quot;setup&quot; id=&quot;setupBox&quot; style=&quot;display:none&quot;&gt;
@@ -3217,7 +3333,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .panel:hover,.out:hover,.skt:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;header&gt;
@@ -3913,6 +4030,7 @@ textarea{line-height:1.5;resize:vertical;}
 .script p{margin:0 0 12px;}
 .outbox{background:var(--card2);border:none;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.55;}
 &lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;h1&gt;Insurance&lt;/h1&gt;
@@ -5185,7 +5303,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .card:hover,.stat:hover,.d:hover,.skt:hover{border-color:transparent!important;background:#181b28!important}
 .stat.owed{box-shadow:inset 3px 0 0 #fbbf24!important}.stat.chase{box-shadow:inset 3px 0 0 #fb7185!important}.stat.paid{box-shadow:inset 3px 0 0 #34d399!important}
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;h1&gt;Drive Tracker&lt;/h1&gt;
@@ -5662,6 +5781,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .toast.show{opacity:1;transform:translateX(-50%)}
 @media (max-width:640px){.list .row{grid-template-columns:1fr .8fr 1fr;} .list .row .h3,.list .row .h4{display:none}}
 &lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
@@ -6117,6 +6237,7 @@ td.chev{width:22px;color:var(--mut);text-align:right;font-size:18px;line-height:
 .pop .btn{margin-top:8px}
 @media(prefers-reduced-motion:reduce){.panel{transition:none}}
 &lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;shell&quot;&gt;
@@ -6527,7 +6648,7 @@ document.addEventListener('DOMContentLoaded',init);
 &lt;title&gt;Partner Manager&lt;/title&gt;
 &lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;
 &lt;style&gt;
-@media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%}}
+html{-webkit-text-size-adjust:100%}
 :root{--bg:#000;--card:#12141f;--card2:#181b28;--card3:#1d2140;--line:rgba(148,163,255,.12);--line2:rgba(148,163,255,.22);--txt:#eef0ff;--dim:#b4b9d9;--mut:#7f86ad;--faint:#5c628a;--teal:#22d3ee;--blue:#4f6bff;--lilac:#9db1ff;--green:#34d399;--amber:#fbbf24;--coral:#fb7185;--violet:#a78bfa;--grad:linear-gradient(90deg,#4f6bff,#22d3ee)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif}
 html,body{background:#000;color:var(--txt);min-height:100%}
@@ -6805,7 +6926,8 @@ table.t .r{text-align:right;font-variant-numeric:tabular-nums}
 .sumline:first-child{border-top:0}
 .sumline span{color:var(--mut)}.sumline b{font-weight:600}
 @media(max-width:600px){.wrap{padding:14px 14px 120px}.top h1{font-size:23px}.cd .big{font-size:30px}}
-&lt;/style&gt;&lt;/head&gt;
+&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
 &lt;div class=&quot;top&quot;&gt;
@@ -8262,7 +8384,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .jrow:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap app&quot;&gt;
 
@@ -9532,7 +9655,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .card:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;h1&gt;CRM Note&lt;/h1&gt;
 &lt;div class=&quot;sub&quot;&gt;Type it however it comes out. Hit Tidy and it comes back clean enough to paste into the CRM. No brackets, no dashes, relaxed grammar.&lt;/div&gt;
@@ -10024,6 +10148,7 @@ textarea::placeholder{color:var(--mut)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#2c2c2e;color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;opacity:0;transition:all .2s;pointer-events:none;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%)}
 &lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
@@ -10168,7 +10293,7 @@ run();
 &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js&quot;&gt;&lt;/script&gt;
 &lt;style&gt;
-@media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%;}}
+html{-webkit-text-size-adjust:100%}
 *{box-sizing:border-box;margin:0;padding:0}html,body,#root{height:100%}body{background:#000000}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#242a4a;border-radius:3px}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -10240,7 +10365,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 ::selection{background:rgba(139,92,246,.45)}
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(148,163,255,.18);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
@@ -10995,68 +11121,6 @@ async function visionRead(file,kind){
 }
 
 return{fileToText:fileToText,classify:classify,parseLicence:parseLicence,parsePayslip:parsePayslip,compare:compare,normDate:normDate,thinRead:thinRead,visionRead:visionRead};
-})();
-&lt;/script&gt;
-&lt;script&gt;
-/* ZBot: a won lead lands in this call script by itself. ZBot locks it with the pair code and drops
-   it on ntfy.sh, this unlocks it with the same code. Nothing readable passes through ntfy. */
-window.ZB=(function(){
-  var PAIR='zbot_pair_v1',SEEN='zbot_seen_v1',HOST='https://ntfy.sh/';
-  var te=new TextEncoder(),es=null,cb=null,keyP=null,topic=null,timer=null,took={};
-  function hex(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
-  function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var bin=atob(s),a=new Uint8Array(bin.length);for(var i=0;i&lt;bin.length;i++)a[i]=bin.charCodeAt(i);return a}
-  function code(){try{return(localStorage.getItem(PAIR)||'').replace(/\s+/g,'')}catch(e){return''}}
-  function seenList(){try{return JSON.parse(localStorage.getItem(SEEN)||'[]')}catch(e){return[]}}
-  async function derive(c){
-    var t=await crypto.subtle.digest('SHA-256',te.encode('zbot-topic|'+c));
-    var k=await crypto.subtle.digest('SHA-256',te.encode('zbot-key|'+c));
-    return{topic:'zb'+hex(t).slice(0,30),key:await crypto.subtle.importKey('raw',k,'AES-GCM',false,['decrypt'])};
-  }
-  async function unlock(body,key){
-    var m=String(body||'').match(/^zb1\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);if(!m)return null;
-    var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(m[1])},key,b64u(m[2]));
-    var txt=await new Response(new Blob([pt]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
-    return JSON.parse(txt);
-  }
-  async function handle(msg){
-    if(!msg||msg.event!=='message'||!cb||!keyP)return;
-    if(took[msg.id]||seenList().indexOf(msg.id)&gt;-1)return;
-    took[msg.id]=1;
-    try{
-      var body=msg.message;
-      if(msg.attachment&amp;&amp;msg.attachment.url){var r=await fetch(msg.attachment.url);body=await r.text();}
-      var L=await unlock(body,(await keyP).key);
-      if(L&amp;&amp;L.v===1)cb(L,msg.id);
-    }catch(e){}
-  }
-  async function poll(){
-    if(!topic)return;
-    try{
-      var r=await fetch(HOST+topic+'/json?poll=1&amp;since=3h');
-      var all=(await r.text()).split('\n').filter(Boolean).map(function(l){try{return JSON.parse(l)}catch(e){return null}}).filter(Boolean);
-      var fresh=all.filter(function(m){return m.event==='message'&amp;&amp;seenList().indexOf(m.id)&lt;0});
-      if(fresh.length)await handle(fresh[fresh.length-1]);
-    }catch(e){}
-  }
-  function stop(){if(es){es.close();es=null}if(timer){clearInterval(timer);timer=null}}
-  async function start(onLead){
-    if(onLead)cb=onLead;stop();
-    var c=code();if(!c||!window.crypto||!crypto.subtle||!window.DecompressionStream)return;
-    keyP=derive(c);topic=(await keyP).topic;
-    await poll();
-    try{es=new EventSource(HOST+topic+'/sse');es.onmessage=function(e){try{handle(JSON.parse(e.data))}catch(_){}}}catch(e){}
-    timer=setInterval(poll,60000);
-  }
-  document.addEventListener('visibilitychange',function(){if(!document.hidden)poll()});
-  window.addEventListener('focus',function(){poll()});
-  return{
-    paired:function(){return!!code()},
-    ok:function(){return!!(window.crypto&amp;&amp;crypto.subtle&amp;&amp;window.DecompressionStream&amp;&amp;window.EventSource)},
-    pair:function(c){try{localStorage.setItem(PAIR,String(c||'').trim())}catch(e){}start()},
-    unpair:function(){try{localStorage.removeItem(PAIR)}catch(e){}stop();topic=null;keyP=null},
-    seen:function(id){var l=seenList();if(l.indexOf(id)&lt;0){l.push(id);try{localStorage.setItem(SEEN,JSON.stringify(l.slice(-50)))}catch(e){}}},
-    start:start,stop:stop
-  };
 })();
 &lt;/script&gt;
 &lt;script type=&quot;text/babel&quot;&gt;
@@ -12008,13 +12072,6 @@ const [qWkEdit,setQWkEdit]=useState(&quot;&quot;);
 const [showZinkPaste,setShowZinkPaste]=useState(true);
 const [zinkRaw,setZinkRaw]=useState(&quot;&quot;);
 const [clientData,setClientData]=useState({});
-const [zbOn,setZbOn]=useState(()=&gt;!!(window.ZB&amp;&amp;ZB.paired()));
-const [zbPairOpen,setZbPairOpen]=useState(false);
-const [zbCodeIn,setZbCodeIn]=useState(&quot;&quot;);
-const [zbPending,setZbPending]=useState(null);
-const [zbFrom,setZbFrom]=useState(null);
-const [zbLast,setZbLast]=useState(null);
-const zbRef=useRef({raw:null,d:null,busy:false});
 const [fee,setFee]=useState(()=&gt;{try{return localStorage.getItem(&quot;closer_fee&quot;)||&quot;$1,500&quot;}catch(e){return&quot;$1,500&quot;}});
 const saveFee=(v)=&gt;{setFee(v);try{localStorage.setItem(&quot;closer_fee&quot;,v)}catch(e){}};
 
@@ -12167,21 +12224,6 @@ const saveToLog=()=&gt;{if(!res.situation&amp;&amp;!res.outcome){toast(&quot;Not
 const delLog=(id)=&gt;{const u=log.filter(e=&gt;e.id!==id);setLog(u);try{localStorage.setItem(&quot;closer_log&quot;,JSON.stringify(u))}catch(e){}};
 const copyLogE=(e)=&gt;{navigator.clipboard.writeText(e.note||&quot;&quot;);toast(&quot;Copied ✓&quot;)};
 const resetAll=()=&gt;{setCur(0);setPath(null);setRes({});setSel([]);setCustom(&quot;&quot;);setShowObj(false);setShowSum(false);setShowLog(false);setQuoteSelected(null);setQuoteCustomAmt(&quot;&quot;);setQuoteComfort(&quot;&quot;);setClientData({});setZinkRaw(&quot;&quot;);setShowZinkPaste(true)};
-useEffect(()=&gt;{zbRef.current.busy=cur&gt;0||!!zinkRaw.trim()||Object.keys(clientData).length&gt;0||Object.keys(res).some(k=&gt;![&quot;callType&quot;,&quot;productType&quot;].includes(k));},[cur,res,zinkRaw,clientData]);
-const zbApply=(L,id)=&gt;{
-  resetAll();
-  const d=L.d||{};
-  zbRef.current.raw=L.raw||d.clientName||&quot;ZBot lead&quot;;zbRef.current.d=d;
-  setZinkRaw(zbRef.current.raw);
-  setClientData(d);
-  if(L.path)setPath(L.path);
-  setRes(prev=&gt;({...prev,...(L.callType?{callType:L.callType}:{}),...(L.productType?{productType:L.productType}:{})}));
-  setZbFrom({lead:L.leadId,price:L.price,test:L.kind===&quot;test&quot;});
-  setShowZinkPaste(true);setZbPending(null);setZbLast({L,id});
-  if(window.ZB)ZB.seen(id);
-  toast(L.kind===&quot;test&quot;?&quot;ZBot test lead loaded&quot;:&quot;New lead from ZBot ✓&quot;);
-};
-useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id)=&gt;{if(zbRef.current.busy)setZbPending({L,id});else zbApply(L,id);});return()=&gt;ZB.stop();},[]);
 
 const done=Object.keys(res).filter(k=&gt;![&quot;loanAmount&quot;,&quot;weeklyRepayment&quot;,&quot;comfortableAt&quot;].includes(k)).length;
 const total=STAGES.filter(s=&gt;s.key&amp;&amp;!skip(s)).length;
@@ -12228,47 +12270,20 @@ return(
 &lt;div style={{minHeight:&quot;100vh&quot;,background:&quot;#000000&quot;,color:&quot;#c9d1d9&quot;,fontFamily:&quot;'Poppins','SF Mono',monospace&quot;,display:&quot;flex&quot;,flexDirection:&quot;column&quot;,fontSize:14}}&gt;
 &lt;style&gt;{css}&lt;/style&gt;
 {toastMsg&amp;&amp;&lt;div className=&quot;toast&quot;&gt;{toastMsg}&lt;/div&gt;}
-{zbPending&amp;&amp;(
-&lt;div style={{position:&quot;fixed&quot;,left:&quot;50%&quot;,transform:&quot;translateX(-50%)&quot;,top:64,zIndex:300,background:&quot;#0d1117&quot;,border:&quot;1px solid #34d39960&quot;,borderRadius:12,padding:&quot;10px 12px&quot;,display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:10,boxShadow:&quot;0 8px 30px #0008&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;,fontSize:12,color:&quot;#eef0ff&quot;,maxWidth:&quot;calc(100vw - 24px)&quot;,width:&quot;max-content&quot;}}&gt;
-&lt;span style={{width:8,height:8,borderRadius:&quot;50%&quot;,background:&quot;#34d399&quot;,flex:&quot;0 0 auto&quot;}}/&gt;
-&lt;span style={{whiteSpace:&quot;nowrap&quot;,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;,minWidth:0}}&gt;New lead from ZBot{zbPending.L.d&amp;&amp;zbPending.L.d.clientName?` · ${zbPending.L.d.clientName}`:&quot;&quot;}&lt;/span&gt;
-&lt;button className=&quot;btn bp&quot; onClick={()=&gt;zbApply(zbPending.L,zbPending.id)} style={{fontSize:11,padding:&quot;5px 12px&quot;}}&gt;Load&lt;/button&gt;
-&lt;button className=&quot;btn&quot; onClick={()=&gt;{if(window.ZB)ZB.seen(zbPending.id);setZbPending(null)}} style={{fontSize:11,padding:&quot;5px 10px&quot;}}&gt;✕&lt;/button&gt;
-&lt;/div&gt;)}
-{zbPairOpen&amp;&amp;(
-&lt;div className=&quot;overlay&quot; onClick={()=&gt;setZbPairOpen(false)} style={{zIndex:400}}&gt;
-&lt;div className=&quot;modal&quot; onClick={e=&gt;e.stopPropagation()} style={{maxWidth:420}}&gt;
-&lt;div style={{padding:&quot;16px 20px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,justifyContent:&quot;space-between&quot;,alignItems:&quot;center&quot;}}&gt;
-&lt;div style={{fontWeight:700,color:&quot;#eef0ff&quot;,fontSize:15,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;ZBot&lt;/div&gt;
-&lt;button className=&quot;btn&quot; onClick={()=&gt;setZbPairOpen(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;
-&lt;/div&gt;
-&lt;div style={{padding:20}}&gt;
-&lt;div style={{fontSize:12,color:zbOn?&quot;#34d399&quot;:&quot;#8b9dc3&quot;,marginBottom:10,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{!ZB.ok()?&quot;This browser can't open ZBot leads. Update it or use Chrome.&quot;:zbOn?&quot;Paired. Won leads load here by themselves.&quot;:&quot;Paste the pair code from ZBot.&quot;}&lt;/div&gt;
-&lt;input value={zbCodeIn} onChange={e=&gt;setZbCodeIn(e.target.value)} placeholder=&quot;Pair code&quot; style={{width:&quot;100%&quot;,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:&quot;10px 12px&quot;,color:&quot;#eef0ff&quot;,fontSize:12,fontFamily:&quot;'SF Mono',monospace&quot;,outline:&quot;none&quot;}}/&gt;
-&lt;div style={{display:&quot;flex&quot;,gap:6,marginTop:12}}&gt;
-&lt;button className=&quot;btn bp&quot; disabled={!zbCodeIn.trim()} onClick={()=&gt;{ZB.pair(zbCodeIn);setZbOn(true);setZbPairOpen(false);toast(&quot;ZBot paired ✓&quot;)}} style={{flex:1,padding:10,fontSize:12}}&gt;Save&lt;/button&gt;
-{zbOn&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{ZB.unpair();setZbOn(false);setZbPairOpen(false);toast(&quot;ZBot unpaired&quot;)}} style={{padding:10,fontSize:12}}&gt;Unpair&lt;/button&gt;}
-&lt;/div&gt;
-{zbLast&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbPairOpen(false);zbApply(zbLast.L,zbLast.id)}} style={{width:&quot;100%&quot;,marginTop:8,padding:10,fontSize:12}}&gt;Load last lead{zbLast.L.d&amp;&amp;zbLast.L.d.clientName?` · ${zbLast.L.d.clientName}`:&quot;&quot;}&lt;/button&gt;}
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;)}
 
 {showZinkPaste&amp;&amp;(
 &lt;div className=&quot;overlay&quot; onClick={()=&gt;setShowZinkPaste(false)}&gt;
 &lt;div className=&quot;modal&quot; onClick={e=&gt;e.stopPropagation()} style={{maxWidth:680}}&gt;
 &lt;div style={{padding:&quot;16px 20px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,justifyContent:&quot;space-between&quot;,alignItems:&quot;center&quot;}}&gt;
 &lt;div style={{fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;&lt;div style={{fontWeight:700,color:&quot;#eef0ff&quot;,fontSize:15}}&gt;📥 Start Call · Setup&lt;/div&gt;&lt;div style={{fontSize:11,color:&quot;#4a5280&quot;,marginTop:2}}&gt;Paste Zink data and set the call type · script will skip anything you've already answered&lt;/div&gt;&lt;/div&gt;
-&lt;div style={{display:&quot;flex&quot;,gap:6,alignItems:&quot;center&quot;}}&gt;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbCodeIn(&quot;&quot;);setZbPairOpen(true)}} style={{padding:&quot;6px 10px&quot;,fontSize:11,display:&quot;inline-flex&quot;,alignItems:&quot;center&quot;,gap:6}}&gt;&lt;span style={{width:7,height:7,borderRadius:&quot;50%&quot;,background:zbOn?&quot;#34d399&quot;:&quot;#4a5280&quot;,display:&quot;inline-block&quot;}}/&gt;ZBot&lt;/button&gt;
-&lt;button className=&quot;btn&quot; onClick={()=&gt;setShowZinkPaste(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;&lt;/div&gt;
+&lt;button className=&quot;btn&quot; onClick={()=&gt;setShowZinkPaste(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;
 &lt;/div&gt;
 &lt;div style={{padding:20,overflow:&quot;auto&quot;,flex:1}}&gt;
 
 &lt;div className=&quot;sl&quot; style={{marginBottom:6}}&gt;Step 1 · Paste Zink application (optional)&lt;/div&gt;
-{zbFrom&amp;&amp;zinkRaw===zbRef.current.raw&amp;&amp;&lt;div style={{margin:&quot;0 0 8px&quot;,fontSize:11,color:&quot;#34d399&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{zbFrom.test?&quot;ZBot test&quot;:&quot;From ZBot&quot;} · lead {zbFrom.lead}{zbFrom.price?` · won at $${zbFrom.price}`:&quot;&quot;}&lt;/div&gt;}
 &lt;textarea value={zinkRaw} onChange={e=&gt;setZinkRaw(e.target.value)} placeholder=&quot;Ctrl+A → Ctrl+C from the Zink page → paste here&quot; style={{width:&quot;100%&quot;,height:140,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:14,color:&quot;#eef0ff&quot;,fontSize:12,fontFamily:&quot;'Poppins',sans-serif&quot;,outline:&quot;none&quot;,resize:&quot;vertical&quot;}} /&gt;
 {zinkRaw.trim()&amp;&amp;&lt;button className=&quot;btn bp&quot; onClick={()=&gt;{
-  const d=(zbRef.current.raw&amp;&amp;zinkRaw===zbRef.current.raw&amp;&amp;zbRef.current.d)?{...zbRef.current.d}:parseZinkText(zinkRaw);
+  const d=parseZinkText(zinkRaw);
   setClientData(d);
   const consumerProducts=[&quot;unsecured_pl&quot;,&quot;secured_pl&quot;,&quot;vehicle&quot;,&quot;refinance&quot;,&quot;consolidation&quot;];
   const commercialProducts=[&quot;cashflow&quot;,&quot;equipment&quot;];
@@ -12371,7 +12386,6 @@ return(
 {clientData.clientName&amp;&amp;&lt;div style={{fontSize:12,color:&quot;#eef0ff&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;,fontWeight:600}}&gt;{clientData.clientName}&lt;/div&gt;}
 &lt;/div&gt;
 &lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:6,flexWrap:&quot;wrap&quot;}}&gt;
-&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbCodeIn(&quot;&quot;);setZbPairOpen(true)}} style={{fontSize:11,padding:&quot;5px 10px&quot;,display:&quot;inline-flex&quot;,alignItems:&quot;center&quot;,gap:6}}&gt;&lt;span style={{width:7,height:7,borderRadius:&quot;50%&quot;,background:zbOn?&quot;#34d399&quot;:&quot;#4a5280&quot;,display:&quot;inline-block&quot;}}/&gt;ZBot&lt;/button&gt;
 &lt;button className=&quot;btn&quot; onClick={()=&gt;setShowZinkPaste(true)} style={{fontSize:11,padding:&quot;5px 10px&quot;,color:&quot;#f0a500&quot;,borderColor:&quot;#f0a50040&quot;}}&gt;📥 Paste Zink&lt;/button&gt;
 &lt;button className=&quot;btn&quot; onClick={()=&gt;{setShowSum(!showSum);setShowObj(false);setShowLog(false)}} style={{fontSize:11,padding:&quot;5px 10px&quot;}}&gt;{showSum?&quot;Hide&quot;:&quot;Summary&quot;}&lt;/button&gt;
 &lt;button className=&quot;btn&quot; onClick={()=&gt;{setShowObj(!showObj);setShowSum(false);setShowLog(false)}} style={{fontSize:11,padding:&quot;5px 10px&quot;,color:&quot;#fb7185&quot;}}&gt;{showObj?&quot;Close&quot;:&quot;Objections&quot;}&lt;/button&gt;
@@ -12641,7 +12655,7 @@ ReactDOM.render(&lt;App/&gt;,document.getElementById(&quot;root&quot;));
 &lt;title&gt;Lender Matcher&lt;/title&gt;
 &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Poppins:wght@500;600&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
 &lt;style&gt;
-@media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%;}}
+html{-webkit-text-size-adjust:100%}
 :root{--bg:#000000;--card:#151823;--card2:#1a1e2b;--bdr:#1e2433;--bdr2:#242a4a;--txt:#eef0ff;--dim:#8b91b8;--mut:#6f7689;--teal:#8b5cf6;--pos:#34d399;--neg:#fb7185;--warn:#f0a500;--amber:#f79009;--blue:#4e8cff}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--txt);font-family:'Poppins',system-ui,sans-serif;min-height:100vh}
@@ -12887,6 +12901,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .cr-float:hover{background:#273066}
 @media(max-width:600px){#pane-extract .cr-go,#pane-extract .cr-btn.p{width:100%}#pane-extract .cr-btn.r{margin-left:0}}
 &lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
@@ -15960,7 +15975,7 @@ if(b0)window.mMode('consumer',b0);
 &lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin&gt;
 &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Poppins:wght@500&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
 &lt;style&gt;
-@media (hover:none),(pointer:coarse){html{zoom:75%;-webkit-text-size-adjust:100%;}}
+html{-webkit-text-size-adjust:100%}
 :root {
   --bg: #0a0c16;
   --card: #12152a;
@@ -17204,7 +17219,8 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .card:hover{border-color:transparent!important;background:#181b28!important}
 
 &lt;/style&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;/head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 
 &lt;div class=&quot;clientbar&quot;&gt;
@@ -23755,6 +23771,7 @@ select.deal{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)
 .step.done .d{opacity:.5}
 .hint{font-size:11.5px;color:var(--mut);margin:6px 0 0}
 &lt;/style&gt;
+&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap&quot;&gt;
@@ -24028,7 +24045,8 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
 .pill-ok{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(52,211,153,.15);color:#34d399}
 .pill-no{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(251,191,36,.15);color:#fbbf24}
 @media(max-width:700px){body{padding:18px 14px 90px!important}}
-&lt;/style&gt;&lt;/head&gt;
+&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
+&lt;/head&gt;
 &lt;body&gt;
 &lt;h1&gt;Settings&lt;/h1&gt;
 &lt;div class=&quot;sub&quot;&gt;Saves to this browser · applies across the Call Script, Serviceability and Lender Matcher instantly. AI keys stay where they were: Serviceability’s API card and the Lender Matcher’s Settings pane.&lt;/div&gt;
@@ -24218,74 +24236,307 @@ aiPaint();ovPaint();setRestore();
 </div>
 
 <script>
-// ═══ PASSWORD GATE ═══
-// To change the password: replace EXPECTED_HASH with the SHA-256 of your new password.
-// Compute a new hash at: https://emn178.github.io/online-tools/sha256.html
-// (Type your password, copy the resulting hash, paste it below)
+
+// ═══ GATE · Face ID first, a 4 digit PIN, the old password as the fallback ═══
+// The PIN lives in the Google Sheet (HubSettings tab) as a hash, so every device checks the same one.
+// Face ID / Touch ID is per device: a passkey made on this device, checked by the phone itself.
 const EXPECTED_HASH = "5c2d603f8c331346ab90777f73e091cc67fe99004c2782f7c7068764a5ef1558";
 const SESSION_DAYS = 30;
 const SESSION_KEY = "bcc_unlock_until";
+const PIN_KEY = "bcc_pin_hash";
+const FACE_KEY = "bcc_face_cred";
+const FACE_SKIP = "bcc_face_skip";
+const PIN_SALT = "bcc-pin-v1:";
+const GATE_URL = "https://script.google.com/macros/s/AKfycbza_HzauQ02hFJFB0ZwTqMQ3C6AlMQ9rd5y7ToLAwNXQZAxcmimv2xXizsU5J_JxDGndA/exec";
 
+function $g(id){ return document.getElementById(id); }
+function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 async function sha256(text){
   const buf = new TextEncoder().encode(text);
   const hash = await crypto.subtle.digest('SHA-256', buf);
   return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-
 function isUnlocked(){
   const until = parseInt(localStorage.getItem(SESSION_KEY)||"0");
-  return until > Date.now();
+  return until > Date.now() || !!sessionStorage.getItem(SESSION_KEY);
 }
-
-function unlock(remember){
-  if(remember){
-    const until = Date.now() + SESSION_DAYS*24*60*60*1000;
-    localStorage.setItem(SESSION_KEY, until.toString());
-  } else {
-    sessionStorage.setItem(SESSION_KEY, "1");
-  }
-  document.getElementById("gate").classList.add("hidden");
+function unlock(){
+  try{ localStorage.setItem(SESSION_KEY, String(Date.now() + SESSION_DAYS*24*60*60*1000)); }catch(e){ sessionStorage.setItem(SESSION_KEY, "1"); }
+  $g("gate").classList.add("hidden");
   document.body.classList.remove("locked");
 }
-
 function lock(){
   localStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(SESSION_KEY);
   location.reload();
 }
+function bioName(){
+  const ua = navigator.userAgent || "";
+  if(/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return "Face ID";
+  if(/Macintosh/.test(ua)) return "Touch ID";
+  if(/Android/.test(ua)) return "fingerprint or face";
+  if(/Windows/.test(ua)) return "Windows Hello";
+  return "Face ID";
+}
+const BIO = bioName();
 
+// ── passkey helpers ──
+const b64u = {
+  enc: function(buf){ return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); },
+  dec: function(s){ s = String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length % 4) s += '='; const bin = atob(s); const u = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
+};
+function faceSupported(){ return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.get && window.isSecureContext); }
+async function faceAvailable(){
+  try{ return faceSupported() && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }catch(e){ return false; }
+}
+function faceReady(){ return faceSupported() && !!localStorage.getItem(FACE_KEY); }
+async function faceUnlock(){
+  const id = b64u.dec(localStorage.getItem(FACE_KEY));
+  const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const cred = await navigator.credentials.get({ publicKey: { challenge: challenge, allowCredentials: [{ type: 'public-key', id: id, transports: ['internal'] }], userVerification: 'required', timeout: 60000 } });
+  return !!cred;
+}
+async function faceSetup(){
+  const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const userId = crypto.getRandomValues(new Uint8Array(16));
+  const cred = await navigator.credentials.create({ publicKey: {
+    challenge: challenge,
+    rp: { name: "Jordon's Broker Suite" },
+    user: { id: userId, name: "jordy", displayName: "Jordy" },
+    pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+    timeout: 60000, attestation: 'none'
+  } });
+  localStorage.setItem(FACE_KEY, b64u.enc(cred.rawId));
+  localStorage.removeItem(FACE_SKIP);
+}
+
+// ── the shared PIN ──
+// remotePin: what the sheet holds ("" means none yet, null means we could not ask)
+// sheetPins: true when the sheet script can store a PIN, false when it is an older script, null when unreachable
+let remotePin = null, remoteDone = false, remotePromise = null, sheetPins = null;
+function localPin(){ try{ return localStorage.getItem(PIN_KEY) || ""; }catch(e){ return ""; } }
+function fetchPin(){
+  if(remotePromise) return remotePromise;
+  const ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+  const t = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+  let fp;
+  try{ fp = fetch(GATE_URL + "?fn=settings", ctl ? { signal: ctl.signal } : {}); }catch(e){ fp = Promise.reject(e); }
+  remotePromise = fp.then(function(r){ return r.json(); }).then(function(j){
+    if(j && j.ok){ sheetPins = true; remotePin = String(j.pin || ""); if(remotePin) localStorage.setItem(PIN_KEY, remotePin); }
+    else sheetPins = false;
+  }).catch(function(){}).then(function(){ clearTimeout(t); remoteDone = true; });
+  return remotePromise;
+}
+// the sheet wins when it has one, otherwise whatever this device last knew
+function expectedPin(){ return remotePin || localPin(); }
+async function savePin(hash){
+  let j = null;
+  try{
+    const r = await fetch(GATE_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type: 'settings', pin: hash, old: expectedPin() }) });
+    j = await r.json();
+  }catch(e){ j = null; }
+  if(j && j.ok){ sheetPins = true; remotePin = hash; localStorage.setItem(PIN_KEY, hash); return 'shared'; }
+  if(j && j.error && /does not match/i.test(j.error)) throw new Error("It was changed on another device. Lock, then unlock with that one first");
+  // an older sheet script, or no internet: keep it on this device, it goes up to the sheet the next time it can
+  if(j && j.error && /unknown post type/i.test(j.error)) sheetPins = false;
+  localStorage.setItem(PIN_KEY, hash);
+  return 'local';
+}
+function healPin(){
+  // this device has a PIN the sheet has never seen, so share it
+  if(!(sheetPins && remotePin === "" && localPin())) return;
+  const h = localPin();
+  fetch(GATE_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ type: 'settings', pin: h, old: "" }) })
+    .then(function(r){ return r.json(); }).then(function(j){ if(j && j.ok) remotePin = h; }).catch(function(){});
+}
+
+// ── pin pad ──
+function makePad(dotsEl, padEl, onFull, onFace){
+  let buf = "";
+  const pad = { onFull: onFull, onFace: onFace };
+  function paint(){ Array.prototype.forEach.call(dotsEl.children, function(d, i){ d.classList.toggle('on', i < buf.length); }); }
+  function key(k){
+    if(k === 'del'){ buf = buf.slice(0, -1); paint(); return; }
+    if(k === 'face'){ if(pad.onFace) pad.onFace(); return; }
+    if(!/^\d$/.test(k) || buf.length >= 4) return;
+    buf += k; paint();
+    if(buf.length === 4){ const v = buf; setTimeout(function(){ if(pad.onFull) pad.onFull(v); }, 80); }
+  }
+  padEl.addEventListener('click', function(e){ const b = e.target.closest('button'); if(b && b.dataset.k) key(b.dataset.k); });
+  pad.key = key;
+  pad.clear = function(){ buf = ""; paint(); dotsEl.classList.remove('ok'); };
+  pad.shake = function(){ dotsEl.classList.add('shake'); setTimeout(function(){ dotsEl.classList.remove('shake'); }, 450); buf = ""; paint(); };
+  pad.ok = function(){ dotsEl.classList.add('ok'); };
+  pad.value = function(){ return buf; };
+  return pad;
+}
+let setupPad = null;
+
+let wrongTries = 0, coolUntil = 0;
+const gatePad = makePad($g('g-dots'), $g('g-pad'), checkPin, function(){ startFace(true); });
+async function checkPin(digits){
+  const err = $g('gate-err');
+  if(Date.now() < coolUntil){ err.textContent = "Too many goes. Wait " + Math.ceil((coolUntil - Date.now())/1000) + " seconds."; gatePad.shake(); return; }
+  err.textContent = "";
+  $g('g-pin-title').textContent = "Checking";
+  if(!remoteDone) await Promise.race([fetchPin(), wait(6000)]);
+  const exp = expectedPin();
+  if(!exp){
+    $g('g-pin-title').textContent = "Enter your PIN";
+    gatePad.clear();
+    showFirstRun();
+    return;
+  }
+  const h = await sha256(PIN_SALT + digits);
+  if(h === exp){
+    gatePad.ok(); $g('g-pin-title').textContent = "In you go";
+    wrongTries = 0;
+    setTimeout(function(){ unlock(); afterUnlock(); }, 120);
+  } else {
+    wrongTries++;
+    if(wrongTries >= 5){ coolUntil = Date.now() + 30000; wrongTries = 0; err.textContent = "Too many goes. Wait 30 seconds."; }
+    else err.textContent = "Not it. Try again.";
+    $g('g-pin-title').textContent = "Enter your PIN";
+    gatePad.shake();
+  }
+}
+function showPin(){ $g('g-face').hidden = true; $g('g-pw').hidden = true; $g('g-pin').hidden = false; }
+function showPw(first){
+  $g('g-face').hidden = true; $g('g-pin').hidden = true; $g('g-pw').hidden = false;
+  $g('g-pw-msg').textContent = first ? "First time. Password once, then you pick your PIN." : "";
+  $g('g-backpin').hidden = !!first;
+  setTimeout(function(){ $g('gpw').focus(); }, 50);
+}
+function showFirstRun(){ $g('gate-err').textContent = ""; showPw(true); }
+function showFace(){ $g('g-pin').hidden = true; $g('g-pw').hidden = true; $g('g-face').hidden = false; }
+
+// ── legacy password ──
 async function tryUnlock(){
-  const input = document.getElementById("gpw").value;
-  const err = document.getElementById("gate-err");
-  const btn = document.getElementById("gate-go");
-  if(!input){ err.textContent = "Enter a password"; return }
-  btn.disabled = true; btn.textContent = "Checking...";
+  const input = $g("gpw").value;
+  const err = $g("gate-err2");
+  const btn = $g("gate-go");
+  if(!input){ err.textContent = "Enter the password"; return; }
+  btn.disabled = true; btn.textContent = "Checking";
   err.textContent = "";
   try {
     const hash = await sha256(input);
-    if(hash === EXPECTED_HASH){
-      const remember = document.getElementById("gate-remember").checked;
-      unlock(remember);
-    } else {
-      err.textContent = "Incorrect password";
-      document.getElementById("gpw").value = "";
-      document.getElementById("gpw").focus();
-    }
-  } catch(e){
-    err.textContent = "Error: " + e.message;
-  } finally {
-    btn.disabled = false; btn.textContent = "Unlock";
+    if(hash === EXPECTED_HASH){ unlock(); afterUnlock(); }
+    else { err.textContent = "Incorrect password"; $g("gpw").value = ""; $g("gpw").focus(); }
+  } catch(e){ err.textContent = "Error: " + e.message; }
+  finally { btn.disabled = false; btn.textContent = "Unlock"; }
+}
+
+// ── Face ID on the gate ──
+let faceBusy = false;
+async function startFace(fromTap){
+  if(!faceReady() || faceBusy) return;
+  const box = $g('g-face'), msg = $g('g-face-msg');
+  showFace(); faceBusy = true; box.classList.add('busy'); msg.textContent = "Looking for you";
+  try{
+    const good = await faceUnlock();
+    if(good){ msg.textContent = "In you go"; unlock(); afterUnlock(); return; }
+    msg.textContent = "Didn't get you. Tap to try again, or use the PIN.";
+  }catch(e){
+    const name = (e && e.name) || "";
+    if(name === 'NotAllowedError') msg.textContent = fromTap ? "Didn't get you. Tap to try again, or use the PIN." : "Tap to use " + BIO + ", or use the PIN.";
+    else if(name === 'InvalidStateError' || name === 'NotSupportedError' || name === 'SecurityError'){ localStorage.removeItem(FACE_KEY); msg.textContent = BIO + " needs setting up again. Use the PIN."; showPin(); }
+    else msg.textContent = BIO + " isn't answering. Use the PIN.";
+  }finally{ faceBusy = false; box.classList.remove('busy'); }
+}
+
+// ── after a successful unlock: a PIN if there is none anywhere, then the Face ID offer ──
+async function afterUnlock(){
+  if(!remoteDone) await Promise.race([fetchPin(), wait(5000)]);
+  if(!expectedPin()) await setupPin(false);
+  else healPin();
+  if(!localStorage.getItem(FACE_KEY) && !localStorage.getItem(FACE_SKIP) && await faceAvailable()) await setupFace();
+}
+function setupPin(changing){
+  return new Promise(function(done){
+    const wrap = $g('g-setup'), card = $g('gs-pin'), h = $g('gs-pin-h'), sub = $g('gs-pin-sub'), err = $g('gs-err');
+    wrap.hidden = false; card.hidden = false; $g('gs-face').hidden = true; err.textContent = "";
+    h.textContent = changing ? "New 4 digit PIN" : "Set your 4 digit PIN";
+    sub.textContent = "This is what you type when " + BIO + " is not available. It works on every device.";
+    let first = "";
+    if(!setupPad) setupPad = makePad($g('gs-dots'), $g('gs-pad'), null, null);
+    const pad = setupPad;
+    pad.onFull = async function(v){
+      if(!first){ first = v; pad.clear(); h.textContent = "Type it again"; sub.textContent = "Just to be sure."; return; }
+      if(v !== first){ first = ""; pad.shake(); h.textContent = changing ? "New 4 digit PIN" : "Set your 4 digit PIN"; sub.textContent = "They didn't match. Start again."; return; }
+      h.textContent = "Saving"; sub.textContent = "";
+      try{ const where = await savePin(await sha256(PIN_SALT + v)); pad.ok(); h.textContent = "PIN set"; sub.textContent = where === 'shared' ? "Same PIN on every device." : "Saved on this device."; await wait(700); wrap.hidden = true; card.hidden = true; done(true); }
+      catch(e){ first = ""; pad.clear(); h.textContent = changing ? "New 4 digit PIN" : "Set your 4 digit PIN"; err.textContent = (e.message || "Couldn't save it") + "."; }
+    };
+    $g('gs-pin-later').onclick = function(){ first = ""; pad.clear(); wrap.hidden = true; card.hidden = true; done(false); };
+    pad.clear();
+  });
+}
+function setupFace(){
+  return new Promise(function(done){
+    const wrap = $g('g-setup'), card = $g('gs-face'), err = $g('gs-face-err');
+    wrap.hidden = false; card.hidden = false; $g('gs-pin').hidden = true; err.textContent = "";
+    card.querySelector('h1').textContent = "Use " + BIO + " on this device?";
+    card.querySelector('.g-msg').textContent = "Next time you open the hub it checks it's you and lets you straight in. The PIN still works if it can't.";
+    $g('gs-face-on').textContent = "Turn on " + BIO;
+    $g('gs-face-on').onclick = async function(){
+      err.textContent = ""; this.disabled = true; this.textContent = "Setting up";
+      try{ await faceSetup(); this.textContent = BIO + " is on"; await wait(500); wrap.hidden = true; card.hidden = true; done(true); }
+      catch(e){ this.disabled = false; this.textContent = "Turn on " + BIO; err.textContent = (e && e.name === 'NotAllowedError') ? "Cancelled. You can turn it on later from the lock menu." : "Couldn't set it up here. The PIN still works."; }
+    };
+    $g('gs-face-no').onclick = function(){ localStorage.setItem(FACE_SKIP, "1"); wrap.hidden = true; card.hidden = true; done(false); };
+  });
+}
+
+// ── lock menu: lock now, change PIN, Face ID on or off ──
+function lockMenu(){
+  const old = $g('g-menu'); if(old) old.remove();
+  const faceOn = !!localStorage.getItem(FACE_KEY);
+  const m = document.createElement('div'); m.id = 'g-menu'; m.className = 'g-setup';
+  m.innerHTML = '<div class="gate-card"><div class="gate-logo">Lock and sign in</div><h1>Jordon\'s Broker Suite</h1>'
+    + '<button type="button" id="gm-lock">Lock now</button>'
+    + '<button type="button" class="g-link" id="gm-pin">Change the PIN</button>'
+    + '<button type="button" class="g-link" id="gm-face">' + (faceOn ? 'Turn off ' + BIO + ' on this device' : 'Turn on ' + BIO + ' on this device') + '</button>'
+    + '<button type="button" class="g-link" id="gm-close">Close</button></div>';
+  document.body.appendChild(m);
+  m.addEventListener('click', function(e){ if(e.target === m) m.remove(); });
+  $g('gm-close').onclick = function(){ m.remove(); };
+  $g('gm-lock').onclick = function(){ lock(); };
+  $g('gm-pin').onclick = async function(){ m.remove(); if(!remoteDone) await Promise.race([fetchPin(), wait(5000)]); await setupPin(!!expectedPin()); };
+  $g('gm-face').onclick = async function(){ m.remove(); if(faceOn){ localStorage.removeItem(FACE_KEY); localStorage.setItem(FACE_SKIP, "1"); } else { localStorage.removeItem(FACE_SKIP); if(await faceAvailable()) await setupFace(); else alert(BIO + " isn't available in this browser."); } };
+}
+window.hubLockMenu = lockMenu;
+window.hubLock = lock;
+
+// ── boot ──
+(function bootGate(){
+  const faceEls = [$g('g-face-btn').querySelector('span'), $g('gs-face-on')];
+  faceEls[0].textContent = "Unlock with " + BIO;
+  $g('g-pad-face').classList.toggle('show', faceReady());
+  if(isUnlocked()){
+    $g("gate").classList.add("hidden");
+    document.body.classList.remove("locked");
+    fetchPin().then(function(){ afterUnlock(); });
+    return;
   }
-}
-
-// Check on load · if unlocked, skip gate
-if(isUnlocked() || sessionStorage.getItem(SESSION_KEY)){
-  document.getElementById("gate").classList.add("hidden");
-  document.body.classList.remove("locked");
-}
-
-document.getElementById("gate-go").addEventListener("click", tryUnlock);
-document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key === "Enter") tryUnlock(); });
+  fetchPin().then(function(){
+    // nothing set anywhere yet: swap the pad for the password before anyone types into it
+    if($g('gate').classList.contains('hidden') || $g('g-pin').hidden || gatePad.value()) return;
+    if(!expectedPin()) showFirstRun();
+  });
+  if(faceReady()){ showFace(); startFace(false); } else showPin();
+  $g('g-face-btn').addEventListener('click', function(){ startFace(true); });
+  $g('g-usepin').addEventListener('click', showPin);
+  $g('g-usepw').addEventListener('click', showPw);
+  $g('g-backpin').addEventListener('click', showPin);
+  $g("gate-go").addEventListener("click", tryUnlock);
+  $g("gpw").addEventListener("keydown", function(e){ if(e.key === "Enter") tryUnlock(); });
+  document.addEventListener('keydown', function(e){
+    if($g('gate').classList.contains('hidden') || $g('g-pin').hidden) return;
+    if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    if(/^\d$/.test(e.key)) gatePad.key(e.key); else if(e.key === 'Backspace') gatePad.key('del');
+  });
+})();
 
 (function(){
   function fitFinance(){
@@ -24385,6 +24636,61 @@ document.getElementById("gpw").addEventListener("keydown", function(e){ if(e.key
   window._syncScroll();window.addEventListener("resize",window._syncScroll);
 
 })();
+
+// ── phone navigation · the four tools you use most live in the bottom bar, the rest are one tap away ──
+(function(){
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.nav-tabs .nav-tab'));
+  if(!tabs.length) return;
+  var USE_KEY = 'hub_tool_use_v1';
+  var SHORT = {dashboard:'Dashboard',closer:'Script',lender:'Lenders',serviceability:'Service',tradeup:'Trade-up',warranty:'Warranty',insurance:'Insurance',drive:'Drive',leadbot:'Lead Bot',dealers:'Dealers',partners:'Partners',replydeck:'Replies',crm:'CRM',cipher:'Cipher',settings:'Settings'};
+  var DEFAULT = ['dashboard','closer','partners','replydeck'];
+  function uses(){ try{ return JSON.parse(localStorage.getItem(USE_KEY)) || {}; }catch(e){ return {}; } }
+  function bump(t){ var u = uses(); u[t] = (u[t] || 0) + 1; try{ localStorage.setItem(USE_KEY, JSON.stringify(u)); }catch(e){} }
+  function topFour(){
+    var u = uses();
+    var scored = tabs.map(function(b, i){ var t = b.getAttribute('data-tool'); var d = DEFAULT.indexOf(t); return {t: t, n: u[t] || 0, d: d < 0 ? 99 : d, i: i}; }).filter(function(x){ return x.t !== 'settings'; });
+    scored.sort(function(a, b){ return (b.n - a.n) || (a.d - b.d) || (a.i - b.i); });
+    return scored.slice(0, 4).sort(function(a, b){ return a.i - b.i; }).map(function(x){ return x.t; });
+  }
+  function tabFor(t){ return tabs.filter(function(b){ return b.getAttribute('data-tool') === t; })[0]; }
+  function icon(t){ var b = tabFor(t); var s = b && b.querySelector('.ico svg'); return s ? s.outerHTML : ''; }
+  function label(t){ var b = tabFor(t); return (b && b.getAttribute('data-label')) || t; }
+  function current(){ var on = tabs.filter(function(b){ return b.classList.contains('on'); })[0]; return on ? on.getAttribute('data-tool') : 'dashboard'; }
+
+  var top = document.createElement('div'); top.id = 'mobtop';
+  top.innerHTML = '<div style="min-width:0"><div class="mt-brand">Broker Suite</div><div class="mt-name" id="mobName"></div></div><button class="mt-lock" id="mobLock" aria-label="Lock, PIN and Face ID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>';
+  var bar = document.createElement('nav'); bar.id = 'mobbar';
+  var sheet = document.createElement('div'); sheet.id = 'mobsheet';
+  sheet.innerHTML = '<div class="pane"><div class="ph"><b>All tools</b><button type="button" id="mobClose">Close</button></div><div class="grid" id="mobGrid"></div><div class="hint">The bottom bar keeps the four you open most.</div></div>';
+  var shell = document.getElementById('appShell');
+  shell.insertBefore(top, shell.firstChild);
+  document.body.appendChild(bar);
+  document.body.appendChild(sheet);
+
+  var four = topFour();
+  function paintBar(){
+    var cur = current();
+    bar.innerHTML = four.map(function(t){ return '<button type="button" data-tool="' + t + '" class="' + (t === cur ? 'on' : '') + '"><span class="ico">' + icon(t) + '</span><span class="l">' + SHORT[t] + '</span></button>'; }).join('')
+      + '<button type="button" class="more' + (four.indexOf(cur) < 0 ? ' on' : '') + '" data-tool="__more"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></span><span class="l">' + (four.indexOf(cur) < 0 ? SHORT[cur] : 'More') + '</span></button>';
+    document.getElementById('mobName').textContent = label(cur);
+  }
+  function paintSheet(){
+    var cur = current();
+    document.getElementById('mobGrid').innerHTML = tabs.map(function(b){ var t = b.getAttribute('data-tool'); return '<button type="button" class="tile' + (t === cur ? ' on' : '') + '" data-tool="' + t + '"><span class="ico">' + icon(t) + '</span><span>' + label(t) + '</span></button>'; }).join('');
+  }
+  function openSheet(){ paintSheet(); sheet.classList.add('on'); var m = bar.querySelector('.more'); if(m) m.classList.add('open'); }
+  function closeSheet(){ sheet.classList.remove('on'); var m = bar.querySelector('.more'); if(m) m.classList.remove('open'); }
+  function go(t){ var b = tabFor(t); if(!b) return; bump(t); b.click(); closeSheet(); paintBar(); window.scrollTo(0, 0); }
+
+  bar.addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; var t = b.getAttribute('data-tool'); if(t === '__more'){ if(sheet.classList.contains('on')) closeSheet(); else openSheet(); } else go(t); });
+  sheet.addEventListener('click', function(e){ if(e.target === sheet){ closeSheet(); return; } var b = e.target.closest('button'); if(!b) return; if(b.id === 'mobClose'){ closeSheet(); return; } var t = b.getAttribute('data-tool'); if(t) go(t); });
+  document.getElementById('mobLock').addEventListener('click', function(){ if(window.hubLockMenu) window.hubLockMenu(); });
+  // keep in step when something else switches tool (a cross tool open request, the desktop sidebar on a resize)
+  tabs.forEach(function(b){ b.addEventListener('click', function(){ setTimeout(paintBar, 0); }); });
+  paintBar();
+  window.hubMobNav = {paintBar: paintBar, four: function(){ return four.slice(); }};
+})();
+
 </script>
 <script>(function(){var as=null,vy=0,raf=null,moved=false,t0=0;function sc(){return document.scrollingElement||document.documentElement;}function step(){if(!as)return;sc().scrollTop+=vy;raf=requestAnimationFrame(step);}function end(){if(!as)return;as=null;vy=0;moved=false;if(raf)cancelAnimationFrame(raf);raf=null;document.documentElement.style.cursor='';}document.addEventListener('mousedown',function(e){if(as&&e.button!==1){end();return;}if(e.button!==1)return;if(e.target.closest('a,input,textarea,select'))return;var s=sc();if(s.scrollHeight<=s.clientHeight+4)return;e.preventDefault();as={y:e.clientY};vy=0;moved=false;t0=Date.now();document.documentElement.style.cursor='ns-resize';raf=requestAnimationFrame(step);},true);document.addEventListener('mousemove',function(e){if(!as)return;var d=e.clientY-as.y;if(Math.abs(d)>8)moved=true;vy=Math.abs(d)<8?0:d*0.14;},true);document.addEventListener('mouseup',function(e){if(!as||e.button!==1)return;if(!moved&&Date.now()-t0<400)return;end();},true);document.addEventListener('wheel',end,{passive:true});document.addEventListener('keydown',end);window.addEventListener('blur',end);})();</script><script>
 (function(){

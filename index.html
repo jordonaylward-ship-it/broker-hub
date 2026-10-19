@@ -11123,6 +11123,68 @@ async function visionRead(file,kind){
 return{fileToText:fileToText,classify:classify,parseLicence:parseLicence,parsePayslip:parsePayslip,compare:compare,normDate:normDate,thinRead:thinRead,visionRead:visionRead};
 })();
 &lt;/script&gt;
+&lt;script&gt;
+/* ZBot: a won lead lands in this call script by itself. ZBot locks it with the pair code and drops
+   it on ntfy.sh, this unlocks it with the same code. Nothing readable passes through ntfy. */
+window.ZB=(function(){
+  var PAIR='zbot_pair_v1',SEEN='zbot_seen_v1',HOST='https://ntfy.sh/';
+  var te=new TextEncoder(),es=null,cb=null,keyP=null,topic=null,timer=null,took={};
+  function hex(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
+  function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var bin=atob(s),a=new Uint8Array(bin.length);for(var i=0;i&lt;bin.length;i++)a[i]=bin.charCodeAt(i);return a}
+  function code(){try{return(localStorage.getItem(PAIR)||'').replace(/\s+/g,'')}catch(e){return''}}
+  function seenList(){try{return JSON.parse(localStorage.getItem(SEEN)||'[]')}catch(e){return[]}}
+  async function derive(c){
+    var t=await crypto.subtle.digest('SHA-256',te.encode('zbot-topic|'+c));
+    var k=await crypto.subtle.digest('SHA-256',te.encode('zbot-key|'+c));
+    return{topic:'zb'+hex(t).slice(0,30),key:await crypto.subtle.importKey('raw',k,'AES-GCM',false,['decrypt'])};
+  }
+  async function unlock(body,key){
+    var m=String(body||'').match(/^zb1\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);if(!m)return null;
+    var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(m[1])},key,b64u(m[2]));
+    var txt=await new Response(new Blob([pt]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+    return JSON.parse(txt);
+  }
+  async function handle(msg){
+    if(!msg||msg.event!=='message'||!cb||!keyP)return;
+    if(took[msg.id]||seenList().indexOf(msg.id)&gt;-1)return;
+    took[msg.id]=1;
+    try{
+      var body=msg.message;
+      if(msg.attachment&amp;&amp;msg.attachment.url){var r=await fetch(msg.attachment.url);body=await r.text();}
+      var L=await unlock(body,(await keyP).key);
+      if(L&amp;&amp;L.v===1)cb(L,msg.id);
+    }catch(e){}
+  }
+  async function poll(){
+    if(!topic)return;
+    try{
+      var r=await fetch(HOST+topic+'/json?poll=1&amp;since=3h');
+      var all=(await r.text()).split('\n').filter(Boolean).map(function(l){try{return JSON.parse(l)}catch(e){return null}}).filter(Boolean);
+      var fresh=all.filter(function(m){return m.event==='message'&amp;&amp;seenList().indexOf(m.id)&lt;0});
+      if(fresh.length)await handle(fresh[fresh.length-1]);
+    }catch(e){}
+  }
+  function stop(){if(es){es.close();es=null}if(timer){clearInterval(timer);timer=null}}
+  async function start(onLead){
+    if(onLead)cb=onLead;stop();
+    var c=code();if(!c||!window.crypto||!crypto.subtle||!window.DecompressionStream)return;
+    keyP=derive(c);topic=(await keyP).topic;
+    await poll();
+    try{es=new EventSource(HOST+topic+'/sse');es.onmessage=function(e){try{handle(JSON.parse(e.data))}catch(_){}}}catch(e){}
+    timer=setInterval(poll,60000);
+  }
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)poll()});
+  window.addEventListener('focus',function(){poll()});
+  return{
+    paired:function(){return!!code()},
+    ok:function(){return!!(window.crypto&amp;&amp;crypto.subtle&amp;&amp;window.DecompressionStream&amp;&amp;window.EventSource)},
+    pair:function(c){try{localStorage.setItem(PAIR,String(c||'').trim())}catch(e){}start()},
+    unpair:function(){try{localStorage.removeItem(PAIR)}catch(e){}stop();topic=null;keyP=null},
+    seen:function(id){var l=seenList();if(l.indexOf(id)&lt;0){l.push(id);try{localStorage.setItem(SEEN,JSON.stringify(l.slice(-50)))}catch(e){}}},
+    start:start,stop:stop
+  };
+})();
+&lt;/script&gt;
 &lt;script type=&quot;text/babel&quot;&gt;
 const {useState,useEffect,useRef,useCallback}=React;
 
@@ -12072,6 +12134,13 @@ const [qWkEdit,setQWkEdit]=useState(&quot;&quot;);
 const [showZinkPaste,setShowZinkPaste]=useState(true);
 const [zinkRaw,setZinkRaw]=useState(&quot;&quot;);
 const [clientData,setClientData]=useState({});
+const [zbOn,setZbOn]=useState(()=&gt;!!(window.ZB&amp;&amp;ZB.paired()));
+const [zbPairOpen,setZbPairOpen]=useState(false);
+const [zbCodeIn,setZbCodeIn]=useState(&quot;&quot;);
+const [zbPending,setZbPending]=useState(null);
+const [zbFrom,setZbFrom]=useState(null);
+const [zbLast,setZbLast]=useState(null);
+const zbRef=useRef({raw:null,d:null,busy:false});
 const [fee,setFee]=useState(()=&gt;{try{return localStorage.getItem(&quot;closer_fee&quot;)||&quot;$1,500&quot;}catch(e){return&quot;$1,500&quot;}});
 const saveFee=(v)=&gt;{setFee(v);try{localStorage.setItem(&quot;closer_fee&quot;,v)}catch(e){}};
 
@@ -12224,6 +12293,21 @@ const saveToLog=()=&gt;{if(!res.situation&amp;&amp;!res.outcome){toast(&quot;Not
 const delLog=(id)=&gt;{const u=log.filter(e=&gt;e.id!==id);setLog(u);try{localStorage.setItem(&quot;closer_log&quot;,JSON.stringify(u))}catch(e){}};
 const copyLogE=(e)=&gt;{navigator.clipboard.writeText(e.note||&quot;&quot;);toast(&quot;Copied ✓&quot;)};
 const resetAll=()=&gt;{setCur(0);setPath(null);setRes({});setSel([]);setCustom(&quot;&quot;);setShowObj(false);setShowSum(false);setShowLog(false);setQuoteSelected(null);setQuoteCustomAmt(&quot;&quot;);setQuoteComfort(&quot;&quot;);setClientData({});setZinkRaw(&quot;&quot;);setShowZinkPaste(true)};
+useEffect(()=&gt;{zbRef.current.busy=cur&gt;0||!!zinkRaw.trim()||Object.keys(clientData).length&gt;0||Object.keys(res).some(k=&gt;![&quot;callType&quot;,&quot;productType&quot;].includes(k));},[cur,res,zinkRaw,clientData]);
+const zbApply=(L,id)=&gt;{
+  resetAll();
+  const d=L.d||{};
+  zbRef.current.raw=L.raw||d.clientName||&quot;ZBot lead&quot;;zbRef.current.d=d;
+  setZinkRaw(zbRef.current.raw);
+  setClientData(d);
+  if(L.path)setPath(L.path);
+  setRes(prev=&gt;({...prev,...(L.callType?{callType:L.callType}:{}),...(L.productType?{productType:L.productType}:{})}));
+  setZbFrom({lead:L.leadId,price:L.price,test:L.kind===&quot;test&quot;});
+  setShowZinkPaste(true);setZbPending(null);setZbLast({L,id});
+  if(window.ZB)ZB.seen(id);
+  toast(L.kind===&quot;test&quot;?&quot;ZBot test lead loaded&quot;:&quot;New lead from ZBot ✓&quot;);
+};
+useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id)=&gt;{if(zbRef.current.busy)setZbPending({L,id});else zbApply(L,id);});return()=&gt;ZB.stop();},[]);
 
 const done=Object.keys(res).filter(k=&gt;![&quot;loanAmount&quot;,&quot;weeklyRepayment&quot;,&quot;comfortableAt&quot;].includes(k)).length;
 const total=STAGES.filter(s=&gt;s.key&amp;&amp;!skip(s)).length;
@@ -12270,20 +12354,47 @@ return(
 &lt;div style={{minHeight:&quot;100vh&quot;,background:&quot;#000000&quot;,color:&quot;#c9d1d9&quot;,fontFamily:&quot;'Poppins','SF Mono',monospace&quot;,display:&quot;flex&quot;,flexDirection:&quot;column&quot;,fontSize:14}}&gt;
 &lt;style&gt;{css}&lt;/style&gt;
 {toastMsg&amp;&amp;&lt;div className=&quot;toast&quot;&gt;{toastMsg}&lt;/div&gt;}
+{zbPending&amp;&amp;(
+&lt;div style={{position:&quot;fixed&quot;,left:&quot;50%&quot;,transform:&quot;translateX(-50%)&quot;,top:64,zIndex:300,background:&quot;#0d1117&quot;,border:&quot;1px solid #34d39960&quot;,borderRadius:12,padding:&quot;10px 12px&quot;,display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:10,boxShadow:&quot;0 8px 30px #0008&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;,fontSize:12,color:&quot;#eef0ff&quot;,maxWidth:&quot;calc(100vw - 24px)&quot;,width:&quot;max-content&quot;}}&gt;
+&lt;span style={{width:8,height:8,borderRadius:&quot;50%&quot;,background:&quot;#34d399&quot;,flex:&quot;0 0 auto&quot;}}/&gt;
+&lt;span style={{whiteSpace:&quot;nowrap&quot;,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;,minWidth:0}}&gt;New lead from ZBot{zbPending.L.d&amp;&amp;zbPending.L.d.clientName?` · ${zbPending.L.d.clientName}`:&quot;&quot;}&lt;/span&gt;
+&lt;button className=&quot;btn bp&quot; onClick={()=&gt;zbApply(zbPending.L,zbPending.id)} style={{fontSize:11,padding:&quot;5px 12px&quot;}}&gt;Load&lt;/button&gt;
+&lt;button className=&quot;btn&quot; onClick={()=&gt;{if(window.ZB)ZB.seen(zbPending.id);setZbPending(null)}} style={{fontSize:11,padding:&quot;5px 10px&quot;}}&gt;✕&lt;/button&gt;
+&lt;/div&gt;)}
+{zbPairOpen&amp;&amp;(
+&lt;div className=&quot;overlay&quot; onClick={()=&gt;setZbPairOpen(false)} style={{zIndex:400}}&gt;
+&lt;div className=&quot;modal&quot; onClick={e=&gt;e.stopPropagation()} style={{maxWidth:420}}&gt;
+&lt;div style={{padding:&quot;16px 20px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,justifyContent:&quot;space-between&quot;,alignItems:&quot;center&quot;}}&gt;
+&lt;div style={{fontWeight:700,color:&quot;#eef0ff&quot;,fontSize:15,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;ZBot&lt;/div&gt;
+&lt;button className=&quot;btn&quot; onClick={()=&gt;setZbPairOpen(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;
+&lt;/div&gt;
+&lt;div style={{padding:20}}&gt;
+&lt;div style={{fontSize:12,color:zbOn?&quot;#34d399&quot;:&quot;#8b9dc3&quot;,marginBottom:10,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{!ZB.ok()?&quot;This browser can't open ZBot leads. Update it or use Chrome.&quot;:zbOn?&quot;Paired. Won leads load here by themselves.&quot;:&quot;Paste the pair code from ZBot.&quot;}&lt;/div&gt;
+&lt;input value={zbCodeIn} onChange={e=&gt;setZbCodeIn(e.target.value)} placeholder=&quot;Pair code&quot; style={{width:&quot;100%&quot;,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:&quot;10px 12px&quot;,color:&quot;#eef0ff&quot;,fontSize:12,fontFamily:&quot;'SF Mono',monospace&quot;,outline:&quot;none&quot;}}/&gt;
+&lt;div style={{display:&quot;flex&quot;,gap:6,marginTop:12}}&gt;
+&lt;button className=&quot;btn bp&quot; disabled={!zbCodeIn.trim()} onClick={()=&gt;{ZB.pair(zbCodeIn);setZbOn(true);setZbPairOpen(false);toast(&quot;ZBot paired ✓&quot;)}} style={{flex:1,padding:10,fontSize:12}}&gt;Save&lt;/button&gt;
+{zbOn&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{ZB.unpair();setZbOn(false);setZbPairOpen(false);toast(&quot;ZBot unpaired&quot;)}} style={{padding:10,fontSize:12}}&gt;Unpair&lt;/button&gt;}
+&lt;/div&gt;
+{zbLast&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbPairOpen(false);zbApply(zbLast.L,zbLast.id)}} style={{width:&quot;100%&quot;,marginTop:8,padding:10,fontSize:12}}&gt;Load last lead{zbLast.L.d&amp;&amp;zbLast.L.d.clientName?` · ${zbLast.L.d.clientName}`:&quot;&quot;}&lt;/button&gt;}
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;)}
 
 {showZinkPaste&amp;&amp;(
 &lt;div className=&quot;overlay&quot; onClick={()=&gt;setShowZinkPaste(false)}&gt;
 &lt;div className=&quot;modal&quot; onClick={e=&gt;e.stopPropagation()} style={{maxWidth:680}}&gt;
 &lt;div style={{padding:&quot;16px 20px&quot;,borderBottom:&quot;1px solid #181c36&quot;,display:&quot;flex&quot;,justifyContent:&quot;space-between&quot;,alignItems:&quot;center&quot;}}&gt;
 &lt;div style={{fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;&lt;div style={{fontWeight:700,color:&quot;#eef0ff&quot;,fontSize:15}}&gt;📥 Start Call · Setup&lt;/div&gt;&lt;div style={{fontSize:11,color:&quot;#4a5280&quot;,marginTop:2}}&gt;Paste Zink data and set the call type · script will skip anything you've already answered&lt;/div&gt;&lt;/div&gt;
-&lt;button className=&quot;btn&quot; onClick={()=&gt;setShowZinkPaste(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;
+&lt;div style={{display:&quot;flex&quot;,gap:6,alignItems:&quot;center&quot;}}&gt;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbCodeIn(&quot;&quot;);setZbPairOpen(true)}} style={{padding:&quot;6px 10px&quot;,fontSize:11,display:&quot;inline-flex&quot;,alignItems:&quot;center&quot;,gap:6}}&gt;&lt;span style={{width:7,height:7,borderRadius:&quot;50%&quot;,background:zbOn?&quot;#34d399&quot;:&quot;#4a5280&quot;,display:&quot;inline-block&quot;}}/&gt;ZBot&lt;/button&gt;
+&lt;button className=&quot;btn&quot; onClick={()=&gt;setShowZinkPaste(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div style={{padding:20,overflow:&quot;auto&quot;,flex:1}}&gt;
 
 &lt;div className=&quot;sl&quot; style={{marginBottom:6}}&gt;Step 1 · Paste Zink application (optional)&lt;/div&gt;
+{zbFrom&amp;&amp;zinkRaw===zbRef.current.raw&amp;&amp;&lt;div style={{margin:&quot;0 0 8px&quot;,fontSize:11,color:&quot;#34d399&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{zbFrom.test?&quot;ZBot test&quot;:&quot;From ZBot&quot;} · lead {zbFrom.lead}{zbFrom.price?` · won at $${zbFrom.price}`:&quot;&quot;}&lt;/div&gt;}
 &lt;textarea value={zinkRaw} onChange={e=&gt;setZinkRaw(e.target.value)} placeholder=&quot;Ctrl+A → Ctrl+C from the Zink page → paste here&quot; style={{width:&quot;100%&quot;,height:140,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:14,color:&quot;#eef0ff&quot;,fontSize:12,fontFamily:&quot;'Poppins',sans-serif&quot;,outline:&quot;none&quot;,resize:&quot;vertical&quot;}} /&gt;
 {zinkRaw.trim()&amp;&amp;&lt;button className=&quot;btn bp&quot; onClick={()=&gt;{
-  const d=parseZinkText(zinkRaw);
+  const d=(zbRef.current.raw&amp;&amp;zinkRaw===zbRef.current.raw&amp;&amp;zbRef.current.d)?{...zbRef.current.d}:parseZinkText(zinkRaw);
   setClientData(d);
   const consumerProducts=[&quot;unsecured_pl&quot;,&quot;secured_pl&quot;,&quot;vehicle&quot;,&quot;refinance&quot;,&quot;consolidation&quot;];
   const commercialProducts=[&quot;cashflow&quot;,&quot;equipment&quot;];
@@ -12386,6 +12497,7 @@ return(
 {clientData.clientName&amp;&amp;&lt;div style={{fontSize:12,color:&quot;#eef0ff&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;,fontWeight:600}}&gt;{clientData.clientName}&lt;/div&gt;}
 &lt;/div&gt;
 &lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:6,flexWrap:&quot;wrap&quot;}}&gt;
+&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbCodeIn(&quot;&quot;);setZbPairOpen(true)}} style={{fontSize:11,padding:&quot;5px 10px&quot;,display:&quot;inline-flex&quot;,alignItems:&quot;center&quot;,gap:6}}&gt;&lt;span style={{width:7,height:7,borderRadius:&quot;50%&quot;,background:zbOn?&quot;#34d399&quot;:&quot;#4a5280&quot;,display:&quot;inline-block&quot;}}/&gt;ZBot&lt;/button&gt;
 &lt;button className=&quot;btn&quot; onClick={()=&gt;setShowZinkPaste(true)} style={{fontSize:11,padding:&quot;5px 10px&quot;,color:&quot;#f0a500&quot;,borderColor:&quot;#f0a50040&quot;}}&gt;📥 Paste Zink&lt;/button&gt;
 &lt;button className=&quot;btn&quot; onClick={()=&gt;{setShowSum(!showSum);setShowObj(false);setShowLog(false)}} style={{fontSize:11,padding:&quot;5px 10px&quot;}}&gt;{showSum?&quot;Hide&quot;:&quot;Summary&quot;}&lt;/button&gt;
 &lt;button className=&quot;btn&quot; onClick={()=&gt;{setShowObj(!showObj);setShowSum(false);setShowLog(false)}} style={{fontSize:11,padding:&quot;5px 10px&quot;,color:&quot;#fb7185&quot;}}&gt;{showObj?&quot;Close&quot;:&quot;Objections&quot;}&lt;/button&gt;

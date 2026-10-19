@@ -6559,7 +6559,7 @@ a{color:var(--lilac);text-decoration:none}
 .card{background:var(--card);border-radius:20px;padding:18px 20px}
 .card+.card{margin-top:14px}
 .grid{display:grid;gap:14px}
-.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:1fr 1fr}.g2w{grid-template-columns:1.4fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
 .lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
@@ -6624,6 +6624,10 @@ a{color:var(--lilac);text-decoration:none}
 .tli .d{flex:none;width:64px;font-size:11.5px;color:var(--faint);padding-top:2px}
 .tli .t{font-size:13px;line-height:1.5;color:var(--dim)}
 .tli .t b{color:var(--txt)}
+.tli .t{flex:1;min-width:0}
+.tli .x{opacity:0;align-self:flex-start;margin-top:2px}
+.tli:hover .x,.tli .x:focus{opacity:.7}
+@media(hover:none){.tli .x{opacity:.45}}
 .in{background:rgba(148,163,255,.07);border:0;border-radius:12px;padding:11px 14px;font-size:13.5px;color:var(--txt);width:100%;font-family:inherit}
 .in::placeholder{color:var(--faint)}
 .in:focus{outline:2px solid rgba(79,107,255,.55)}
@@ -6664,7 +6668,15 @@ input.in[type=date],input.in[type=time]{color-scheme:dark}
 .lead .la{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
 @media(max-width:760px){.lead .la{flex-direction:row;flex-wrap:wrap;align-items:center}}
 .lead .notes{grid-column:1/-1;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
-.note{font-size:12.5px;color:var(--dim);padding:5px 0;line-height:1.45}
+.note{font-size:12.5px;color:var(--dim);padding:5px 0;line-height:1.45;display:flex;gap:6px;align-items:flex-start}
+.note span{flex:1;min-width:0}
+.x{flex:none;background:none;border:0;color:var(--faint);font-size:16px;line-height:1;padding:0 4px;cursor:pointer;border-radius:6px;opacity:.55}
+.x:hover{color:var(--coral);opacity:1;background:rgba(255,255,255,.05)}
+.rmrow{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:8px;font-size:12.5px;color:var(--mut)}
+.rmrow.warn{justify-content:flex-start;flex-wrap:wrap;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);border-radius:12px;padding:8px 10px;color:var(--txt)}
+.rmrow.warn span{flex:1;min-width:160px}
+.lnk{background:none;border:0;color:var(--faint);font-size:12px;cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
+.lnk:hover{color:var(--coral)}
 .note b{color:var(--faint);font-weight:600;margin-right:6px;font-size:11.5px}
 .addnote{display:flex;gap:8px;margin-top:6px}
 .addnote .in{padding:9px 12px;font-size:13px}
@@ -6716,6 +6728,7 @@ table.t .r{text-align:right;font-variant-numeric:tabular-nums}
 .say{background:var(--card);border-radius:18px;padding:16px 18px;font-size:17px;line-height:1.5;color:var(--txt);margin:14px 0 10px;position:relative}
 .say::before{content:&quot;&quot;;position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--grad)}
 .say.read{color:#fde68a;font-size:15px}
+.say .hint{font-size:13px;color:var(--mut);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
 .say.read::before{background:var(--amber)}
 .ans{margin:0 0 18px;padding:0 4px}
 .ans .q{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
@@ -6776,6 +6789,10 @@ table.t .r{text-align:right;font-variant-numeric:tabular-nums}
 .toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:99;max-width:340px}
 .toast{background:#1d2140;color:#fff;border-radius:14px;padding:11px 14px;font-size:13px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:tin .2s ease}
 .toast b{display:block;font-size:13.5px}
+.rec .w small{font-size:inherit}
+.toast.undo{display:flex;align-items:center;gap:12px}
+.toast.undo&gt;div{flex:1;min-width:0}
+.toast.undo .btn{flex:none;background:#fff;color:#111;border-color:#fff}
 @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;display:none;align-items:center;justify-content:center;padding:20px}
 .modal.on{display:flex}
@@ -6824,8 +6841,8 @@ table.t .r{text-align:right;font-variant-numeric:tabular-nums}
     &lt;div class=&quot;lbl&quot; style=&quot;margin-bottom:10px&quot;&gt;New lead&lt;/div&gt;
     &lt;div class=&quot;fgrid&quot;&gt;
       &lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Partner&lt;/label&gt;&lt;select class=&quot;in&quot; id=&quot;nlPartner&quot;&gt;&lt;/select&gt;&lt;/div&gt;
-      &lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Client&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;nlClient&quot; placeholder=&quot;Name&quot;&gt;&lt;/div&gt;
-      &lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Phone&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;nlPhone&quot; placeholder=&quot;Optional&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Client&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;nlClient&quot; placeholder=&quot;Full name&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Their mobile&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;nlPhone&quot; placeholder=&quot;Optional&quot; inputmode=&quot;tel&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Asset and price&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;nlAsset&quot; placeholder=&quot;Ranger XLT, $48k&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;row&quot; style=&quot;margin-top:12px&quot;&gt;&lt;button class=&quot;btn p&quot; onclick=&quot;PM.addLead()&quot;&gt;Start the clock&lt;/button&gt;&lt;span class=&quot;cap&quot;&gt;Ausloans wants first contact inside 60 minutes.&lt;/span&gt;&lt;/div&gt;
@@ -6864,7 +6881,7 @@ table.t .r{text-align:right;font-variant-numeric:tabular-nums}
 &lt;/section&gt;
 
 &lt;section class=&quot;pane&quot; id=&quot;pane-me&quot;&gt;
-  &lt;div class=&quot;grid g2&quot; style=&quot;align-items:start;grid-template-columns:1.4fr 1fr&quot;&gt;
+  &lt;div class=&quot;grid g2 g2w&quot; style=&quot;align-items:start&quot;&gt;
     &lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;h2&quot;&gt;Quarter KPIs&lt;/div&gt;&lt;div class=&quot;cap&quot; style=&quot;margin-bottom:10px&quot;&gt;Your numbers, not your partners'. From Zink and your own records.&lt;/div&gt;&lt;div id=&quot;bsInputs&quot;&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div&gt;
       &lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;lbl&quot;&gt;How Ausloans scores you&lt;/div&gt;&lt;div class=&quot;score&quot; id=&quot;bsBig&quot; style=&quot;margin-top:8px&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;side-band&quot; id=&quot;bsStatus&quot;&gt;not scored yet&lt;/div&gt;&lt;div class=&quot;cap&quot; id=&quot;bsComp&quot;&gt;&lt;/div&gt;&lt;/div&gt;
@@ -6890,8 +6907,11 @@ var DAY=864e5,HOUR=36e5,MIN=6e4;
 var $=function(q){return document.querySelector(q)},$$=function(q){return Array.prototype.slice.call(document.querySelectorAll(q))};
 function h(s){return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;').replace(/&quot;/g,'&amp;quot;')}
 function money(n){n=+n||0;return (n&lt;0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-AU')}
-function pct(r){return (r==null||isNaN(r))?'—':Math.round(r*100)+'%'}
+function pct(r){return (r==null||isNaN(r)||!isFinite(r))?'':Math.round(r*100)+'%'}
 function toast(title,msg){var t=document.createElement('div');t.className='toast';t.innerHTML='&lt;b&gt;'+h(title)+'&lt;/b&gt;'+(msg?h(msg):'');$('#toasts').appendChild(t);setTimeout(function(){t.remove()},4200)}
+var undoFn=null;
+function toastUndo(title,msg,fn,label){undoFn=fn;$$('#toasts .toast.undo').forEach(function(x){x.remove()});var t=document.createElement('div');t.className='toast undo';t.innerHTML='&lt;div&gt;&lt;b&gt;'+h(title)+'&lt;/b&gt;'+(msg?h(msg):'')+'&lt;/div&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;PM.undo()&quot;&gt;'+h(label||'Undo')+'&lt;/button&gt;';$('#toasts').appendChild(t);setTimeout(function(){t.remove();if(undoFn===fn)undoFn=null},9000)}
+function undo(){var f=undoFn;undoFn=null;$$('#toasts .toast.undo').forEach(function(x){x.remove()});if(f)f()}
 function copyText(t,msg){if(!t){toast('Nothing to copy');return}var p=navigator.clipboard&amp;&amp;navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject();p.then(function(){toast(msg||'Copied')}).catch(function(){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast(msg||'Copied')}catch(e){toast('Copy failed')}document.body.removeChild(ta)})}
 var MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function fmtD(ts){if(!ts)return '';var d=new Date(ts);return d.getDate()+' '+MONS[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')}
@@ -7082,7 +7102,7 @@ var t5=function(v,a,b,c,d){return v&gt;=a?5:v&gt;=b?4:v&gt;=c?3:v&gt;=d?2:v&gt;0
 
 /* ═══ data ═══ */
 var PKEY='hub_partners_v1',BKEY='hub_bscore_v1';
-var D={partners:[],leads:[],ledger:[],checkins:[],reviews:[],slaLog:[]};
+var D={partners:[],leads:[],ledger:[],checkins:[],reviews:[],slaLog:[],gone:[]};
 function pipeDefaults(o){o=o||{};return {email:o.email||'',stage:o.stage||'Agreement out',page:o.page||'',qr:!!o.qr,zink:!!o.zink}}
 function meetDefaults(o){o=o||{};return {date:o.date||'',time:o.time||'',status:o.status||'Nothing booked',note:o.note||'',askedAt:o.askedAt||null}}
 function blankQ(){return {leads:0,soft:0,app:0,dec:0,set:0,vol:0,cHrs:null,subD:0,appD:0}}
@@ -7096,15 +7116,30 @@ function normP(p){
   p.h=calcHealth(p);return p;
 }
 function load(){
-  try{var o=JSON.parse(localStorage.getItem(PKEY))||{};D.partners=Array.isArray(o.partners)?o.partners:[];D.leads=Array.isArray(o.leads)?o.leads:[];D.ledger=Array.isArray(o.ledger)?o.ledger:[];D.checkins=Array.isArray(o.checkins)?o.checkins:[];D.reviews=Array.isArray(o.reviews)?o.reviews:[];D.slaLog=Array.isArray(o.slaLog)?o.slaLog:[]}catch(e){}
+  try{var o=JSON.parse(localStorage.getItem(PKEY))||{};D.partners=Array.isArray(o.partners)?o.partners:[];D.leads=Array.isArray(o.leads)?o.leads:[];D.ledger=Array.isArray(o.ledger)?o.ledger:[];D.checkins=Array.isArray(o.checkins)?o.checkins:[];D.reviews=Array.isArray(o.reviews)?o.reviews:[];D.slaLog=Array.isArray(o.slaLog)?o.slaLog:[];D.gone=Array.isArray(o.gone)?o.gone:[]}catch(e){}
   D.partners.forEach(normP);
   D.leads.forEach(function(L){L.notes=Array.isArray(L.notes)?L.notes:[];L.att=+L.att||0;L.stage=+L.stage||0;L.recv=+L.recv||Date.now()});
 }
-function save(){try{localStorage.setItem(PKEY,JSON.stringify({v:2,partners:D.partners,leads:D.leads,ledger:D.ledger,checkins:D.checkins.slice(0,400),reviews:D.reviews.slice(0,200),slaLog:D.slaLog.slice(0,80)}))}catch(e){}}
+function save(){try{localStorage.setItem(PKEY,JSON.stringify({v:2,partners:D.partners,leads:D.leads,ledger:D.ledger,checkins:D.checkins.slice(0,400),reviews:D.reviews.slice(0,200),slaLog:D.slaLog.slice(0,80),gone:D.gone.slice(-400)}))}catch(e){}}
 function P(id){return D.partners.find(function(p){return p.id===id||p.id===+id})}
 function L(id){return D.leads.find(function(l){return l.id===id||l.id===+id})}
 function touch(p){p.updatedAt=Date.now()}
 function note(p,t,kind){p.hist=p.hist||[];p.hist.unshift({d:Date.now(),t:t,k:kind||'note'});touch(p)}
+/* ═══ tombstones · a removal has to beat the sheet, which otherwise hands the row back on the next pull ═══ */
+function gkey(g){
+  if(!g)return '';
+  if(g.t==='lead')return 'lead|'+nmKey(g.biz)+'|'+nmKey(g.client)+'|'+String(g.received||'').slice(0,10);
+  if(g.t==='partner')return 'partner|'+nmKey(g.biz);
+  if(g.t==='note')return 'note|'+nmKey(g.biz)+'|'+Math.round((+g.when||0)/MIN)+'|'+String(g.note||'').slice(0,60);
+  if(g.t==='leadnote')return 'leadnote|'+nmKey(g.biz)+'|'+nmKey(g.client)+'|'+String(g.received||'').slice(0,10)+'|'+String(g.note||'').slice(0,60);
+  return '';
+}
+function gone(g){g.at=g.at||Date.now();var k=gkey(g);if(!k)return;D.gone=D.gone.filter(function(x){return gkey(x)!==k});D.gone.push(g);if(D.gone.length&gt;400)D.gone=D.gone.slice(-400)}
+function ungone(g){var k=gkey(g);D.gone=D.gone.filter(function(x){return gkey(x)!==k})}
+function goneFor(g){var k=gkey(g);return k?D.gone.find(function(x){return gkey(x)===k}):null}
+function leadGone(l,p){p=p||P(l.pid)||{};return {t:'lead',biz:p.biz||'',client:l.client,received:iso(l.recv)}}
+function leadNoteGone(l,n,p){p=p||P(l.pid)||{};return {t:'leadnote',biz:p.biz||'',client:l.client,received:iso(l.recv),note:String(n.t||'').replace(/\s*\|\s*/g,', ')}}
+function noteGone(p,n){return {t:'note',biz:p.biz,when:+n.d||0,note:n.t}}
 function leadsOf(p,days){var from=days?Date.now()-days*DAY:0;return D.leads.filter(function(l){return l.pid===p.id&amp;&amp;l.recv&gt;=from})}
 function lastLeadAt(p){var ls=leadsOf(p);return ls.length?Math.max.apply(null,ls.map(function(l){return l.recv})):(p.lastLeadAt||null)}
 function leadsMonth(p){var n=new Date(),from=new Date(n.getFullYear(),n.getMonth(),1).getTime();var c=D.leads.filter(function(l){return l.pid===p.id&amp;&amp;l.recv&gt;=from}).length;return c||(+p.leadsMTD||0)}
@@ -7141,13 +7176,13 @@ function prepText(p){
    +'Last 90 days: '+ls.length+' leads on the board · '+(q.leads||0)+' leads, '+(q.app||0)+' approved / '+(q.dec||0)+' declined, '+(q.set||0)+' settled at last review\n'
    +'Health: '+(p.h?p.h.H+' '+bandOf(p.h.H).t:'unscored')+(p.readiness?' · readiness '+p.readiness.t:'')+'\n'
    +spokeText(p).t+(p.lastTouchHow?' ('+p.lastTouchHow.toLowerCase()+')':'')+'\n'
-   +(ci?'Last catch up '+ci.date+': sat '+(ci.sat||'—')+' · priorities '+[ci.p1,ci.p2,ci.p3].filter(Boolean).join(' / ')+' · they committed to '+[ci.b1,ci.b2,ci.b3].filter(Boolean).join(' / ')+'\n':'')
-   +'Last note: '+(p.hist[0]?p.hist[0].t:'—');
+   +(ci?'Last catch up '+ci.date+': happy '+(ci.sat||'not asked')+' · priorities '+[ci.p1,ci.p2,ci.p3].filter(Boolean).join(' / ')+' · they committed to '+[ci.b1,ci.b2,ci.b3].filter(Boolean).join(' / ')+'\n':'')
+   +'Last note: '+(p.hist[0]?p.hist[0].t:'none');
 }
-return {DAY:DAY,HOUR:HOUR,MIN:MIN,$:$,$$:$$,h:h,money:money,pct:pct,toast:toast,copyText:copyText,fmtD:fmtD,fmtDow:fmtDow,iso:iso,fromIso:fromIso,isoFromSheet:isoFromSheet,timeFromSheet:timeFromSheet,fmtTime:fmtTime,daysSince:daysSince,first:first,nmKey:nmKey,cdText:cdText,cdLine:cdLine,mmss:mmss,
+return {DAY:DAY,HOUR:HOUR,MIN:MIN,$:$,$$:$$,h:h,money:money,pct:pct,toast:toast,toastUndo:toastUndo,undo:undo,copyText:copyText,fmtD:fmtD,fmtDow:fmtDow,iso:iso,fromIso:fromIso,isoFromSheet:isoFromSheet,timeFromSheet:timeFromSheet,fmtTime:fmtTime,daysSince:daysSince,first:first,nmKey:nmKey,cdText:cdText,cdLine:cdLine,mmss:mmss,
  ZINK:ZINK,REFB:REFB,COMMS:COMMS,MKTS:MKTS,RISKPEN:RISKPEN,MKT_TOOLS:MKT_TOOLS,OPPS:OPPS,TRAIN_Q:TRAIN_Q,sAppr:sAppr,sSettle:sSettle,sContact:sContact,sTouch:sTouch,bandOf:bandOf,calcHealth:calcHealth,
  SAT:SAT,LEADH:LEADH,CONF:CONF,MACT:MACT,IMPL:IMPL,SUPPORT:SUPPORT,ACTIONS:ACTIONS,ZTRAIN:ZTRAIN,CTRAIN:CTRAIN,ONB:ONB,ONB_NEXT:ONB_NEXT,MEET:MEET,STAGES:STAGES,SMS:SMS,CATALOGUE:CATALOGUE,ASK:ASK,QS:QS,QOUT:QOUT,PACKS:PACKS,packFor:packFor,BKPI:BKPI,t5:t5,
- PKEY:PKEY,BKEY:BKEY,D:D,pipeDefaults:pipeDefaults,meetDefaults:meetDefaults,blankQ:blankQ,normP:normP,load:load,save:save,P:P,L:L,touch:touch,note:note,leadsOf:leadsOf,lastLeadAt:lastLeadAt,leadsMonth:leadsMonth,nextQR:nextQR,spendFor:spendFor,spokeText:spokeText,meetTs:meetTs,meetLine:meetLine,slots:slots,drafts:drafts,prepText:prepText};
+ PKEY:PKEY,BKEY:BKEY,D:D,pipeDefaults:pipeDefaults,meetDefaults:meetDefaults,blankQ:blankQ,normP:normP,load:load,save:save,P:P,L:L,touch:touch,note:note,gkey:gkey,gone:gone,ungone:ungone,goneFor:goneFor,leadGone:leadGone,leadNoteGone:leadNoteGone,noteGone:noteGone,leadsOf:leadsOf,lastLeadAt:lastLeadAt,leadsMonth:leadsMonth,nextQR:nextQR,spendFor:spendFor,spokeText:spokeText,meetTs:meetTs,meetLine:meetLine,slots:slots,drafts:drafts,prepText:prepText};
 })();
 
 /* ═══════════════ views ═══════════════ */
@@ -7157,11 +7192,11 @@ var $=PM.$,$$=PM.$$,h=PM.h,D=PM.D,DAY=PM.DAY,HOUR=PM.HOUR,MIN=PM.MIN,money=PM.mo
 var view='today',detailId=null,openLeads={},CD=[];
 
 /* ── navigation ── */
-var TITLES={today:['Today',function(){return fmtDow(Date.now())}],partners:['Partners',function(){return D.partners.length+' in the book'}],leads:['Leads',function(){var n=D.leads.filter(function(l){return l.stage===0}).length;return n?n+' on the clock':'Every lead a partner sends you'}],money:['Money',function(){return money(D.ledger.reduce(function(a,l){return a+(+l.cost||0)},0))+' spent on partners'}],me:['Me',function(){return 'How Ausloans scores you'}]};
+var TITLES={today:['Today',function(){return fmtDow(Date.now())}],partners:['Partners',function(){return D.partners.length+' in the book'}],leads:['Leads',function(){var n=D.leads.filter(function(l){return l.stage===0&amp;&amp;!l.handed}).length;return n?n+' on the clock':'Every lead a partner sends you'}],money:['Money',function(){return money(D.ledger.reduce(function(a,l){return a+(+l.cost||0)},0))+' spent on partners'}],me:['Me',function(){return 'How Ausloans scores you'}]};
 function nav(v){view=v;$$('#nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v)});$$('.pane').forEach(function(p){p.classList.remove('on')});$('#pane-'+v).classList.add('on');paint();window.scrollTo(0,0)}
 function paint(){
   var t=TITLES[view];$('#pageTitle').textContent=t[0];$('#pageSub').textContent=t[1]();
-  $('#nPartners').textContent=D.partners.length||'';var onClock=D.leads.filter(function(l){return l.stage===0}).length;$('#nLeads').textContent=onClock||'';
+  $('#nPartners').textContent=D.partners.length||'';var onClock=D.leads.filter(function(l){return l.stage===0&amp;&amp;!l.handed}).length;$('#nLeads').textContent=onClock||'';
   CD=[];
   if(view==='today')paintToday();
   else if(view==='partners'){if(detailId&amp;&amp;PM.P(detailId))paintDetail(detailId);else paintList()}
@@ -7187,13 +7222,13 @@ setInterval(tick,1000);
 function recs(){
   var out=[],now=Date.now();
   if(!D.partners.length)out.push({p:2,ic:'＋',t:'Add your first partner',w:'Score them on a call, or add one head office signed up.',a:[['New partner','PM.newPartner()','p']]});
-  D.leads.filter(function(l){return l.stage===0}).sort(function(a,b){return a.recv-b.recv}).forEach(function(l){var p=PM.P(l.pid);var left=60*MIN-(now-l.recv);out.push({p:0,ic:'☎',t:'Call '+l.client,w:(p?p.biz+' · ':'')+(left&gt;0?'&lt;span id=&quot;'+cd(l.recv,'sla')+'&quot;&gt;&lt;/span&gt; left on the hour':'over the hour by &lt;span id=&quot;'+cd(l.recv+60*MIN,'mm')+'&quot;&gt;&lt;/span&gt;')+(l.att?' · '+l.att+' of 3 attempts':''),a:[['Contacted','PM.contact('+l.id+')','p'],['Log attempt','PM.attempt('+l.id+')',''],['Open','PM.openLead('+l.id+')','q']]})});
+  D.leads.filter(function(l){return l.stage===0&amp;&amp;!l.handed}).sort(function(a,b){return a.recv-b.recv}).forEach(function(l){var p=PM.P(l.pid);var left=60*MIN-(now-l.recv);out.push({p:0,ic:'☎',t:'Call '+l.client,w:(p?h(p.biz)+' · ':'')+(left&gt;0?'&lt;span id=&quot;'+cd(l.recv,'sla')+'&quot;&gt;&lt;/span&gt; &lt;small&gt;left on the hour&lt;/small&gt;':'over the hour by &lt;span id=&quot;'+cd(l.recv+60*MIN,'mm')+'&quot;&gt;&lt;/span&gt;')+(l.att?' · '+l.att+' of 3 attempts':''),a:[['Contacted','PM.contact('+l.id+')','p'],['Log attempt','PM.attempt('+l.id+')',''],['Open','PM.openLead('+l.id+')','q']]})});
   D.partners.forEach(function(p){
     var f=first(p),ml=PM.meetLine(p),dueMs=p.nextCI-now,dueD=Math.round(dueMs/DAY);
-    if(p.pipe.stage!=='Live'){out.push({p:2,ic:'⇢',t:p.biz+' is not live yet',w:PM.ONB_NEXT[p.pipe.stage]||'Move them along.',a:[['Open','PM.open('+p.id+')','']]})}
-    if(ml.k==='coral'&amp;&amp;p.meet.status==='Confirmed'){out.push({p:1,ic:'↻',t:'Call with '+f+' slipped',w:ml.t+'. Mark it done if it happened, or rebook.',a:[['It happened','PM.meetDone('+p.id+')','p'],['Rebook','PM.book('+p.id+')','']]})}
-    else if(ml.chase&amp;&amp;p.meet.status==='Requested'){out.push({p:1,ic:'↩',t:'Nudge '+f+' for a time',w:ml.t+'. Nothing booked yet.',a:[['Copy the nudge','PM.copyDraft('+p.id+',\'nudge\')','p'],['They replied, book it','PM.book('+p.id+')',''],['Do it now','PM.startCheckin('+p.id+')','q']]})}
-    else if(ml.k==='teal'&amp;&amp;ml.ts&amp;&amp;ml.ts-now&lt;2*DAY){out.push({p:1,ic:'●',t:'Call with '+f+' '+(ml.ts-now&lt;0?'is now':PM.cdLine(ml.ts-now)),w:fmtDow(ml.ts)+(p.meet.time?' at '+PM.fmtTime(p.meet.time):'')+(p.meet.note?' · '+p.meet.note:''),a:[['Start the catch-up','PM.startCheckin('+p.id+')','p'],['Copy prep','PM.copyPrep('+p.id+')','']]})}
+    if(p.pipe.stage!=='Live'){out.push({p:2,ic:'⇢',t:p.biz+' is not live yet',w:h(PM.ONB_NEXT[p.pipe.stage]||'Move them along.'),a:[['Open','PM.open('+p.id+')','']]})}
+    if(ml.k==='coral'&amp;&amp;p.meet.status==='Confirmed'){out.push({p:1,ic:'↻',t:'Call with '+f+' slipped',w:h(ml.t)+'. Mark it done if it happened, or rebook.',a:[['It happened','PM.meetDone('+p.id+')','p'],['Rebook','PM.book('+p.id+')','']]})}
+    else if(ml.chase&amp;&amp;p.meet.status==='Requested'){out.push({p:1,ic:'↩',t:'Nudge '+f+' for a time',w:h(ml.t)+'. Nothing booked yet.',a:[['Copy the nudge','PM.copyDraft('+p.id+',\'nudge\')','p'],['They replied, book it','PM.book('+p.id+')',''],['Do it now','PM.startCheckin('+p.id+')','q']]})}
+    else if(ml.k==='teal'&amp;&amp;ml.ts&amp;&amp;ml.ts-now&lt;2*DAY){out.push({p:1,ic:'●',t:'Call with '+f+' '+(ml.ts-now&lt;0?'is now':PM.cdLine(ml.ts-now)),w:fmtDow(ml.ts)+(p.meet.time?' at '+PM.fmtTime(p.meet.time):'')+(p.meet.note?' · '+h(p.meet.note):''),a:[['Start the catch-up','PM.startCheckin('+p.id+')','p'],['Copy prep','PM.copyPrep('+p.id+')','']]})}
     var booked=ml.k==='teal'&amp;&amp;ml.ts&amp;&amp;ml.ts&gt;now;
     if(!booked&amp;&amp;p.meet.status!=='Requested'){
       if(dueD&lt;0)out.push({p:1,ic:'⏱',t:'Monthly with '+f+' is overdue',w:Math.abs(dueD)+' day'+(Math.abs(dueD)===1?'':'s')+' past due. Get a time or do it now.',a:[['Do it now','PM.startCheckin('+p.id+')','p'],['Ask for a time','PM.askTime('+p.id+')','']]});
@@ -7206,7 +7241,7 @@ function recs(){
     var ll=PM.lastLeadAt(p),ql=ll?daysSince(ll):null;
     if(p.pipe.stage==='Live'&amp;&amp;(ql==null?daysSince(p.added)&gt;=30:ql&gt;=30))out.push({p:3,ic:'◌',t:'Quiet from '+p.biz,w:ql==null?'Nothing sent since they went live.':'Last lead '+ql+' days ago.',a:[['Ask what\'s in the pipeline','PM.copyDraft('+p.id+',\'quiet\')','p']]});
     var owed=D.ledger.filter(function(l){return l.pid===p.id&amp;&amp;!l.paid&amp;&amp;(+l.inv&gt;0)});
-    if(owed.length)out.push({p:3,ic:'$',t:p.biz+' owes '+money(owed.reduce(function(a,l){return a+(+l.inv||0)},0)),w:owed.map(function(l){return l.item}).join(', '),a:[['Open the ledger','PM.view(\'money\')','']]});
+    if(owed.length)out.push({p:3,ic:'$',t:p.biz+' owes '+money(owed.reduce(function(a,l){return a+(+l.inv||0)},0)),w:h(owed.map(function(l){return l.item}).join(', ')),a:[['Open the ledger','PM.view(\'money\')','']]});
   });
   out.sort(function(a,b){return a.p-b.p});
   return out;
@@ -7219,16 +7254,16 @@ function paintToday(){
   var nextCI=D.partners.slice().sort(function(a,b){return a.nextCI-b.nextCI})[0];
   var booked=D.partners.map(function(p){var ml=PM.meetLine(p);return {p:p,ml:ml}}).filter(function(x){return x.ml.ts&amp;&amp;x.ml.ts&gt;now-HOUR}).sort(function(a,b){return a.ml.ts-b.ml.ts})[0];
   var nextQ=D.partners.filter(function(p){return p.pipe.stage==='Live'}).map(function(p){return {p:p,ts:PM.nextQR(p)}}).sort(function(a,b){return a.ts-b.ts})[0];
-  var onClock=D.leads.filter(function(l){return l.stage===0}).sort(function(a,b){return a.recv-b.recv});
+  var onClock=D.leads.filter(function(l){return l.stage===0&amp;&amp;!l.handed}).sort(function(a,b){return a.recv-b.recv});
   var tiles='';
   function tile(cls,lbl,who,bigId,when,click){return '&lt;div class=&quot;cd '+cls+'&quot; onclick=&quot;'+click+'&quot;&gt;&lt;div&gt;&lt;div class=&quot;lbl&quot;&gt;'+h(lbl)+'&lt;/div&gt;&lt;div class=&quot;who&quot;&gt;'+h(who)+'&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;big&quot; id=&quot;'+bigId+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;when&quot;&gt;'+h(when)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'}
   function quiet(lbl,who,txt,click){return '&lt;div class=&quot;cd quiet&quot; onclick=&quot;'+click+'&quot;&gt;&lt;div&gt;&lt;div class=&quot;lbl&quot;&gt;'+h(lbl)+'&lt;/div&gt;&lt;div class=&quot;who&quot;&gt;'+h(who)+'&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;big&quot; style=&quot;font-size:22px;font-weight:500&quot;&gt;'+h(txt)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'}
   if(nextCI){var ms=nextCI.nextCI-now;tiles+=tile(ms&lt;0?'bad':ms&lt;7*DAY?'warn':'ok','Next catch-up',nextCI.biz+' · '+nextCI.name,cd(nextCI.nextCI,'big'),(ms&lt;0?'overdue since ':'due ')+fmtDow(nextCI.nextCI),'PM.open('+nextCI.id+')')}
-  else tiles+=quiet('Next catch-up','No partners yet','—','PM.view(\'partners\')');
+  else tiles+=quiet('Next catch-up','No partners yet','Add one','PM.view(\'partners\')');
   if(booked)tiles+=tile(booked.ml.ts-now&lt;DAY?'warn':'ok','Booked call',booked.p.biz+(booked.p.meet.note?' · '+booked.p.meet.note:''),cd(booked.ml.ts,'big'),fmtDow(booked.ml.ts)+(booked.p.meet.time?' at '+PM.fmtTime(booked.p.meet.time):''),'PM.open('+booked.p.id+')');
-  else{var req=D.partners.filter(function(p){return p.meet.status==='Requested'})[0];tiles+=quiet('Booked call',req?req.biz:'Nothing in the diary',req?'Waiting on a time':'—',req?'PM.open('+req.id+')':'PM.view(\'partners\')')}
+  else{var req=D.partners.filter(function(p){return p.meet.status==='Requested'})[0];tiles+=quiet('Booked call',req?req.biz:'Nothing in the diary',req?'Waiting on a time':'None',req?'PM.open('+req.id+')':'PM.view(\'partners\')')}
   if(nextQ){var qm=nextQ.ts-now;tiles+=tile(qm&lt;0?'bad':qm&lt;14*DAY?'warn':'ok','Quarterly review',nextQ.p.biz,cd(nextQ.ts,'big'),(qm&lt;0?'overdue since ':'due ')+fmtDow(nextQ.ts),'PM.open('+nextQ.p.id+')')}
-  else tiles+=quiet('Quarterly review','No live partners yet','—','PM.view(\'partners\')');
+  else tiles+=quiet('Quarterly review','No live partners yet','None','PM.view(\'partners\')');
   if(onClock.length){var l0=onClock[0];tiles+='&lt;div class=&quot;cd ok&quot; onclick=&quot;PM.view(\'leads\')&quot;&gt;&lt;div&gt;&lt;div class=&quot;lbl&quot;&gt;On the clock&lt;/div&gt;&lt;div class=&quot;who&quot;&gt;'+h(l0.client)+(onClock.length&gt;1?' and '+(onClock.length-1)+' more':'')+'&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;big&quot;&gt;&lt;b id=&quot;'+cd(l0.recv,'sla')+'&quot;&gt;&lt;/b&gt;&lt;small&gt;on the hour&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;when&quot;&gt;'+h((PM.P(l0.pid)||{}).biz||'')+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'}
   else tiles+=quiet('On the clock','No new leads waiting','0','PM.view(\'leads\')');
   $('#cds').innerHTML=tiles;
@@ -7238,7 +7273,7 @@ function paintToday(){
 }
 
 /* ── Partners list ── */
-function ringHtml(score,size){var r=22,c=2*Math.PI*r,v=score==null?0:Math.max(0,Math.min(100,score)),b=bandOf(score);return '&lt;div class=&quot;ring&quot;&gt;&lt;svg viewBox=&quot;0 0 54 54&quot;&gt;&lt;circle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;'+r+'&quot; fill=&quot;none&quot; stroke=&quot;rgba(148,163,255,.12)&quot; stroke-width=&quot;5&quot;/&gt;&lt;circle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;'+r+'&quot; fill=&quot;none&quot; stroke=&quot;'+(score==null?'transparent':b.c)+'&quot; stroke-width=&quot;5&quot; stroke-linecap=&quot;round&quot; stroke-dasharray=&quot;'+(c*v/100).toFixed(1)+' '+c.toFixed(1)+'&quot;/&gt;&lt;/svg&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+(score==null?'var(--faint)':b.c)+'&quot;&gt;'+(score==null?'—':score)+'&lt;/div&gt;&lt;/div&gt;'}
+function ringHtml(score,size){var r=22,c=2*Math.PI*r,v=score==null?0:Math.max(0,Math.min(100,score)),b=bandOf(score);return '&lt;div class=&quot;ring&quot;&gt;&lt;svg viewBox=&quot;0 0 54 54&quot;&gt;&lt;circle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;'+r+'&quot; fill=&quot;none&quot; stroke=&quot;rgba(148,163,255,.12)&quot; stroke-width=&quot;5&quot;/&gt;&lt;circle cx=&quot;27&quot; cy=&quot;27&quot; r=&quot;'+r+'&quot; fill=&quot;none&quot; stroke=&quot;'+(score==null?'transparent':b.c)+'&quot; stroke-width=&quot;5&quot; stroke-linecap=&quot;round&quot; stroke-dasharray=&quot;'+(c*v/100).toFixed(1)+' '+c.toFixed(1)+'&quot;/&gt;&lt;/svg&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+(score==null?'var(--faint)':b.c)+'&quot;&gt;'+(score==null?'·':score)+'&lt;/div&gt;&lt;/div&gt;'}
 function paintList(){
   $('#plist').style.display='block';$('#pdetail').style.display='none';
   var g=$('#pgrid');
@@ -7249,7 +7284,7 @@ function paintList(){
     var due=p.nextCI-Date.now();
     return '&lt;button class=&quot;pc&quot; onclick=&quot;PM.open('+p.id+')&quot;&gt;&lt;div class=&quot;row&quot; style=&quot;justify-content:space-between;align-items:flex-start;flex-wrap:nowrap&quot;&gt;&lt;div style=&quot;min-width:0&quot;&gt;&lt;div class=&quot;nm&quot;&gt;'+h(p.biz)+'&lt;/div&gt;&lt;div class=&quot;ct&quot;&gt;'+h(p.name)+(p.ind&amp;&amp;p.ind!=='—'?' · '+h(p.ind):'')+'&lt;/div&gt;&lt;/div&gt;'+ringHtml(p.h?p.h.H:null)+'&lt;/div&gt;'
       +'&lt;div class=&quot;pills&quot; style=&quot;gap:5px&quot;&gt;'+chips+'&lt;/div&gt;'
-      +'&lt;div class=&quot;nums&quot;&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+l90+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Leads 90d&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+st.c+'&quot;&gt;'+(ds==null?'—':ds+'d')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Since spoke&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+(due&lt;0?'var(--coral)':due&lt;7*DAY?'var(--amber)':'var(--txt)')+'&quot;&gt;'+(due&lt;0?'-':'')+Math.abs(Math.round(due/DAY))+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;'+(due&lt;0?'Overdue':'Catch-up')+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/button&gt;'}).join('');
+      +'&lt;div class=&quot;nums&quot;&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+l90+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Leads 90d&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+st.c+'&quot;&gt;'+(ds==null?'never':ds+'d')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Since spoke&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;num&quot;&gt;&lt;div class=&quot;v&quot; style=&quot;color:'+(due&lt;0?'var(--coral)':due&lt;7*DAY?'var(--amber)':'var(--txt)')+'&quot;&gt;'+(due&lt;0?'-':'')+Math.abs(Math.round(due/DAY))+'d&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;'+(due&lt;0?'Overdue':'Catch-up')+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/button&gt;'}).join('');
 }
 
 /* ── Partner detail ── */
@@ -7260,7 +7295,7 @@ function paintDetail(id){
   var now=Date.now(),ml=PM.meetLine(p),st=PM.spokeText(p),b=bandOf(p.h?p.h.H:null),qr=PM.nextQR(p),ls=PM.leadsOf(p).sort(function(a,c){return c.recv-a.recv}),ci=D.checkins.filter(function(c){return c.pid===p.id}),rv=D.reviews.filter(function(r){return r.pid===p.id}),mk=D.ledger.filter(function(l){return l.pid===p.id});
   var meta=[];if(p.phone&amp;&amp;p.phone!=='—')meta.push('&lt;a href=&quot;tel:'+h(String(p.phone).replace(/\s+/g,''))+'&quot;&gt;'+h(p.phone)+'&lt;/a&gt;');if(p.pipe.email)meta.push('&lt;a href=&quot;mailto:'+h(p.pipe.email)+'&quot;&gt;'+h(p.pipe.email)+'&lt;/a&gt;');if(p.pipe.page)meta.push('&lt;a href=&quot;'+h(p.pipe.page)+'&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Partner page&lt;/a&gt;');if(p.ind&amp;&amp;p.ind!=='—')meta.push(h(p.ind));
   var htmlOut='&lt;button class=&quot;back&quot; onclick=&quot;PM.closeDetail()&quot;&gt;‹ Partners&lt;/button&gt;'
-   +'&lt;div class=&quot;dhead&quot;&gt;&lt;div style=&quot;min-width:0&quot;&gt;&lt;h2&gt;'+h(p.biz)+'&lt;/h2&gt;&lt;div class=&quot;meta&quot;&gt;&lt;span&gt;'+h(p.name)+' · '+h(p.type)+'&lt;/span&gt;'+meta.map(function(m){return '&lt;span&gt;'+m+'&lt;/span&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;gap:8px;align-items:center&quot;&gt;'+ringHtml(p.h?p.h.H:null)+'&lt;div&gt;&lt;div style=&quot;font-size:12px;font-weight:700;color:'+b.c+'&quot;&gt;'+h(b.t)+'&lt;/div&gt;&lt;div style=&quot;font-size:11.5px;color:var(--faint)&quot;&gt;'+(p.readiness?'readiness '+p.readiness.t:'health score')+'&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;btn q sm&quot; onclick=&quot;PM.editPartner('+p.id+')&quot;&gt;Edit&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;dhead&quot;&gt;&lt;div style=&quot;min-width:0&quot;&gt;&lt;h2&gt;'+h(p.biz)+'&lt;/h2&gt;&lt;div class=&quot;meta&quot;&gt;&lt;span&gt;'+h(p.name==='—'?'No contact name yet':p.name)+' · '+h(p.type)+'&lt;/span&gt;'+meta.map(function(m){return '&lt;span&gt;'+m+'&lt;/span&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;gap:8px;align-items:center&quot;&gt;'+ringHtml(p.h?p.h.H:null)+'&lt;div&gt;&lt;div style=&quot;font-size:12px;font-weight:700;color:'+b.c+'&quot;&gt;'+h(b.t)+'&lt;/div&gt;&lt;div style=&quot;font-size:11.5px;color:var(--faint)&quot;&gt;'+(p.readiness?'readiness '+p.readiness.t:'health score')+'&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;btn q sm&quot; onclick=&quot;PM.editPartner('+p.id+')&quot;&gt;Edit&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;'
    +'&lt;div class=&quot;cds&quot; style=&quot;margin-top:16px&quot;&gt;'
    +'&lt;div class=&quot;cd '+(p.nextCI-now&lt;0?'bad':p.nextCI-now&lt;7*DAY?'warn':'ok')+'&quot; onclick=&quot;PM.startCheckin('+p.id+')&quot;&gt;&lt;div&gt;&lt;div class=&quot;lbl&quot;&gt;Monthly catch-up&lt;/div&gt;&lt;div class=&quot;who&quot;&gt;'+(p.nextCI-now&lt;0?'Overdue since ':'Due ')+fmtDow(p.nextCI)+'&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;big&quot; id=&quot;'+cd(p.nextCI,'big')+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;when&quot;&gt;tap to start&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'
    +'&lt;div class=&quot;cd '+(qr-now&lt;0?'bad':qr-now&lt;14*DAY?'warn':'ok')+'&quot; onclick=&quot;PM.startQuarterly('+p.id+')&quot;&gt;&lt;div&gt;&lt;div class=&quot;lbl&quot;&gt;Quarterly review&lt;/div&gt;&lt;div class=&quot;who&quot;&gt;'+(p.lastReviewAt?'Last one '+fmtD(p.lastReviewAt):'None yet')+'&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div class=&quot;big&quot; id=&quot;'+cd(qr,'big')+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;when&quot;&gt;'+(qr-now&lt;0?'overdue since ':'due ')+fmtDow(qr)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'
@@ -7277,27 +7312,27 @@ function paintDetail(id){
    +(p.pipe.stage!=='Live'?'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;row&quot; style=&quot;justify-content:space-between&quot;&gt;&lt;div class=&quot;lbl&quot;&gt;Onboarding&lt;/div&gt;&lt;span class=&quot;chip amber&quot;&gt;'+h(p.pipe.stage)+'&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;steps&quot; style=&quot;margin-top:12px&quot;&gt;'+PM.ONB.map(function(s,i){return '&lt;div class=&quot;'+(PM.ONB.indexOf(p.pipe.stage)&gt;=i?'on':'')+'&quot;&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;&lt;div class=&quot;stepl&quot;&gt;&lt;span&gt;Agreement&lt;/span&gt;&lt;span&gt;Signed&lt;/span&gt;&lt;span&gt;Zink&lt;/span&gt;&lt;span&gt;Assets&lt;/span&gt;&lt;span&gt;Live&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;cap&quot; style=&quot;margin-top:12px&quot;&gt;'+h(PM.ONB_NEXT[p.pipe.stage])+'&lt;/div&gt;&lt;div class=&quot;pills&quot; style=&quot;margin-top:12px&quot;&gt;'+PM.ONB.map(function(s){return '&lt;button class=&quot;pill'+(s===p.pipe.stage?' on':'')+'&quot; onclick=&quot;PM.setStage('+p.id+',\''+s+'\')&quot;&gt;'+h(s)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;':'')
    +'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:8px&quot;&gt;&lt;div class=&quot;lbl&quot;&gt;Notes&lt;/div&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;div class=&quot;pills&quot; style=&quot;gap:4px&quot;&gt;'+['Call','Text','Email','In person'].map(function(k){return '&lt;button class=&quot;pill&quot; style=&quot;padding:6px 11px;font-size:12px&quot; onclick=&quot;PM.logTouch('+p.id+',\''+k+'\')&quot;&gt;'+k+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'
    +'&lt;div class=&quot;addnote&quot;&gt;&lt;input class=&quot;in&quot; id=&quot;pnote&quot; placeholder=&quot;Add a note about '+h(first(p))+'&quot; onkeydown=&quot;if(event.key===\'Enter\')PM.addNote('+p.id+')&quot;&gt;&lt;button class=&quot;btn p&quot; onclick=&quot;PM.addNote('+p.id+')&quot;&gt;Add&lt;/button&gt;&lt;/div&gt;'
-   +'&lt;div class=&quot;tl&quot; style=&quot;margin-top:10px&quot;&gt;'+(p.hist.length?p.hist.slice(0,40).map(function(x){return '&lt;div class=&quot;tli&quot;&gt;&lt;div class=&quot;d&quot;&gt;'+fmtD(x.d)+'&lt;/div&gt;&lt;div class=&quot;t&quot;&gt;'+h(x.t)+'&lt;/div&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;Nothing yet.&lt;/div&gt;')+'&lt;/div&gt;&lt;/div&gt;'
+   +'&lt;div class=&quot;tl&quot; style=&quot;margin-top:10px&quot;&gt;'+(p.hist.length?p.hist.slice(0,40).map(function(x,i){return '&lt;div class=&quot;tli&quot;&gt;&lt;div class=&quot;d&quot;&gt;'+fmtD(x.d)+'&lt;/div&gt;&lt;div class=&quot;t&quot;&gt;'+h(tidy(x.t))+'&lt;/div&gt;&lt;button class=&quot;x&quot; title=&quot;Delete this note&quot; onclick=&quot;PM.removeNote('+p.id+','+i+','+(+x.d)+')&quot;&gt;×&lt;/button&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;Nothing yet.&lt;/div&gt;')+'&lt;/div&gt;&lt;/div&gt;'
    +'&lt;/div&gt;&lt;div&gt;'
    // right · leads, catch ups, numbers, marketing
    +'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:6px&quot;&gt;&lt;div class=&quot;lbl&quot;&gt;Leads from '+h(p.biz)+'&lt;/div&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;button class=&quot;btn sm q&quot; onclick=&quot;PM.addLeadFor('+p.id+')&quot;&gt;+ Lead&lt;/button&gt;&lt;/div&gt;'
-   +(ls.length?ls.slice(0,12).map(function(l){var s=l.outcome==='app'?(l.settled?'Settled':'Approved'):l.outcome==='dec'?'Declined':PM.STAGES[l.stage];var k=l.outcome==='app'?'green':l.outcome==='dec'?'coral':l.stage===0?'amber':'teal';return '&lt;div class=&quot;kv&quot; style=&quot;cursor:pointer&quot; onclick=&quot;PM.openLead('+l.id+')&quot;&gt;&lt;div&gt;&lt;div style=&quot;color:var(--txt);font-weight:600&quot;&gt;'+h(l.client)+'&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+h(l.asset||'')+(l.notes.length?' · '+h(l.notes[0].t):'')+'&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot;&gt;&lt;span class=&quot;chip '+k+'&quot;&gt;'+h(s)+'&lt;/span&gt;&lt;div style=&quot;font-size:11px;color:var(--faint);margin-top:4px&quot;&gt;'+fmtD(l.recv)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;No leads logged from them yet.&lt;/div&gt;')+'&lt;/div&gt;'
-   +'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;lbl&quot; style=&quot;margin-bottom:8px&quot;&gt;Last 90 days&lt;/div&gt;&lt;div class=&quot;mini&quot;&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(PM.leadsOf(p,90).length||(+p.q.leads||0))+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Leads&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(+p.q.app||0)+' / '+(+p.q.dec||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Appr / dec&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(+p.q.set||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Settled&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+pct(p.h?p.h.apprRate:null)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Approval&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+money(p.q.vol||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Volume&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+money(PM.spendFor(p.id))+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Spent on them&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'
-   +(p.h?'&lt;div class=&quot;hr&quot;&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Finance ×0.4&lt;/span&gt;&lt;b&gt;'+p.h.F+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Engagement ×0.3&lt;/span&gt;&lt;b&gt;'+p.h.E+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Marketing ×0.2&lt;/span&gt;&lt;b&gt;'+p.h.M+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Risk ×0.1&lt;/span&gt;&lt;b&gt;'+p.h.R+'&lt;/b&gt;&lt;/div&gt;':'')+'&lt;/div&gt;'
+   +(ls.length?ls.slice(0,12).map(function(l){var s=l.outcome==='app'?(l.settled?'Settled':'Approved'):l.outcome==='dec'?'Declined':PM.STAGES[l.stage];var k=l.outcome==='app'?'green':l.outcome==='dec'?'coral':l.stage===0?'amber':'teal';return '&lt;div class=&quot;kv&quot; style=&quot;cursor:pointer&quot; onclick=&quot;PM.openLead('+l.id+')&quot;&gt;&lt;div&gt;&lt;div style=&quot;color:var(--txt);font-weight:600&quot;&gt;'+h(l.client)+'&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+h(l.asset||'')+(l.notes.length?' · '+h(tidy(l.notes[0].t)):'')+'&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot;&gt;&lt;span class=&quot;chip '+k+'&quot;&gt;'+h(s)+'&lt;/span&gt;&lt;div style=&quot;font-size:11px;color:var(--faint);margin-top:4px&quot;&gt;'+fmtD(l.recv)+'&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;No leads logged from them yet.&lt;/div&gt;')+'&lt;/div&gt;'
+   +'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;lbl&quot; style=&quot;margin-bottom:8px&quot;&gt;Last 90 days&lt;/div&gt;&lt;div class=&quot;mini&quot;&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(PM.leadsOf(p,90).length||(+p.q.leads||0))+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Leads&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(+p.q.app||0)+' / '+(+p.q.dec||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Appr / dec&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(+p.q.set||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Settled&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+(pct(p.h?p.h.apprRate:null)||'n/a')+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Approval&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+money(p.q.vol||0)+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Volume&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;m&quot;&gt;&lt;div class=&quot;v&quot;&gt;'+money(PM.spendFor(p.id))+'&lt;/div&gt;&lt;div class=&quot;l&quot;&gt;Spent on them&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'
+   +(p.h&amp;&amp;p.h.F!=null?'&lt;div class=&quot;hr&quot;&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Finance ×0.4&lt;/span&gt;&lt;b&gt;'+p.h.F+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Engagement ×0.3&lt;/span&gt;&lt;b&gt;'+p.h.E+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Marketing ×0.2&lt;/span&gt;&lt;b&gt;'+p.h.M+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Risk ×0.1&lt;/span&gt;&lt;b&gt;'+p.h.R+'&lt;/b&gt;&lt;/div&gt;':'')+'&lt;/div&gt;'
    +'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;lbl&quot; style=&quot;margin-bottom:6px&quot;&gt;Catch-ups and reviews&lt;/div&gt;'
-   +((ci.length||rv.length)?ci.map(function(c){return {d:PM.fromIso(c.date)||0,k:'Monthly',t:'Sat '+(c.sat||'—')+' · '+(c.leads||0)+' leads, '+(c.funded||0)+' funded'+(c.p1?' · '+c.p1:'')}}).concat(rv.map(function(r){return {d:PM.fromIso(r.date)||0,k:'Quarterly',t:'Health '+(r.health||'—')+(r.band?' '+r.band:'')+(r.nextInitiatives?' · '+r.nextInitiatives.split(' | ')[0]:'')}})).sort(function(a,c){return c.d-a.d}).slice(0,10).map(function(x){return '&lt;div class=&quot;kv&quot;&gt;&lt;div&gt;&lt;div style=&quot;color:var(--txt);font-weight:600&quot;&gt;'+x.k+'&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+h(x.t)+'&lt;/div&gt;&lt;/div&gt;&lt;span style=&quot;font-size:12px&quot;&gt;'+fmtD(x.d)+'&lt;/span&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;None saved yet.&lt;/div&gt;')+'&lt;/div&gt;'
+   +((ci.length||rv.length)?ci.map(function(c){return {d:PM.fromIso(c.date)||0,k:'Monthly',t:'Happy: '+(c.sat||'not asked')+' · '+(c.leads||0)+' leads, '+(c.funded||0)+' funded'+(c.p1?' · '+c.p1:'')}}).concat(rv.map(function(r){return {d:PM.fromIso(r.date)||0,k:'Quarterly',t:'Health '+(r.health||'—')+(r.band?' '+r.band:'')+(r.nextInitiatives?' · '+r.nextInitiatives.split(' | ')[0]:'')}})).sort(function(a,c){return c.d-a.d}).slice(0,10).map(function(x){return '&lt;div class=&quot;kv&quot;&gt;&lt;div&gt;&lt;div style=&quot;color:var(--txt);font-weight:600&quot;&gt;'+x.k+'&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--mut)&quot;&gt;'+h(x.t)+'&lt;/div&gt;&lt;/div&gt;&lt;span style=&quot;font-size:12px&quot;&gt;'+fmtD(x.d)+'&lt;/span&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;None saved yet.&lt;/div&gt;')+'&lt;/div&gt;'
    +(mk.length?'&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;lbl&quot; style=&quot;margin-bottom:6px&quot;&gt;Marketing bought&lt;/div&gt;'+mk.map(function(l){return '&lt;div class=&quot;kv&quot;&gt;&lt;span style=&quot;color:var(--txt)&quot;&gt;'+h(l.item)+'&lt;/span&gt;&lt;b&gt;'+money(l.inv)+' &lt;span class=&quot;'+(l.paid?'paid':'unpaid')+'&quot; style=&quot;font-size:11px;margin-left:6px&quot;&gt;'+(l.paid?'PAID':'UNPAID')+'&lt;/span&gt;&lt;/b&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;':'')
    +'&lt;/div&gt;&lt;/div&gt;';
   host.innerHTML=htmlOut;
 }
 function closeDetail(){detailId=null;paint()}
 function setStage(id,s){var p=PM.P(id);var was=p.pipe.stage;p.pipe.stage=s;if(s==='Zink live'||PM.ONB.indexOf(s)&gt;2)p.pipe.zink=true;if(PM.ONB.indexOf(s)&gt;=3)p.pipe.qr=true;if(was!==s)PM.note(p,'Onboarding moved '+was+' to '+s+'.','stage');PM.save();paint();PM.push('stage')}
-function addNote(id){var p=PM.P(id),el=$('#pnote');var t=(el.value||'').trim();if(!t)return;PM.note(p,t,'note');el.value='';PM.save();paint();PM.push('note');toast('Noted')}
+function addNote(id){var p=PM.P(id),el=$('#pnote');var t=(el.value||'').trim();if(!t)return;PM.note(p,t,'note');el.value='';PM.save();paint();var e2=$('#pnote');if(e2)e2.focus();PM.push('note');toast('Noted')}
 function logTouch(id,how){var p=PM.P(id);p.lastTouch=Date.now();p.lastTouchHow=how||'Call';PM.note(p,'Spoke with them, '+String(how||'call').toLowerCase()+'.','touch');PM.save();paint();PM.push('contact');toast('Logged',p.biz+' · '+PM.spokeText(p).t.toLowerCase())}
 function copyDraft(id,k){var p=PM.P(id);var d=PM.drafts(p);PM.copyText(d[k]||d.touch,'Copied, paste it into Dialpad');if(k==='ask'||k==='nudge'||k==='quarterly'){if(p.meet.status!=='Confirmed'){p.meet.status='Requested';if(!p.meet.askedAt||k==='nudge')p.meet.askedAt=Date.now();p.meet.note=p.meet.note||(k==='quarterly'?'Quarterly review':'Monthly catch up');PM.note(p,k==='nudge'?'Nudged them for a time.':'Asked them for a time.','meet');PM.save();paint();PM.push('next call')}}}
 function askTime(id){copyDraft(id,'ask')}
 function copyPrep(id){PM.copyText(PM.prepText(PM.P(id)),'Prep copied')}
-function meetDone(id){var p=PM.P(id);p.meet.status='Done';p.lastTouch=Date.now();p.lastTouchHow='Call';PM.note(p,'Call done.','meet');PM.save();paint();PM.push('next call')}
+function meetDone(id){var p=PM.P(id);p.meet.status='Done';p.lastTouch=Date.now();p.lastTouchHow='Call';if(/catch|monthly/i.test(p.meet.note||'')&amp;&amp;p.nextCI&lt;Date.now()+7*DAY)p.nextCI=Date.now()+(p.cadence||30)*DAY;PM.note(p,'Call done.','meet');PM.save();paint();PM.push('next call')}
 
 /* ── modal helpers ── */
 function modal(html){$('#modalBox').innerHTML=html;$('#modal').classList.add('on')}
@@ -7320,61 +7355,74 @@ function addDirect(){modal('&lt;h3&gt;Add a partner&lt;/h3&gt;&lt;div class=&quo
 function saveDirect(){var g=function(i){return ($('#'+i).value||'').trim()};var biz=g('apBiz');if(!biz){toast('Business name needed');return}if(D.partners.some(function(x){return PM.nmKey(x.biz)===PM.nmKey(biz)})){toast('Already in the book');return}var p=PM.normP({id:Date.now(),biz:biz,name:g('apName')||'—',type:$('#apType').value,ind:g('apInd')||'—',phone:g('apPhone')||'—',pipe:PM.pipeDefaults({email:g('apEmail'),stage:$('#apStage').value}),nextCI:Date.now()+30*DAY,added:Date.now(),hist:[{d:Date.now(),t:'Added to the book'+(g('apNotes')?'. '+g('apNotes'):'.'),k:'note'}]});D.partners.push(p);PM.save();modalClose();PM.fillPickers();open(p.id);PM.push('new partner');toast('Added',biz+' · first catch-up in 30 days')}
 function editPartner(id){var p=PM.P(id);modal('&lt;h3&gt;Edit '+h(p.biz)+'&lt;/h3&gt;&lt;div class=&quot;fgrid&quot;&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Business&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;epBiz&quot; value=&quot;'+h(p.biz)+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Contact&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;epName&quot; value=&quot;'+h(p.name==='—'?'':p.name)+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Type&lt;/label&gt;&lt;select class=&quot;in&quot; id=&quot;epType&quot;&gt;&lt;option'+(p.type==='Referral'?' selected':'')+'&gt;Referral&lt;/option&gt;&lt;option'+(p.type==='Agent'?' selected':'')+'&gt;Agent&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Industry&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;epInd&quot; value=&quot;'+h(p.ind==='—'?'':p.ind)+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Phone&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;epPhone&quot; value=&quot;'+h(p.phone==='—'?'':p.phone)+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Email&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;epEmail&quot; value=&quot;'+h(p.pipe.email)+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Partner page&lt;/label&gt;&lt;input class=&quot;in&quot; id=&quot;epPage&quot; value=&quot;'+h(p.pipe.page)+'&quot;&gt;&lt;/div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;label&gt;Catch-up every&lt;/label&gt;&lt;select class=&quot;in&quot; id=&quot;epCad&quot;&gt;'+[14,21,30,45,60].map(function(n){return '&lt;option value=&quot;'+n+'&quot;'+(n===p.cadence?' selected':'')+'&gt;'+n+' days&lt;/option&gt;'}).join('')+'&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-top:14px&quot;&gt;&lt;label class=&quot;tog&quot; style=&quot;border:0;padding:0&quot; id=&quot;epQr&quot; onclick=&quot;this.classList.toggle(\'on\')&quot;&gt;&lt;i&gt;✓&lt;/i&gt;QR and assets issued&lt;/label&gt;&lt;label class=&quot;tog&quot; style=&quot;border:0;padding:0;margin-left:14px&quot; id=&quot;epZink&quot; onclick=&quot;this.classList.toggle(\'on\')&quot;&gt;&lt;i&gt;✓&lt;/i&gt;Zink live&lt;/label&gt;&lt;/div&gt;&lt;div class=&quot;row&quot; style=&quot;margin-top:16px&quot;&gt;&lt;button class=&quot;btn p&quot; onclick=&quot;PM.saveEdit('+p.id+')&quot;&gt;Save&lt;/button&gt;&lt;button class=&quot;btn q&quot; onclick=&quot;PM.modalClose()&quot;&gt;Cancel&lt;/button&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;button class=&quot;btn d sm&quot; onclick=&quot;PM.removePartner('+p.id+')&quot;&gt;Remove&lt;/button&gt;&lt;/div&gt;');if(p.pipe.qr)$('#epQr').classList.add('on');if(p.pipe.zink)$('#epZink').classList.add('on')}
 function saveEdit(id){var p=PM.P(id);var g=function(i){return ($('#'+i).value||'').trim()};p.biz=g('epBiz')||p.biz;p.name=g('epName')||'—';p.type=$('#epType').value;p.ind=g('epInd')||'—';p.phone=g('epPhone')||'—';p.pipe.email=g('epEmail');p.pipe.page=g('epPage');p.cadence=+$('#epCad').value||30;p.pipe.qr=$('#epQr').classList.contains('on');p.pipe.zink=$('#epZink').classList.contains('on');PM.touch(p);p.h=PM.calcHealth(p);PM.save();modalClose();PM.fillPickers();paint();PM.push('partner details');toast('Saved')}
-function removePartner(id){var p=PM.P(id);if(!confirm('Remove '+p.biz+' from this device? The sheet keeps its row.'))return;D.partners=D.partners.filter(function(x){return x.id!==id});D.leads=D.leads.filter(function(l){return l.pid!==id});PM.save();modalClose();detailId=null;PM.fillPickers();paint()}
+function removePartner(id,sure){var p=PM.P(id);if(!p)return;if(!sure){var n=PM.leadsOf(p).length;modal('&lt;h3&gt;Remove '+h(p.biz)+'?&lt;/h3&gt;&lt;div class=&quot;cap&quot; style=&quot;margin-bottom:14px&quot;&gt;They come off the book here and in the sheet'+(n?', along with their '+n+' lead'+(n===1?'':'s'):'')+'. Catch-up history stays in the sheet.&lt;/div&gt;&lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;btn d&quot; onclick=&quot;PM.removePartner('+p.id+',1)&quot;&gt;Yes, remove&lt;/button&gt;&lt;button class=&quot;btn q&quot; onclick=&quot;PM.editPartner('+p.id+')&quot;&gt;Keep&lt;/button&gt;&lt;/div&gt;');return}
+  var g={t:'partner',biz:p.biz},ls=D.leads.filter(function(l){return l.pid===id});D.partners=D.partners.filter(function(x){return x.id!==id});D.leads=D.leads.filter(function(l){return l.pid!==id});PM.gone(g);PM.save();modalClose();detailId=null;PM.fillPickers();paint();PM.push('remove partner');
+  PM.toastUndo('Removed '+p.biz,'Gone from here and from the sheet.',function(){if(PM.P(id))return;p.added=Date.now();PM.touch(p);D.partners.push(p);ls.forEach(function(l){l.updated=Date.now();D.leads.push(l)});PM.ungone(g);PM.save();PM.fillPickers();paint();PM.push('restore partner');toast('Put back',p.biz)})}
 
 /* ── Leads ── */
-function fillPickers(){var o=D.partners.map(function(p){return '&lt;option value=&quot;'+p.id+'&quot;&gt;'+h(p.biz)+'&lt;/option&gt;'}).join('')||'&lt;option value=&quot;&quot;&gt;Add a partner first&lt;/option&gt;';['nlPartner','saleP','nmPartner'].forEach(function(i){var e=$('#'+i);if(e)e.innerHTML=o});var si=$('#saleI');if(si&amp;&amp;!si.innerHTML){si.innerHTML=PM.CATALOGUE.map(function(c,i){return '&lt;option value=&quot;'+i+'&quot;&gt;'+h(c.n)+' · '+money(c.s)+'&lt;/option&gt;'}).join('');si.onchange=function(){$('#saleAmt').value=PM.CATALOGUE[si.value].s};$('#saleAmt').value=PM.CATALOGUE[0].s}}
+function fillPickers(){var o=D.partners.map(function(p){return '&lt;option value=&quot;'+p.id+'&quot;&gt;'+h(p.biz)+'&lt;/option&gt;'}).join('')||'&lt;option value=&quot;&quot;&gt;Add a partner first&lt;/option&gt;';['nlPartner','saleP','nmPartner'].forEach(function(i){var e=$('#'+i);if(e){var was=e.value;e.innerHTML=o;if(was&amp;&amp;D.partners.some(function(p){return String(p.id)===was}))e.value=was}});var si=$('#saleI');if(si&amp;&amp;!si.innerHTML){si.innerHTML=PM.CATALOGUE.map(function(c,i){return '&lt;option value=&quot;'+i+'&quot;&gt;'+h(c.n)+' · '+money(c.s)+'&lt;/option&gt;'}).join('');si.onchange=function(){$('#saleAmt').value=PM.CATALOGUE[si.value].s};$('#saleAmt').value=PM.CATALOGUE[0].s}}
+var confirmRm={};
+function tidy(t){return String(t==null?'':t).replace(/\s+[—–]\s+/g,', ').replace(/[—–]/g,', ')}
 function leadHtml(l){
   var p=PM.P(l.pid)||{biz:'—'},now=Date.now(),openN=!!openLeads[l.id];
   var clk;
-  if(l.stage===0)clk='&lt;div class=&quot;clk&quot;&gt;&lt;span id=&quot;'+cd(l.recv,'sla')+'&quot;&gt;&lt;/span&gt;&lt;small&gt;left on the hour&lt;/small&gt;&lt;/div&gt;';
+  if(l.handed)clk='&lt;div class=&quot;clk&quot; style=&quot;font-size:18px;font-weight:600;color:var(--mut)&quot;&gt;Handed back&lt;small&gt;'+l.att+' attempts, no answer&lt;/small&gt;&lt;/div&gt;';
+  else if(l.stage===0)clk='&lt;div class=&quot;clk&quot;&gt;&lt;span id=&quot;'+cd(l.recv,'sla')+'&quot;&gt;&lt;/span&gt;&lt;small&gt;left on the hour&lt;/small&gt;&lt;/div&gt;';
   else if(l.outcome)clk='&lt;div class=&quot;clk&quot; style=&quot;font-size:18px;font-weight:600;color:'+(l.outcome==='app'?'var(--green)':'var(--coral)')+'&quot;&gt;'+(l.outcome==='app'?(l.settled?'Settled':'Approved'):'Declined')+'&lt;small&gt;'+(l.contactAt!=null?'contacted in '+l.contactAt+'m':'')+'&lt;/small&gt;&lt;/div&gt;';
   else clk='&lt;div class=&quot;clk&quot; style=&quot;font-size:18px;font-weight:600;color:var(--teal)&quot;&gt;'+h(PM.STAGES[l.stage])+'&lt;small&gt;'+(l.contactAt!=null?'contacted in '+l.contactAt+'m':'')+'&lt;/small&gt;&lt;/div&gt;';
   var pips=PM.STAGES.map(function(s,i){if(i===4&amp;&amp;l.outcome)return '&lt;span class=&quot;pip '+(l.outcome==='app'?'done':'bad')+'&quot;&gt;'+(l.outcome==='app'?(l.settled?'Settled':'Approved'):'Declined')+'&lt;/span&gt;';return '&lt;span class=&quot;pip '+(i&lt;l.stage?'done':i===l.stage?'now':'')+'&quot;&gt;'+s+'&lt;/span&gt;'}).join('');
   var act='';
-  if(l.outcome==='app'&amp;&amp;!l.settled)act='&lt;button class=&quot;btn sm g&quot; onclick=&quot;PM.settle('+l.id+')&quot;&gt;Settled&lt;/button&gt;';
+  if(l.handed&amp;&amp;!l.outcome)act='&lt;button class=&quot;btn sm&quot; onclick=&quot;PM.contact('+l.id+')&quot;&gt;They came back&lt;/button&gt;';
+  else if(l.outcome==='app'&amp;&amp;!l.settled)act='&lt;button class=&quot;btn sm g&quot; onclick=&quot;PM.settle('+l.id+')&quot;&gt;Settled&lt;/button&gt;';
   else if(l.outcome)act='';
   else if(l.stage===0)act='&lt;button class=&quot;btn sm p&quot; onclick=&quot;PM.contact('+l.id+')&quot;&gt;Contacted&lt;/button&gt;&lt;button class=&quot;btn sm&quot; onclick=&quot;PM.attempt('+l.id+')&quot;&gt;Attempt '+(l.att+1)+' of 3&lt;/button&gt;'+(l.att&gt;=3?'&lt;button class=&quot;btn sm w&quot; onclick=&quot;PM.handback('+l.id+')&quot;&gt;Hand back&lt;/button&gt;':'');
   else if(l.stage&lt;3)act='&lt;button class=&quot;btn sm p&quot; onclick=&quot;PM.advance('+l.id+')&quot;&gt;'+h(PM.STAGES[l.stage+1])+' →&lt;/button&gt;';
   else act='&lt;button class=&quot;btn sm g&quot; onclick=&quot;PM.outcome('+l.id+',\'app\')&quot;&gt;Approved&lt;/button&gt;&lt;button class=&quot;btn sm d&quot; onclick=&quot;PM.outcome('+l.id+',\'dec\')&quot;&gt;Declined&lt;/button&gt;';
-  var cls='lead'+(l.stage===0?' ok':' done');
+  var cls='lead'+(l.stage===0&amp;&amp;!l.handed?' ok':' done');
   return '&lt;div class=&quot;'+cls+'&quot; style=&quot;margin-bottom:10px&quot;&gt;'+clk
    +'&lt;div style=&quot;min-width:0&quot;&gt;&lt;div class=&quot;cl&quot;&gt;'+h(l.client)+(l.phone?' &lt;a style=&quot;font-size:13px;font-weight:600;margin-left:6px&quot; href=&quot;tel:'+h(String(l.phone).replace(/\s+/g,''))+'&quot;&gt;'+h(l.phone)+'&lt;/a&gt;':'')+'&lt;/div&gt;&lt;div class=&quot;me&quot;&gt;'+h(p.biz)+(l.asset&amp;&amp;l.asset!=='—'?' · '+h(l.asset):'')+' · '+fmtD(l.recv)+'&lt;/div&gt;&lt;div class=&quot;pips&quot;&gt;'+pips+'&lt;/div&gt;&lt;/div&gt;'
    +'&lt;div class=&quot;la&quot;&gt;'+act+'&lt;button class=&quot;btn sm q&quot; onclick=&quot;PM.toggleLead('+l.id+')&quot;&gt;'+(l.notes.length?l.notes.length+' note'+(l.notes.length===1?'':'s'):'Notes')+(openN?' ▴':' ▾')+'&lt;/button&gt;&lt;/div&gt;'
-   +(openN?'&lt;div class=&quot;notes&quot;&gt;'+(l.notes.length?l.notes.slice(0,8).map(function(n){return '&lt;div class=&quot;note&quot;&gt;&lt;b&gt;'+fmtD(n.d)+'&lt;/b&gt;'+h(n.t)+'&lt;/div&gt;'}).join(''):'')+'&lt;div class=&quot;addnote&quot;&gt;&lt;input class=&quot;in&quot; id=&quot;ln'+l.id+'&quot; placeholder=&quot;Note on '+h(l.client)+'&quot; onkeydown=&quot;if(event.key===\'Enter\')PM.addLeadNote('+l.id+')&quot;&gt;&lt;button class=&quot;btn p sm&quot; onclick=&quot;PM.addLeadNote('+l.id+')&quot;&gt;Add&lt;/button&gt;'+(l.stage&gt;0&amp;&amp;!l.outcome?'&lt;button class=&quot;btn sm q&quot; onclick=&quot;PM.copySms('+l.id+')&quot;&gt;Partner update text&lt;/button&gt;':'')+'&lt;button class=&quot;btn sm q&quot; onclick=&quot;PM.removeLead('+l.id+')&quot;&gt;Remove&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;':'')
+   +(openN?'&lt;div class=&quot;notes&quot;&gt;'+(l.notes.length?l.notes.slice(0,8).map(function(n,i){return '&lt;div class=&quot;note&quot;&gt;&lt;b&gt;'+fmtD(n.d)+'&lt;/b&gt;&lt;span&gt;'+h(tidy(n.t))+'&lt;/span&gt;&lt;button class=&quot;x&quot; title=&quot;Delete this note&quot; onclick=&quot;PM.removeLeadNote('+l.id+','+i+','+(+n.d)+')&quot;&gt;×&lt;/button&gt;&lt;/div&gt;'}).join(''):'')+'&lt;div class=&quot;addnote&quot;&gt;&lt;input class=&quot;in&quot; id=&quot;ln'+l.id+'&quot; placeholder=&quot;Note on '+h(l.client)+'&quot; onkeydown=&quot;if(event.key===\'Enter\')PM.addLeadNote('+l.id+')&quot;&gt;&lt;button class=&quot;btn p sm&quot; onclick=&quot;PM.addLeadNote('+l.id+')&quot;&gt;Add&lt;/button&gt;'+(l.stage&gt;0&amp;&amp;!l.outcome?'&lt;button class=&quot;btn sm q&quot; onclick=&quot;PM.copySms('+l.id+')&quot;&gt;Partner update text&lt;/button&gt;':'')+'&lt;/div&gt;'
+     +(confirmRm[l.id]?'&lt;div class=&quot;rmrow warn&quot;&gt;&lt;span&gt;Remove '+h(l.client)+' from the board? Their notes go too.&lt;/span&gt;&lt;button class=&quot;btn sm d&quot; onclick=&quot;PM.removeLead('+l.id+',1)&quot;&gt;Yes, remove&lt;/button&gt;&lt;button class=&quot;btn sm q&quot; onclick=&quot;PM.keepLead('+l.id+')&quot;&gt;Keep&lt;/button&gt;&lt;/div&gt;':'&lt;div class=&quot;rmrow&quot;&gt;&lt;button class=&quot;lnk&quot; onclick=&quot;PM.removeLead('+l.id+')&quot;&gt;Remove this client&lt;/button&gt;&lt;/div&gt;')+'&lt;/div&gt;':'')
    +'&lt;/div&gt;';
 }
 function paintLeads(){
   fillPickers();
-  var live=D.leads.filter(function(l){return !l.outcome||(l.outcome==='app'&amp;&amp;!l.settled)}).sort(function(a,b){return (a.stage-b.stage)||(a.recv-b.recv)});
-  var done=D.leads.filter(function(l){return l.outcome&amp;&amp;!(l.outcome==='app'&amp;&amp;!l.settled)}).sort(function(a,b){return b.recv-a.recv});
+  var live=D.leads.filter(function(l){return !l.handed&amp;&amp;(!l.outcome||(l.outcome==='app'&amp;&amp;!l.settled))}).sort(function(a,b){return (a.stage-b.stage)||(a.recv-b.recv)});
+  var done=D.leads.filter(function(l){return l.handed||(l.outcome&amp;&amp;!(l.outcome==='app'&amp;&amp;!l.settled))}).sort(function(a,b){return b.recv-a.recv});
   $('#leadList').innerHTML=(live.length?live.map(leadHtml).join(''):'&lt;div class=&quot;card empty&quot;&gt;Nothing on the board. Log a lead the moment a partner sends one.&lt;/div&gt;')+(done.length?'&lt;div class=&quot;lbl&quot; style=&quot;margin:18px 0 8px&quot;&gt;Finished&lt;/div&gt;'+done.slice(0,20).map(leadHtml).join(''):'');
   $('#slaLog').innerHTML=D.slaLog.length?D.slaLog.slice(0,30).map(function(r){return '&lt;div class=&quot;log&quot;&gt;&lt;span style=&quot;min-width:110px;color:var(--faint)&quot;&gt;'+h(r.t)+'&lt;/span&gt;&lt;span&gt;'+h(r.p)+' · '+h(r.c)+'&lt;/span&gt;&lt;span class=&quot;'+(r.ok?'ok':'bad')+'&quot;&gt;'+h(r.r)+'&lt;/span&gt;&lt;/div&gt;'}).join(''):'&lt;div class=&quot;empty&quot;&gt;Every lead you contact lands here with its response time. Your proof at review time.&lt;/div&gt;';
 }
-function addLead(){var pid=+$('#nlPartner').value,client=($('#nlClient').value||'').trim();if(!pid){toast('Add a partner first');return}if(!client){toast('Whose deal is it?');return}var l={id:Date.now(),pid:pid,client:client,phone:($('#nlPhone').value||'').trim(),asset:($('#nlAsset').value||'').trim()||'—',recv:Date.now(),stage:0,att:0,outcome:null,notes:[],updated:Date.now()};D.leads.unshift(l);var p=PM.P(pid);if(p){p.lastLeadAt=Date.now();p.leadsMTD=PM.leadsMonth(p);PM.note(p,'Sent '+client+(l.asset!=='—'?' · '+l.asset:'')+'.','lead')}PM.save();$('#nlClient').value='';$('#nlPhone').value='';$('#nlAsset').value='';paint();PM.push('lead');toast('Clock started',client+' · 60 minutes')}
+function addLead(force){var pid=+$('#nlPartner').value,client=($('#nlClient').value||'').trim();if(!pid){toast('Add a partner first');return}if(!client){toast('Whose deal is it?');return}
+  if(!force){var dup=D.leads.filter(function(x){return x.pid===pid&amp;&amp;PM.nmKey(x.client)===PM.nmKey(client)}).sort(function(a,b){return b.recv-a.recv})[0];if(dup){var ds=dup.outcome==='app'?(dup.settled?'settled':'approved'):dup.outcome==='dec'?'declined':PM.STAGES[dup.stage].toLowerCase();modal('&lt;h3&gt;'+h(dup.client)+' is already on the board&lt;/h3&gt;&lt;div class=&quot;cap&quot; style=&quot;margin-bottom:14px&quot;&gt;Sent '+fmtD(dup.recv)+', '+h(ds)+'. Open that one, or add a second one for a new deal?&lt;/div&gt;&lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;btn p&quot; onclick=&quot;PM.modalClose();PM.openLead('+dup.id+')&quot;&gt;Open it&lt;/button&gt;&lt;button class=&quot;btn&quot; onclick=&quot;PM.modalClose();PM.addLead(1)&quot;&gt;Add as a new deal&lt;/button&gt;&lt;button class=&quot;btn q&quot; onclick=&quot;PM.modalClose()&quot;&gt;Cancel&lt;/button&gt;&lt;/div&gt;');return}}
+  var l={id:Date.now(),pid:pid,client:client,phone:($('#nlPhone').value||'').trim(),asset:($('#nlAsset').value||'').trim()||'—',recv:Date.now(),stage:0,att:0,outcome:null,notes:[],updated:Date.now()};D.leads.unshift(l);var p=PM.P(pid);if(p){p.lastLeadAt=Date.now();p.leadsMTD=PM.leadsMonth(p);PM.note(p,'Sent '+client+(l.asset!=='—'?' · '+l.asset:'')+'.','lead')}PM.save();$('#nlClient').value='';$('#nlPhone').value='';$('#nlAsset').value='';paint();PM.push('lead');toast('Clock started',client+' · 60 minutes')}
 function addLeadFor(pid){nav('leads');$('#nlPartner').value=String(pid);$('#nlClient').focus()}
 function openLead(id){openLeads[id]=true;nav('leads');var e=document.getElementById('ln'+id);if(e)e.scrollIntoView({block:'center'})}
 function toggleLead(id){openLeads[id]=!openLeads[id];paint()}
-function addLeadNote(id){var l=PM.L(id),e=document.getElementById('ln'+id);var t=(e&amp;&amp;e.value||'').trim();if(!t)return;l.notes.unshift({d:Date.now(),t:t});l.updated=Date.now();openLeads[id]=true;PM.save();paint();PM.push('lead note');toast('Noted')}
+function addLeadNote(id){var l=PM.L(id),e=document.getElementById('ln'+id);var t=(e&amp;&amp;e.value||'').trim();if(!t)return;l.notes.unshift({d:Date.now(),t:t});l.updated=Date.now();openLeads[id]=true;PM.save();paint();var e2=document.getElementById('ln'+id);if(e2)e2.focus();PM.push('lead note');toast('Noted')}
 function stamp(){var d=new Date();return PM.fmtDow(d.getTime())+' '+PM.fmtTime(String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'))}
 function attempt(id){var l=PM.L(id);l.att=Math.min(3,l.att+1);l.updated=Date.now();l.notes.unshift({d:Date.now(),t:'Attempt '+l.att+', no answer.'});PM.save();paint();PM.push('lead');toast('Attempt '+l.att+' of 3 logged')}
 function contact(id){var l=PM.L(id),p=PM.P(l.pid);var m=Math.round((Date.now()-l.recv)/MIN);l.stage=1;l.contactAt=m;l.updated=Date.now();D.slaLog.unshift({t:stamp(),p:p?p.biz:'',c:l.client,r:'Contacted in '+m+'m'+(m&lt;=60?'':' · over the hour'),ok:m&lt;=60});l.notes.unshift({d:Date.now(),t:'Contacted after '+m+' minutes.'});PM.save();paint();PM.push('lead');PM.copyText(PM.SMS[1](l.client),'Contacted in '+m+'m. Partner update copied, paste it to '+(p?first(p):'the partner'))}
 function advance(id){var l=PM.L(id),p=PM.P(l.pid);l.stage++;l.updated=Date.now();l.notes.unshift({d:Date.now(),t:PM.STAGES[l.stage]+'.'});PM.save();paint();PM.push('lead');var s=PM.SMS[l.stage];if(s)PM.copyText(s(l.client),PM.STAGES[l.stage]+'. Partner update copied')}
 function outcome(id,o){var l=PM.L(id),p=PM.P(l.pid);l.outcome=o;l.stage=4;l.updated=Date.now();l.notes.unshift({d:Date.now(),t:o==='app'?'Approved.':'Declined.'});if(p)PM.note(p,l.client+(o==='app'?' approved.':' declined.'),'lead');PM.save();paint();PM.push('lead');PM.copyText(PM.SMS[o](l.client),(o==='app'?'Approved':'Declined')+'. Partner update copied')}
 function settle(id){var l=PM.L(id),p=PM.P(l.pid);l.settled=true;l.settledAt=Date.now();l.updated=Date.now();l.notes.unshift({d:Date.now(),t:'Settled.'});if(p)PM.note(p,l.client+' settled.','lead');PM.save();paint();PM.push('lead');PM.copyText(PM.SMS.set(l.client),'Settled. Partner update copied')}
-function handback(id){var l=PM.L(id),p=PM.P(l.pid);l.notes.unshift({d:Date.now(),t:'Handed back to the partner after 3 attempts.'});l.updated=Date.now();PM.save();paint();PM.push('lead');PM.copyText(PM.SMS.hand(l.client),'Hand back text copied')}
+function handback(id){var l=PM.L(id),p=PM.P(l.pid);l.handed=true;l.att=Math.max(l.att,3);l.notes.unshift({d:Date.now(),t:'Handed back to the partner after 3 attempts.'});l.updated=Date.now();if(p)PM.note(p,l.client+' handed back after 3 attempts, could not reach them.','lead');PM.save();paint();PM.push('lead');PM.copyText(PM.SMS.hand(l.client),'Hand back text copied')}
 function copySms(id){var l=PM.L(id);var s=l.outcome?PM.SMS[l.outcome]:PM.SMS[l.stage];if(s)PM.copyText(s(l.client),'Copied')}
-function removeLead(id){var l=PM.L(id);if(!confirm('Remove '+l.client+'?'))return;D.leads=D.leads.filter(function(x){return x.id!==id});PM.save();paint()}
+function removeLead(id,sure){var l=PM.L(id);if(!l)return;if(!sure){confirmRm[id]=true;openLeads[id]=true;paint();return}var p=PM.P(l.pid);var g=PM.leadGone(l,p);D.leads=D.leads.filter(function(x){return x.id!==id});PM.gone(g);delete confirmRm[id];delete openLeads[id];if(p){p.leadsMTD=PM.leadsMonth(p)}PM.save();paint();PM.push('remove lead');PM.toastUndo('Removed '+l.client,'Gone from here and from the sheet.',function(){if(PM.L(id))return;l.updated=Date.now();D.leads.unshift(l);PM.ungone(g);if(p){p.leadsMTD=PM.leadsMonth(p)}PM.save();paint();PM.push('restore lead');toast('Put back',l.client)})}
+function keepLead(id){delete confirmRm[id];paint()}
+function removeLeadNote(id,i,d){var l=PM.L(id);if(!l)return;if(!(l.notes[i]&amp;&amp;+l.notes[i].d===+d))i=l.notes.findIndex(function(n){return +n.d===+d});if(i&lt;0)return;var n=l.notes[i],p=PM.P(l.pid);var g=PM.leadNoteGone(l,n,p);l.notes.splice(i,1);l.updated=Date.now();PM.gone(g);openLeads[id]=true;PM.save();paint();PM.push('lead note');PM.toastUndo('Note deleted',n.t.length&gt;60?n.t.slice(0,60)+'…':n.t,function(){if(l.notes.indexOf(n)&gt;-1)return;l.notes.splice(Math.min(i,l.notes.length),0,n);l.updated=Date.now();PM.ungone(g);PM.save();paint();PM.push('lead note')})}
+function removeNote(pid,i,d){var p=PM.P(pid);if(!p)return;if(!(p.hist[i]&amp;&amp;+p.hist[i].d===+d))i=p.hist.findIndex(function(n){return +n.d===+d});if(i&lt;0)return;var n=p.hist[i];var g=PM.noteGone(p,n);p.hist.splice(i,1);PM.gone(g);PM.touch(p);PM.save();paint();PM.push('note');PM.toastUndo('Note deleted',n.t.length&gt;60?n.t.slice(0,60)+'…':n.t,function(){if(p.hist.indexOf(n)&gt;-1)return;p.hist.splice(Math.min(i,p.hist.length),0,n);PM.ungone(g);PM.touch(p);PM.save();paint();PM.push('note')})}
 
 /* ── Money ── */
 function paintMoney(){
   fillPickers();
   $('#catList').innerHTML=PM.CATALOGUE.map(function(c,i){return '&lt;div class=&quot;cat&quot; onclick=&quot;document.getElementById(\'catd'+i+'\').classList.toggle(\'on\')&quot;&gt;&lt;div&gt;&lt;div class=&quot;n&quot;&gt;'+h(c.n)+(c.star?' &lt;span class=&quot;chip teal&quot; style=&quot;margin-left:6px&quot;&gt;Best margin&lt;/span&gt;':'')+'&lt;/div&gt;&lt;div class=&quot;s&quot;&gt;'+h(c.sub)+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pr&quot;&gt;sell &lt;b&gt;'+money(c.s)+'&lt;/b&gt;&lt;br&gt;cost '+money(c.c)+' · keep '+money(c.s-c.c)+'&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;catd&quot; id=&quot;catd'+i+'&quot;&gt;&lt;div class=&quot;k&quot;&gt;What it is&lt;/div&gt;'+h(c.what)+'&lt;div class=&quot;k&quot;&gt;How they use it&lt;/div&gt;'+h(c.use)+'&lt;div class=&quot;k&quot;&gt;For example&lt;/div&gt;&lt;em&gt;'+h(c.eg)+'&lt;/em&gt;&lt;div class=&quot;k&quot;&gt;When to sell it&lt;/div&gt;'+h(c.when)+'&lt;/div&gt;'}).join('');
-  $('#ledger').innerHTML=D.ledger.length?'&lt;table class=&quot;t&quot;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Partner&lt;/th&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Cost&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Invoiced&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'+D.ledger.map(function(l,i){var p=PM.P(l.pid);return '&lt;tr&gt;&lt;td&gt;'+h(p?p.biz:'—')+'&lt;/td&gt;&lt;td&gt;'+h(l.item)+'&lt;/td&gt;&lt;td class=&quot;r&quot;&gt;'+money(l.cost)+'&lt;/td&gt;&lt;td class=&quot;r&quot;&gt;'+money(l.inv)+'&lt;/td&gt;&lt;td class=&quot;r&quot;&gt;'+(l.paid?'&lt;span class=&quot;paid&quot;&gt;PAID&lt;/span&gt;':'&lt;button class=&quot;btn sm w&quot; onclick=&quot;PM.markPaid('+i+')&quot;&gt;Unpaid&lt;/button&gt;')+'&lt;/td&gt;&lt;/tr&gt;'}).join('')+'&lt;/tbody&gt;&lt;/table&gt;':'&lt;div class=&quot;empty&quot;&gt;Nothing spent yet.&lt;/div&gt;';
+  $('#ledger').innerHTML=D.ledger.length?'&lt;div style=&quot;overflow-x:auto&quot;&gt;&lt;table class=&quot;t&quot;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Partner&lt;/th&gt;&lt;th&gt;Item&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Cost&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;Invoiced&lt;/th&gt;&lt;th class=&quot;r&quot;&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'+D.ledger.map(function(l,i){var p=PM.P(l.pid);return '&lt;tr&gt;&lt;td&gt;'+h(p?p.biz:'Removed partner')+'&lt;/td&gt;&lt;td&gt;'+h(l.item)+'&lt;/td&gt;&lt;td class=&quot;r&quot;&gt;'+money(l.cost)+'&lt;/td&gt;&lt;td class=&quot;r&quot;&gt;'+money(l.inv)+'&lt;/td&gt;&lt;td class=&quot;r&quot; style=&quot;white-space:nowrap&quot;&gt;'+(l.paid?'&lt;span class=&quot;paid&quot;&gt;PAID&lt;/span&gt;':'&lt;button class=&quot;btn sm w&quot; onclick=&quot;PM.markPaid('+i+')&quot;&gt;Unpaid&lt;/button&gt;')+'&lt;button class=&quot;x&quot; title=&quot;Remove this line&quot; onclick=&quot;PM.removeSpend('+i+')&quot;&gt;×&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;'}).join('')+'&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;':'&lt;div class=&quot;empty&quot;&gt;Nothing spent yet.&lt;/div&gt;';
 }
 function addSale(){var pid=+$('#saleP').value;if(!pid){toast('Add a partner first');return}var c=PM.CATALOGUE[$('#saleI').value];D.ledger.unshift({pid:pid,item:c.n,cost:c.c,inv:+($('#saleAmt').value||c.s),paid:true,inv_no:($('#saleInv').value||'').trim(),d:Date.now()});var p=PM.P(pid);if(p)PM.note(p,'Bought '+c.n+' for '+money($('#saleAmt').value||c.s)+'.','money');PM.save();paint();PM.push('sale');toast('Recorded',money(c.c)+' will land on your RCTI, margin '+money((+$('#saleAmt').value||c.s)-c.c))}
 function addSpend(paid){var pid=+$('#nmPartner').value,item=($('#nmItem').value||'').trim();if(!pid){toast('Add a partner first');return}if(!item){toast('What was it?');return}D.ledger.unshift({pid:pid,item:item,cost:+($('#nmCost').value||0),inv:+($('#nmInv').value||0),paid:!!paid,d:Date.now()});var p=PM.P(pid);if(p)PM.note(p,'Spent '+money($('#nmCost').value||0)+' on '+item+'.','money');PM.save();$('#nmItem').value='';$('#nmCost').value='';$('#nmInv').value='';paint();toast('On the ledger')}
 function markPaid(i){if(D.ledger[i]){D.ledger[i].paid=true;PM.save();paint()}}
+function removeSpend(i){var l=D.ledger[i];if(!l)return;D.ledger.splice(i,1);PM.save();paint();PM.toastUndo('Line removed',l.item+' · '+money(l.cost),function(){if(D.ledger.indexOf(l)&gt;-1)return;D.ledger.splice(Math.min(i,D.ledger.length),0,l);PM.save();paint()})}
 
 /* ── Me ── */
 function bsLoad(){try{return JSON.parse(localStorage.getItem(PM.BKEY))||{}}catch(e){return {}}}
@@ -7386,7 +7434,7 @@ function paintMe(){
 function bsCalc(){
   var o={},filled=0;PM.BKPI.forEach(function(k){var e=$('#'+k.id);if(e){o[k.id]=e.value;if(String(e.value).trim()!=='')filled++}});try{localStorage.setItem(PM.BKEY,JSON.stringify(o))}catch(e){}
   var g=function(id){return parseFloat(o[id])||0};
-  if(!filled){PM.BKPI.forEach(function(k){var e=$('#'+k.id+'s');if(e){e.textContent='';e.className='ps'}});$('#bsBig').textContent='—';$('#bsStatus').textContent='not scored yet';$('#bsStatus').style.color='';$('#bsComp').textContent='';$('#bsCats').innerHTML='&lt;div class=&quot;empty&quot;&gt;Type your numbers in and this fills.&lt;/div&gt;';return}
+  if(!filled){PM.BKPI.forEach(function(k){var e=$('#'+k.id+'s');if(e){e.textContent='';e.className='ps'}});$('#bsBig').textContent='';$('#bsStatus').textContent='not scored yet';$('#bsStatus').style.color='';$('#bsComp').textContent='';$('#bsCats').innerHTML='&lt;div class=&quot;empty&quot;&gt;Type your numbers in and this fills.&lt;/div&gt;';return}
   PM.BKPI.forEach(function(k){var ok=k.pass(g(k.id)),e=$('#'+k.id+'s');if(e){e.textContent=String(o[k.id]).trim()===''?'':(ok?'PASS':'FAIL');e.className='ps '+(ok?'pass':'fail')}});
   var t5=PM.t5;var c1=t5(g('b1'),95,85,70,50),c2=Math.min(t5(g('b3'),95,85,70,50),t5(g('b4'),95,85,70,50)),c3=Math.min(t5(g('b9'),70,60,50,40),t5(g('b10'),80,70,60,50)),c4=Math.min(t5(g('b5'),100,90,75,50),t5(g('b6'),100,90,75,50)),stall=g('b7'),c5=Math.min(t5(g('b8'),97,95,90,80),stall&lt;=0?5:stall&lt;=2?4:stall&lt;=5?3:stall&lt;=10?2:1);
   var cats=[['Lead response and contact',.25,c1],['Partner communication and SLA updates',.25,c2],['Conversion',.2,c3],['Partner engagement',.2,c4],['Zink hygiene',.1,c5]];
@@ -7396,7 +7444,7 @@ function bsCalc(){
 }
 
 $$('#nav button').forEach(function(b){b.onclick=function(){detailId=null;nav(b.getAttribute('data-v'))}});
-Object.assign(PM,{view:nav,paint:paint,cd:cd,tick:tick,recs:recs,open:open,closeDetail:closeDetail,setStage:setStage,addNote:addNote,logTouch:logTouch,copyDraft:copyDraft,askTime:askTime,copyPrep:copyPrep,meetDone:meetDone,modal:modal,modalClose:modalClose,book:book,pick:pick,pickStatus:pickStatus,saveBook:saveBook,newPartner:newPartner,addDirect:addDirect,saveDirect:saveDirect,editPartner:editPartner,saveEdit:saveEdit,removePartner:removePartner,fillPickers:fillPickers,addLead:addLead,addLeadFor:addLeadFor,openLead:openLead,toggleLead:toggleLead,addLeadNote:addLeadNote,attempt:attempt,contact:contact,advance:advance,outcome:outcome,settle:settle,handback:handback,copySms:copySms,removeLead:removeLead,addSale:addSale,addSpend:addSpend,markPaid:markPaid,bsCalc:bsCalc,ringHtml:ringHtml,currentView:function(){return view},detail:function(){return detailId}});
+Object.assign(PM,{view:nav,paint:paint,cd:cd,tick:tick,recs:recs,open:open,closeDetail:closeDetail,setStage:setStage,addNote:addNote,logTouch:logTouch,copyDraft:copyDraft,askTime:askTime,copyPrep:copyPrep,meetDone:meetDone,modal:modal,modalClose:modalClose,book:book,pick:pick,pickStatus:pickStatus,saveBook:saveBook,newPartner:newPartner,addDirect:addDirect,saveDirect:saveDirect,editPartner:editPartner,saveEdit:saveEdit,removePartner:removePartner,fillPickers:fillPickers,addLead:addLead,addLeadFor:addLeadFor,openLead:openLead,toggleLead:toggleLead,addLeadNote:addLeadNote,attempt:attempt,contact:contact,advance:advance,outcome:outcome,settle:settle,handback:handback,copySms:copySms,removeLead:removeLead,keepLead:keepLead,removeLeadNote:removeLeadNote,removeNote:removeNote,addSale:addSale,addSpend:addSpend,markPaid:markPaid,removeSpend:removeSpend,bsCalc:bsCalc,ringHtml:ringHtml,currentView:function(){return view},detail:function(){return detailId}});
 })(PM);
 
 /* ═══════════════ sessions · the scripted calls ═══════════════ */
@@ -7414,7 +7462,8 @@ function draftClear(){try{localStorage.removeItem(DKEY)}catch(e){}}
 
 /* ── open · render · nav ── */
 function sessOpen(def){
-  S=def;S.i=0;var dr=draftLoad(def.kind,def.pid);if(dr){Object.keys(dr).forEach(function(k){if(dr[k]!==''&amp;&amp;dr[k]!=null)S.ans[k]=dr[k]});toast('Picked up where you left off')}
+  S=def;S.i=0;var dr=draftLoad(def.kind,def.pid);
+  if(dr){var fresh=JSON.parse(JSON.stringify(S.ans));Object.keys(dr).forEach(function(k){if(dr[k]!==''&amp;&amp;dr[k]!=null)S.ans[k]=dr[k]});var who=def.pid?'':(dr.n_biz||dr.n_name||'');PM.toastUndo('Picked up where you left off',who?who+'. Not them? Start fresh.':'Not what you wanted? Start fresh.',function(){if(S!==def)return;S.ans=fresh;S.i=0;draftClear();render()},'Start fresh')}
   $('#sess').classList.add('on');document.body.style.overflow='hidden';render();
 }
 function sessClose(){$('#sess').classList.remove('on');document.body.style.overflow='';S=null}
@@ -7437,17 +7486,18 @@ function sideRender(){var el=$('#sSide');if(!el||!S)return;el.innerHTML=S.side?S
 /* ── items ── */
 function sub(t){return String(t).replace(/\{first\}/g,first(S.p||{})).replace(/\{biz\}/g,(S.p&amp;&amp;S.p.biz)||'the business')}
 function item(it){
-  if(it.say)return '&lt;div class=&quot;say'+(it.read?' read':'')+'&quot;&gt;'+(it.read?'':'“')+h(sub(it.say))+(it.read?'':'”')+'&lt;/div&gt;';
+  if(it.say)return '&lt;div class=&quot;say'+(it.read?' read':'')+'&quot;&gt;'+(it.read?'':'“')+h(sub(it.say))+(it.read?'':'”')+(it.hint?'&lt;div class=&quot;hint&quot;&gt;'+h(sub(it.hint))+'&lt;/div&gt;':'')+'&lt;/div&gt;';
   if(it.info)return '&lt;div class=&quot;cap&quot; style=&quot;margin:0 4px 16px&quot;&gt;'+h(sub(it.info))+'&lt;/div&gt;';
   if(it.html)return it.html();
   if(it.nums)return '&lt;div class=&quot;ans&quot;&gt;&lt;div class=&quot;numrow&quot;&gt;'+it.nums.map(function(x){if(x.auto)return '&lt;div class=&quot;numb auto&quot;&gt;&lt;div class=&quot;l&quot;&gt;'+h(x.l)+'&lt;/div&gt;&lt;div class=&quot;c&quot;&gt;&lt;span class=&quot;a&quot; id=&quot;auto_'+x.k+'&quot;&gt;'+h(x.auto())+'&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;';var v=A(x.k);return '&lt;div class=&quot;numb&quot;&gt;&lt;div class=&quot;l&quot;&gt;'+h(x.l)+'&lt;/div&gt;&lt;div class=&quot;c&quot;&gt;&lt;button onclick=&quot;PM.sessStep(\''+x.k+'\',-1)&quot;&gt;−&lt;/button&gt;&lt;input inputmode=&quot;decimal&quot; value=&quot;'+h(v==null?'':v)+'&quot; oninput=&quot;PM.sessSet(\''+x.k+'\',this.value)&quot;&gt;&lt;button onclick=&quot;PM.sessStep(\''+x.k+'\',1)&quot;&gt;+&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;';
-  var head='&lt;div class=&quot;q&quot;&gt;&lt;span&gt;'+h(it.q||'')+'&lt;/span&gt;'+(it.last!=null&amp;&amp;it.last!==''?'&lt;i&gt;last time: '+h(it.last)+'&lt;/i&gt;':'')+'&lt;/div&gt;';
-  if(it.opts){var v=A(it.k);var tone=it.tone||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;div class=&quot;'+(it.list?'optl':'opts')+'&quot;&gt;'+it.opts.map(function(o,i){return '&lt;button class=&quot;opt'+(o===v?' on '+(tone[i]||''):'')+'&quot; onclick=&quot;PM.sessPick(\''+h(it.k)+'\',this)&quot; data-v=&quot;'+h(o)+'&quot;&gt;'+h(o)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}
-  if(it.multi){var arr=A(it.k)||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;div class=&quot;opts&quot;&gt;'+it.multi.map(function(o){return '&lt;button class=&quot;opt'+(arr.indexOf(o)&gt;-1?' on':'')+'&quot; onclick=&quot;PM.sessToggle(\''+h(it.k)+'\',this)&quot; data-v=&quot;'+h(o)+'&quot;&gt;'+h(o)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}
+  var lab=function(o){return (it.labels&amp;&amp;it.labels[o])||o};
+  var head='&lt;div class=&quot;q&quot;&gt;&lt;span&gt;'+h(sub(it.q||''))+'&lt;/span&gt;'+(it.last!=null&amp;&amp;it.last!==''?'&lt;i&gt;last time: '+h(lab(it.last))+'&lt;/i&gt;':'')+'&lt;/div&gt;';
+  if(it.grid){var g=A(it.k)||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+it.grid.map(function(row,i){return '&lt;div class=&quot;mrow&quot;&gt;&lt;div class=&quot;n&quot;&gt;'+h(lab(row))+'&lt;/div&gt;&lt;div class=&quot;opts&quot;&gt;'+it.opts.map(function(o){return '&lt;button class=&quot;opt&quot; style=&quot;padding:7px 12px;font-size:12.5px'+(g[i]===o?';background:var(--grad);color:#06070d':'')+'&quot; onclick=&quot;PM.sessGrid(\''+it.k+'\','+i+',\''+h(o)+'\')&quot;&gt;'+h(lab(o))+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;'}
+  if(it.opts){var v=A(it.k);var tone=it.tone||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;div class=&quot;'+(it.list?'optl':'opts')+'&quot;&gt;'+it.opts.map(function(o,i){return '&lt;button class=&quot;opt'+(o===v?' on '+(tone[i]||''):'')+'&quot; onclick=&quot;PM.sessPick(\''+h(it.k)+'\',this)&quot; data-v=&quot;'+h(o)+'&quot;&gt;'+h(lab(o))+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}
+  if(it.multi){var arr=A(it.k)||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;div class=&quot;opts&quot;&gt;'+it.multi.map(function(o){return '&lt;button class=&quot;opt'+(arr.indexOf(o)&gt;-1?' on':'')+'&quot; onclick=&quot;PM.sessToggle(\''+h(it.k)+'\',this)&quot; data-v=&quot;'+h(o)+'&quot;&gt;'+h(lab(o))+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}
   if(it.text){var tv=A(it.k)||'';return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;textarea class=&quot;in&quot; id=&quot;ta_'+it.k+'&quot; placeholder=&quot;'+h(it.ph||'')+'&quot; oninput=&quot;PM.sessSet(\''+it.k+'\',this.value)&quot;&gt;'+h(tv)+'&lt;/textarea&gt;'+(it.qp?'&lt;div class=&quot;qp&quot;&gt;'+it.qp.map(function(q){return '&lt;button onclick=&quot;PM.sessQuick(\''+it.k+'\',this.textContent)&quot;&gt;'+h(q)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;':'')+'&lt;/div&gt;'}
   if(it.line){var lv=A(it.k)||'';return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;input class=&quot;in&quot; value=&quot;'+h(lv)+'&quot; placeholder=&quot;'+h(it.ph||'')+'&quot; oninput=&quot;PM.sessSet(\''+it.k+'\',this.value)&quot;&gt;'+(it.qp?'&lt;div class=&quot;qp&quot;&gt;'+it.qp.map(function(q){return '&lt;button onclick=&quot;PM.sessQuick(\''+it.k+'\',this.textContent,true)&quot;&gt;'+h(q)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;':'')+'&lt;/div&gt;'}
   if(it.date){var dv=A(it.k)||'';return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;div class=&quot;row&quot;&gt;&lt;input class=&quot;in&quot; type=&quot;date&quot; style=&quot;max-width:220px&quot; value=&quot;'+h(dv)+'&quot; onchange=&quot;PM.sessSet(\''+it.k+'\',this.value)&quot;&gt;'+(it.time?'&lt;input class=&quot;in&quot; type=&quot;time&quot; style=&quot;max-width:150px&quot; value=&quot;'+h(A(it.time)||'')+'&quot; onchange=&quot;PM.sessSet(\''+it.time+'\',this.value)&quot;&gt;':'')+'&lt;/div&gt;'+(it.qp?'&lt;div class=&quot;qp&quot;&gt;'+it.qp.map(function(q){return '&lt;button onclick=&quot;PM.sessSet(\''+it.k+'\',\''+q.v+'\');'+(q.t&amp;&amp;it.time?'PM.sessSet(\''+it.time+'\',\''+q.t+'\');':'')+'PM.sessRender()&quot;&gt;'+h(q.l)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;':'')+'&lt;/div&gt;'}
-  if(it.grid){var g=A(it.k)||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+it.grid.map(function(row,i){return '&lt;div class=&quot;mrow&quot;&gt;&lt;div class=&quot;n&quot;&gt;'+h(row)+'&lt;/div&gt;&lt;div class=&quot;opts&quot;&gt;'+it.opts.map(function(o){return '&lt;button class=&quot;opt&quot; style=&quot;padding:7px 12px;font-size:12.5px'+(g[i]===o?';background:var(--grad);color:#06070d':'')+'&quot; onclick=&quot;PM.sessGrid(\''+it.k+'\','+i+',\''+h(o)+'\')&quot;&gt;'+h(o)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;'}
   if(it.risks){var rk=A('riskRows')||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+[0,1,2,3,4].map(function(i){var r=rk[i]||{t:'',l:'Low',m:''};return '&lt;div class=&quot;rrow&quot;&gt;&lt;div&gt;&lt;input class=&quot;in&quot; placeholder=&quot;Risk '+(i+1)+'&quot; value=&quot;'+h(r.t)+'&quot; oninput=&quot;PM.sessRisk('+i+',\'t\',this.value)&quot;&gt;&lt;input class=&quot;in&quot; style=&quot;margin-top:6px;font-size:12.5px;padding:8px 12px&quot; placeholder=&quot;What we do about it&quot; value=&quot;'+h(r.m)+'&quot; oninput=&quot;PM.sessRisk('+i+',\'m\',this.value)&quot;&gt;&lt;/div&gt;&lt;div class=&quot;opts&quot;&gt;'+['Low','Medium','High'].map(function(o){var on=r.l===o;return '&lt;button class=&quot;opt'+(on?' on '+(o==='Medium'?'amber':o==='High'?'coral':'green'):'')+'&quot; style=&quot;padding:7px 12px;font-size:12.5px&quot; onclick=&quot;PM.sessRisk('+i+',\'l\',\''+o+'\')&quot;&gt;'+o+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}).join('')+'&lt;div class=&quot;qp&quot;&gt;'+['Key person dependency','Staff turnover','Low referral volume','Competitor finance offer','Slow document turnaround','Cashflow pressure','Compliance or advertising','Owner disengaged'].map(function(q){return '&lt;button onclick=&quot;PM.sessRiskQuick(this.textContent)&quot;&gt;'+h(q)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;&lt;/div&gt;'}
   if(it.plan){var pl=A('plan')||[];return '&lt;div class=&quot;ans&quot;&gt;'+head+['Partner','Me','Joint'].map(function(g){return '&lt;div class=&quot;lbl&quot; style=&quot;margin:10px 0 6px&quot;&gt;'+g+'&lt;/div&gt;'+[0,1,2].map(function(r){var key=g+r,row=pl.find(function(x){return x.key===key})||{a:'',d:''};return '&lt;div class=&quot;prow&quot;&gt;&lt;input class=&quot;in&quot; placeholder=&quot;Action&quot; value=&quot;'+h(row.a)+'&quot; oninput=&quot;PM.sessPlan(\''+key+'\',\'a\',this.value)&quot;&gt;&lt;input class=&quot;in&quot; type=&quot;date&quot; value=&quot;'+h(row.d)+'&quot; onchange=&quot;PM.sessPlan(\''+key+'\',\'d\',this.value)&quot;&gt;&lt;/div&gt;'}).join('')}).join('')+'&lt;/div&gt;'}
   if(it.triple){var ks=it.triple;return '&lt;div class=&quot;ans&quot;&gt;'+head+'&lt;div class=&quot;triple&quot;&gt;'+ks.map(function(k,i){return '&lt;input class=&quot;in&quot; placeholder=&quot;'+h(it.ph?it.ph[i]||'':'')+'&quot; value=&quot;'+h(A(k)||'')+'&quot; oninput=&quot;PM.sessSet(\''+k+'\',this.value)&quot;&gt;'}).join('')+'&lt;/div&gt;'+(it.qp&amp;&amp;it.qp.length?'&lt;div class=&quot;qp&quot;&gt;'+it.qp.map(function(q){return '&lt;button onclick=&quot;PM.sessTriple(\''+ks.join(',')+'\',this.textContent)&quot;&gt;'+h(q)+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;':'')+'&lt;/div&gt;'}
@@ -7468,91 +7518,116 @@ function refreshAutos(){var sec=S.secs[S.i];var items=typeof sec.items==='functi
 function lastOf(list,pid){return list.filter(function(c){return c.pid===pid})[0]||null}
 function nextSlotQps(cadence){var out=[];var base=Date.now()+cadence*DAY;PM.slots(base-5*DAY,3).forEach(function(s){out.push({l:fmtDow(s.ts)+' '+PM.fmtTime(s.time),v:s.date,t:s.time})});out.unshift({l:'In '+cadence+' days',v:PM.iso(base)});return out}
 
+
 /* ═══ MONTHLY CATCH-UP ═══ */
+/* plain labels shown on the buttons · the official Ausloans value is what gets saved */
+var L_SAT={'Excellent':'Excellent · 9 or 10','Good':'Good · 7 or 8','Fair':'Fair · 5 or 6','Needs Attention':'Not great · under 5'};
+var L_HANDLING={'Very Good':'Really good','Acceptable':'Fine','Needs Improvement':'Could be better'};
+var L_CONF={'Very Confident':'Confident','Mostly Confident':'Mostly there','A Little':'Still unsure'};
+var L_MACT={'Yes':'Yes','No':'No','A Little':'A bit'};
+var L_IMPL={'Using Regularly':'Using it','Using Occasionally':'Now and then',&quot;Hasn't Implemented&quot;:'Not using it'};
+var L_SUPPORT={'Weekly pricing content':'Weekly price sheet','Social media tiles':'Social media posts','Staff scripts':'Cheat sheet for the team','Website finance CTA':'Finance button on the website','Posters / QR codes':'Posters and QR codes','In-store finance display':'Finance display in store','Marketplace listings &quot;from $xx/week&quot;':'Weekly price on marketplace listings','Campaign ideas (EOFY, stock run-out, service promos)':'A campaign, EOFY, clearance, service promo'};
+var L_ACTIONS={'Provided new pricing sheets':'Price sheets','Sent updated posters':'Posters','Shared social media templates':'Social media posts','Provided video content':'Video','Delivered new QR codes':'QR codes'};
+var L_ZTRAIN={'Soft Check refresher':'Credit check refresher','App entry training':'Entering an application','Document request process':'Requesting documents','Dashboard/deal navigation':'Finding their way around','Explaining finance to customers':'Explaining finance to customers'};
+var L_CTRAIN={'Finance 101':'Finance basics','How to sell using weekly payments':'Selling with weekly payments','Using the Zink platform':'Using Zink','Identifying finance customers':'Spotting finance customers','Soft credit checks':'Credit checks','Document gathering':'Getting documents together','Loan types &amp; lender matching':'Loan types and lenders'};
+var L_ZINK={'Confident user':'Confident','Moderate user':'Getting there','Needs more support':'Needs a hand','Not using key features':'Not really using it'};
+var L_REFB={'Refers consistently':'Sends people regularly','Refers sporadically':'Sends people now and then','Refers only when asked':'Only when I ask','High staff turnover affecting referrals':'Staff keep changing, so it drops off','Prefers pre-qualifying before referrals':'Checks them first, then sends them'};
+var L_COMMS={'Excellent':'Really good','Good':'Good','Adequate':'OK','Needs improvement':'Could be better','Poor':'Not good'};
+var L_MKTS={'Using regularly':'All the time','Using occasionally':'Now and then','Not using':'Not at all'};
+var L_TOOLS={'Weekly pricing sheets':'Weekly price sheets','Social media templates':'Social media posts','QR posters / in-store signage':'QR posters in store','Website finance CTA':'Finance button on the website','Marketplace listings (from $/week)':'Weekly price on marketplace listings','In-store finance signage':'Finance signs in store','Staff finance scripts':'Cheat sheet for the team','Soft check promotion':'Telling customers about the credit check'};
+var L_OPPS={'Increase staff finance training':'Train the team on finance','Improve lead qualification / completeness':'Better details on the customers they send','Increase soft-check usage':'Run more credit checks','Introduce weekly repayment pricing in ads':'Weekly price on their ads','Add finance messaging to website':'Finance on the website','Add finance messaging to marketplace listings':'Finance on marketplace listings','Upgrade to Agency Program (if not already)':'Move to the agency model','Improve customer handover speed':'Hand customers over faster','Add in-store signage / QR finance posters':'Posters and QR codes in store','Run seasonal / stock-based finance campaigns':'A campaign around a sale or season'};
+var L_TRAINQ={'Finance 101 for staff':'Finance basics for staff','Selling with weekly repayments':'Selling with weekly payments','Zink platform refresher':'Zink refresher','Soft credit check process':'Running credit checks','Document gathering best practice':'Getting documents together','Social media &amp; finance marketing':'Social media and finance marketing'};
+
 function startCheckin(pid){
   var p=PM.P(pid);if(!p){toast('No partner');return}
   var isAgent=p.type==='Agent',last=lastOf(D.checkins,p.id);
   var m=PM.leadsOf(p,31),monthLeads=m.length;
-  var ans={date:today(),broker:'Jordy Aylward',leads:monthLeads||'',qualified:m.filter(function(l){return l.stage&gt;=1}).length||'',approvals:m.filter(function(l){return l.outcome==='app'}).length||'',declines:m.filter(function(l){return l.outcome==='dec'}).length||'',unableToContact:m.filter(function(l){return l.stage===0&amp;&amp;l.att&gt;=3}).length||'',funded:m.filter(function(l){return l.settled}).length||'',nextMeeting:PM.iso(Date.now()+(p.cadence||30)*DAY)};
+  var ans={date:today(),broker:'Jordy Aylward',leads:monthLeads||'',qualified:m.filter(function(l){return l.stage&gt;=1}).length||'',approvals:m.filter(function(l){return l.outcome==='app'}).length||'',declines:m.filter(function(l){return l.outcome==='dec'}).length||'',unableToContact:m.filter(function(l){return l.handed||(l.stage===0&amp;&amp;l.att&gt;=3)}).length||'',funded:m.filter(function(l){return l.settled}).length||'',nextMeeting:PM.iso(Date.now()+(p.cadence||30)*DAY)};
   if(last){['promoting','implementation','confidence'].forEach(function(k){if(last[k])ans[k]=last[k]})}
   var lv=function(k){return last?last[k]:''};
-  var rate=function(a,b){return b?pct(n(A(a))/n(A(b))):'—'};
+  var rate=function(a,b){var d=n(A(b));return d&gt;0?pct(n(A(a))/d):''};
   S={kind:'checkin',pid:p.id,p:p,ans:ans,title:'Monthly catch-up · '+p.biz,saveLabel:'Save and lock in the next one',
    secs:[
     {t:'Open',sub:'Ten minutes. Keep it light.',items:[
-      {say:&quot;Hey {first}, Jordy. Got ten minutes? It's our monthly catch up, I'll keep it tight.&quot;},
-      {say:&quot;First up, out of ten, how are you finding the whole thing from your side?&quot;},
-      {k:'sat',q:'Their answer · 9 to 10 Excellent, 7 to 8 Good, 5 to 6 Fair, under 5 Needs attention',opts:PM.SAT,tone:['green','green','amber','coral'],last:lv('sat')},
-      {k:'satComments',q:'Anything behind that',text:true,ph:'Their words',qp:['Happy with the speed','Wants more updates','Quiet month their end','Loves not doing the paperwork','Had a customer go quiet']}
+      {say:&quot;Hey {first}, Jordy here. Got ten minutes for our monthly catch up? I'll keep it quick.&quot;},
+      {say:&quot;First one's easy. Out of ten, how happy are you with how it's all going with me?&quot;,hint:&quot;If they hesitate: ten is couldn't be happier, five is it's fine, under five means something's bugging you.&quot;},
+      {k:'sat',q:'Their answer',opts:PM.SAT,labels:L_SAT,tone:['green','green','amber','coral'],last:lv('sat')},
+      {say:&quot;What's behind that number?&quot;},
+      {k:'satComments',q:'In their words',text:true,qp:['Happy with the speed','Wants more updates','Quiet month their end','Loves not doing the paperwork','Had a customer go quiet']}
     ]},
     {t:'Their month',sub:'How the business is going. Listen more than you talk.',items:[
-      {say:&quot;What's been happening your end this month, busy or quiet?&quot;},
-      {k:'units',q:'Units sold or jobs done',text:true,qp:['Busy month','Steady','Quiet month','Flat out','Picking up']},
-      {say:&quot;Anything coming up? Promotions, a busy season, end of quarter push?&quot;},
-      {k:'season',q:'Coming up',text:true,qp:['EOFY push','Christmas rush','Stock clearance','New product line','Nothing planned','Winter slow down']},
-      {say:&quot;Any changes in the team? Anyone new I should meet?&quot;},
-      {k:'staff',q:'Staff',opts:['No changes','New staff','Staff left','Both'],tone:['','teal','amber','amber'],last:lv('staff')},
-      {say:&quot;What are your customers struggling with at the moment?&quot;},
-      {k:'pain',q:'Customer pain points',text:true,qp:['Price sensitivity','Cashflow timing','Slow approvals elsewhere','Getting knocked back on finance','Rates','Waiting on stock']}
+      {say:&quot;How's business been this month? Busy, quiet, about normal?&quot;},
+      {k:'units',q:'Their month',text:true,qp:['Busy','About normal','Quiet','Flat out','Picking up']},
+      {say:&quot;Anything big coming up in the next month or two? A sale, a busy season, a new product?&quot;,hint:&quot;Examples if they're stuck: end of financial year, Christmas, a clearance, a show.&quot;},
+      {k:'season',q:'Coming up',text:true,qp:['EOFY push','Christmas rush','Clearance sale','New product line','Nothing planned','Winter slow down']},
+      {say:&quot;Any changes with your staff? Anyone new, anyone left?&quot;},
+      {k:'staff',q:'Staff',opts:['No changes','New staff','Staff left','Both'],labels:{'No changes':'No changes','New staff':'Someone new','Staff left':'Someone left','Both':'Both'},tone:['','teal','amber','amber'],last:lv('staff')},
+      {say:&quot;What are your customers finding hard right now? Price, getting finance, waiting on stock, anything like that?&quot;},
+      {k:'pain',q:'What customers find hard',text:true,qp:['Price','Getting finance','Cashflow timing','Waiting on stock','Slow approvals elsewhere','Interest rates']}
     ]},
     {t:'The leads',sub:'Pre-filled from your board. Fix any that are off.',items:function(){return [
-      {say:&quot;You've sent me &quot;+(n(A('leads'))||'a few')+&quot; this month. Here's where they sit.&quot;},
-      {nums:[{k:'leads',l:'Leads sent'},{k:'qualified',l:'Qualified'},{k:'approvals',l:'Approvals'},{k:'declines',l:'Declines'},{k:'unableToContact',l:'Unable to contact'},{k:'funded',l:'Funded'}]},
-      {nums:[{k:'conversion',l:'Conversion',auto:function(){return rate('funded','leads')}},{k:'qualRate',l:'Qualified rate',auto:function(){return rate('qualified','leads')}},{k:'apprOfQual',l:'Approval of qualified',auto:function(){return rate('approvals','qualified')}},{k:'apprOfLeads',l:'Approval of leads',auto:function(){return rate('approvals','leads')}},{k:'fundRate',l:'Funding of approvals',auto:function(){return rate('funded','approvals')}}]},
-      {say:&quot;Who have you been sending through, what kind of customers?&quot;},
-      {k:'clientTypes',q:'Client types',text:true,qp:['Tradies','Small business owners','Self employed','Upgraders','First car buyers','Caravan buyers','Equipment buyers']},
-      {say:&quot;Anything you're noticing in who gets approved and who doesn't?&quot;},
-      {k:'patterns',q:'Patterns',text:true,qp:['Low credit scores','Affordability','Self employed with no financials','Missing documents','Good files, quick approvals','Too many enquiries on file']},
-      {say:&quot;Any of your customers saying they haven't heard from me, or missing my calls?&quot;},
-      {k:'missedCalls',q:'Missed calls',opts:['No','A couple','Yes, a few'],tone:['green','amber','coral'],last:lv('missedCalls')},
-      {say:&quot;Is the team picking the finance customers early, or is it coming up late in the sale?&quot;},
-      {k:'earlySpot',q:'Spotting them early',opts:['Yes','Mostly','Not yet'],tone:['green','amber','coral'],last:lv('earlySpot')},
-      {say:&quot;How's my handling of the leads from your side? Anything you'd change?&quot;},
-      {k:'handling',q:'Lead handling',opts:PM.LEADH,tone:['green','amber','coral'],last:lv('handling')}
+      {say:&quot;You sent me &quot;+(n(A('leads'))||'a few')+&quot; this month. Here's where each one is up to.&quot;},
+      {nums:[{k:'leads',l:'Sent to me'},{k:'qualified',l:'I spoke to'},{k:'approvals',l:'Approved'},{k:'declines',l:'Declined'},{k:'unableToContact',l:&quot;Couldn't reach&quot;},{k:'funded',l:'Funded'}]},
+      {nums:[{k:'conversion',l:'Funded out of sent',auto:function(){return rate('funded','leads')}},{k:'qualRate',l:'Spoke to out of sent',auto:function(){return rate('qualified','leads')}},{k:'apprOfQual',l:'Approved out of spoke to',auto:function(){return rate('approvals','qualified')}},{k:'apprOfLeads',l:'Approved out of sent',auto:function(){return rate('approvals','leads')}},{k:'fundRate',l:'Funded out of approved',auto:function(){return rate('funded','approvals')}}]},
+      {say:&quot;Who are you sending me mostly? Tradies, business owners, everyday car buyers?&quot;},
+      {k:'clientTypes',q:'Who they send',text:true,qp:['Tradies','Business owners','Self employed','Everyday car buyers','First car buyers','Caravan buyers','Equipment buyers']},
+      {say:&quot;Have you noticed anything about who gets approved and who gets knocked back?&quot;,hint:&quot;If they're not sure: are the knock backs mostly credit score, or mostly people who can't show their income?&quot;},
+      {k:'patterns',q:'What they noticed',text:true,qp:['Low credit scores','Can\'t show income','Self employed, no financials','Missing documents','Good files, quick approvals','Too many enquiries on file']},
+      {say:&quot;Has anyone you sent me said they didn't hear from me, or that they missed my call?&quot;},
+      {k:'missedCalls',q:'Missed calls',opts:['No','A couple','Yes, a few'],labels:{'No':'No','A couple':'One or two','Yes, a few':'Yes, a few'},tone:['green','amber','coral'],last:lv('missedCalls')},
+      {say:&quot;When a customer needs finance, does your team bring it up early, or does it only come up at the end when the price is a problem?&quot;},
+      {k:'earlySpot',q:'When finance comes up',opts:['Yes','Mostly','Not yet'],labels:{'Yes':'Early','Mostly':'Sometimes','Not yet':'Only at the end'},tone:['green','amber','coral'],last:lv('earlySpot')},
+      {say:&quot;How am I going with your customers? Anything you'd want me to do differently?&quot;},
+      {k:'handling',q:'How I\'m going',opts:PM.LEADH,labels:L_HANDLING,tone:['green','amber','coral'],last:lv('handling')}
     ]}},
     isAgent?{t:'Zink',sub:'Agency partners only.',items:[
-      {say:&quot;How's the team going in Zink?&quot;},
-      {nums:[{k:'softChecks',l:'Soft checks run'},{k:'appsStarted',l:'Applications started'},{k:'docRequests',l:'Document requests'},{k:'transferred',l:'Transferred to me'}]},
-      {k:'confidence',q:'How confident are they',opts:PM.CONF,tone:['green','amber','coral'],last:lv('confidence')},
-      {k:'zinkTraining',q:'Training they need',multi:PM.ZTRAIN}
+      {say:&quot;How's the team finding Zink? Easy enough, or a bit of a struggle?&quot;},
+      {nums:[{k:'softChecks',l:'Credit checks run'},{k:'appsStarted',l:'Applications started'},{k:'docRequests',l:'Document requests sent'},{k:'transferred',l:'Deals sent to me'}]},
+      {say:&quot;Do they feel confident using it, or still a bit unsure?&quot;},
+      {k:'confidence',q:'Confidence',opts:PM.CONF,labels:L_CONF,tone:['green','amber','coral'],last:lv('confidence')},
+      {say:&quot;Is there any part of it they'd like me to go over again?&quot;},
+      {k:'zinkTraining',q:'Go over again',multi:PM.ZTRAIN,labels:L_ZTRAIN}
     ]}:null,
     {t:'Marketing',sub:'Is finance visible anywhere.',items:[
-      {say:&quot;Are you mentioning finance anywhere at the moment? In store, online, on socials?&quot;},
-      {k:'promoting',q:'Promoting finance',opts:PM.MACT,tone:['green','coral','amber'],last:lv('promoting')},
-      {say:&quot;What would help you push it more? I can do pricing sheets, social tiles, posters, scripts for the team.&quot;},
-      {k:'support',q:'They want',multi:PM.SUPPORT},
-      {k:'actions',q:'What I got to them this month',multi:PM.ACTIONS},
-      {say:&quot;Your read. Are they actually using what you've sent?&quot;,read:true},
-      {k:'implementation',q:'Using it',opts:PM.IMPL,tone:['green','amber','coral'],last:lv('implementation')}
+      {say:&quot;Are you telling customers you offer finance anywhere at the moment? On the website, on social media, a sign in the shop?&quot;},
+      {k:'promoting',q:'Finance is visible',opts:PM.MACT,labels:L_MACT,tone:['green','coral','amber'],last:lv('promoting')},
+      {say:&quot;What would make it easier to bring finance up with customers? I can do weekly price sheets, social media posts, posters, or a cheat sheet for your team.&quot;},
+      {k:'support',q:'They want',multi:PM.SUPPORT,labels:L_SUPPORT},
+      {k:'actions',q:'What I got to them this month',multi:PM.ACTIONS,labels:L_ACTIONS},
+      {say:&quot;Your read. Are they actually using what you've sent them?&quot;,read:true},
+      {k:'implementation',q:'Using it',opts:PM.IMPL,labels:L_IMPL,tone:['green','amber','coral'],last:lv('implementation')}
     ]},
     {t:'Next month',sub:'One thing each. Keep it small enough to actually happen.',items:[
-      {say:&quot;If we did one thing differently next month, what do you reckon would move the needle?&quot;},
-      {k:'recs',q:'My recommendation',text:true,qp:['Weekly repayment pricing on ads','QR code at the counter','Staff finance session','Soft check before handover','Finance line on the website','Marketplace listing wording','Seasonal campaign']},
-      {k:'partnerPlan',q:'What {first} will do',text:true,qp:['Mention finance to every customer','Put the QR code up','Send three referrals','Post the social tiles','Introduce me to the team','Reply to my update texts']},
-      {k:'brokerPlan',q:'What I will do',text:true,qp:['Send the pricing sheet','Drop in with posters','Run a staff session','Weekly update text','Build the EOFY campaign','Call every lead inside the hour']}
+      {say:&quot;If we changed one thing next month to get more finance customers through, what would it be?&quot;,hint:&quot;If they're stuck, offer one: a QR code at the counter, a weekly price on the ads, or a quick session with the team.&quot;},
+      {k:'recs',q:'My recommendation',text:true,qp:['Weekly price on the ads','QR code at the counter','Quick session with the team','Credit check before handover','Finance line on the website','Weekly price on marketplace listings','A campaign around a sale']},
+      {say:&quot;What's one thing you'll do your end this month?&quot;},
+      {k:'partnerPlan',q:'What {first} will do',text:true,qp:['Mention finance to every customer','Put the QR code up','Send three referrals','Post the social media tiles','Introduce me to the team','Reply to my update texts']},
+      {say:&quot;And here's what I'll do my end.&quot;},
+      {k:'brokerPlan',q:'What I will do',text:true,qp:['Send the price sheet','Drop in with posters','Run a session with the team','Weekly update text','Build the EOFY campaign','Call every lead inside the hour']}
     ]},
     {t:'Training',sub:'Offer it, do not push it.',items:[
-      {say:&quot;Would a quick session for the team help? Fifteen minutes, I come to you.&quot;},
-      {k:'trainingTopics',q:'Topics',multi:PM.CTRAIN},
+      {say:&quot;Would it help if I came in and ran a quick fifteen minute session with your team on how to bring finance up?&quot;},
+      {k:'trainingTopics',q:'What to cover',multi:PM.CTRAIN,labels:L_CTRAIN},
       {k:'trainingBooked',q:'Booked',opts:['Yes','No'],tone:['green','']},
       {k:'trainingDate',q:'Date',date:true}
     ]},
     {t:'Anything else',items:[
-      {say:&quot;Anything bugging you? Anything I could be doing better?&quot;},
+      {say:&quot;Anything annoying you, or anything you want me to do differently?&quot;},
       {k:'issues',q:'Issues and feedback',text:true,qp:['Nothing, all good','Wants faster updates','Confused by a decline','Wants to meet in person','Asked about commission']}
     ]},
     {t:'Wrap up',sub:'Three priorities, three commitments, one date.',items:function(){return [
       {say:&quot;So the three things we're focused on this month are...&quot;},
       {q:'Three priorities',triple:['p1','p2','p3'],ph:['Priority 1','Priority 2','Priority 3'],qp:[A('recs'),A('partnerPlan'),A('brokerPlan')].filter(Boolean).map(function(x){return String(x).split(/,\s*/)[0]}).filter(Boolean)},
-      {say:&quot;And what I need from you is...&quot;},
+      {say:&quot;And from your end, can you do these three for me?&quot;},
       {q:'They commit to',triple:['b1','b2','b3'],ph:['Commitment 1','Commitment 2','Commitment 3'],qp:['Three referrals this month','Finance mentioned to every customer','QR code up this week','Reply to my update texts',&quot;Send the customer's number straight away&quot;]},
-      {say:&quot;Let's lock in the next one. Same time next month?&quot;},
+      {say:&quot;Let's lock in the next catch up now. Same time next month?&quot;},
       {k:'nextMeeting',q:'Next catch-up',date:true,time:'nextTime',qp:nextSlotQps(p.cadence||30)},
       {cdprev:'nextMeeting',timeKey:'nextTime'}
     ]}}
    ].filter(Boolean),
-   side:function(){var L=n(A('leads')),F=n(A('funded'));return '&lt;div class=&quot;side-h&quot;&gt;Live summary&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Satisfaction&lt;/span&gt;&lt;b&gt;'+h(A('sat')||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Leads&lt;/span&gt;&lt;b&gt;'+(L||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Funded&lt;/span&gt;&lt;b&gt;'+(F||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Conversion&lt;/span&gt;&lt;b&gt;'+(L?pct(F/L):'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Lead handling&lt;/span&gt;&lt;b&gt;'+h(A('handling')||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Using the marketing&lt;/span&gt;&lt;b&gt;'+h(A('implementation')||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Next catch-up&lt;/span&gt;&lt;b&gt;'+(A('nextMeeting')?fmtDow(PM.fromIso(A('nextMeeting'))):'—')+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;'+(last?'&lt;div class=&quot;side-h&quot; style=&quot;margin-top:16px&quot;&gt;Last time · '+h(last.date)+'&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Sat&lt;/span&gt;&lt;b&gt;'+h(last.sat||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Priorities&lt;/span&gt;&lt;b style=&quot;text-align:right&quot;&gt;'+h([last.p1,last.p2,last.p3].filter(Boolean).join(' · ')||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;They committed to&lt;/span&gt;&lt;b style=&quot;text-align:right&quot;&gt;'+h([last.b1,last.b2,last.b3].filter(Boolean).join(' · ')||'—')+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;':'')},
+   side:function(){var L=n(A('leads')),F=n(A('funded'));return '&lt;div class=&quot;side-h&quot;&gt;Live summary&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Happy&lt;/span&gt;&lt;b&gt;'+h(A('sat')||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Sent&lt;/span&gt;&lt;b&gt;'+(L||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Funded&lt;/span&gt;&lt;b&gt;'+(F||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Funded out of sent&lt;/span&gt;&lt;b&gt;'+(L?pct(F/L):'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;How I\'m going&lt;/span&gt;&lt;b&gt;'+h(L_HANDLING[A('handling')]||A('handling')||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Using the marketing&lt;/span&gt;&lt;b&gt;'+h(L_IMPL[A('implementation')]||A('implementation')||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Next catch-up&lt;/span&gt;&lt;b&gt;'+(A('nextMeeting')?fmtDow(PM.fromIso(A('nextMeeting'))):'…')+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;'+(last?'&lt;div class=&quot;side-h&quot; style=&quot;margin-top:16px&quot;&gt;Last time · '+h(last.date)+'&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Happy&lt;/span&gt;&lt;b&gt;'+h(last.sat||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Priorities&lt;/span&gt;&lt;b style=&quot;text-align:right&quot;&gt;'+h([last.p1,last.p2,last.p3].filter(Boolean).join(' · ')||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;They committed to&lt;/span&gt;&lt;b style=&quot;text-align:right&quot;&gt;'+h([last.b1,last.b2,last.b3].filter(Boolean).join(' · ')||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;':'')},
    onSave:function(){
+     p=PM.P(p.id)||p;S.p=p;
      var a=S.ans,rec={pid:p.id,biz:p.biz,contact:p.name,savedAt:Date.now()};
      ['date','broker','sat','satComments','units','season','staff','pain','leads','qualified','approvals','declines','unableToContact','funded','clientTypes','patterns','missedCalls','earlySpot','handling','softChecks','appsStarted','docRequests','transferred','confidence','promoting','implementation','recs','partnerPlan','brokerPlan','trainingBooked','trainingDate','issues','p1','p2','p3','b1','b2','b3','nextMeeting'].forEach(function(k){rec[k]=a[k]==null?'':String(a[k]).trim()});
      rec.conversion=rate('funded','leads');rec.qualRate=rate('qualified','leads');rec.apprOfQual=rate('approvals','qualified');rec.apprOfLeads=rate('approvals','leads');rec.fundRate=rate('funded','approvals');
@@ -7560,7 +7635,7 @@ function startCheckin(pid){
      if(!rec.date)rec.date=today();
      var at=D.checkins.findIndex(function(c){return c.pid===p.id&amp;&amp;c.date===rec.date});if(at&gt;=0)D.checkins[at]=rec;else D.checkins.unshift(rec);
      var L=n(a.leads),F=n(a.funded);
-     PM.note(p,'Monthly catch-up. Sat '+(a.sat||'—')+'. '+L+' leads, '+F+' funded. '+(a.recs?'Next: '+a.recs:''),'checkin');
+     PM.note(p,'Monthly catch-up. Happy: '+(a.sat||'not asked')+'. '+L+' sent, '+F+' funded. '+(a.recs?'Next: '+a.recs:''),'checkin');
      p.lastTouch=Date.now();p.lastTouchHow='Monthly catch-up';
      var nx=PM.fromIso(a.nextMeeting);p.nextCI=nx||(Date.now()+(p.cadence||30)*DAY);
      if(nx){p.meet={date:a.nextMeeting,time:a.nextTime||'',status:'Confirmed',note:'Monthly catch up',askedAt:null}}else{p.meet.status='Done'}
@@ -7596,56 +7671,58 @@ function startQuarterly(pid){
   S={kind:'quarterly',pid:p.id,p:p,ans:ans,title:'Quarterly review · '+p.biz,saveLabel:'Save and rescore',
    secs:[
     {t:'Open',sub:'Twenty minutes. The whole quarter, then the plan.',items:[
-      {say:&quot;Right, quarterly review. This one's a bit bigger. I want to look at the whole quarter, show you what your referrals turned into, and plan the next three months. Twenty minutes.&quot;},
-      {say:&quot;Big picture, how was the last three months for the business?&quot;},
-      {k:'units',q:'Units sold or services delivered',text:true,qp:['Strong quarter','Steady','Soft quarter','Record quarter','Seasonal dip']},
-      {say:&quot;What are you chasing next quarter, sales wise?&quot;},
-      {k:'goals',q:'Sales goals',text:true,qp:['Grow volume','Clear old stock','New product line','More repeat business','Hire a salesperson']},
-      {say:&quot;Anything big coming up? Promotions, seasonal spikes?&quot;},
-      {k:'promos',q:'Promotions and spikes',text:true,qp:['EOFY','Christmas','Show season','Stock run out','Service promotion']},
-      {say:&quot;How many of the team are actually sending me customers?&quot;},
-      {nums:[{k:'staffReferring',l:'Staff referring'}]},
-      {k:'training',q:'New staff or refreshers needed',text:true,qp:['New salesperson to train','Whole team refresher','Owner only','All good']}
+      {say:&quot;Hey {first}, this one's our quarterly review, so it's a bit bigger than the monthly. I'll show you what your referrals turned into, then we plan the next three months. About twenty minutes.&quot;},
+      {say:&quot;Overall, how were the last three months for the business? Good, average, tough?&quot;},
+      {k:'units',q:'Their quarter',text:true,qp:['Good quarter','Average','Tough quarter','Best yet','Seasonal dip']},
+      {say:&quot;What are you aiming for in the next three months, sales wise?&quot;,hint:&quot;If they're vague: more sales, clearing old stock, a new line, or hiring someone?&quot;},
+      {k:'goals',q:'Aiming for',text:true,qp:['More sales','Clear old stock','New product line','More repeat customers','Hire a salesperson']},
+      {say:&quot;Anything big coming up? A sale, a show, a busy season?&quot;},
+      {k:'promos',q:'Coming up',text:true,qp:['EOFY','Christmas','Show season','Clearance sale','Service promotion']},
+      {say:&quot;How many of your team are actually sending me customers?&quot;},
+      {nums:[{k:'staffReferring',l:'Staff sending customers'}]},
+      {say:&quot;Anyone new who needs to be shown how it works, or anyone who could do with a refresher?&quot;},
+      {k:'training',q:'Who needs showing',text:true,qp:['New salesperson','Whole team refresher','Owner only','All good']}
     ]},
-    {t:'The numbers',sub:'Last 90 days. Pre-filled from your board, check them against Zink.',items:function(){var c=calc();return [
+    {t:'The numbers',sub:'Last 90 days. Pre-filled from your board, check them against Zink.',items:function(){return [
       {say:&quot;Here's what your referrals turned into this quarter.&quot;},
-      {nums:[{k:'leads',l:'Leads submitted'}].concat(isAgent?[{k:'softChecks',l:'Soft checks'}]:[]).concat([{k:'approvals',l:'Approvals'},{k:'declines',l:'Declines'},{k:'settled',l:'Settled'},{k:'volume',l:'Volume $'}])},
-      {nums:[{k:'avgDeal',l:'Average deal',auto:function(){var c2=calc();return c2.avg!=null?money(c2.avg):'—'}},{k:'approvalRate',l:'Approval rate',auto:function(){return pct(calc().ar)}},{k:'settlementRate',l:'Settlement rate',auto:function(){return pct(calc().sr)}}]},
-      {say:&quot;Your read. How fast were you getting to them, and how long to submit and approve.&quot;,read:true},
-      {nums:[{k:'contactHrs',l:'Hours to first contact'},{k:'submitDays',l:'Days to submit'},{k:'approvalDays',l:'Days to approval'}]},
-      {say:&quot;Does that match what you're seeing your end?&quot;}
+      {nums:[{k:'leads',l:'Sent to me'}].concat(isAgent?[{k:'softChecks',l:'Credit checks'}]:[]).concat([{k:'approvals',l:'Approved'},{k:'declines',l:'Declined'},{k:'settled',l:'Settled'},{k:'volume',l:'Total lent $'}])},
+      {nums:[{k:'avgDeal',l:'Average loan',auto:function(){var c2=calc();return c2.avg!=null?money(c2.avg):''}},{k:'approvalRate',l:'Approved rate',auto:function(){return pct(calc().ar)}},{k:'settlementRate',l:'Settled rate',auto:function(){return pct(calc().sr)}}]},
+      {say:&quot;Your read. How quickly did you get to them, and how long to submit and get approved.&quot;,read:true},
+      {nums:[{k:'contactHrs',l:'Hours to first call'},{k:'submitDays',l:'Days to submit'},{k:'approvalDays',l:'Days to approval'}]},
+      {say:&quot;Does that line up with what you're seeing your end?&quot;}
     ]}},
     {t:'What worked',items:[
       {say:&quot;What worked well this quarter from your side?&quot;},
-      {k:'worked',q:'Worked',text:true,qp:['Fast turnaround','Weekly pricing on ads','QR code at the counter','Good communication','Staff bringing it up early']},
+      {k:'worked',q:'Worked',text:true,qp:['Fast turnaround','Weekly price on the ads','QR code at the counter','Good communication','Staff bringing it up early']},
       {say:&quot;And what got in the way?&quot;},
-      {k:'challenges',q:'Challenges',text:true,qp:['Customers with bad credit','Slow documents','Quiet trading','Staff forgetting to mention it','Competitor finance offer','Missed calls']}
+      {k:'challenges',q:'Got in the way',text:true,qp:['Customers with bad credit','Slow documents','Quiet trading','Staff forgetting to mention it','Competitor finance offer','Missed calls']}
     ]},
-    {t:'Working together',sub:'Engagement feeds the score.',items:[
-      isAgent?{say:&quot;How's the team going in Zink, honestly?&quot;}:{say:&quot;Your read. How do they refer, and how has the communication been.&quot;,read:true},
-      isAgent?{k:'zink',q:'Zink usage',opts:Object.keys(PM.ZINK),tone:['green','teal','amber','coral'],last:last?last.zink:''}:{info:'Referral partner. Zink usage scores 80 flat.'},
-      {k:'referral',q:'How they refer',opts:Object.keys(PM.REFB),list:true,last:last?last.referral:''},
+    {t:'Working together',sub:'Feeds the score.',items:[
+      isAgent?{say:&quot;How's the team going in Zink, honestly? Easy, or a bit of a struggle?&quot;}:{say:&quot;Your read. How do they send customers, and how has the communication been.&quot;,read:true},
+      isAgent?{k:'zink',q:'Zink',opts:Object.keys(PM.ZINK),labels:L_ZINK,tone:['green','teal','amber','coral'],last:last?last.zink:''}:{info:'Referral partner. Zink usage scores 80 flat.'},
+      {k:'referral',q:'How they send customers',opts:Object.keys(PM.REFB),labels:L_REFB,list:true,last:last?last.referral:''},
       {say:&quot;How's the communication been between us? Be honest, I'd rather know.&quot;},
-      {k:'comms',q:'Communication',opts:Object.keys(PM.COMMS),tone:['green','green','amber','coral','coral'],last:last?last.comms:''},
-      {nums:[{k:'touchpoints',l:'Touchpoints last 30 days'}]},
-      {k:'partnerComments',q:'Their comments',text:true}
+      {k:'comms',q:'Communication',opts:Object.keys(PM.COMMS),labels:L_COMMS,tone:['green','green','amber','coral','coral'],last:last?last.comms:''},
+      {nums:[{k:'touchpoints',l:'Times we spoke, last 30 days'}]},
+      {say:&quot;Anything else you want to say about how we work together?&quot;},
+      {k:'partnerComments',q:'Their words',text:true}
     ]},
     {t:'Marketing tools',sub:'All eight need an answer for the score.',items:[
-      {say:&quot;Let's run through what you're actually using at the moment.&quot;},
-      {k:'mkt',q:'',grid:PM.MKT_TOOLS,opts:Object.keys(PM.MKTS)}
+      {say:&quot;Let's go through the finance marketing. For each one, are you using it all the time, now and then, or not at all?&quot;},
+      {k:'mkt',q:'',grid:PM.MKT_TOOLS,opts:Object.keys(PM.MKTS),labels:Object.assign({},L_TOOLS,L_MKTS)}
     ]},
     {t:'Next quarter',sub:'Pick one to three. More than that and none happen.',items:[
-      {say:&quot;Out of everything we could do next quarter, what would make the biggest difference?&quot;},
-      {k:'nextInitiatives',q:'Initiatives',multi:PM.OPPS}
+      {say:&quot;Out of all the things we could do in the next three months, which one or two would make the biggest difference to you?&quot;},
+      {k:'nextInitiatives',q:'Next quarter',multi:PM.OPPS,labels:L_OPPS}
     ]},
     {t:'90 day plan',sub:'Who does what, by when.',items:[
-      {say:&quot;So over the next ninety days, you'll handle these, I'll handle these, and these we do together.&quot;},
+      {say:&quot;So for the next ninety days. These ones are yours, these are mine, and these we do together.&quot;},
       {q:'Actions',plan:true}
     ]},
     {t:'Training',items:[
       {say:&quot;Any training that would help the team this quarter?&quot;},
-      {k:'trainingNeeded',q:'Training',multi:PM.TRAIN_Q},
-      {k:'trainingDate',q:'Scheduled for',date:true}
+      {k:'trainingNeeded',q:'Training',multi:PM.TRAIN_Q,labels:L_TRAINQ},
+      {k:'trainingDate',q:'Booked for',date:true}
     ]},
     {t:'Risks',sub:'Low 0, Medium minus 10, High minus 20.',items:[
       {say:&quot;Your read. What could get in the way of this partnership over the next quarter.&quot;,read:true},
@@ -7653,16 +7730,18 @@ function startQuarterly(pid){
     ]},
     {t:'Sign off',items:function(){var c=calc();return [
       {say:&quot;Your call overall, with the score next to it.&quot;,read:true},
-      {k:'assessment',q:'Broker assessment',opts:['Excellent','Good','Fair','At Risk','Critical'],tone:['green','green','amber','coral','coral']},
-      {k:'finalFeedback',q:'Their final feedback',text:true},
-      {say:&quot;Let's lock in the next quarterly now so it doesn't drift.&quot;},
+      {k:'assessment',q:'Your assessment',opts:['Excellent','Good','Fair','At Risk','Critical'],tone:['green','green','amber','coral','coral']},
+      {say:&quot;Anything else you'd like me to take away from today?&quot;},
+      {k:'finalFeedback',q:'Their final word',text:true},
+      {say:&quot;Let's put the next quarterly in the diary now, so it doesn't drift.&quot;},
       {k:'nextReview',q:'Next review',date:true,time:'nextTime',qp:nextSlotQps(90)},
       {cdprev:'nextReview'},
-      {html:function(){var c2=calc();return c2.H==null?'&lt;div class=&quot;cap&quot; style=&quot;margin:12px 4px&quot;&gt;Score not complete yet: '+[c2.F==null?'the numbers (needs hours to first contact)':'',c2.E==null?'working together':'',c2.M==null?'marketing tools ('+c2.mset+' of 8)':''].filter(Boolean).join(', ')+'.&lt;/div&gt;':''}}
+      {html:function(){var c2=calc();return c2.H==null?'&lt;div class=&quot;cap&quot; style=&quot;margin:12px 4px&quot;&gt;Score not complete yet. Still needs: '+[c2.F==null?'the numbers, including hours to first call':'',c2.E==null?'working together':'',c2.M==null?'marketing tools, '+c2.mset+' of 8 answered':''].filter(Boolean).join('; ')+'.&lt;/div&gt;':''}}
     ]}}
    ],
-   side:function(){var c=calc(),b=bandOf(c.H);return '&lt;div class=&quot;side-h&quot;&gt;Health score&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;side-big&quot; style=&quot;color:'+b.c+'&quot;&gt;'+(c.H==null?'—':c.H)+'&lt;/div&gt;&lt;div class=&quot;side-band&quot; style=&quot;color:'+b.c+'&quot;&gt;'+h(b.t)+'&lt;/div&gt;&lt;div class=&quot;hr&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Finance ×0.4&lt;/span&gt;&lt;b&gt;'+(c.F==null?'—':c.F)+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Engagement ×0.3&lt;/span&gt;&lt;b&gt;'+(c.E==null?'—':c.E)+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Marketing ×0.2&lt;/span&gt;&lt;b&gt;'+(c.M==null?'—':c.M+(c.mset&lt;8?' ('+c.mset+'/8)':''))+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Risk ×0.1&lt;/span&gt;&lt;b&gt;'+c.R+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Approval / settlement&lt;/span&gt;&lt;b&gt;'+pct(c.ar)+' / '+pct(c.sr)+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;'+(p.h?'&lt;div class=&quot;cap&quot; style=&quot;margin-top:10px&quot;&gt;Last score '+p.h.H+' · '+h(bandOf(p.h.H).t)+'&lt;/div&gt;':'')},
+   side:function(){var c=calc(),b=bandOf(c.H);return '&lt;div class=&quot;side-h&quot;&gt;Health score&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;side-big&quot; style=&quot;color:'+b.c+'&quot;&gt;'+(c.H==null?'…':c.H)+'&lt;/div&gt;&lt;div class=&quot;side-band&quot; style=&quot;color:'+b.c+'&quot;&gt;'+h(b.t)+'&lt;/div&gt;&lt;div class=&quot;hr&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Finance ×0.4&lt;/span&gt;&lt;b&gt;'+(c.F==null?'…':c.F)+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Engagement ×0.3&lt;/span&gt;&lt;b&gt;'+(c.E==null?'…':c.E)+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Marketing ×0.2&lt;/span&gt;&lt;b&gt;'+(c.M==null?'…':c.M+(c.mset&lt;8?' ('+c.mset+'/8)':''))+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Risk ×0.1&lt;/span&gt;&lt;b&gt;'+c.R+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Approved / settled&lt;/span&gt;&lt;b&gt;'+(pct(c.ar)||'…')+' / '+(pct(c.sr)||'…')+'&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;'+(p.h?'&lt;div class=&quot;cap&quot; style=&quot;margin-top:10px&quot;&gt;Last score '+p.h.H+' · '+h(bandOf(p.h.H).t)+'&lt;/div&gt;':'')},
    onSave:function(){
+     p=PM.P(p.id)||p;S.p=p;
      var c=calc(),a=S.ans;
      if(c.H==null){var missing=c.F==null?1:c.E==null?3:4;S.i=missing;render();toast('Score not complete','Fill this part first');return}
      p.q={leads:n(a.leads),soft:n(a.softChecks),app:n(a.approvals),dec:n(a.declines),set:n(a.settled),vol:n(a.volume),cHrs:parseFloat(a.contactHrs),subD:n(a.submitDays),appD:n(a.approvalDays)};
@@ -7680,7 +7759,7 @@ function startQuarterly(pid){
      rec.trainingNeeded=(a.trainingNeeded||[]).join(' | ');
      if(!rec.date)rec.date=today();
      var at=D.reviews.findIndex(function(x){return x.pid===p.id&amp;&amp;x.date===rec.date});if(at&gt;=0)D.reviews[at]=rec;else D.reviews.unshift(rec);
-     PM.note(p,'Quarterly review. Health '+c.H+', '+bandOf(c.H).t+'.'+((a.nextInitiatives||[])[0]?' Next: '+a.nextInitiatives[0]+'.':''),'review');
+     PM.note(p,'Quarterly review. Health '+c.H+', '+bandOf(c.H).t+'.'+((a.nextInitiatives||[])[0]?' Next: '+(L_OPPS[a.nextInitiatives[0]]||a.nextInitiatives[0])+'.':''),'review');
      p.lastReviewAt=PM.fromIso(rec.date)||Date.now();p.lastTouch=Date.now();p.lastTouchHow='Quarterly review';
      if(a.nextReview&amp;&amp;a.nextTime&amp;&amp;(p.meet.status!=='Confirmed'||!PM.meetTs(p)||PM.meetTs(p)&lt;Date.now())){p.meet={date:a.nextReview,time:a.nextTime,status:'Confirmed',note:'Quarterly review',askedAt:null}}
      PM.touch(p);PM.save();draftClear();sessClose();PM.paint();PM.push('quarterly review');
@@ -7690,13 +7769,42 @@ function startQuarterly(pid){
 }
 
 /* ═══ SCORE A PARTNER · readiness ═══ */
+/* what you say, in plain words · the official question stays as the stored label */
+var ASK2={
+ 'How many staff are involved in sales/customer service?':{say:&quot;How many people do you have serving customers, including you?&quot;,why:&quot;If they're not sure: anyone who deals with customers counts. In the shop, on the phone, online.&quot;},
+ &quot;What's their average transaction value?&quot;:{say:&quot;What does a typical sale come to? Roughly is fine.&quot;,why:&quot;If they're not sure: what do most customers spend? Five thousand, twenty thousand, more than that?&quot;},
+ 'How comfortable are they with technology?':{say:&quot;Is your team good with new apps and software, or do they like to keep things simple?&quot;,why:&quot;If they're not sure: think of the last new system you brought in. Did it stick, or did people fight it?&quot;},
+ &quot;What's their current finance lead volume or enquiries?&quot;:{say:&quot;In a normal month, how many customers ask about paying it off over time instead of all at once?&quot;,why:&quot;If they're not sure: anyone who asked about a payment plan, asked if you do finance, or went quiet when they heard the price.&quot;},
+ 'Do they currently offer any finance options?':{say:&quot;Do you offer finance now, or do customers sort it out themselves?&quot;,why:&quot;If they're not sure: a finance company you use, a brochure on the counter, or nothing at all. Any answer is fine.&quot;},
+ 'How do they handle customer affordability concerns?':{say:&quot;When a customer says it's more than they wanted to spend, what usually happens next?&quot;,why:&quot;If they're not sure: do you drop the price, show them something cheaper, or do they leave to think about it?&quot;},
+ 'Are they interested in learning about finance as a sales tool?':{say:&quot;Would your team want to learn how to use finance to close a sale, or would you rather I handle all of that?&quot;,why:&quot;Neither answer is wrong. Some want their staff quoting a weekly figure, others just want to hand the customer over.&quot;},
+ 'Do they have competitors offering finance?':{say:&quot;Do the businesses you compete with offer finance?&quot;,why:&quot;If they're not sure: if they advertise weekly prices or payment plans, they do.&quot;},
+ 'How responsive are they to communication?':{say:&quot;What's the best way to reach you during the day, and how quickly do you usually see a message?&quot;,why:&quot;If they're not sure: a text, a call or an email, and do you see it within the hour, or that night?&quot;},
+ 'Do they follow through on commitments?':{say:&quot;Your read. Do not ask this one.&quot;,read:true,why:&quot;Score it on how they've dealt with you so far. Did they turn up when they said they would, reply to your messages, send what they promised?&quot;},
+ 'Are they open to new ideas and suggestions?':{say:&quot;Are you open to me suggesting ways to get more finance customers, or would you rather keep it simple?&quot;,why:&quot;If they're not sure: things like a weekly price on your ads, a QR code at the counter, or a campaign at the end of financial year.&quot;},
+ 'Do they see finance as valuable to their business?':{say:&quot;Have you lost customers because they couldn't pay the full amount up front?&quot;,why:&quot;If they're not sure: usually the ones who said they'd think about it and never came back.&quot;}
+};
+var QS_LABELS=[
+ ['4 or more staff','2 to 3 staff','1 to 2 staff','Just the owner','Changes all the time'],
+ ['$40k or more','$25k to $40k','$15k to $25k','$8k to $15k','Under $8k'],
+ ['Very tech savvy','Comfortable, happy to learn','Basic, needs a hand','Prefers simple','Avoids tech'],
+ ['20 or more a month','10 to 19 a month','5 to 9 a month','2 to 4 a month','0 or 1 a month'],
+ ['More than one provider, pushes finance','One provider, mentions it often','Basic option, mentions it sometimes','Rarely brings it up','Nothing in place'],
+ ['Offers finance straight away','Mentions finance when price comes up','Sometimes, on bigger sales','Rarely links it to finance','No set approach'],
+ ['Keen, asking good questions','Interested','Open but needs a push','Not that interested','Not interested at all'],
+ ['None of them do, big opportunity','A few do','Some do','Most do','All of them, and better'],
+ ['Within 2 hours','Same day','Within a day or two','2 to 3 days','Often no reply'],
+ ['Always delivers','Reliable','Usually, sometimes late','Needs reminding','Unreliable'],
+ ['Loves new ideas','Open to ideas','Cautious','Prefers things as they are','Closed to it'],
+ ['Sees finance as a big advantage','Sees the value, wants more','Some value, not convinced',&quot;Doesn't really get it&quot;,&quot;Doesn't see the point&quot;]
+];
 function startQualify(pid){
   var p=pid?PM.P(pid):null;
   var ans={n_name:p?(p.name==='—'?'':p.name):'',n_biz:p?p.biz:'',n_ind:p?(p.ind==='—'?'':p.ind):'',n_type:p?p.type:'Referral'};
   if(p&amp;&amp;p.readiness&amp;&amp;p.readiness.answers)p.readiness.answers.forEach(function(v,i){if(v)ans['qs'+i]=v});
   function calc(){var qi=0,subs=[],total=0,answered=0,weak=[];PM.QS.forEach(function(sec){var s=0;sec.qs.forEach(function(qq){var v=ans['qs'+(qi++)];if(v&amp;&amp;qq.a[v]!=null){s+=qq.a[v]*sec.w;answered++;if(qq.a[v]&lt;=2)weak.push(qq.q.replace(/\?$/,''))}});subs.push(s);total+=s});var t=Math.round(total*10)/10,full=answered===12,out=full?PM.QOUT.find(function(o){return t&gt;=o.min}):null;return {t:t,full:full,out:out,subs:subs,answered:answered,weak:weak}}
   var qsecs=[];var qi=0;
-  PM.QS.forEach(function(sec,si){var items=[];sec.qs.forEach(function(qq){var a=PM.ASK[qq.q]||{};var k='qs'+(qi++);items.push({say:a.say||qq.q,read:!!a.read});items.push({info:a.why||''});items.push({k:k,q:qq.q,opts:Object.keys(qq.a),list:true,tone:['green','green','amber','coral','coral']})});qsecs.push({t:sec.s,sub:'Weight ×'+sec.w,items:items})});
+  PM.QS.forEach(function(sec,si){var items=[];sec.qs.forEach(function(qq){var a=ASK2[qq.q]||PM.ASK[qq.q]||{};var k='qs'+qi;var keys=Object.keys(qq.a),labels={};keys.forEach(function(o,j){labels[o]=(QS_LABELS[qi]||[])[j]||o});qi++;items.push({say:a.say||qq.q,read:!!a.read,hint:a.why||''});items.push({k:k,q:'Score it',opts:keys,labels:labels,list:true,tone:['green','green','amber','coral','coral']})});qsecs.push({t:sec.s,sub:'Weight ×'+sec.w,items:items})});
   S={kind:'qualify',pid:pid||0,p:p||{name:ans.n_name,biz:ans.n_biz||'the business'},ans:ans,title:p?'Score readiness · '+p.biz:'Score a new partner',saveLabel:p?'Save the score':'Add to the book',
    secs:[
     {t:'Who',sub:'Twelve questions. Score as they talk.',items:[
@@ -7704,19 +7812,20 @@ function startQualify(pid){
       {k:'n_biz',q:'Business',line:true,ph:'Amibo Finance'},
       {k:'n_ind',q:'Industry',line:true,ph:'Commercial finance'},
       {k:'n_type',q:'Model you are leaning to',opts:['Referral','Agent']},
-      {say:&quot;Before I set anything up I want to understand your business a bit, so what I send you actually fits. Twelve quick ones.&quot;}
+      {say:&quot;Before I set anything up I want to get a feel for your business, so what I send you actually fits. Twelve quick questions, two minutes.&quot;}
     ]}
    ].concat(qsecs).concat([
     {t:'The verdict',items:function(){var c=calc();var pick=c.full?PM.packFor(c.t):null;var hi=function(x){return h(x).replace(/\[([^\]]+)\]/g,'&lt;em&gt;$1&lt;/em&gt;')};
       return [
        {html:function(){return '&lt;div class=&quot;verdict&quot;&gt;&lt;div class=&quot;row&quot; style=&quot;align-items:baseline;gap:12px&quot;&gt;&lt;div class=&quot;b&quot; style=&quot;color:'+(c.out?c.out.c:'var(--mut)')+'&quot;&gt;'+(c.full?c.t:c.answered+'&lt;span style=&quot;font-size:18px;color:var(--mut)&quot;&gt;/12&lt;/span&gt;')+'&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;font-size:16px;font-weight:700;color:'+(c.out?c.out.c:'var(--mut)')+'&quot;&gt;'+(c.out?h(c.out.t):'answer all twelve')+'&lt;/div&gt;&lt;div class=&quot;cap&quot;&gt;Business '+Math.round(c.subs[0])+'/40 · Finance '+Math.round(c.subs[1])+'/30 · Relationship '+Math.round(c.subs[2])+'/30&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;'+(c.out?'&lt;div style=&quot;margin-top:10px&quot;&gt;'+h(c.out.v)+'&lt;/div&gt;':'')+(c.full&amp;&amp;c.weak.length?'&lt;div class=&quot;cap&quot; style=&quot;margin-top:8px&quot;&gt;&lt;b style=&quot;color:var(--txt)&quot;&gt;Weak spots:&lt;/b&gt; '+h(c.weak.join(' · '))+'. These are what the catch-ups chip away at.&lt;/div&gt;':'')+'&lt;/div&gt;'}},
        {html:function(){return PM.PACKS.map(function(P){var on=P.k===pick;return '&lt;div class=&quot;pk'+(on?' on':'')+'&quot;&gt;&lt;div class=&quot;pn&quot;&gt;&lt;span&gt;'+h(P.n)+(on?' &lt;span class=&quot;chip teal&quot; style=&quot;margin-left:6px&quot;&gt;Recommended&lt;/span&gt;':'')+'&lt;/span&gt;&lt;span class=&quot;pf&quot;&gt;'+h(P.fit)+'&lt;/span&gt;&lt;/div&gt;'+(on?'&lt;div class=&quot;pq&quot;&gt;“'+hi(P.pitch)+'”&lt;/div&gt;&lt;ul&gt;'+P.items.map(function(x){return '&lt;li&gt;'+hi(x)+'&lt;/li&gt;'}).join('')+'&lt;/ul&gt;&lt;div class=&quot;ml&quot;&gt;&lt;b&gt;The money line:&lt;/b&gt; “'+hi(P.maths)+'”&lt;/div&gt;&lt;div class=&quot;ml&quot;&gt;&lt;b&gt;Where others sit:&lt;/b&gt; '+hi(P.bench)+'&lt;/div&gt;&lt;div class=&quot;ml&quot;&gt;&lt;b&gt;What you ask back:&lt;/b&gt; '+hi(P.ask)+'&lt;/div&gt;':'')+'&lt;/div&gt;'}).join('')+(pick?'&lt;div class=&quot;cap&quot; style=&quot;margin:10px 4px&quot;&gt;Figures in orange are examples. Swap in your real commission once confirmed.&lt;/div&gt;':'')}},
-       {say:&quot;I will send the agreement over today. It comes through DocuSign. Once that is back, head office sets up your Zink account and your application page goes live. Then I send your launch pack and we book fifteen minutes to walk your team through it. From there I check in monthly. First target is three to five referrals in the first thirty days.&quot;},
-       {k:'commits',q:'Minimum commitment · all three or walk away',multi:['Actively offers finance','3 or more referrals a month','Shows up to the monthly catch-up']}
+       {say:&quot;Here's what happens next. I'll send the agreement over today, it comes through DocuSign. Once that's back, head office sets up your account and your application page goes live. Then I send your launch pack and we book fifteen minutes to walk your team through it. From there I check in once a month. First target is three to five referrals in the first thirty days.&quot;},
+       {k:'commits',q:'Minimum commitment · all three or walk away',multi:['Actively offers finance','3 or more referrals a month','Shows up to the monthly catch-up'],labels:{'Actively offers finance':'They will bring finance up with customers','3 or more referrals a month':'Three or more referrals a month','Shows up to the monthly catch-up':'They turn up to the monthly catch-up'}}
       ]}}
    ]),
    side:function(){var c=calc();return '&lt;div class=&quot;side-h&quot;&gt;Readiness&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;side-big&quot; style=&quot;color:'+(c.out?c.out.c:'var(--mut)')+'&quot;&gt;'+(c.full?c.t:c.answered+'/12')+'&lt;/div&gt;&lt;div class=&quot;side-band&quot; style=&quot;color:'+(c.out?c.out.c:'var(--mut)')+'&quot;&gt;'+(c.out?h(c.out.t):'in progress')+'&lt;/div&gt;&lt;div class=&quot;hr&quot;&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Business /40&lt;/span&gt;&lt;b&gt;'+Math.round(c.subs[0])+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Finance /30&lt;/span&gt;&lt;b&gt;'+Math.round(c.subs[1])+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;Relationship /30&lt;/span&gt;&lt;b&gt;'+Math.round(c.subs[2])+'&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;80+&lt;/span&gt;&lt;b&gt;Agency&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;67+&lt;/span&gt;&lt;b&gt;Referral&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sumline&quot;&gt;&lt;span&gt;40+&lt;/span&gt;&lt;b&gt;Maintenance&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;'},
    onSave:function(){
+     if(p){p=PM.P(p.id)||p;S.p=p}
      var c=calc(),a=S.ans;
      if(!c.full){toast('Answer all twelve first');var qi2=0;for(var si=0;si&lt;PM.QS.length;si++){var done=true;PM.QS[si].qs.forEach(function(){if(!a['qs'+(qi2++)])done=false});if(!done){S.i=si+1;render();return}}return}
      var answers=[];for(var i=0;i&lt;12;i++)answers.push(a['qs'+i]||'');
@@ -7739,34 +7848,67 @@ Object.assign(PM,{sessTriple:sessTriple,sessClose:sessClose,sessNav:sessNav,sess
 'use strict';
 var $=PM.$,D=PM.D,toast=PM.toast;
 var EXEC_URL='https://script.google.com/macros/s/AKfycbza_HzauQ02hFJFB0ZwTqMQ3C6AlMQ9rd5y7ToLAwNXQZAxcmimv2xXizsU5J_JxDGndA/exec';
-var CI_KEYS=['biz','date','contact','broker','sat','satComments','units','season','staff','pain','leads','qualified','approvals','declines','unableToContact','funded','conversion','qualRate','apprOfQual','apprOfLeads','fundRate','clientTypes','patterns','missedCalls','earlySpot','handling','softChecks','appsStarted','docRequests','transferred','confidence','zinkTraining','promoting','support','implementation','recs','partnerPlan','brokerPlan','trainingBooked','trainingDate','issues','p1','p2','p3','b1','b2','b3','nextMeeting','actions','savedAt'];
+var CI_KEYS=['biz','date','contact','broker','sat','satComments','units','season','staff','pain','leads','qualified','approvals','declines','unableToContact','funded','conversion','qualRate','apprOfQual','apprOfLeads','fundRate','clientTypes','patterns','missedCalls','earlySpot','handling','softChecks','appsStarted','docRequests','transferred','confidence','zinkTraining','promoting','support','implementation','recs','partnerPlan','brokerPlan','trainingBooked','trainingDate','issues','p1','p2','p3','b1','b2','b3','nextMeeting','actions','savedAt','trainingTopics','nextTime'];
 var RV_KEYS=['biz','date','contact','nextReview','health','band','finance','engagement','marketing','risk','units','goals','promos','staffReferring','training','leads','softChecks','approvals','declines','settled','volume','avgDeal','approvalRate','settlementRate','contactHrs','submitDays','approvalDays','worked','challenges','zink','referral','comms','touchpoints','partnerComments','marketingTools','nextInitiatives','actionPlan','trainingNeeded','trainingDate','risks','assessment','finalFeedback','completedDate','savedAt'];
 var ok=null;
 function status(good,msg){ok=good;var el=$('#syncDot');if(el){el.classList.toggle('off',!good);el.querySelector('span').textContent=good?'Sheet':'Sheet offline'}var n=$('#sheetNote');if(n){n.classList.toggle('on',!good);if(!good)n.textContent='Saved on this device. The Google Sheet is not answering, so other devices will not see this until it is.'}}
 function yes(v){return /^(y|yes|true|1)$/i.test(String(v||'').trim())}
-function tsOf(v){if(v==null||v==='')return 0;var t=Date.parse(v);if(!isNaN(t))return t;var i=PM.isoFromSheet(v);return i?PM.fromIso(i):0}
+/* a cell to a timestamp · a bare date means local midnight, a datetime keeps its time */
+function tsOf(v){if(v==null||v==='')return 0;var s=String(v).trim();if(/^\d{4}-\d{2}-\d{2}$/.test(s))return PM.fromIso(s)||0;var t=Date.parse(s);if(!isNaN(t)){if(new Date(t).getFullYear()&lt;1950)return 0;return t}var i=PM.isoFromSheet(v);return i?PM.fromIso(i):0}
 function str(v){return v==null?'':String(v).trim()}
+function num(v){var x=parseFloat(v);return isNaN(x)?0:x}
 function dateCell(v){return PM.isoFromSheet(v)}
 /* ── merge what the sheet knows into this device ── */
+function goneRows(j){var out=[];(j.gone||[]).forEach(function(c){if(!c||!c[0]||/^kind$/i.test(str(c[0])))return;var g={t:str(c[0]).toLowerCase(),biz:str(c[1]),client:str(c[2]),received:PM.isoFromSheet(c[3]),when:tsOf(c[4]),note:str(c[5]),at:tsOf(c[6])||0};if(PM.gkey(g))out.push(g)});return out}
+function applyGone(){
+  var changed=false;
+  D.gone.forEach(function(g){
+    if(g.t==='partner'){var b=D.partners.length;D.partners=D.partners.filter(function(p){return !(PM.nmKey(p.biz)===PM.nmKey(g.biz)&amp;&amp;(p.added||0)&lt;=g.at)});if(D.partners.length!==b){var ids={};D.partners.forEach(function(p){ids[p.id]=1});D.leads=D.leads.filter(function(l){return ids[l.pid]});changed=true}}
+    else if(g.t==='lead'){var b2=D.leads.length,k=PM.gkey(g);D.leads=D.leads.filter(function(l){var p=PM.P(l.pid);return !(p&amp;&amp;PM.gkey(PM.leadGone(l,p))===k&amp;&amp;(l.updated||l.recv)&lt;=g.at)});if(D.leads.length!==b2)changed=true}
+    else if(g.t==='note'){var k3=PM.gkey(g);D.partners.forEach(function(p){if(PM.nmKey(p.biz)!==PM.nmKey(g.biz))return;var b3=p.hist.length;p.hist=p.hist.filter(function(n){return PM.gkey(PM.noteGone(p,n))!==k3});if(p.hist.length!==b3)changed=true})}
+    else if(g.t==='leadnote'){var k4=PM.gkey(g);D.leads.forEach(function(l){var p=PM.P(l.pid);if(!p||PM.nmKey(p.biz)!==PM.nmKey(g.biz))return;var b4=l.notes.length;l.notes=l.notes.filter(function(n){return PM.gkey(PM.leadNoteGone(l,n,p))!==k4});if(l.notes.length!==b4)changed=true})}
+  });
+  return changed;
+}
+/* the newest quarterly row carries everything the health score needs, so another device can show the ring */
+function applyReview(p,r){
+  p.q={leads:num(r.leads),soft:num(r.softChecks),app:num(r.approvals),dec:num(r.declines),set:num(r.settled),vol:num(r.volume),cHrs:r.contactHrs===''?null:parseFloat(r.contactHrs),subD:num(r.submitDays),appD:num(r.approvalDays)};
+  if(isNaN(p.q.cHrs))p.q.cHrs=null;
+  p.eng={zink:r.zink||'',ref:r.referral||'',comms:r.comms||'',touch:num(r.touchpoints)};
+  var mk=['','','','','','','',''];String(r.marketingTools||'').split(' | ').forEach(function(seg){var i=seg.lastIndexOf(': ');if(i&lt;0)return;var tool=seg.slice(0,i),val=seg.slice(i+2).trim();var at=PM.MKT_TOOLS.indexOf(tool);if(at&gt;-1&amp;&amp;PM.MKTS[val]!=null)mk[at]=val});p.mkt=mk;
+  var rk=String(r.risks||'').split(' | ').map(function(seg){var m=seg.match(/\b(High|Medium|Low)\b/);return m?m[1]:'Low'}).filter(function(x,i){return i&lt;5});while(rk.length&lt;5)rk.push('Low');p.risks=rk;
+  var d=PM.fromIso(r.date);if(d&amp;&amp;(!p.lastReviewAt||d&gt;p.lastReviewAt))p.lastReviewAt=d;
+  p.h=PM.calcHealth(p);
+}
 function merge(j){
-  var changed=false,now=Date.now();
+  var changed=false,now=Date.now(),freshIds={};
+  /* removals first · the sheet is the referee once it has seen a removal */
+  if(Array.isArray(j.gone)){
+    var sg=goneRows(j),sk={};sg.forEach(function(g){sk[PM.gkey(g)]=g});
+    D.gone=D.gone.filter(function(g){var k=PM.gkey(g);if(sk[k]){g.synced=true;return true}return !g.synced});
+    sg.forEach(function(g){if(!PM.goneFor(g)){g.synced=true;D.gone.push(g);changed=true}});
+  }
+  if(applyGone())changed=true;
   (j.partners||[]).forEach(function(c,i){
     if(!c||!c[0]||/^business$/i.test(str(c[0])))return;
-    var biz=str(c[0]),upd=tsOf(c[19]);
+    var biz=str(c[0]),upd=tsOf(c[19]),addedCell=tsOf(c[23]);
+    if(PM.goneFor({t:'partner',biz:biz}))return;
     var p=D.partners.find(function(x){return PM.nmKey(x.biz)===PM.nmKey(biz)});
     var fresh=!p;
-    if(!p){p=PM.normP({id:now+i,biz:biz,name:str(c[1])||'—',type:str(c[2])||'Referral',ind:str(c[3])||'—',phone:str(c[4])||'—',leadsMTD:+c[5]||0,pipe:PM.pipeDefaults({email:str(c[6]),stage:str(c[7])||'Agreement out',page:str(c[8]),qr:yes(c[9]),zink:yes(c[10])}),nextCI:now+7*PM.DAY,added:upd||now,hist:[{d:now,t:'Synced in from the sheet.',k:'note'}]});D.partners.push(p);changed=true}
+    if(!p){p=PM.normP({id:now+i,biz:biz,name:str(c[1])||'—',type:str(c[2])||'Referral',ind:str(c[3])||'—',phone:str(c[4])||'—',leadsMTD:+c[5]||0,pipe:PM.pipeDefaults({email:str(c[6]),stage:str(c[7])||'Agreement out',page:str(c[8]),qr:yes(c[9]),zink:yes(c[10])}),nextCI:now+7*PM.DAY,added:addedCell||upd||now,hist:[]});D.partners.push(p);freshIds[p.id]=!addedCell;changed=true}
+    else if(addedCell&amp;&amp;addedCell&lt;p.added){p.added=addedCell;changed=true}
     var newer=fresh||!p.updatedAt||(upd&amp;&amp;upd&gt;p.updatedAt);
     if(newer){
       if(str(c[1]))p.name=str(c[1]);if(str(c[2]))p.type=str(c[2]);if(str(c[3]))p.ind=str(c[3]);if(str(c[4]))p.phone=str(c[4]);
       if(str(c[6]))p.pipe.email=str(c[6]);if(str(c[7]))p.pipe.stage=str(c[7]);if(str(c[8]))p.pipe.page=str(c[8]);if(str(c[9]))p.pipe.qr=yes(c[9]);if(str(c[10]))p.pipe.zink=yes(c[10]);
       var rd=parseFloat(c[11]);if(!isNaN(rd)&amp;&amp;!p.readiness)p.readiness={t:rd,band:'',d:upd||now,answers:null,committed:true};
-      var ls=dateCell(c[13]);if(ls){var lt=PM.fromIso(ls);if(lt&amp;&amp;(!p.lastTouch||lt&gt;p.lastTouch)){p.lastTouch=lt;p.lastTouchHow=str(c[14])||p.lastTouchHow||'Call'}}
+      var lt=tsOf(c[13]);if(lt&amp;&amp;(!p.lastTouch||lt&gt;p.lastTouch)){p.lastTouch=lt;p.lastTouchHow=str(c[14])||p.lastTouchHow||'Call'}
       var md=dateCell(c[15]),mstat=str(c[17]);
-      if(mstat&amp;&amp;PM.MEET.indexOf(mstat)&gt;-1&amp;&amp;(fresh||p.meet.status==='Nothing booked'||upd&gt;(p.updatedAt||0))){p.meet.status=mstat;p.meet.date=md||p.meet.date;p.meet.time=PM.timeFromSheet(c[16])||p.meet.time;p.meet.note=str(c[18])||p.meet.note;if(mstat==='Requested'&amp;&amp;!p.meet.askedAt)p.meet.askedAt=upd||now}
-      var nc=dateCell(c[20]);if(nc){var nct=PM.fromIso(nc);if(nct&amp;&amp;(fresh||upd&gt;(p.updatedAt||0)))p.nextCI=nct}
-      var lr=dateCell(c[21]);if(lr){var lrt=PM.fromIso(lr);if(lrt&amp;&amp;(!p.lastReviewAt||lrt&gt;p.lastReviewAt))p.lastReviewAt=lrt}
+      if(mstat&amp;&amp;PM.MEET.indexOf(mstat)&gt;-1&amp;&amp;(fresh||upd&gt;(p.updatedAt||0))){p.meet.status=mstat;p.meet.date=md||p.meet.date;p.meet.time=PM.timeFromSheet(c[16])||p.meet.time;p.meet.note=str(c[18])||p.meet.note;if(mstat==='Requested'&amp;&amp;!p.meet.askedAt)p.meet.askedAt=upd||now}
+      var nct=tsOf(c[20]);if(nct&amp;&amp;(fresh||upd&gt;(p.updatedAt||0)))p.nextCI=nct;
+      var lrt=tsOf(c[21]);if(lrt&amp;&amp;(!p.lastReviewAt||lrt&gt;p.lastReviewAt))p.lastReviewAt=lrt;
       var cad=parseInt(c[22],10);if(cad&gt;0)p.cadence=cad;
+      var hc=parseFloat(c[12]);if(!isNaN(hc)&amp;&amp;(!p.h||p.h.H==null))p.h={F:null,E:null,M:null,R:null,H:Math.round(hc),apprRate:null,settleRate:null,fromSheet:true};
       if(upd&amp;&amp;(!p.updatedAt||upd&gt;p.updatedAt))p.updatedAt=upd;
       changed=true;
     }
@@ -7774,44 +7916,61 @@ function merge(j){
   (j.leads||[]).forEach(function(c,i){
     if(!c||!c[0]||/^partner$/i.test(str(c[0])))return;
     var p=D.partners.find(function(x){return PM.nmKey(x.biz)===PM.nmKey(str(c[0]))});var client=str(c[1]);if(!p||!client)return;
-    var recv=tsOf(c[3])||now,upd=tsOf(c[9]);
-    var l=D.leads.find(function(x){return x.pid===p.id&amp;&amp;PM.nmKey(x.client)===PM.nmKey(client)&amp;&amp;Math.abs(x.recv-recv)&lt;2*PM.DAY})||D.leads.find(function(x){return x.pid===p.id&amp;&amp;PM.nmKey(x.client)===PM.nmKey(client)});
-    var stage=Math.max(0,PM.STAGES.indexOf(str(c[4]))),out=str(c[5]);
+    var recvDay=tsOf(c[3])||now,recv=tsOf(c[10])||recvDay,upd=tsOf(c[9]),att=c[11]===''||c[11]==null?null:Math.max(0,Math.min(3,parseInt(c[11],10)||0));
+    var lg=PM.goneFor({t:'lead',biz:p.biz,client:client,received:PM.iso(recvDay)});if(lg){if(upd&gt;lg.at)PM.ungone(lg);else return}
+    var l=D.leads.find(function(x){return x.pid===p.id&amp;&amp;PM.nmKey(x.client)===PM.nmKey(client)&amp;&amp;Math.abs(x.recv-recvDay)&lt;2*PM.DAY});
+    var stage=Math.max(0,PM.STAGES.indexOf(str(c[4]))),out=str(c[5]),handed=/handed/i.test(out);
     var notes=str(c[8])?str(c[8]).split(' | ').map(function(s){var m=s.match(/^(\d{4}-\d{2}-\d{2})\s*:\s*([\s\S]*)$/);return m?{d:PM.fromIso(m[1])||now,t:m[2]}:{d:now,t:s}}).filter(function(x){return x.t}):[];
-    if(!l){l={id:now+9000+i,pid:p.id,client:client,asset:str(c[2])||'—',recv:recv,stage:stage,att:0,outcome:/approved|settled/i.test(out)?'app':/declined/i.test(out)?'dec':null,settled:/settled/i.test(out),phone:str(c[6]),contactAt:c[7]!==''&amp;&amp;c[7]!=null?+c[7]:null,notes:notes,updated:upd||recv};if(l.outcome)l.stage=4;D.leads.push(l);changed=true}
-    else if(upd&amp;&amp;upd&gt;(l.updated||0)){l.stage=Math.max(l.stage,stage);if(out){l.outcome=/approved|settled/i.test(out)?'app':/declined/i.test(out)?'dec':l.outcome;l.settled=l.settled||/settled/i.test(out);if(l.outcome)l.stage=4}if(str(c[6]))l.phone=str(c[6]);if(c[7]!==''&amp;&amp;c[7]!=null&amp;&amp;l.contactAt==null)l.contactAt=+c[7];notes.forEach(function(nn){if(!l.notes.some(function(x){return x.t===nn.t}))l.notes.push(nn)});l.notes.sort(function(a,b){return b.d-a.d});l.updated=upd;changed=true}
+    notes.sort(function(a,b){return b.d-a.d});
+    if(!l){l={id:now+9000+i,pid:p.id,client:client,asset:str(c[2])||'—',recv:recv,stage:stage,att:att||0,handed:handed,outcome:/approved|settled/i.test(out)?'app':/declined/i.test(out)?'dec':null,settled:/settled/i.test(out),phone:str(c[6]),contactAt:c[7]!==''&amp;&amp;c[7]!=null?+c[7]:null,notes:notes,updated:upd||recv};if(l.outcome)l.stage=4;D.leads.push(l);changed=true}
+    else if(upd&amp;&amp;upd&gt;(l.updated||0)){l.stage=Math.max(l.stage,stage);if(out){l.outcome=/approved|settled/i.test(out)?'app':/declined/i.test(out)?'dec':l.outcome;l.settled=l.settled||/settled/i.test(out);if(l.outcome)l.stage=4;if(handed)l.handed=true}if(str(c[6]))l.phone=str(c[6]);if(c[7]!==''&amp;&amp;c[7]!=null&amp;&amp;l.contactAt==null)l.contactAt=+c[7];if(att!=null&amp;&amp;att&gt;l.att)l.att=att;if(tsOf(c[10])&amp;&amp;Math.abs(l.recv-recv)&lt;2*PM.DAY)l.recv=recv;notes.forEach(function(nn){if(!l.notes.some(function(x){return x.t===nn.t})&amp;&amp;!PM.goneFor(PM.leadNoteGone(l,nn,p)))l.notes.push(nn)});l.notes.sort(function(a,b){return b.d-a.d});l.updated=upd;changed=true}
   });
-  function rows(list,keys,local){(list||[]).forEach(function(c){if(!c||!c[0]||/^partner$/i.test(str(c[0])))return;var p=D.partners.find(function(x){return PM.nmKey(x.biz)===PM.nmKey(str(c[0]))});if(!p)return;var rec={pid:p.id};keys.forEach(function(k,i){var v=c[i];if(k==='date'||k==='nextReview'||k==='trainingDate'||k==='nextMeeting'||k==='completedDate')v=dateCell(v);else if(k==='savedAt')v=tsOf(v);else v=str(v);rec[k]=v});if(!rec.date)return;if(!local.some(function(x){return x.pid===p.id&amp;&amp;x.date===rec.date})){local.push(rec);local.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});changed=true}})}
-  rows(j.checkins,CI_KEYS,D.checkins);rows(j.reviews,RV_KEYS,D.reviews);
-  (j.notes||[]).forEach(function(c){if(!c||!c[0]||/^partner$/i.test(str(c[0])))return;var p=D.partners.find(function(x){return PM.nmKey(x.biz)===PM.nmKey(str(c[0]))});if(!p)return;var when=tsOf(c[1])||now,t=str(c[2]);if(!t)return;if(!p.hist.some(function(x){return x.t===t&amp;&amp;Math.abs(x.d-when)&lt;PM.MIN}))p.hist.push({d:when,t:t,k:str(c[3])||'note'});p.hist.sort(function(a,b){return b.d-a.d});changed=true});
-  D.partners.forEach(function(p){p.h=PM.calcHealth(p);if(!p.lastReviewAt){var rv=D.reviews.filter(function(r){return r.pid===p.id}).map(function(r){return PM.fromIso(r.date)||0});if(rv.length)p.lastReviewAt=Math.max.apply(null,rv)}});
+  function rows(list,keys,local){var added=[];(list||[]).forEach(function(c){if(!c||!c[0]||/^partner$/i.test(str(c[0])))return;var p=D.partners.find(function(x){return PM.nmKey(x.biz)===PM.nmKey(str(c[0]))});if(!p)return;var rec={pid:p.id};keys.forEach(function(k,i){var v=c[i];if(k==='date'||k==='nextReview'||k==='trainingDate'||k==='nextMeeting'||k==='completedDate')v=dateCell(v);else if(k==='savedAt')v=tsOf(v);else v=str(v);rec[k]=v});if(!rec.date)return;if(!local.some(function(x){return x.pid===p.id&amp;&amp;x.date===rec.date})){local.push(rec);added.push(rec);local.sort(function(a,b){return String(b.date).localeCompare(String(a.date))});changed=true}});return added}
+  rows(j.checkins,CI_KEYS,D.checkins);var newReviews=rows(j.reviews,RV_KEYS,D.reviews);
+  (j.notes||[]).forEach(function(c){if(!c||!c[0]||/^partner$/i.test(str(c[0])))return;var p=D.partners.find(function(x){return PM.nmKey(x.biz)===PM.nmKey(str(c[0]))});if(!p)return;var when=tsOf(c[1])||now,t=str(c[2]);if(!t)return;if(PM.goneFor({t:'note',biz:p.biz,when:when,note:t}))return;if(!p.hist.some(function(x){return x.t===t&amp;&amp;Math.abs(x.d-when)&lt;PM.MIN})){p.hist.push({d:when,t:t,k:str(c[3])||'note'});p.hist.sort(function(a,b){return b.d-a.d});changed=true}});
+  D.partners.forEach(function(p){
+    /* a partner this pull created with no Added column: date them from their oldest note, not from the sync stamp */
+    if(freshIds[p.id]&amp;&amp;p.hist.length){var oldest=Math.min.apply(null,p.hist.map(function(x){return +x.d||now}));if(oldest&lt;p.added)p.added=oldest}
+    var mine=D.reviews.filter(function(r){return r.pid===p.id}).sort(function(a,b){return String(b.date).localeCompare(String(a.date))})[0];
+    if(mine){var mineTs=PM.fromIso(mine.date)||0;var isNew=newReviews.indexOf(mine)&gt;-1;if(isNew&amp;&amp;(mineTs&gt;=(p.lastReviewAt||0)||!p.h||p.h.H==null||p.h.fromSheet))applyReview(p,mine)}
+    if(!p.h||p.h.fromSheet){var hh=PM.calcHealth(p);if(hh)p.h=hh}else p.h=PM.calcHealth(p)||p.h;
+    if(!p.lastReviewAt){var rv=D.reviews.filter(function(r){return r.pid===p.id}).map(function(r){return PM.fromIso(r.date)||0});if(rv.length)p.lastReviewAt=Math.max.apply(null,rv)}
+  });
   return changed;
 }
-var busy=false;
+/* ── network · a request that hangs must not jam the sync for the rest of the session ── */
+function timed(url,opts,ms){var ctl=typeof AbortController==='function'?new AbortController():null;var o=Object.assign({},opts||{});if(ctl)o.signal=ctl.signal;var t=setTimeout(function(){if(ctl)ctl.abort()},ms||15000);var fp;try{fp=fetch(url,o)}catch(e){clearTimeout(t);return Promise.reject(e)}return fp.then(function(r){clearTimeout(t);return r},function(e){clearTimeout(t);throw e})}
+var busy=false,lastPullAt=0;
+function typing(){var e=document.activeElement;return !!(e&amp;&amp;(e.tagName==='TEXTAREA'||(e.tagName==='INPUT'&amp;&amp;/^(text|search|tel|email|url|number|date|time)$/i.test(e.type||'text')))&amp;&amp;e.value)}
+function repaintWhenFree(){if(!typing()){PM.paint();return}var e=document.activeElement;e.addEventListener(&quot;blur&quot;,function(){setTimeout(PM.paint,700)},{once:true})}
 function pull(){
-  if(busy)return;busy=true;var fp;
-  try{fp=fetch(EXEC_URL+'?fn=partners',{method:'GET'})}catch(e){busy=false;status(false);return}
-  fp.then(function(r){return r.json()}).then(function(j){busy=false;if(!j||!j.ok){status(false);return}var ch=merge(j);status(true);if(ch){PM.save();PM.fillPickers();PM.paint()}}).catch(function(){busy=false;status(false)});
+  if(busy)return Promise.resolve(false);busy=true;
+  return timed(EXEC_URL+'?fn=partners',{method:'GET'},15000).then(function(r){return r.json()}).then(function(j){if(!j||!j.ok){status(false);return false}var ch=merge(j);lastPullAt=Date.now();status(true);if(ch){PM.save();PM.fillPickers();repaintWhenFree()}return true}).catch(function(){status(false);return false}).then(function(v){busy=false;return v});
 }
 /* ── push · everything this device knows, the script upserts ── */
 var pushBusy=false,queued=null,timer=null;
 function payload(){
+  var isoT=function(ts){return ts?new Date(ts).toISOString():''};
   return {type:'partners',
-    partners:D.partners.map(function(p){return {biz:p.biz,contact:p.name,type:p.type,ind:p.ind,phone:p.phone==='—'?'':p.phone,leadsMTD:PM.leadsMonth(p),email:p.pipe.email||'',stage:p.pipe.stage||'',page:p.pipe.page||'',qr:p.pipe.qr?'Yes':'No',zink:p.pipe.zink?'Yes':'No',nextCall:p.meet.date||'',nextCallTime:p.meet.time||'',nextCallStatus:p.meet.status||'',nextCallNote:p.meet.note||'',lastTouch:p.lastTouch?PM.iso(p.lastTouch):'',lastTouchHow:p.lastTouchHow||'',readiness:p.readiness?p.readiness.t:'',health:(p.h&amp;&amp;p.h.H!=null)?p.h.H:'',nextCatchup:p.nextCI?PM.iso(p.nextCI):'',lastReview:p.lastReviewAt?PM.iso(p.lastReviewAt):'',cadence:p.cadence||30}}),
-    leads:D.leads.slice(0,200).map(function(l){var p=PM.P(l.pid)||{};return {biz:p.biz||'',client:l.client,asset:l.asset||'',received:PM.iso(l.recv),stage:PM.STAGES[l.stage]||'Received',outcome:l.outcome==='app'?(l.settled?'Settled':'Approved'):l.outcome==='dec'?'Declined':'',phone:l.phone||'',contactMins:l.contactAt!=null?l.contactAt:'',notes:(l.notes||[]).slice().reverse().map(function(x){return PM.iso(x.d)+': '+String(x.t).replace(/\s*\|\s*/g,', ')}).join(' | '),updated:new Date(l.updated||l.recv).toISOString()}}),
-    notes:[].concat.apply([],D.partners.map(function(p){return (p.hist||[]).slice(0,40).map(function(x){return {biz:p.biz,when:new Date(x.d).toISOString(),note:x.t,kind:x.k||'note'}})})),
-    checkins:D.checkins.slice(0,60),reviews:D.reviews.slice(0,40)};
+    partners:D.partners.map(function(p){return {biz:p.biz,contact:p.name,type:p.type,ind:p.ind,phone:p.phone==='—'?'':p.phone,leadsMTD:PM.leadsMonth(p),email:p.pipe.email||'',stage:p.pipe.stage||'',page:p.pipe.page||'',qr:p.pipe.qr?'Yes':'No',zink:p.pipe.zink?'Yes':'No',nextCall:p.meet.date||'',nextCallTime:p.meet.time||'',nextCallStatus:p.meet.status||'',nextCallNote:p.meet.note||'',lastTouch:isoT(p.lastTouch),lastTouchHow:p.lastTouchHow||'',readiness:p.readiness?p.readiness.t:'',health:(p.h&amp;&amp;p.h.H!=null)?p.h.H:'',nextCatchup:isoT(p.nextCI),lastReview:isoT(p.lastReviewAt),cadence:p.cadence||30,added:isoT(p.added)}}),
+    leads:D.leads.slice(0,200).map(function(l){var p=PM.P(l.pid)||{};return {biz:p.biz||'',client:l.client,asset:l.asset||'',received:PM.iso(l.recv),receivedAt:isoT(l.recv),attempts:+l.att||0,stage:PM.STAGES[l.stage]||'Received',outcome:l.outcome==='app'?(l.settled?'Settled':'Approved'):l.outcome==='dec'?'Declined':l.handed?'Handed back':'',phone:l.phone||'',contactMins:l.contactAt!=null?l.contactAt:'',notes:(l.notes||[]).slice().reverse().map(function(x){return PM.iso(x.d)+': '+String(x.t).replace(/\s*\|\s*/g,', ')}).join(' | '),updated:isoT(l.updated||l.recv)}}),
+    notes:[].concat.apply([],D.partners.map(function(p){return (p.hist||[]).slice(0,40).map(function(x){return {biz:p.biz,when:isoT(x.d),note:x.t,kind:x.k||'note'}})})),
+    checkins:D.checkins.slice(0,60),reviews:D.reviews.slice(0,40),
+    gone:D.gone.slice(-300).map(function(g){return {t:g.t,biz:g.biz||'',client:g.client||'',received:g.received||'',when:isoT(g.when),note:g.note||'',at:isoT(g.at||Date.now())}})};
 }
 function push(why){clearTimeout(timer);timer=setTimeout(function(){pushNow(why)},1200)}
 function pushNow(why){
-  if(pushBusy){queued=why||'update';return}pushBusy=true;var fp;
-  try{fp=fetch(EXEC_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload())})}catch(e){pushBusy=false;status(false);return}
-  fp.then(function(r){return r.json()}).then(function(j){status(!!(j&amp;&amp;j.ok))}).catch(function(){status(false)}).then(function(){pushBusy=false;if(queued){var q=queued;queued=null;push(q)}});
+  if(pushBusy){queued=why||'update';return}pushBusy=true;
+  /* pick up what another device did first, so a stale copy does not write over it */
+  var first=(Date.now()-lastPullAt&gt;20000)?pull():Promise.resolve(true);
+  first.then(function(){return timed(EXEC_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload())},20000)})
+   .then(function(r){return r.json()}).then(function(j){status(!!(j&amp;&amp;j.ok))}).catch(function(){status(false)})
+   .then(function(){pushBusy=false;if(queued){var q=queued;queued=null;push(q)}});
 }
 /* ── boot ── */
 PM.load();PM.fillPickers();PM.view('today');
 pull();setInterval(pull,60000);
-window.addEventListener('storage',function(e){if(e&amp;&amp;e.key===PM.PKEY){PM.load();PM.paint()}});
+window.addEventListener('storage',function(e){if(e&amp;&amp;e.key===PM.PKEY){PM.load();if(PM.session&amp;&amp;PM.session())PM.session().p=PM.P(PM.session().pid)||PM.session().p;repaintWhenFree()}});
 Object.assign(PM,{pull:pull,push:push,pushNow:pushNow,payload:payload,merge:merge,EXEC_URL:EXEC_URL});
 })(PM);
 

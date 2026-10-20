@@ -11359,6 +11359,275 @@ window.ZB=(function(){
   };
 })();
 &lt;/script&gt;
+&lt;script id=&quot;lm2-reader&quot;&gt;
+/* ═══ LM2 · CLIENT READER ═══════════════════════════════════════════
+   Reads the client straight from what Zink gives us, no AI:
+   · the lead profile ZBot hands over (sections in capitals, &quot;Key: value&quot; lines)
+   · a Zink application page copied with Ctrl A, Ctrl C
+   · an Equifax credit file, payslips and the rest through the clean room readers
+   Every fact keeps where it came from, so the results can say it. */
+var LM2R=(function(){
+  var NOW=new Date();
+  function num(v){if(v==null)return null;var s=String(v).replace(/[$,\s]/g,'');if(!/\d/.test(s))return null;var n=parseFloat(s);return isNaN(n)?null:n}
+  function txt(t){return String(t||'').replace(/\r\n?/g,'\n').replace(/ /g,' ')}
+  function lines(t){return txt(t).split('\n').map(function(l){return l.replace(/\s+$/,'')})}
+  function ageFrom(d){var m=String(d||'').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);if(!m)return null;var b=new Date(+m[3],+m[2]-1,+m[1]);var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
+  function perMonth(amt,fq){if(amt==null)return null;fq=String(fq||'').toLowerCase();var m={weekly:52/12,fortnightly:26/12,monthly:1,quarterly:1/3,yearly:1/12,annually:1/12,annual:1/12}[fq.replace(/[^a-z]/g,'')];return m?amt*m:null}
+  function perWeek(amt,fq){var m=perMonth(amt,fq);return m==null?null:m*12/52}
+  function resid(s){s=String(s||'').toLowerCase();if(!s)return null;
+    if(/new zealand|\bnz\b|444/.test(s))return 'nz';
+    if(/permanent/.test(s))return 'pr';
+    if(/citizen/.test(s))return 'citizen';
+    if(/bridg/.test(s))return 'bridging';
+    if(/visa|temporary|student|holiday|sponsor|482|457|820|309|491|494|skilled/.test(s))return 'visa';
+    return null}
+  function living(s){s=String(s||'').toLowerCase();if(!s)return null;
+    if(/parent|family/.test(s))return 'parents';
+    if(/board/.test(s))return 'boarding';
+    if(/mortgag/.test(s))return 'mortgage';
+    if(/\bown|owner|outright/.test(s))return 'owner';
+    if(/rent|lease|tenan/.test(s))return 'renting';
+    if(/employer/.test(s))return 'employer';
+    return 'other'}
+  function emp(s){s=String(s||'').toLowerCase();if(!s)return null;
+    if(/self|sole trader|contractor|abn/.test(s))return 'self';
+    if(/casual/.test(s))return 'casual';
+    if(/part/.test(s))return 'pt';
+    if(/full|permanent/.test(s))return 'ft';
+    if(/centrelink|pension|benefit/.test(s))return 'benefits';
+    return null}
+  function rentShare(comments){
+    var c=String(comments||'');var out={};
+    var lease=c.match(/\b(?:lease|rent)\b[^.\n]{0,40}?\$?\s*([\d,]{3,6})(?:\.\d+)?\s*(?:a|per|\/)\s*(?:week|wk)/i)||c.match(/\b(?:lease|rent)\s+is\s+\$?\s*([\d,]{3,6})/i);
+    var share=c.match(/\b(?:her|his|their|my|the client'?s?|client)?\s*share\b[^.\n]{0,20}?\$?\s*([\d,]{2,6})/i);
+    if(lease)out.lease=num(lease[1]);if(share)out.share=num(share[1]);
+    if(/\bhousemates?|share house|shares a rental|flatmates?|room ?mates?\b/i.test(c))out.shared=true;
+    return out}
+
+  /* ── the lead profile ── */
+  function isLead(t){t=txt(t);return /(^|\n)\s*LEAD\b[^\n]{0,30}\bPROFILE\s*(\n|$)/.test(t)||/\nCREDIT SCORE\s*\n\s*V ?\d{1,2}\s*:/.test(t)||(/\nVEDA REPORT\s*\n/.test(t)&amp;&amp;/\nAPPLICANTS\s*\n/.test(t))}
+  function leadBlocks(t){
+    var L=lines(t),B=[],cur={h:'_TOP',kv:{},order:[]},prevBlank=true,lastKey=null;B.push(cur);
+    for(var i=0;i&lt;L.length;i++){
+      var l=L[i].trim();
+      if(!l){prevBlank=true;continue}
+      var heading=prevBlank&amp;&amp;!/:/.test(l)&amp;&amp;l.length&lt;=48&amp;&amp;/^[A-Z0-9][A-Z0-9 &amp;\/\-'().]*$/.test(l)&amp;&amp;/[A-Z]{2,}/.test(l);
+      if(heading){cur={h:l,kv:{},order:[]};B.push(cur);lastKey=null;prevBlank=false;continue}
+      var m=l.match(/^([A-Za-z][A-Za-z0-9 \/&amp;'().\-]{0,48}?)\s*:\s?(.*)$/);
+      var cont=lastKey!=null&amp;&amp;!prevBlank&amp;&amp;/^\s/.test(L[i]);
+      if(m&amp;&amp;!cont){var k=m[1].trim().toLowerCase();var v=m[2].trim();if(k in cur.kv)k=k+'#'+cur.order.length;cur.kv[k]=v;cur.order.push(k);lastKey=k;prevBlank=false;continue}
+      if(lastKey!=null&amp;&amp;!prevBlank){cur.kv[lastKey]=(cur.kv[lastKey]?cur.kv[lastKey]+' ':'')+l}
+      else if(lastKey!=null&amp;&amp;cur.kv[lastKey]===''){cur.kv[lastKey]=l}
+      prevBlank=false;
+    }
+    return B;
+  }
+  function readLead(t){
+    var B=leadBlocks(t),c={src:'Zink lead'},st={sec:null,sub:null};
+    var addrs={},emps={},comments=[],expenses=[],assets=[],bureauAddr=[];
+    var SUB=/^(CURRENT|PREVIOUS \d+)$/,INADDR=/^(ADDRESS|DURATION|EXPENSE|LANDLORD)$/,INEMP=/^(EMPLOYER DETAILS|ADDRESS|DURATION|INCOME)$/;
+    var ccrSeen=false,ccrItems=0,afterCcr=false,applicantTypes=[];
+    B.forEach(function(b){
+      var h=b.h,kv=b.kv;
+      if(h==='ADDRESSES'){st={sec:'addr',sub:null};return}
+      if(h==='EMPLOYMENTS'){st={sec:'emp',sub:null};return}
+      if(st.sec==='addr'||st.sec==='emp'){
+        if(SUB.test(h)){st.sub=h;st.last=null;var tgt=st.sec==='addr'?addrs:emps;tgt[h]=tgt[h]||{};Object.assign(tgt[h],kv);return}
+        if(st.sub&amp;&amp;(st.sec==='addr'?INADDR:INEMP).test(h)){var tg=(st.sec==='addr'?addrs:emps)[st.sub];var hk=(h==='ADDRESS'&amp;&amp;st.last==='LANDLORD')?'LANDLORD ADDRESS':(h==='ADDRESS'&amp;&amp;tg.ADDRESS)?'ADDRESS 2':h;tg[hk]=Object.assign(tg[hk]||{},kv);st.last=h;return}
+        st={sec:null,sub:null};
+      }
+      if(h==='VEDA REPORT'){st={sec:'veda',sub:null};return}
+      if(st.sec==='veda'&amp;&amp;/^ADDRESS( \d+)?$|^DURATION$/.test(h)){return}
+      switch(true){
+        case h==='LOAN':c.loanType=kv.type||null;if(/^yes/i.test(kv['is commercial']||''))c.commercial=true;break;
+        case h==='REQUESTED':c.loanRequested=num(kv.amount);c.termMonths=num(kv.term);break;
+        case h==='AFFORDABILITY':c.affordAmt=num(kv.amount);c.affordFreq=kv.frequency||null;break;
+        case /^COMMENTS( \d+)?$/.test(h):if(kv.content)comments.push(kv.content);break;
+        case h==='ASSET':c.assetType=kv.type||null;break;
+        case h==='ACTIVE'||h==='VEHICLE':
+          if(c.price==null&amp;&amp;num(kv['purchase cost'])&gt;0)c.price=num(kv['purchase cost']);
+          if(c.deposit==null&amp;&amp;kv['deposit value']!=null)c.deposit=num(kv['deposit value']);
+          if(c.tradeIn==null&amp;&amp;kv['trade in value']!=null)c.tradeIn=num(kv['trade in value']);
+          if(c.extras==null&amp;&amp;kv['accessories cost']!=null)c.extras=num(kv['accessories cost']);
+          if(!c.assetDesc&amp;&amp;kv.description)c.assetDesc=kv.description;
+          if(c.build==null&amp;&amp;num(kv['make year'])&gt;1950)c.build=num(kv['make year']);
+          if(c.build==null&amp;&amp;num(kv['model year'])&gt;1950)c.build=num(kv['model year']);
+          if(c.isNew==null&amp;&amp;kv['new']!=null)c.isNew=/^yes|^1|true/i.test(kv['new']);
+          if(c.saleCode==null&amp;&amp;kv['private sale']!=null)c.saleCode=kv['private sale'];
+          if(c.assetRequested==null&amp;&amp;num(kv['requested amount'])&gt;0)c.assetRequested=num(kv['requested amount']);
+          if(c.odometer==null&amp;&amp;kv.odometer!=null)c.odometer=num(kv.odometer);
+          break;
+        case h==='EXPENSES':if(/hem/i.test(kv.type||'')){c.hemMonthly=num(kv['monthly value'])}break;
+        case h==='CAPACITY AND PRELIM':c.capIncome=num(kv['total incomes']);c.capDeclared=num(kv['declared outgoings']);c.capHem=num(kv['hem outgoings']);c.capSurplus=num(kv['uncommited income']||kv['uncommitted income']);break;
+        case h==='APPLICANTS':if(kv.type)applicantTypes.push(kv.type);break;
+        case h==='NAME'&amp;&amp;kv.firstname!=null:if(!c.firstName)c.firstName=kv.firstname||null;break;
+        case h==='CONTACT':if(kv['date of birth']&amp;&amp;c.dob==null){c.dob=kv['date of birth'];c.age=ageFrom(kv['date of birth'])}if(kv.gender)c.gender=kv.gender;break;
+        case h==='PERSONAL DETAILS':c.residencyRaw=kv.residency||null;c.residency=resid(kv.residency);c.dependants=num(kv['number of dependants']);c.marital=kv['marital status']||null;break;
+        case /^EXPENSES \d+$/.test(h):expenses.push({type:kv.type||'',amount:num(kv.amount),freq:kv.frequency||'',monthly:num(kv['monthly value'])});break;
+        case /^ASSETS \d+$/.test(h):assets.push({type:kv.type||'',desc:kv.description||'',value:num(kv.value),year:num(kv.years),liability:/^yes/i.test(kv['has liability']||'')});break;
+        case h==='FINANCE':if(assets.length){var a=assets[assets.length-1];Object.keys(kv).forEach(function(k){a['f_'+k]=kv[k]})}break;
+        case h==='CREDIT SCORE':
+          Object.keys(kv).forEach(function(k){var v=num(kv[k]);if(v==null)return;var kk=k.replace(/\s+/g,'');
+            if(/^v?20$|^v2\.?0$|comprehensive/.test(kk))c.comp=v;else if(/^v?11$|^v1\.?1$|negative|apply/.test(kk))c.neg=v;else if(/one/.test(kk))c.one=v;else if(/experian/.test(kk))c.experian=v});break;
+        case /ONE ?SCORE/.test(h):var os=num(kv.value||kv.score);if(os)c.one=os;break;
+        case h==='CREDIT SHOPPING':c.creditShopping=/^yes/i.test(kv.value||'');c.shoppingCount=num(kv.count);break;
+        case h==='PAYDAY ENQUIRIES':c.payday=/^yes/i.test(kv.value||'');c.paydayCount=num(kv.count);break;
+        case h==='FINANCIAL DEFAULTS':c.defPaidCount=num(kv['paid count']);c.defPaidValue=num(kv['paid value']);c.defUnpaidCount=num(kv['unpaid count']);c.defUnpaidValue=num(kv['unpaid value']);break;
+        case h==='NON FINANCIAL DEFAULTS':c.nfdPaidCount=num(kv['paid count']);c.nfdUnpaidCount=num(kv['unpaid count']);c.nfdUnpaidValue=num(kv['unpaid value']);break;
+        case h==='JUDGEMENTS':c.judgements=num(kv.count||kv.value);break;
+        case h==='INSOLVENCY'||h==='INSOLVENCIES':c.insolvency=kv.value||kv.type||null;break;
+        case h==='CCR':ccrSeen=true;afterCcr=true;ccrItems+=Object.keys(kv).length;return;
+        case h==='USER DETAILS':afterCcr=false;c.bureauEmployer=kv.employment||null;c.bureauAddrMonths=num(kv['current address duration']);c.bureauJobMonths=num(kv['current employment duration']);break;
+        case h==='DIRECTORSHIPS':c.directorships=num(kv.count);break;
+        case /^DATA \d+$/.test(h):var nm=String(kv.name||'');var vv=String(kv.value||'').trim();
+          if(/fhi_12m$/i.test(nm))c.hardship12=/^y/i.test(vv);
+          if(/fhi_0m$/i.test(nm))c.hardshipNow=/^y/i.test(vv);
+          break;
+        case h==='AGE OF FILE':c.fileMonths=num(kv.months);c.fileAgeText=kv.readable||null;break;
+        case h==='REQUIRED DOCS':c.requiredDocs=Object.keys(kv).map(function(k){return kv[k]}).filter(Boolean);break;
+      }
+      if(afterCcr&amp;&amp;h!=='CCR'&amp;&amp;!/^USER DETAILS$/.test(h))ccrItems+=1;
+    });
+    if(ccrSeen){c.ccrEmpty=ccrItems===0;if(c.ccrEmpty){c.accounts=0;c.accountsFrom='Zink lead, the CCR section is empty'}}
+    if(applicantTypes.length&gt;1)c.joint=true;
+    // where they live now, how long, the rent and who the landlord is
+    var cur=addrs.CURRENT||{};
+    c.livingRaw=cur.ownership||null;c.living=living(cur.ownership);
+    var dur=cur.DURATION||{};if(dur.years!=null||dur.months!=null)c.addrMonths=(num(dur.years)||0)*12+(num(dur.months)||0);
+    var ad=cur.ADDRESS||{};c.postcode=num(ad['post code'])||null;c.state=ad.state||null;c.country=ad.country||null;c.homeType=ad.type||null;
+    var ex=cur.EXPENSE||{};if(num(ex.amount)&gt;0){c.housingAmt=num(ex.amount);c.housingFreq=ex.frequency||null;c.housingWeekly=perWeek(num(ex.amount),ex.frequency);c.housingMonthly=num(ex['monthly value'])||perMonth(num(ex.amount),ex.frequency)}
+    var ll=cur.LANDLORD||{};c.landlord=ll.name||null;c.landlordPhone=ll.phone||null;
+    // time in Australia, counting back through addresses until one is overseas
+    var keys=['CURRENT'].concat(Object.keys(addrs).filter(function(k){return /^PREVIOUS/.test(k)}).sort(function(a,b){return num(a)-num(b)}));
+    var inAus=0,overseas=null,hist=[];
+    for(var i=0;i&lt;keys.length;i++){var A=addrs[keys[i]];var cn=String(((A.ADDRESS||{}).country)||'').trim();var d=A.DURATION||{};var mo=(num(d.years)||0)*12+(num(d.months)||0);hist.push({ownership:A.ownership||'',country:cn,months:mo});
+      if(cn&amp;&amp;!/^australia$|^aus$/i.test(cn)){overseas=cn;break}inAus+=mo}
+    c.addrHistory=hist;if(overseas){c.monthsInAus=inAus;c.cameFrom=overseas}
+    c.addrHistoryMonths=hist.reduce(function(s,a){return s+a.months},0);
+    // the job
+    var E=emps.CURRENT||{};
+    c.empRaw=E.type||null;c.emp=emp(E.type);c.jobTitle=E.title||null;c.industry=E.industry||null;c.occupation=E.occupation||null;
+    c.probation=/^(1|yes|true)$/i.test(String(E.probation||'').trim());
+    var ed=E['EMPLOYER DETAILS']||{};c.employer=ed.name||null;c.employerPhone=ed['contact number']||null;
+    var edur=E.DURATION||{};if(edur.years!=null||edur.months!=null)c.jobMonths=(num(edur.years)||0)*12+(num(edur.months)||0);
+    var inc=E.INCOME||{};if(num(inc.amount)&gt;0){c.netAmt=num(inc.amount);c.netFreq=inc.frequency||null;c.netMonthly=num(inc['monthly value'])||perMonth(num(inc.amount),inc.frequency)}
+    var pk=Object.keys(emps).filter(function(k){return /^PREVIOUS/.test(k)}).sort(function(a,b){return num(a)-num(b)});
+    if(pk.length){var P=emps[pk[0]];var pd=P.DURATION||{};c.prevJobMonths=(num(pd.years)||0)*12+(num(pd.months)||0);c.prevJobCountry=((P.ADDRESS||{}).country)||null}
+    c.expenses=expenses;c.assets=assets;c.comments=comments.join('\n');
+    var declared=expenses.reduce(function(s,e){return s+(e.monthly||0)},0);if(declared&gt;0)c.declaredMonthly=declared;
+    var rs=rentShare(c.comments);if(rs.lease)c.leaseWeekly=rs.lease;if(rs.share)c.shareWeekly=rs.share;if(rs.shared||(rs.lease&amp;&amp;rs.share&amp;&amp;rs.lease&gt;rs.share))c.sharedRent=true;
+    var desc=String(c.assetDesc||'');
+    if(/still looking|not found|shopping around|tbc|tba/i.test(desc))c.stillLooking=true;
+    c.assetName=desc.replace(/\bMakeYear:\s*\d{4}|\bModelYear:\s*\d{4}|still looking/gi,'').replace(/\s{2,}/g,' ').trim()||null;
+    if(c.saleCode!=null){var sc=String(c.saleCode).trim();c.sale=sc==='1'||/^yes|true|private/i.test(sc)?'private':sc==='0'||/^no|false|dealer/i.test(sc)?'dealer':null}
+    return c;
+  }
+
+  /* ── a Zink application page, copied whole ── */
+  function isPage(t){t=txt(t);return /Open Application:|Assess &amp; Submit|Making Finance Easy/.test(t)&amp;&amp;/Marital Status|Current Address|Credit Score/.test(t)}
+  function readPage(t){
+    t='\n'+txt(t)+'\n';var L=lines(t).map(function(l){return l.trim()}),c={src:'Zink page'};
+    var norm=function(s){return String(s||'').replace(/\s*\*\s*$/,'').trim().toLowerCase()};
+    var after=function(label,from,to){for(var i=from||0;i&lt;(to||L.length);i++){if(norm(L[i])===label){for(var j=i+1;j&lt;Math.min(L.length,i+4);j++){var v=L[j];if(!v||v==='+')continue;return v}return ''}}return ''};
+    var before=function(label,from,to){for(var i=Math.max(1,from||0);i&lt;(to||L.length);i++){if(norm(L[i])===label){var v=L[i-1];return v||''}}return ''};
+    var idx=function(re,from){for(var i=from||0;i&lt;L.length;i++)if(re.test(L[i]))return i;return -1};
+    var g=function(re){var m=t.match(re);return m?m[1]:null};
+    var fn=after('first name');if(fn&amp;&amp;!/^(middle|last) name/i.test(fn))c.firstName=fn;
+    c.residencyRaw=before('australian citizen');c.residency=resid(c.residencyRaw);
+    c.marital=before('marital status')||g(/Marital Status:\s*([A-Za-z ]+?)\s+Number of/);
+    c.dependants=num(after('number of dependants (under 18)'));
+    var dob=after('date of birth');if(dob){c.dob=dob;c.age=ageFrom(dob)}
+    // current address block
+    var a0=idx(/^Current Address$/);var a1=-1;for(var i=a0+1;a0&gt;-1&amp;&amp;i&lt;L.length;i++){if(/^Search Address$/.test(L[i])&amp;&amp;i===a0+1){continue}if(/^(Credit Report|Previous Address|Landlord Details)$/.test(L[i])){a1=i;break}}
+    if(a0&gt;-1&amp;&amp;L[a0+1]!=='Search Address'){var a2=idx(/^Current Address$/,a0+1);if(a2&gt;-1){a0=a2;a1=idx(/^(Credit Report|Previous Address|Landlord Details)$/,a0+1)}}
+    if(a0&gt;-1){var AT=L.slice(a0,a1&gt;-1?a1:a0+60);var AJ=AT.join('\n');
+      var y=AJ.match(/\nYears\s*\n(\d+)/),m=AJ.match(/\nMonths\s*\n(\d+)/);if(y||m)c.addrMonths=(y?+y[1]:0)*12+(m?+m[1]:0);
+      var ow=AJ.match(/\n([A-Za-z][A-Za-z ]{2,30})\n\s*Ownership\b/);if(ow){c.livingRaw=ow[1];c.living=living(ow[1])}
+      var rc=AJ.match(/Ownership\s*\n(?:[A-Za-z ]{0,20}\n)?\$\n([\d,.]+)\n(?:\$[\d,.]+\/m\n)?(Weekly|Fortnightly|Monthly|Quarterly|Yearly)/i);if(rc&amp;&amp;num(rc[1])&gt;0){c.housingAmt=num(rc[1]);c.housingFreq=rc[2];c.housingWeekly=perWeek(num(rc[1]),rc[2]);c.housingMonthly=perMonth(num(rc[1]),rc[2])}
+      var pc=AJ.match(/\n(\d{4})\nAustralia\b/)||AJ.match(/\b(?:QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\s+(\d{4})\b/);if(pc)c.postcode=+pc[1];
+      var stt=AJ.match(/\n(QLD|NSW|VIC|SA|WA|TAS|NT|ACT)\n/);if(stt)c.state=stt[1];
+    }
+    var l0=idx(/^Landlord Details$/);if(l0&gt;-1){c.landlord=after('landlord or agency name',l0,l0+12)||null;var lp=after('phone number',l0,l0+12);if(lp&amp;&amp;/\d{6}/.test(lp.replace(/\D/g,'')))c.landlordPhone=lp}
+    // scores and the bureau summary
+    var cs=t.match(/Credit Score\s*\n\s*(\d{3,4})\s*\n\s*2\.0\s*\n\s*(\d{3,4})\s*\n\s*1\.1/);if(cs){c.comp=+cs[1];c.neg=+cs[2]}else{var c1=g(/Credit Score\s*\n\s*(\d{3,4})\s*\n/);if(c1)c.comp=+c1}
+    var on=t.match(/\nOne Score\s*\n\s*(\d{3,4})\s*\n/);if(on)c.one=+on[1];
+    var fa=g(/Age of File\s*\n\s*([^\n]+)/);if(fa){c.fileAgeText=fa;var fy=fa.match(/(\d+)\s*Year/i),fm=fa.match(/(\d+)\s*Month/i);c.fileMonths=(fy?+fy[1]:0)*12+(fm?+fm[1]:0)}
+    var ins=g(/\nInsolvency\s*\n\s*([^\n]+)/);if(ins)c.insolvency=/^none$/i.test(ins)?null:ins;
+    var pd=g(/\nPayday Enquiries\s*\n\s*(Yes|No)/i);if(pd)c.payday=/yes/i.test(pd);
+    var fd=t.match(/Financial Defaults\s*\n\s*\$([\d,]+)\s*\n\s*(\d+) Paid\s*\n\s*\$([\d,]+)\s*\n\s*(\d+) Unpaid/);if(fd){c.defPaidValue=num(fd[1]);c.defPaidCount=+fd[2];c.defUnpaidValue=num(fd[3]);c.defUnpaidCount=+fd[4]}
+    var nf=t.match(/Non Financial Defaults\s*\n\s*\$([\d,]+)\s*\n\s*(\d+) Paid\s*\n\s*\$([\d,]+)\s*\n\s*(\d+) Unpaid/);if(nf){c.nfdPaidCount=+nf[2];c.nfdUnpaidValue=num(nf[3]);c.nfdUnpaidCount=+nf[4]}
+    var jd=t.match(/\nJudgements\s*\n\s*(\d+)/);if(jd)c.judgements=+jd[1];
+    var shp=t.match(/Credit Shopping\s*\n\s*(Yes|No)\s*\n\s*(\d+) Enquiries/i);if(shp){c.creditShopping=/yes/i.test(shp[1]);c.shoppingCount=+shp[2]}
+    var hd=g(/Financial Hardship\s*\n\s*(Yes|No)/i);if(hd)c.hardshipNow=/yes/i.test(hd);
+    var wc=t.match(/Worst CCR\s*\n\s*(\d+)\s*\n\s*Last 12 months\s*\n\s*(\d+)\s*\n\s*Last 24 months/);if(wc){c.worstRhi12=+wc[1];c.worstRhi24=+wc[2]}
+    var dr=t.match(/Directorships\s*\n\s*(Yes|No)\s*\n\s*(\d+) Directorships/i);if(dr)c.directorships=/yes/i.test(dr[1])?+dr[2]:0;
+    // the job
+    var e0=idx(/^Employment Details$/);if(e0&gt;-1){var e1=idx(/^(Employment Address|Previous Employment|Other Incomes|Spouses Details.*)$/,e0+1);var EL=L.slice(e0,e1&gt;-1?e1:e0+40);var EJ=EL.join('\n');
+      var ty=EJ.match(/\n([A-Za-z][A-Za-z \-]{2,30})\n\s*Type\b/);if(ty&amp;&amp;!/^Search Business$/i.test(ty[1])){c.empRaw=ty[1];c.emp=emp(ty[1])}
+      var tt=EJ.match(/\nTitle\s*\n([^\n]+)\n/);if(tt&amp;&amp;!/^Industry$/i.test(tt[1]))c.jobTitle=tt[1];
+      var ey=EJ.match(/\nYears\s*\*?\s*\n(\d+)/),em=EJ.match(/\nMonths\s*\*?\s*\n(\d+)/);if(ey||em)c.jobMonths=(ey?+ey[1]:0)*12+(em?+em[1]:0);
+      var er=EJ.match(/\nEmployer\s*\n([^\n]+)\n/);if(er&amp;&amp;!/^(ABN|Contact Name)$/i.test(er[1]))c.employer=er[1];
+      var cp=EJ.match(/Contact Phone\s*\n(?:\+\s*\n)?\s*(\+?[\d ()]{8,})/);if(cp)c.employerPhone=cp[1].trim();
+      var cn=EJ.match(/Contact Name\s*\n([^\n]+)\n/);if(cn&amp;&amp;!/^Contact Phone$/i.test(cn[1]))c.employerContact=cn[1];
+      var ni=EJ.match(/Net Income[^\n]*\n\s*\$\s*\n\s*([\d,.]+)\s*\n(?:\s*\$([\d,.]+)\/m\s*\n)?\s*(Weekly|Fortnightly|Monthly|Yearly)?/i);if(ni&amp;&amp;num(ni[1])&gt;0){c.netAmt=num(ni[1]);c.netFreq=ni[3]||null;c.netMonthly=num(ni[2])||perMonth(num(ni[1]),ni[3])}
+      if(/\nProbation\s*\n\s*(Yes|1)\b/i.test(EJ))c.probation=true;
+    }
+    // the deal
+    var reqs=(t.match(/Requested Loan Amount\s*\n\s*\$\s*\n\s*([\d,]+)/g)||[]).map(function(x){return num(x.replace(/[^\d,]/g,''))}).filter(function(v){return v&gt;0});if(reqs.length)c.loanRequested=Math.max.apply(null,reqs);
+    var pcs=(t.match(/Purchase Cost\s*\n\s*\$\s*\n\s*([\d,]+)/g)||[]).map(function(x){return num(x.replace(/[^\d,]/g,''))}).filter(function(v){return v&gt;0});if(pcs.length)c.price=Math.max.apply(null,pcs);
+    var dps=(t.match(/Deposit\s*\n\s*\$\s*\n\s*([\d,.]+)/g)||[]).map(function(x){return num(x.replace(/[^\d,.]/g,''))}).filter(function(v){return v&gt;0});c.deposit=dps.length?Math.max.apply(null,dps):(pcs.length?0:null);
+    var exs=(t.match(/Extras\s*\n\s*\$\s*\n\s*([\d,.]+)/g)||[]).map(function(x){return num(x.replace(/[^\d,.]/g,''))}).filter(function(v){return v&gt;0});if(exs.length)c.extras=Math.max.apply(null,exs);
+    var tm=g(/Term \(months\)\s*\n\s*(\d+)/);if(tm)c.termMonths=+tm;
+    var blocks=t.split(/\n(?=Asset Details\n)/),AB=null;blocks.forEach(function(x){var pp=x.match(/Purchase Cost\s*\n\s*\$\s*\n\s*([\d,]+)/);if(pp&amp;&amp;num(pp[1])&gt;0&amp;&amp;!AB)AB=x});
+    var ZB=AB||t;
+    var mk=ZB.match(/\n([A-Z][A-Z0-9 \-]{1,20})\s*\n\s*Make\s*\n\s*([A-Z0-9][A-Za-z0-9 \-]{0,30})\s*\n\s*Model\s*\n\s*(\d{4})\s*\n\s*Year/);if(mk){c.assetName=(mk[3]+' '+mk[1]+' '+mk[2]).replace(/\s+/g,' ').trim();c.build=+mk[3]}
+    if(AB){var cd=AB.match(/\nCondition\s*\n\s*(New \/ Demo|New|Demo|Used)\b/i);if(cd)c.isNew=!/used/i.test(cd[1]);var st2=AB.match(/Sale Type\s*\n\s*(Dealership|Dealer|Private)/i);if(st2)c.sale=/private/i.test(st2[1])?'private':'dealer'}
+    if(c.build==null){var by=g(/MakeYear:\s*(\d{4})/)||g(/ModelYear:\s*(\d{4})/);if(by)c.build=+by}
+    var ds=(ZB.match(/\nDescription\s*\n\s*([^\n]{4,80})\s*\n\s*Purchase Cost/)||[])[1];if(ds){c.assetDesc=ds;if(!c.assetName)c.assetName=ds.replace(/\bMakeYear:\s*\d{4}|\bModelYear:\s*\d{4}/gi,'').replace(/\s{2,}/g,' ').trim()}
+    if(c.sale==null){var sale=g(/Sale Type\s*\n\s*(Dealership|Dealer|Private)/i);if(sale)c.sale=/private/i.test(sale)?'private':'dealer'}
+    // expenses, assets, liabilities, comments
+    var tot=g(/\nTotal:\s*\$\s*([\d,.]+)/);if(tot&amp;&amp;num(tot)&gt;0)c.declaredMonthly=num(tot);
+    if(/Declared living expenses are below expected benchmark|\nLow Expenses\n/.test(t))c.lowExpenses=true;
+    var asr=/\n([A-Za-z][A-Za-z &amp;\/]{2,40})\n\s*Type\s*\*?\s*\n\s*Asset Value\s*\n\s*\$\s*\n\s*([\d,.]+)\s*\n/g,am;c.assets=[];while((am=asr.exec(t)))c.assets.push({type:am[1].trim(),value:num(am[2])});
+    var ci=idx(/^Comments$/);if(ci&gt;-1)c.comments=L.slice(ci+1,ci+30).join('\n');
+    var rs=rentShare(c.comments||'');if(rs.lease)c.leaseWeekly=rs.lease;if(rs.share)c.shareWeekly=rs.share;if(rs.shared)c.sharedRent=true;
+    var cap=g(/Uncommitted Income:\s*\$([\d,.]+)/);if(cap)c.capSurplus=num(cap);
+    return c;
+  }
+
+  /* ── an Equifax credit file, through the clean room reader ── */
+  function fromCredit(f){
+    var c={src:'credit file'};
+    if(f.score)c.comp=f.score;if(f.vedaScore)c.neg=f.vedaScore;if(f.oneScore)c.one=f.oneScore;
+    if(f.accountCount!=null){c.accounts=f.accountCount;c.accountsFrom='credit file'}
+    if(f.accountTypes&amp;&amp;f.accountTypes.length){c.activeAccounts=f.accountTypes.reduce(function(s,a){return s+(a.open||0)},0)}
+    if(f.fileAge){var fy=String(f.fileAge).match(/(\d+)\s*year/i),fm=String(f.fileAge).match(/(\d+)\s*month/i);c.fileMonths=(fy?+fy[1]:0)*12+(fm?+fm[1]:0)}
+    if(f.defaults&amp;&amp;f.defaults.length){var un=f.defaults.filter(function(d){return /outstanding|part/i.test(d.status)});c.defUnpaidCount=un.length;c.defUnpaidValue=un.reduce(function(s,d){return s+(d.latest||d.amount||0)},0);c.defPaidCount=f.defaults.length-un.length}
+    if(f.hardship)c.hardshipNow=/yes/i.test(f.hardship);
+    if(f.enq3m!=null)c.enq3m=f.enq3m;
+    return c;
+  }
+
+  /* ── put it together. First source to give a fact wins, credit file wins on bureau facts ── */
+  var BUREAU=['comp','neg','one','accounts','activeAccounts','fileMonths'];
+  function merge(list){
+    var c={from:{}};
+    list.forEach(function(s){if(!s)return;Object.keys(s).forEach(function(k){if(k==='src'||k==='from')return;var v=s[k];if(v==null||v===''||(typeof v==='number'&amp;&amp;isNaN(v)))return;
+      var bureau=BUREAU.indexOf(k)&gt;-1&amp;&amp;s.src==='credit file';
+      if(c[k]==null||bureau){c[k]=v;c.from[k]=s.src}})});
+    return c;
+  }
+  function read(texts,extra){
+    var parts=[];
+    (texts||[]).forEach(function(t){if(!t)return;if(isLead(t))parts.push(readLead(t));else if(isPage(t))parts.push(readPage(t))});
+    (extra||[]).forEach(function(x){parts.push(x)});
+    return merge(parts);
+  }
+  return {read:read,readLead:readLead,readPage:readPage,fromCredit:fromCredit,isLead:isLead,isPage:isPage,merge:merge,perWeek:perWeek,perMonth:perMonth,resid:resid,living:living};
+})();
+if(typeof module!=='undefined')module.exports=LM2R;
+
+&lt;/script&gt;
 &lt;script type=&quot;text/babel&quot;&gt;
 const {useState,useEffect,useRef,useCallback}=React;
 
@@ -11743,6 +12012,9 @@ function buildNaturalNote(cd,res,path){
     if(tips.length)parts.push(`Next time, ${tips.join(&quot;, &quot;)}.`);
   }
 
+  const xs=STAGES.filter(s=&gt;s.custom&amp;&amp;s.key&amp;&amp;res[s.key]).map(s=&gt;s.title+&quot;: &quot;+res[s.key]);
+  if(xs.length)parts.push(xs.join(&quot;. &quot;)+&quot;.&quot;);
+
   const zkNotes=String(res.closeNotes||&quot;&quot;).trim();
   return parts.join(&quot; &quot;)+(zkNotes?&quot;\n\nNotes: &quot;+zkNotes:&quot;&quot;);
 }
@@ -12004,6 +12276,102 @@ function FileCheck({raw,cd}){
   &lt;/div&gt;;
 }
 
+/* Credit file panel · sits under &quot;What's been in the way&quot;. Reads the bureau summary straight off the
+   pasted Zink page or the ZBot lead with the same reader the Lender Matcher uses, then gives the
+   lines worth reading back to the client. */
+function creditRead(raw){
+  if(!raw||!window.LM2R)return null;
+  let c=null;
+  try{c=LM2R.read([String(raw)],[])}catch(e){return null}
+  if(!c)return null;
+  const keys=[&quot;comp&quot;,&quot;neg&quot;,&quot;one&quot;,&quot;fileMonths&quot;,&quot;creditShopping&quot;,&quot;shoppingCount&quot;,&quot;payday&quot;,&quot;defUnpaidCount&quot;,&quot;defPaidCount&quot;,&quot;nfdUnpaidCount&quot;,&quot;judgements&quot;,&quot;worstRhi12&quot;,&quot;worstRhi24&quot;,&quot;hardshipNow&quot;,&quot;accounts&quot;,&quot;insolvency&quot;];
+  return keys.some(k=&gt;c[k]!=null)?c:null;
+}
+/* Equifax's own bands for the 0 to 1200 score */
+function creditBand(s){return s&gt;=853?&quot;Excellent&quot;:s&gt;=735?&quot;Very good&quot;:s&gt;=661?&quot;Good&quot;:s&gt;=460?&quot;Average&quot;:&quot;Below average&quot;}
+function creditView(c){
+  const money=n=&gt;&quot;$&quot;+Math.round(n).toLocaleString(&quot;en-AU&quot;);
+  const pl=(n,one,many)=&gt;n+&quot; &quot;+(n===1?one:(many||one+&quot;s&quot;));
+  const age=m=&gt;{m=Math.round(m);const y=Math.floor(m/12),r=m%12;return y?pl(y,&quot;year&quot;)+(r?&quot; &quot;+pl(r,&quot;month&quot;):&quot;&quot;):pl(r,&quot;month&quot;)};
+  const late=w=&gt;w&gt;=4?&quot;three months or more late&quot;:w===3?&quot;two to three months late&quot;:w===2?&quot;one to two months late&quot;:&quot;up to a month late&quot;;
+  const V={score:null,band:null,sub:[],rows:[],say:[]};
+  const R=(tone,t)=&gt;V.rows.push({tone,t});
+  if(c.comp!=null){V.score=c.comp;V.band=creditBand(c.comp);if(c.neg!=null)V.sub.push(&quot;Negative &quot;+c.neg)}
+  else if(c.neg!=null){V.score=c.neg;V.sub.push(&quot;Negative score&quot;)}
+  if(c.one!=null)V.sub.push(&quot;One Score &quot;+c.one);
+
+  const fu=c.defUnpaidCount||0,fp=c.defPaidCount||0,nu=c.nfdUnpaidCount||0,np=c.nfdPaidCount||0,jd=c.judgements||0,ins=c.insolvency||null;
+  const knowMarks=c.defUnpaidCount!=null||c.nfdUnpaidCount!=null||c.judgements!=null;
+  const clean=knowMarks&amp;&amp;!ins&amp;&amp;!fu&amp;&amp;!fp&amp;&amp;!nu&amp;&amp;!np&amp;&amp;!jd;
+  if(ins)R(&quot;b&quot;,&quot;Insolvency on file, &quot;+ins);
+  if(fu)R(&quot;b&quot;,pl(fu,&quot;unpaid default&quot;)+(c.defUnpaidValue?&quot;, &quot;+money(c.defUnpaidValue):&quot;&quot;));
+  if(nu)R(&quot;b&quot;,pl(nu,&quot;unpaid bill default&quot;)+(c.nfdUnpaidValue?&quot;, &quot;+money(c.nfdUnpaidValue):&quot;&quot;));
+  if(fp+np)R(&quot;w&quot;,pl(fp+np,&quot;paid default&quot;));
+  if(jd)R(&quot;b&quot;,pl(jd,&quot;court judgement&quot;));
+  if(clean)R(&quot;g&quot;,&quot;No defaults or judgements&quot;);
+
+  const sc=c.shoppingCount||0;
+  const quiet=c.creditShopping===false&amp;&amp;!sc;
+  if(c.creditShopping===true)R(&quot;w&quot;,&quot;Shopping around&quot;+(sc?&quot;, &quot;+pl(sc,&quot;enquiry&quot;,&quot;enquiries&quot;):&quot;&quot;));
+  else if(sc&gt;0)R(&quot;w&quot;,pl(sc,&quot;recent enquiry&quot;,&quot;recent enquiries&quot;));
+  else if(quiet)R(&quot;g&quot;,&quot;No other lenders checking lately&quot;);
+  if(c.payday===true)R(&quot;w&quot;,&quot;Payday loan enquiry in the last 6 months&quot;);
+  else if(c.payday===false)R(&quot;g&quot;,&quot;No payday loans in 6 months&quot;);
+
+  const w12=c.worstRhi12,w24=c.worstRhi24,known=w12!=null||w24!=null,w=Math.max(w12||0,w24||0);
+  if(known){if(!w)R(&quot;g&quot;,&quot;Repayments all on time, last 2 years&quot;);else R(w&gt;=2?&quot;b&quot;:&quot;w&quot;,&quot;A repayment &quot;+late(w)+((w12||0)&gt;0?&quot;, last 12 months&quot;:&quot;, last 2 years&quot;))}
+  if(c.hardshipNow===true)R(&quot;b&quot;,&quot;Hardship arrangement on now&quot;);
+  else if(c.hardship12===true)R(&quot;w&quot;,&quot;Hardship in the last 12 months&quot;);
+  else if(c.hardshipNow===false)R(&quot;g&quot;,&quot;No hardship&quot;);
+  if(c.accounts===0)R(&quot;w&quot;,&quot;No accounts open on the file&quot;);
+  if(c.fileMonths&gt;0)R(&quot;n&quot;,&quot;File &quot;+age(c.fileMonths)+&quot; old&quot;);
+  if(c.directorships&gt;0)R(&quot;n&quot;,pl(c.directorships,&quot;directorship&quot;));
+
+  // what to read back, in his voice
+  const S=V.say;
+  S.push(&quot;I've got your credit file up here.&quot;+(c.comp!=null?&quot; Your score's &quot;+c.comp+&quot;, which Equifax calls &quot;+V.band.toLowerCase()+&quot;.&quot;:&quot;&quot;));
+  if(clean&amp;&amp;known&amp;&amp;!w)S.push(&quot;No defaults, no judgements, and your repayments have all been on time.&quot;);
+  else if(clean)S.push(&quot;No defaults and no judgements on there.&quot;);
+  else if(known&amp;&amp;!w)S.push(&quot;Your repayments have all been on time.&quot;);
+  if(quiet)S.push(&quot;And nobody else has checked your file lately, which is exactly what we want.&quot;);
+  if(c.creditShopping===true||sc&gt;0)S.push(sc===1?&quot;I can see one other enquiry on there lately. Who was that with?&quot;:&quot;I can see &quot;+(sc?sc+&quot; other enquiries&quot;:&quot;a few other enquiries&quot;)+&quot; on there lately. Who were they with?&quot;);
+  if(c.payday===true)S.push(&quot;There's a payday loan enquiry in the last six months too. What was that one for?&quot;);
+  if(ins)S.push(&quot;I can see &quot;+String(ins).toLowerCase()+&quot; on the file. When did that finish up?&quot;);
+  if(fu)S.push((fu===1?&quot;There's an unpaid default on there&quot;:&quot;There are &quot;+fu+&quot; unpaid defaults on there&quot;)+(c.defUnpaidValue?&quot; for &quot;+money(c.defUnpaidValue):&quot;&quot;)+&quot;. What happened there?&quot;);
+  if(nu)S.push((nu===1?&quot;There's an unpaid bill default on there&quot;:&quot;There are &quot;+nu+&quot; unpaid bill defaults on there&quot;)+(c.nfdUnpaidValue?&quot; for &quot;+money(c.nfdUnpaidValue):&quot;&quot;)+&quot;, usually a phone or power bill. What happened with that?&quot;);
+  if(fp+np&amp;&amp;!fu&amp;&amp;!nu)S.push((fp+np===1?&quot;There's an old default on there that's been paid&quot;:&quot;There are &quot;+(fp+np)+&quot; old defaults on there that have been paid&quot;)+&quot;, which is good.&quot;);
+  if(jd)S.push(&quot;I can also see &quot;+(jd===1?&quot;a court judgement&quot;:jd+&quot; court judgements&quot;)+&quot;. What was that about?&quot;);
+  if(known&amp;&amp;w)S.push(&quot;One of your repayments ran &quot;+late(w)+((w12||0)&gt;0?&quot; in the last year&quot;:&quot; in the last couple of years&quot;)+&quot;. What happened there?&quot;);
+  if(c.hardshipNow===true)S.push(&quot;I can see a hardship arrangement on one of your accounts. Is that still going?&quot;);
+  else if(c.hardship12===true)S.push(&quot;There was a hardship arrangement in the last year. What happened there?&quot;);
+  if(c.accounts===0)S.push(&quot;There's nothing open on your file right now, no cards or loans, so the lender will lean a bit more on your payslips and bank statements. That's normal.&quot;);
+  return V;
+}
+function CreditCheck({raw}){
+  const c=creditRead(raw);
+  if(!c)return null;
+  const v=creditView(c);
+  if(v.score==null&amp;&amp;!v.rows.length)return null;
+  const dot={g:&quot;#34d399&quot;,w:&quot;#f0a500&quot;,b:&quot;#fb7185&quot;,n:&quot;#4a5280&quot;};
+  const band={Excellent:[&quot;#12341f&quot;,&quot;#34d399&quot;],&quot;Very good&quot;:[&quot;#12341f&quot;,&quot;#34d399&quot;],Good:[&quot;#1a2433&quot;,&quot;#9db1ff&quot;],Average:[&quot;#2b1d0e&quot;,&quot;#f0a500&quot;],&quot;Below average&quot;:[&quot;#2d1515&quot;,&quot;#fb7185&quot;]};
+  const lab={fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:&quot;uppercase&quot;,color:&quot;#6e7681&quot;};
+  return &lt;div className=&quot;credit-check&quot; style={{marginTop:14,paddingTop:14,borderTop:&quot;1px solid #242a4a&quot;,whiteSpace:&quot;normal&quot;}}&gt;
+    &lt;div style={{...lab,marginBottom:8}}&gt;Credit file&lt;/div&gt;
+    {v.score!=null&amp;&amp;&lt;div style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,gap:10,flexWrap:&quot;wrap&quot;,marginBottom:12}}&gt;
+      &lt;span style={{fontSize:30,fontWeight:700,color:&quot;#eef0ff&quot;,lineHeight:1}}&gt;{v.score}&lt;/span&gt;
+      {v.band&amp;&amp;&lt;span style={{fontSize:12,fontWeight:700,padding:&quot;4px 10px&quot;,borderRadius:999,background:band[v.band][0],color:band[v.band][1]}}&gt;{v.band}&lt;/span&gt;}
+      {v.sub.length&gt;0&amp;&amp;&lt;span style={{fontSize:12.5,color:&quot;#6e7681&quot;}}&gt;{v.sub.join(&quot; · &quot;)}&lt;/span&gt;}
+    &lt;/div&gt;}
+    &lt;div style={{display:&quot;grid&quot;,gap:7}}&gt;
+      {v.rows.map((r,i)=&gt;&lt;div key={i} style={{display:&quot;flex&quot;,gap:10,alignItems:&quot;flex-start&quot;,fontSize:14,lineHeight:1.45,color:r.tone===&quot;n&quot;?&quot;#8b949e&quot;:&quot;#c9d1d9&quot;}}&gt;&lt;span style={{width:7,height:7,borderRadius:&quot;50%&quot;,background:dot[r.tone],flex:&quot;0 0 7px&quot;,marginTop:7}}/&gt;&lt;span&gt;{r.t}&lt;/span&gt;&lt;/div&gt;)}
+    &lt;/div&gt;
+    {v.say.length&gt;0&amp;&amp;&lt;div style={{marginTop:16}}&gt;
+      &lt;div style={{...lab,marginBottom:6}}&gt;Read it back&lt;/div&gt;
+      {v.say.map((p,i)=&gt;&lt;div key={i} style={{marginTop:i?10:0}}&gt;{p}&lt;/div&gt;)}
+    &lt;/div&gt;}
+  &lt;/div&gt;;
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    STAGES
    ══════════════════════════════════════════════════════════════════════ */
@@ -12156,18 +12524,25 @@ creditWarn:&quot;One thing before I go. Your credit file is looking okay right n
 confirm:&quot;Done. Keep your phone handy, I'll call you back in about 15 minutes.\n\nAnything you want to ask before I let you go?&quot;},
 ];
 
-/* ── Broker Hub settings · optional name swap + script overrides ── */
-const HUB=(()=&gt;{try{return JSON.parse(localStorage.getItem('hub_settings_v1'))||{};}catch(e){return {};}})();
-const HUB_NAME=((HUB.name||'').trim());
-const HUB_OV=HUB.ov||{};
+/* ── Broker Hub settings · optional name swap, script overrides and his own sections ── */
+const STAGES_DEF=JSON.parse(JSON.stringify(STAGES));
+function hubRead(){try{return JSON.parse(localStorage.getItem('hub_settings_v1'))||{};}catch(e){return {};}}
+let HUB=hubRead();
+let HUB_NAME=((HUB.name||'').trim());
+let HUB_OV=HUB.ov||{};
 /* A saved line that matches an older default is not a real edit, so it never hides the newer wording. */
 const HUB_OLD={&quot;affordability.script&quot;:[&quot;wtry7j&quot;],&quot;barrier.cue&quot;:[&quot;586b42&quot;],&quot;barrier.script&quot;:[&quot;ew9iyt&quot;],&quot;barrier.script2&quot;:[&quot;tu43et&quot;],&quot;close.comms&quot;:[&quot;182tfwm&quot;,&quot;jy7mgf&quot;],&quot;close.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.cred&quot;:[&quot;1587xcw&quot;,&quot;1xi8if2&quot;],&quot;close.creditWarn&quot;:[&quot;1eaeo2i&quot;,&quot;agdfgw&quot;],&quot;close.cue&quot;:[&quot;18l298b&quot;],&quot;close.docs&quot;:[&quot;9uh5v0&quot;,&quot;zdmwz5&quot;],&quot;close.script&quot;:[&quot;1nuktmn&quot;,&quot;a8hza1&quot;,&quot;yg12pg&quot;],&quot;close.script2&quot;:[&quot;102xvla&quot;,&quot;10qyqii&quot;,&quot;v11kds&quot;],&quot;close.variants.refinance.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.variants.refinance.script&quot;:[&quot;1cgyi2h&quot;,&quot;fqecj9&quot;],&quot;close.variants.refinance.script2&quot;:[&quot;10qyqii&quot;,&quot;15mozeb&quot;],&quot;frame.script&quot;:[&quot;apwc5e&quot;],&quot;handover.followUp&quot;:[&quot;1afw5cb&quot;],&quot;outcome.script&quot;:[&quot;11uvdp7&quot;],&quot;outcome.script2&quot;:[&quot;1bmsdk&quot;],&quot;priority.script&quot;:[&quot;1tdqsbv&quot;],&quot;recon.script&quot;:[&quot;5jaeil&quot;],&quot;recon.script2&quot;:[&quot;1eg1mnl&quot;],&quot;refiRepay.script&quot;:[&quot;10k312&quot;],&quot;situation.script&quot;:[&quot;83zxeb&quot;],&quot;situation.variants.refinance.script&quot;:[&quot;1q6y17k&quot;]};
 function hubH(t){t=String(t);let x=5381;for(let i=0;i&lt;t.length;i++)x=((x&lt;&lt;5)+x+t.charCodeAt(i))|0;return (x&gt;&gt;&gt;0).toString(36);}
 function hubOv(k){const v=HUB_OV[k];if(v==null||String(v).trim()==='')return null;const o=HUB_OLD[k];return (o&amp;&amp;o.indexOf(hubH(v))&gt;-1)?null:v;}
 function hubText(t){return (typeof t==='string'&amp;&amp;HUB_NAME)?t.replace(/\bJordon\b/g,HUB_NAME).replace(/\bJordy\b/g,HUB_NAME):t;}
-(function(){
+/* Builds the stages from the defaults every time: his edited lines, then his sections. His order
+   wins, sections he took out are skipped, his own go where he dragged them. A section the hub adds
+   later that his saved order doesn't know about slots in after the one it follows by default. */
+function hubApply(){
+  HUB=hubRead();HUB_NAME=((HUB.name||'').trim());HUB_OV=HUB.ov||{};
+  const fresh=JSON.parse(JSON.stringify(STAGES_DEF));
   const F=['script','script2','followUp','confirm','cred','docs','comms','creditWarn','cue','cue2','followUpCue'];
-  STAGES.forEach(s=&gt;{
+  fresh.forEach(s=&gt;{
     F.forEach(f=&gt;{
       const k=s.id+'.'+f;
       const v=hubOv(k);if(v!=null)s[f]=v;
@@ -12181,8 +12556,33 @@ function hubText(t){return (typeof t==='string'&amp;&amp;HUB_NAME)?t.replace(/\b
       });
     });
   });
-})();
-window.addEventListener('storage',e=&gt;{if(e&amp;&amp;e.key==='hub_settings_v1')location.reload();});
+  let next=fresh;
+  const L=HUB.layout;
+  if(L&amp;&amp;typeof L==='object'){
+    const by={};fresh.forEach(s=&gt;{by[s.id]=s});
+    const def=fresh.map(s=&gt;s.id);
+    const cus=(L.custom&amp;&amp;typeof L.custom==='object')?L.custom:{};
+    Object.keys(cus).forEach(id=&gt;{
+      const c=cus[id]||{};if(by[id])return;
+      const opts=(Array.isArray(c.options)?c.options:String(c.options||'').split('\n')).map(x=&gt;String(x).trim()).filter(Boolean);
+      const st={id:id,custom:true,icon:'📝',title:hubText(String(c.title||'').trim()||'New section'),script:hubText(String(c.script||''))};
+      if(String(c.script2||'').trim())st.script2=hubText(String(c.script2));
+      if(opts.length){st.key='x_'+id;st.responseLabel=st.title;st.options=opts.map(t=&gt;({text:hubText(t)}))}else st.noResponse=true;
+      by[id]=st;
+    });
+    const order=(Array.isArray(L.order)?L.order:[]).filter((id,i,a)=&gt;by[id]&amp;&amp;a.indexOf(id)===i);
+    def.forEach((id,i)=&gt;{if(order.indexOf(id)&gt;-1)return;let j=i-1;while(j&gt;=0&amp;&amp;order.indexOf(def[j])&lt;0)j--;order.splice(j&gt;=0?order.indexOf(def[j])+1:0,0,id)});
+    Object.keys(by).forEach(id=&gt;{if(order.indexOf(id)&lt;0){const k=order.indexOf('close');order.splice(k&gt;-1?k:order.length,0,id)}});
+    const hid=new Set(Array.isArray(L.hidden)?L.hidden:[]);
+    const list=order.filter(id=&gt;!hid.has(id)).map(id=&gt;by[id]);
+    if(list.length)next=list;
+  }
+  STAGES.splice(0,STAGES.length,...next);
+}
+hubApply();
+/* A change in Settings shows straight away, and the call on screen stays where it is. */
+window.addEventListener('storage',e=&gt;{if(!e||e.key!=='hub_settings_v1')return;const was=window._hubCurId;hubApply();if(window._hubRefresh)window._hubRefresh(was);});
+
 
 const OBJECTIONS=[
 // ═══ TIER 1: EVERY WEEK ═══
@@ -12506,6 +12906,9 @@ Drop files here or tap to add
 
 function App(){
 const [cur,setCur]=useState(0);
+const [,setHubTick]=useState(0);
+window._hubCurId=STAGES[cur]?STAGES[cur].id:null;
+useEffect(()=&gt;{window._hubRefresh=(was)=&gt;{const i=STAGES.findIndex(s=&gt;s.id===was);setCur(c=&gt;i&gt;-1?i:Math.max(0,Math.min(c,STAGES.length-1)));setHubTick(t=&gt;t+1)};return()=&gt;{window._hubRefresh=null}},[]);
 const [path,setPath]=useState(null);
 const [res,setRes]=useState({});
 const [sel,setSel]=useState([]);
@@ -13010,7 +13413,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 
 ):(
 &lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:14}}&gt;
-{stage.autoScript?&lt;div className=&quot;sb&quot;&gt;{sayLines(recapText())}&lt;/div&gt;:(()=&gt;{const _t=fillScript(c.confirmScript&amp;&amp;stage.key&amp;&amp;res[stage.key]?c.confirmScript:c.script);return _t&amp;&amp;_t.trim()?&lt;div className=&quot;sb&quot;&gt;{sayLines(_t)}&lt;/div&gt;:null;})()}
+{stage.autoScript?&lt;div className=&quot;sb&quot;&gt;{sayLines(recapText())}&lt;/div&gt;:(()=&gt;{const _t=fillScript(c.confirmScript&amp;&amp;stage.key&amp;&amp;res[stage.key]?c.confirmScript:c.script);return _t&amp;&amp;_t.trim()?&lt;div className=&quot;sb&quot;&gt;{sayLines(_t)}{stage.id===&quot;barrier&quot;&amp;&amp;&lt;CreditCheck raw={zinkRaw}/&gt;}&lt;/div&gt;:null;})()}
 {c.cue&amp;&amp;&lt;div className=&quot;cb&quot;&gt;⏸ Slow down, breathe.&lt;/div&gt;}
 {c.script2&amp;&amp;&lt;&gt;&lt;div className=&quot;sl&quot;&gt;Then&lt;/div&gt;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.script2))}&lt;/div&gt;&lt;/&gt;}
 {c.cue2&amp;&amp;&lt;div className=&quot;cb&quot;&gt;⏸ Slow down, breathe.&lt;/div&gt;}
@@ -26018,6 +26421,46 @@ details.stage&gt;summary .mod{color:var(--gold);font-size:11px;font-weight:600;}
 .stage .vh{padding:10px 14px 2px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);font-weight:700;}
 .resetline{padding:4px 14px 12px;}
 .resetline a{color:var(--mut);font-size:11.5px;cursor:pointer;text-decoration:underline;}
+#secList{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.sec{min-width:0;border:1px solid var(--line);border-radius:10px;background:#11141d}
+.sec.open{border-color:#2f3766}
+.sec-h{display:flex;align-items:center;gap:2px;padding:3px 4px}
+.grip{flex:0 0 36px;height:42px;display:flex;align-items:center;justify-content:center;color:var(--mut);cursor:grab;touch-action:none;border-radius:8px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.grip:hover{color:var(--dim);background:rgba(148,163,255,.06)}
+.sec-t{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:0;color:var(--dim);font-family:inherit;font-size:13px;font-weight:600;text-align:left;padding:10px 4px;cursor:pointer}
+.sec-t:disabled{cursor:default;color:var(--dim)}
+.sec-t .ic{flex:0 0 auto}
+.sec-t .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.sec-t .tg{flex:0 0 auto;font-size:10.5px;font-weight:600;color:var(--mut);background:rgba(148,163,255,.08);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.sec-t .mod{flex:0 0 auto;font-size:11px;color:var(--gold);font-weight:600;margin-left:auto;padding-left:6px}
+.sec-t .mod.own{color:var(--teal)}
+.sec-t .tg+.mod,.sec-t .mod+.mod{margin-left:6px}
+.sec-x{flex:0 0 38px;height:38px;border:0;background:none;color:var(--mut);font-size:13px;border-radius:8px;cursor:pointer}
+.sec-x:hover{background:rgba(251,113,133,.12);color:var(--red)}
+.sec-b{display:none;padding:0 0 4px}
+.sec.open .sec-b{display:block}
+.sec .fld{padding:0 14px 12px}
+.sec .fld label{margin-top:8px}
+.sec .vh{padding:10px 14px 2px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.sec.drag{box-shadow:0 16px 36px rgba(0,0,0,.65);border-color:#4f6bff;background:#151a2e}
+.sec-ph{border:1px dashed #4f6bff;border-radius:10px;background:rgba(79,107,255,.07)}
+.sec-add{margin-top:10px;width:100%;padding:13px;border:1px dashed var(--line);border-radius:10px;background:none;color:var(--dim);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.sec-add:hover{border-color:#4f6bff;color:var(--ink)}
+.sec-gone{margin-top:18px}
+.sec-gh{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:0 0 6px 4px}
+.sec-gr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 6px 6px 10px;border-radius:9px;color:var(--mut);font-size:13px}
+.sec-gr button{flex:0 0 auto;border:1px solid var(--line);background:none;color:var(--dim);border-radius:999px;padding:6px 13px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.sec-gr button:hover{border-color:#4f6bff;color:var(--ink)}
+.sec-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.sec-tools .btn{padding:8px 13px;font-size:12px}
+.load-box{margin-top:10px}
+.load-row{display:flex;gap:8px;margin-top:8px}
+#secUndo{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#12152a;border:1px solid var(--line);border-radius:999px;padding:7px 7px 7px 16px;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--dim);z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:calc(100vw - 32px)}
+#secUndo[hidden]{display:none}
+#secUndo span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#secUndo button{flex:0 0 auto;border:0;background:#4f6bff;color:#fff;border-radius:999px;padding:7px 15px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer}
+.saved{z-index:41}
+@media(max-width:700px){.saved{bottom:86px;right:16px}}
 &lt;/style&gt;
 &lt;style id=&quot;nightglass&quot;&gt;
 :root,[data-theme=&quot;dark&quot;],html[data-theme=&quot;dark&quot;],[data-theme=&quot;light&quot;],html[data-theme=&quot;light&quot;]{
@@ -26095,10 +26538,11 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
   &lt;/div&gt;
 &lt;/details&gt;
 
-&lt;details class=&quot;card&quot; id=&quot;cardScript&quot;&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;Call Script&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot; id=&quot;ovCount&quot;&gt;edit the words&lt;/span&gt;&lt;/summary&gt;&lt;div class=&quot;cb&quot; style=&quot;padding-bottom:0&quot;&gt;&lt;div style=&quot;display:flex;justify-content:flex-end&quot;&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;resetAll()&quot;&gt;Reset everything to default&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;details class=&quot;card&quot; id=&quot;cardScript&quot;&gt;&lt;summary&gt;&lt;span class=&quot;sm-l&quot;&gt;&lt;span class=&quot;sm-caret&quot;&gt;&amp;#9654;&lt;/span&gt;&lt;span class=&quot;sm-t&quot;&gt;Call Script&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;sm-c&quot; id=&quot;ovCount&quot;&gt;edit, move, add&lt;/span&gt;&lt;/summary&gt;
   &lt;div class=&quot;cb&quot;&gt;
-    &lt;div class=&quot;hint&quot; style=&quot;margin:0 0 10px;&quot;&gt;Change any line, hit Save. Blank a box to fall back to the default. Your name substitution still applies to edited text. Stages hidden for some loan types only show on those calls.&lt;/div&gt;
     &lt;div id=&quot;stageList&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;sec-tools&quot;&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;copyChanges()&quot;&gt;Copy my changes&lt;/button&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;loadOpen()&quot;&gt;Load changes&lt;/button&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;resetAll()&quot;&gt;Reset everything&lt;/button&gt;&lt;/div&gt;
+    &lt;div id=&quot;loadBox&quot; class=&quot;load-box&quot; hidden&gt;&lt;textarea id=&quot;loadTxt&quot; rows=&quot;3&quot; placeholder=&quot;Paste your copied changes&quot;&gt;&lt;/textarea&gt;&lt;div class=&quot;load-row&quot;&gt;&lt;button class=&quot;btn&quot; onclick=&quot;loadApply()&quot;&gt;Load&lt;/button&gt;&lt;button class=&quot;btn ghost&quot; onclick=&quot;loadClose()&quot;&gt;Cancel&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/details&gt;
 
@@ -26126,38 +26570,211 @@ const DEFAULTS=[{&quot;id&quot;:&quot;handover&quot;,&quot;title&quot;:&quot;Not
 const FIELD_LABELS={script:&quot;Main script&quot;,script2:&quot;Second beat&quot;,followUp:&quot;Follow-up line&quot;,confirm:&quot;Confirm / wrap line&quot;,cred:&quot;Credentials line&quot;,docs:&quot;Documents line&quot;,comms:&quot;Comms preference line&quot;,creditWarn:&quot;Credit-shopping warning&quot;};
 function S(){try{return JSON.parse(localStorage.getItem('hub_settings_v1'))||{};}catch(e){return {};}}
 function ovKeyBase(st,variant){return variant?st.id+'.variants.'+variant+'.':st.id+'.';}
-function buildEditor(){
-  const s=S(); const ov=s.ov||{};
-  var dropped=false;Object.keys(ov).forEach(function(k){if(ov[k]===defaultFor(k)||setOld(k,ov[k])){delete ov[k];dropped=true}});
-  if(dropped){s.ov=ov;try{localStorage.setItem('hub_settings_v1',JSON.stringify(s))}catch(e){}try{ovPaint()}catch(e){}}
-  const host=document.getElementById('stageList');
-  host.innerHTML='';
-  DEFAULTS.forEach(st=&gt;{
-    const d=document.createElement('details'); d.className='stage';
-    let modified=false;
-    let inner='';
-    function fields(fieldsObj,variant){
-      let h='';
-      Object.keys(fieldsObj).forEach(f=&gt;{
-        const k=ovKeyBase(st,variant)+f;
-        const cur=(ov[k]!=null&amp;&amp;ov[k]!=='')?ov[k]:fieldsObj[f];
-        if(ov[k]!=null&amp;&amp;ov[k]!=='')modified=true;
-        const _d=String(fieldsObj[f]);const rows=Math.min(14,Math.max(2,Math.ceil(_d.length/95)+(_d.match(/\n/g)||[]).length));
-        h+='&lt;div class=&quot;fld&quot;&gt;&lt;label&gt;'+(FIELD_LABELS[f]||f)+(variant?' · '+variant:'')+'&lt;/label&gt;&lt;textarea data-k=&quot;'+k+'&quot; data-def=&quot;1&quot; rows=&quot;'+rows+'&quot;&gt;'+esc(cur)+'&lt;/textarea&gt;&lt;/div&gt;';
-      });
-      return h;
-    }
-    inner+=fields(st.fields,null);
-    if(st.variants)Object.keys(st.variants).forEach(v=&gt;{inner+='&lt;div class=&quot;vh&quot;&gt;'+v+' variant&lt;/div&gt;'+fields(st.variants[v],v);});
-    inner+='&lt;div class=&quot;resetline&quot;&gt;&lt;a onclick=&quot;resetStage(\''+st.id+'\')&quot;&gt;Reset this stage to default&lt;/a&gt;&lt;/div&gt;';
-    d.innerHTML='&lt;summary&gt;&lt;span&gt;'+esc(st.title)+' &lt;span style=&quot;color:var(--mut);font-weight:400;&quot;&gt;· '+st.id+'&lt;/span&gt;&lt;/span&gt;'+(modified?'&lt;span class=&quot;mod&quot;&gt;edited&lt;/span&gt;':'')+'&lt;/summary&gt;'+inner;
-    host.appendChild(d);
-  });
-}
 function esc(x){return String(x).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;');}
 /* A saved line that matches an older default is not a real edit, so it is dropped and the new wording shows. */
 const SET_OLD={&quot;affordability.script&quot;:[&quot;wtry7j&quot;],&quot;barrier.cue&quot;:[&quot;586b42&quot;],&quot;barrier.script&quot;:[&quot;ew9iyt&quot;],&quot;barrier.script2&quot;:[&quot;tu43et&quot;],&quot;close.comms&quot;:[&quot;182tfwm&quot;,&quot;jy7mgf&quot;],&quot;close.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.cred&quot;:[&quot;1587xcw&quot;,&quot;1xi8if2&quot;],&quot;close.creditWarn&quot;:[&quot;1eaeo2i&quot;,&quot;agdfgw&quot;],&quot;close.cue&quot;:[&quot;18l298b&quot;],&quot;close.docs&quot;:[&quot;9uh5v0&quot;,&quot;zdmwz5&quot;],&quot;close.script&quot;:[&quot;1nuktmn&quot;,&quot;a8hza1&quot;,&quot;yg12pg&quot;],&quot;close.script2&quot;:[&quot;102xvla&quot;,&quot;10qyqii&quot;,&quot;v11kds&quot;],&quot;close.variants.refinance.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.variants.refinance.script&quot;:[&quot;1cgyi2h&quot;,&quot;fqecj9&quot;],&quot;close.variants.refinance.script2&quot;:[&quot;10qyqii&quot;,&quot;15mozeb&quot;],&quot;frame.script&quot;:[&quot;apwc5e&quot;],&quot;handover.followUp&quot;:[&quot;1afw5cb&quot;],&quot;outcome.script&quot;:[&quot;11uvdp7&quot;],&quot;outcome.script2&quot;:[&quot;1bmsdk&quot;],&quot;priority.script&quot;:[&quot;1tdqsbv&quot;],&quot;recon.script&quot;:[&quot;5jaeil&quot;],&quot;recon.script2&quot;:[&quot;1eg1mnl&quot;],&quot;refiRepay.script&quot;:[&quot;10k312&quot;],&quot;situation.script&quot;:[&quot;83zxeb&quot;],&quot;situation.variants.refinance.script&quot;:[&quot;1q6y17k&quot;]};
 function setOld(k,t){var o=SET_OLD[k];if(!o)return false;t=String(t);var x=5381;for(var i=0;i&lt;t.length;i++)x=((x&lt;&lt;5)+x+t.charCodeAt(i))|0;return o.indexOf((x&gt;&gt;&gt;0).toString(36))&gt;-1}
+/* ── Call Script sections · drag to reorder, take one out, put it back, add your own ──
+   Kept in hub_settings_v1.layout: order of every section, the built in ones taken out, and his own. */
+const STAGE_META=[{&quot;id&quot;:&quot;handover&quot;,&quot;title&quot;:&quot;Notes-Aware Opener&quot;,&quot;icon&quot;:&quot;👋&quot;,&quot;tag&quot;:&quot;&quot;},{&quot;id&quot;:&quot;frame&quot;,&quot;title&quot;:&quot;Soft Frame&quot;,&quot;icon&quot;:&quot;🤝&quot;,&quot;tag&quot;:&quot;&quot;},{&quot;id&quot;:&quot;recon&quot;,&quot;title&quot;:&quot;Confirm the Situation&quot;,&quot;icon&quot;:&quot;🔍&quot;,&quot;tag&quot;:&quot;Car loans&quot;},{&quot;id&quot;:&quot;personalSecuredDetail&quot;,&quot;title&quot;:&quot;Secured PL Details&quot;,&quot;icon&quot;:&quot;🔒&quot;,&quot;tag&quot;:&quot;Secured PL&quot;},{&quot;id&quot;:&quot;marineDetail&quot;,&quot;title&quot;:&quot;Marine Details&quot;,&quot;icon&quot;:&quot;🚤&quot;,&quot;tag&quot;:&quot;Boats&quot;},{&quot;id&quot;:&quot;leisureDetail&quot;,&quot;title&quot;:&quot;Leisure Details&quot;,&quot;icon&quot;:&quot;🏕️&quot;,&quot;tag&quot;:&quot;Caravans&quot;},{&quot;id&quot;:&quot;commReason&quot;,&quot;title&quot;:&quot;What's it for?&quot;,&quot;icon&quot;:&quot;🏢&quot;,&quot;tag&quot;:&quot;Commercial&quot;},{&quot;id&quot;:&quot;commUse&quot;,&quot;title&quot;:&quot;Use of Funds&quot;,&quot;icon&quot;:&quot;🎯&quot;,&quot;tag&quot;:&quot;Commercial&quot;},{&quot;id&quot;:&quot;situation&quot;,&quot;title&quot;:&quot;Why Now&quot;,&quot;icon&quot;:&quot;📍&quot;,&quot;tag&quot;:&quot;&quot;},{&quot;id&quot;:&quot;outcome&quot;,&quot;title&quot;:&quot;Desired Outcome&quot;,&quot;icon&quot;:&quot;🎯&quot;,&quot;tag&quot;:&quot;Skips refinance&quot;},{&quot;id&quot;:&quot;refiRate&quot;,&quot;title&quot;:&quot;Current Rate&quot;,&quot;icon&quot;:&quot;📉&quot;,&quot;tag&quot;:&quot;Refinance&quot;},{&quot;id&quot;:&quot;barrier&quot;,&quot;title&quot;:&quot;What's been in the way&quot;,&quot;icon&quot;:&quot;🚧&quot;,&quot;tag&quot;:&quot;Skips refinance&quot;},{&quot;id&quot;:&quot;refiRepay&quot;,&quot;title&quot;:&quot;Current Repayments&quot;,&quot;icon&quot;:&quot;💳&quot;,&quot;tag&quot;:&quot;Refinance&quot;},{&quot;id&quot;:&quot;priority&quot;,&quot;title&quot;:&quot;Priority&quot;,&quot;icon&quot;:&quot;⚖️&quot;,&quot;tag&quot;:&quot;Skips refinance&quot;},{&quot;id&quot;:&quot;playback&quot;,&quot;title&quot;:&quot;The Playback&quot;,&quot;icon&quot;:&quot;🔁&quot;,&quot;tag&quot;:&quot;Builds itself&quot;},{&quot;id&quot;:&quot;affordability&quot;,&quot;title&quot;:&quot;Affordability Check&quot;,&quot;icon&quot;:&quot;💳&quot;,&quot;tag&quot;:&quot;Skips refinance&quot;},{&quot;id&quot;:&quot;quote&quot;,&quot;title&quot;:&quot;Quote&quot;,&quot;icon&quot;:&quot;💰&quot;,&quot;tag&quot;:&quot;Skips refinance&quot;},{&quot;id&quot;:&quot;close&quot;,&quot;title&quot;:&quot;Close&quot;,&quot;icon&quot;:&quot;✅&quot;,&quot;tag&quot;:&quot;&quot;}];
+const GRIP='&lt;svg width=&quot;12&quot; height=&quot;18&quot; viewBox=&quot;0 0 12 18&quot; aria-hidden=&quot;true&quot;&gt;&lt;g fill=&quot;currentColor&quot;&gt;&lt;circle cx=&quot;3&quot; cy=&quot;3&quot; r=&quot;1.6&quot;/&gt;&lt;circle cx=&quot;9&quot; cy=&quot;3&quot; r=&quot;1.6&quot;/&gt;&lt;circle cx=&quot;3&quot; cy=&quot;9&quot; r=&quot;1.6&quot;/&gt;&lt;circle cx=&quot;9&quot; cy=&quot;9&quot; r=&quot;1.6&quot;/&gt;&lt;circle cx=&quot;3&quot; cy=&quot;15&quot; r=&quot;1.6&quot;/&gt;&lt;circle cx=&quot;9&quot; cy=&quot;15&quot; r=&quot;1.6&quot;/&gt;&lt;/g&gt;&lt;/svg&gt;';
+function escA(x){return esc(x).replace(/&quot;/g,'&amp;quot;')}
+function lay(){
+  const s=S(),L=(s.layout&amp;&amp;typeof s.layout==='object')?s.layout:{};
+  return {order:Array.isArray(L.order)?L.order.slice():[],hidden:Array.isArray(L.hidden)?L.hidden.slice():[],custom:(L.custom&amp;&amp;typeof L.custom==='object')?JSON.parse(JSON.stringify(L.custom)):{}};
+}
+function metaOf(id,L){
+  const m=STAGE_META.find(x=&gt;x.id===id);if(m)return m;
+  const c=L.custom[id];return c?{id:id,title:(String(c.title||'').trim()||'New section'),icon:'📝',custom:true}:null;
+}
+function fullOrder(L){
+  const def=STAGE_META.map(m=&gt;m.id);
+  const known=id=&gt;def.indexOf(id)&gt;-1||!!L.custom[id];
+  const order=L.order.filter((id,i,a)=&gt;known(id)&amp;&amp;a.indexOf(id)===i);
+  def.forEach((id,i)=&gt;{if(order.indexOf(id)&gt;-1)return;let j=i-1;while(j&gt;=0&amp;&amp;order.indexOf(def[j])&lt;0)j--;order.splice(j&gt;=0?order.indexOf(def[j])+1:0,0,id)});
+  Object.keys(L.custom).forEach(id=&gt;{if(order.indexOf(id)&lt;0){const k=order.indexOf('close');order.splice(k&gt;-1?k:order.length,0,id)}});
+  return order;
+}
+function layPut(s,L){
+  L.order=fullOrder(L);
+  L.hidden=L.hidden.filter((id,i,a)=&gt;!!metaOf(id,L)&amp;&amp;a.indexOf(id)===i);
+  const moved=L.order.join()!==STAGE_META.map(m=&gt;m.id).join();
+  if(moved||L.hidden.length||Object.keys(L.custom).length)s.layout=L;else delete s.layout;
+}
+function laySave(L,msg){
+  const s=S();layPut(s,L);
+  try{localStorage.setItem('hub_settings_v1',JSON.stringify(s))}catch(e){}
+  try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*')}catch(e){}
+  ovPaint();if(msg)flash(msg);
+}
+function undoHide(){const u=document.getElementById('secUndo');if(u){u.hidden=true;clearTimeout(u._t)}}
+function flash(msg){
+  undoHide();
+  const t=document.getElementById('savedToast');if(!t)return;
+  t.textContent=msg||'Saved ✓';t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=&gt;t.classList.remove('show'),1800);
+}
+/* what is typed but not saved yet, and which sections are open, so a redraw never loses it */
+function secKeep(){
+  const d={},open=[];
+  document.querySelectorAll('#stageList [data-k],#stageList [data-c]').forEach(el=&gt;{d[el.getAttribute('data-k')||('c:'+el.getAttribute('data-c'))]=el.value});
+  document.querySelectorAll('#stageList .sec.open').forEach(r=&gt;open.push(r.getAttribute('data-id')));
+  return {d:d,open:open};
+}
+function secRestore(x){
+  if(!x)return;
+  document.querySelectorAll('#stageList [data-k],#stageList [data-c]').forEach(el=&gt;{const k=el.getAttribute('data-k')||('c:'+el.getAttribute('data-c'));if(k in x.d)el.value=x.d[k]});
+  x.open.forEach(id=&gt;{const r=document.querySelector('#stageList .sec[data-id=&quot;'+id+'&quot;]');if(r)r.classList.add('open')});
+}
+function secFields(st,ov){
+  let h='',mod=false;
+  function fields(fo,variant){
+    Object.keys(fo).forEach(f=&gt;{
+      const k=ovKeyBase(st,variant)+f;
+      const cur=(ov[k]!=null&amp;&amp;ov[k]!=='')?ov[k]:fo[f];
+      if(ov[k]!=null&amp;&amp;ov[k]!=='')mod=true;
+      const _d=String(fo[f]);const rows=Math.min(14,Math.max(2,Math.ceil(_d.length/95)+(_d.match(/\n/g)||[]).length));
+      h+='&lt;div class=&quot;fld&quot;&gt;&lt;label&gt;'+(FIELD_LABELS[f]||f)+(variant?' · '+variant:'')+'&lt;/label&gt;&lt;textarea data-k=&quot;'+k+'&quot; data-def=&quot;1&quot; rows=&quot;'+rows+'&quot;&gt;'+esc(cur)+'&lt;/textarea&gt;&lt;/div&gt;';
+    });
+  }
+  fields(st.fields,null);
+  if(st.variants)Object.keys(st.variants).forEach(v=&gt;{h+='&lt;div class=&quot;vh&quot;&gt;'+v+' variant&lt;/div&gt;';fields(st.variants[v],v)});
+  h+='&lt;div class=&quot;resetline&quot;&gt;&lt;a onclick=&quot;resetStage(\''+st.id+'\')&quot;&gt;Reset this section to default&lt;/a&gt;&lt;/div&gt;';
+  return {h:h,mod:mod};
+}
+function secRow(id,L,ov){
+  const m=metaOf(id,L);if(!m)return '';
+  let body='',mod=false;
+  if(m.custom){
+    const c=L.custom[id]||{};
+    body='&lt;div class=&quot;fld&quot;&gt;&lt;label&gt;Title&lt;/label&gt;&lt;input type=&quot;text&quot; data-c=&quot;'+id+'.title&quot; value=&quot;'+escA(c.title||'')+'&quot; placeholder=&quot;New section&quot;&gt;&lt;/div&gt;'
+      +'&lt;div class=&quot;fld&quot;&gt;&lt;label&gt;What to say&lt;/label&gt;&lt;textarea data-c=&quot;'+id+'.script&quot; rows=&quot;4&quot;&gt;'+esc(c.script||'')+'&lt;/textarea&gt;&lt;/div&gt;'
+      +'&lt;div class=&quot;fld&quot;&gt;&lt;label&gt;Then&lt;/label&gt;&lt;textarea data-c=&quot;'+id+'.script2&quot; rows=&quot;2&quot;&gt;'+esc(c.script2||'')+'&lt;/textarea&gt;&lt;/div&gt;'
+      +'&lt;div class=&quot;fld&quot;&gt;&lt;label&gt;Quick answers · one a line&lt;/label&gt;&lt;textarea data-c=&quot;'+id+'.options&quot; rows=&quot;3&quot;&gt;'+esc((Array.isArray(c.options)?c.options:[]).join('\n'))+'&lt;/textarea&gt;&lt;/div&gt;'
+      +'&lt;div class=&quot;resetline&quot;&gt;&lt;a onclick=&quot;secRm(\''+id+'\')&quot;&gt;Delete this section&lt;/a&gt;&lt;/div&gt;';
+  }else{
+    const st=DEFAULTS.find(x=&gt;x.id===id);
+    if(st){const f=secFields(st,ov);body=f.h;mod=f.mod}
+  }
+  return '&lt;div class=&quot;sec'+(m.custom?' own':'')+'&quot; data-id=&quot;'+id+'&quot;&gt;'
+    +'&lt;div class=&quot;sec-h&quot;&gt;&lt;span class=&quot;grip&quot; title=&quot;Drag to move&quot;&gt;'+GRIP+'&lt;/span&gt;'
+    +'&lt;button type=&quot;button&quot; class=&quot;sec-t&quot;'+(body?' onclick=&quot;secOpen(this)&quot;':' disabled')+'&gt;&lt;span class=&quot;ic&quot;&gt;'+m.icon+'&lt;/span&gt;&lt;span class=&quot;tt&quot;&gt;'+esc(m.title)+'&lt;/span&gt;'
+    +(m.tag?'&lt;span class=&quot;tg&quot;&gt;'+esc(m.tag)+'&lt;/span&gt;':'')+(mod?'&lt;span class=&quot;mod&quot;&gt;edited&lt;/span&gt;':'')+(m.custom?'&lt;span class=&quot;mod own&quot;&gt;yours&lt;/span&gt;':'')+'&lt;/button&gt;'
+    +'&lt;button type=&quot;button&quot; class=&quot;sec-x&quot; title=&quot;Take this section out&quot; aria-label=&quot;Take this section out&quot; onclick=&quot;secRm(\''+id+'\')&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;'
+    +(body?'&lt;div class=&quot;sec-b&quot;&gt;'+body+'&lt;/div&gt;':'')+'&lt;/div&gt;';
+}
+function buildEditor(keep){
+  const s=S(); const ov=s.ov||{};
+  var dropped=false;Object.keys(ov).forEach(function(k){if(ov[k]===defaultFor(k)||setOld(k,ov[k])){delete ov[k];dropped=true}});
+  if(dropped){s.ov=ov;try{localStorage.setItem('hub_settings_v1',JSON.stringify(s))}catch(e){}try{ovPaint()}catch(e){}}
+  const L=lay(),order=fullOrder(L),host=document.getElementById('stageList');
+  let h='&lt;div id=&quot;secList&quot;&gt;';
+  order.forEach(id=&gt;{if(L.hidden.indexOf(id)&lt;0)h+=secRow(id,L,ov)});
+  h+='&lt;/div&gt;&lt;button type=&quot;button&quot; class=&quot;sec-add&quot; onclick=&quot;secAdd()&quot;&gt;+ Add a section&lt;/button&gt;';
+  const gone=L.hidden.filter(id=&gt;metaOf(id,L));
+  if(gone.length)h+='&lt;div class=&quot;sec-gone&quot;&gt;&lt;div class=&quot;sec-gh&quot;&gt;Taken out&lt;/div&gt;'+gone.map(id=&gt;{const m=metaOf(id,L);return '&lt;div class=&quot;sec-gr&quot; data-id=&quot;'+id+'&quot;&gt;&lt;span&gt;'+m.icon+'&amp;nbsp; '+esc(m.title)+'&lt;/span&gt;&lt;button type=&quot;button&quot; onclick=&quot;secBack(\''+id+'\')&quot;&gt;Put back&lt;/button&gt;&lt;/div&gt;'}).join('')+'&lt;/div&gt;';
+  host.innerHTML=h;
+  secRestore(keep);
+}
+function secOpen(b){const r=b.closest('.sec');if(r)r.classList.toggle('open')}
+function secUndoBar(prev,keep,msg){
+  let u=document.getElementById('secUndo');
+  if(!u){u=document.createElement('div');u.id='secUndo';document.body.appendChild(u)}
+  u.innerHTML='&lt;span&gt;'+esc(msg)+'&lt;/span&gt;&lt;button type=&quot;button&quot;&gt;Undo&lt;/button&gt;';
+  u.hidden=false;clearTimeout(u._t);
+  u.querySelector('button').onclick=function(){u.hidden=true;laySave(prev,'Put back');buildEditor(keep)};
+  u._t=setTimeout(function(){u.hidden=true},7000);
+}
+function secRm(id){
+  const keep=secKeep(),L=lay(),prev=lay(),m=metaOf(id,L);if(!m)return;
+  if(L.custom[id]){delete L.custom[id];L.order=L.order.filter(x=&gt;x!==id)}
+  else{
+    if(L.hidden.indexOf(id)&lt;0)L.hidden.push(id);
+    if(!fullOrder(L).some(x=&gt;L.hidden.indexOf(x)&lt;0)){flash('Keep at least one section');return}
+  }
+  laySave(L);buildEditor(keep);secUndoBar(prev,keep,m.title+' taken out');
+}
+function secBack(id){const keep=secKeep(),L=lay();L.hidden=L.hidden.filter(x=&gt;x!==id);laySave(L,'Put back');buildEditor(keep)}
+function secAdd(){
+  const keep=secKeep(),L=lay(),id='c'+Date.now().toString(36);
+  L.custom[id]={title:'',script:'',script2:'',options:[]};
+  laySave(L,'Section added');keep.open.push(id);buildEditor(keep);
+  const r=document.querySelector('#stageList .sec[data-id=&quot;'+id+'&quot;]');
+  if(r){try{r.scrollIntoView({block:'center'})}catch(e){}const t=r.querySelector('input[data-c]');if(t)t.focus()}
+}
+/* the title on the row follows what he types */
+document.addEventListener('input',function(e){
+  const t=e.target;if(!t||!t.getAttribute)return;const k=t.getAttribute('data-c');if(!k||!/\.title$/.test(k))return;
+  const r=t.closest('.sec');const tt=r&amp;&amp;r.querySelector('.tt');if(tt)tt.textContent=t.value.trim()||'New section';
+});
+/* drag by the dots · works with a finger or a mouse */
+(function(){
+  let D=null;
+  function place(){
+    D.row.style.top=(D.y-D.dy)+'px';
+    let before=null;
+    const rows=D.list.querySelectorAll('.sec:not(.drag)');
+    for(let i=0;i&lt;rows.length;i++){const b=rows[i].getBoundingClientRect();if(D.y&lt;b.top+b.height/2){before=rows[i];break}}
+    if(before){if(D.ph.nextElementSibling!==before)D.list.insertBefore(D.ph,before)}
+    else if(D.list.lastElementChild!==D.ph)D.list.appendChild(D.ph);
+  }
+  function tick(){
+    if(!D)return;
+    const h=window.innerHeight,edge=60;
+    if(D.y&gt;h-edge)window.scrollBy(0,Math.min(12,Math.ceil((D.y-(h-edge))/5)));
+    else if(D.y&lt;edge)window.scrollBy(0,-Math.min(12,Math.ceil((edge-D.y)/5)));
+    place();D.raf=requestAnimationFrame(tick);
+  }
+  document.addEventListener('pointerdown',function(e){
+    const g=e.target&amp;&amp;e.target.closest&amp;&amp;e.target.closest('#secList .grip');if(!g||D)return;
+    const row=g.closest('.sec'),list=document.getElementById('secList');if(!row||!list)return;
+    e.preventDefault();
+    const dy=e.clientY-row.getBoundingClientRect().top;
+    const wasOpen=row.classList.contains('open');row.classList.remove('open');
+    const r0=row.getBoundingClientRect();
+    const ph=document.createElement('div');ph.className='sec-ph';ph.style.height=r0.height+'px';
+    list.insertBefore(ph,row);
+    row.classList.add('drag');
+    row.style.position='fixed';row.style.left=r0.left+'px';row.style.top=(e.clientY-dy)+'px';row.style.width=r0.width+'px';row.style.zIndex='40';row.style.pointerEvents='none';
+    D={row:row,ph:ph,list:list,dy:dy,y:e.clientY,id:e.pointerId,open:wasOpen};
+    try{g.setPointerCapture(e.pointerId)}catch(_){}
+    D.raf=requestAnimationFrame(tick);
+  });
+  document.addEventListener('pointermove',function(e){if(!D||e.pointerId!==D.id)return;D.y=e.clientY});
+  function end(e){
+    if(!D||(e&amp;&amp;e.pointerId!==D.id))return;
+    cancelAnimationFrame(D.raf);
+    const row=D.row,ph=D.ph,list=D.list,reopen=D.open;D=null;
+    row.classList.remove('drag');row.removeAttribute('style');if(reopen)row.classList.add('open');
+    list.replaceChild(row,ph);
+    const ids=Array.prototype.map.call(list.querySelectorAll('.sec'),r=&gt;r.getAttribute('data-id'));
+    const L=lay(),full=fullOrder(L),next=ids.slice();
+    full.filter(id=&gt;L.hidden.indexOf(id)&gt;-1).forEach(id=&gt;{const i=full.indexOf(id);let j=i-1;while(j&gt;=0&amp;&amp;next.indexOf(full[j])&lt;0)j--;next.splice(j&gt;=0?next.indexOf(full[j])+1:0,0,id)});
+    if(next.join()!==full.join()){L.order=next;laySave(L,'Order saved')}
+  }
+  document.addEventListener('pointerup',end);
+  document.addEventListener('pointercancel',end);
+})();
+/* carry his script to another phone or computer, or send it over to be built in */
+function copyChanges(){
+  const s=S();const txt='HUBSCRIPT1 '+JSON.stringify({v:1,ov:s.ov||{},layout:s.layout||null});
+  const ok=function(){flash('Copied')};
+  const fb=function(){const a=document.createElement('textarea');a.value=txt;a.setAttribute('readonly','');a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();ok()};
+  try{if(navigator.clipboard&amp;&amp;navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb()}catch(e){fb()}
+}
+function loadOpen(){const b=document.getElementById('loadBox');if(!b)return;b.hidden=false;const t=document.getElementById('loadTxt');if(t)t.focus()}
+function loadClose(){const b=document.getElementById('loadBox');if(b)b.hidden=true;const t=document.getElementById('loadTxt');if(t)t.value=''}
+function loadApply(){
+  const raw=(document.getElementById('loadTxt').value||'').trim();
+  const m=raw.match(/HUBSCRIPT1\s+(\{[\s\S]*\})/);let p=null;
+  try{p=JSON.parse(m?m[1]:raw)}catch(e){}
+  if(!p||typeof p!=='object'||(!p.ov&amp;&amp;!p.layout)){flash('That is not a copied script');return}
+  const s=S();s.ov=(p.ov&amp;&amp;typeof p.ov==='object')?p.ov:{};
+  if(p.layout&amp;&amp;typeof p.layout==='object')s.layout=p.layout;else delete s.layout;
+  try{localStorage.setItem('hub_settings_v1',JSON.stringify(s))}catch(e){}
+  try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*')}catch(e){}
+  loadClose();buildEditor();ovPaint();flash('Loaded');
+}
+
 function defaultFor(k){
   for(const st of DEFAULTS){
     if(k.startsWith(st.id+'.variants.')){
@@ -26193,11 +26810,13 @@ function aiPaint(){
   if(pill)pill.innerHTML=hasKey?'&lt;span class=&quot;pill-ok&quot;&gt;API key set&lt;/span&gt;':'&lt;span class=&quot;pill-no&quot;&gt;No API key yet&lt;/span&gt;';
   var s=document.getElementById('aiSummary');if(s)s.textContent=nm;
 }
-function ovPaint(){var n=0;try{var s=S();n=Object.keys(s.ov||{}).length}catch(e){}
-  var el=document.getElementById('ovCount');if(el)el.textContent=n?(n+' line'+(n===1?'':'s')+' edited'):'edit the words'}
+function ovPaint(){var n=0,a=0,r=0,mv=false;try{var s=S();n=Object.keys(s.ov||{}).length;var L=s.layout;if(L){a=Object.keys(L.custom||{}).length;r=(L.hidden||[]).length;mv=true}}catch(e){}
+  var p=[];if(n)p.push(n+' line'+(n===1?'':'s')+' edited');if(a)p.push(a+' added');if(r)p.push(r+' taken out');if(mv&amp;&amp;!a&amp;&amp;!r)p.push('order changed');
+  var el=document.getElementById('ovCount');if(el)el.textContent=p.length?p.join(' · '):'edit, move, add'}
 document.addEventListener('toggle',function(e){if(e.target&amp;&amp;e.target.classList&amp;&amp;e.target.classList.contains('card'))setRemember()},true);
 
 function saveAll(){
+  const openNow=secKeep().open;
   const s=S();
   s.name=document.getElementById('sName').value.trim();
   s.zoom=parseInt(document.getElementById('sZoom').value)||65;
@@ -26207,25 +26826,32 @@ function saveAll(){
     if(val.trim()!==''&amp;&amp;val!==def)ov[k]=val;
   });
   s.ov=ov;
+  const L=lay();
+  document.querySelectorAll('#stageList [data-c]').forEach(el=&gt;{const p=el.getAttribute('data-c').split('.');if(!L.custom[p[0]])return;L.custom[p[0]][p[1]]=p[1]==='options'?el.value.split('\n').map(x=&gt;x.trim()).filter(Boolean):el.value});
+  layPut(s,L);
   localStorage.setItem('hub_settings_v1',JSON.stringify(s));
   try{var mm=document.getElementById('sModel');if(mm&amp;&amp;mm.value)localStorage.setItem('anthropic_model',mm.value)}catch(e){}
   try{var kk=document.getElementById('sApiKey');if(kk&amp;&amp;kk.value.trim()){localStorage.setItem('claude_api_key',kk.value.trim());kk.value=''}}catch(e){}
   aiPaint();ovPaint();
   try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*');}catch(e){}
   document.getElementById('lastSaved').textContent='Saved '+new Date().toLocaleTimeString('en-AU');
-  const t=document.getElementById('savedToast');t.classList.add('show');setTimeout(()=&gt;t.classList.remove('show'),1800);
-  buildEditor();
+  flash('Saved ✓');
+  buildEditor({d:{},open:openNow});
 }
 function resetStage(id){
+  const keep=secKeep();
+  Object.keys(keep.d).forEach(k=&gt;{if(k===id||k.startsWith(id+'.'))delete keep.d[k]});
   const s=S(); const ov=s.ov||{};
   Object.keys(ov).forEach(k=&gt;{if(k===id||k.startsWith(id+'.'))delete ov[k];});
   s.ov=ov; localStorage.setItem('hub_settings_v1',JSON.stringify(s));
-  buildEditor();
+  try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*')}catch(e){}
+  buildEditor(keep);ovPaint();
 }
 function resetAll(){
-  if(!confirm('Reset every script edit back to the default text?'))return;
-  const s=S(); s.ov={}; localStorage.setItem('hub_settings_v1',JSON.stringify(s));
-  buildEditor();
+  if(!confirm('Put every script line and section back to the default?'))return;
+  const s=S(); s.ov={}; delete s.layout; localStorage.setItem('hub_settings_v1',JSON.stringify(s));
+  try{parent.postMessage({type:'hub-settings-updated',name:s.name},'*')}catch(e){}
+  buildEditor();ovPaint();
 }
 (function boot(){
   const s=S();

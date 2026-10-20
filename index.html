@@ -11257,7 +11257,7 @@ function parseZinkText(raw){
   }
 
   d.email=grab([/Email\s*\*?\s*\n?\s*([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/i]);
-  d.phone=grab([/Mobile Contact Number[\s\S]*?(\d{10,})/,/(\d{4}\s?\d{3}\s?\d{3})/]);
+  d.phone=(function(){const m=raw.match(/Mobile Contact Number\s*\n\s*(?:\+\d{0,2}\s*\n\s*)?(0?\d{9,10})\b/);if(m)return m[1].length===9?&quot;0&quot;+m[1]:m[1];return grab([/Mobile Contact Number[\s\S]*?(\d{10,})/,/(\d{4}\s?\d{3}\s?\d{3})/]);})();
   d.dob=grab([/Date of Birth\s*\*?\s*\n?\s*(\d{2}\/\d{2}\/\d{4})/]);
   d.gender=grab([/Gender\s*\*?\s*\n?\s*(Male|Female)/i]);
   d.dependants=grabNum([/Number of Dependants[^\n]*\n\s*(\d+)/,/Dependants?\s*\(Under 18\)\s*\n\s*(\d+)/]);
@@ -11633,6 +11633,204 @@ function sayLines(t){
   return s.split(/\n\s*\n/).map((p,pi)=&gt;&lt;div key={pi} style={{marginTop:pi?12:0}}&gt;{sayPara(p,pi)}&lt;/div&gt;);
 }
 
+/* Close stage file check · reads each thing to confirm straight off the pasted Zink page.
+   Anything Zink doesn't have comes back as an ask, so it shows &quot;Ask for it&quot;. */
+function fileCheck(raw,cd){
+  cd=cd||{};
+  const t=&quot;\n&quot;+String(raw||&quot;&quot;).replace(/\r\n?/g,&quot;\n&quot;)+&quot;\n&quot;;
+  const ASK=&quot;Ask for it&quot;;
+  const LABELS=new Set([&quot;first name&quot;,&quot;middle name&quot;,&quot;last name&quot;,&quot;mobile contact number&quot;,&quot;home contact number&quot;,&quot;work contact number&quot;,&quot;email&quot;,&quot;spouses employment&quot;,&quot;spouses name&quot;,&quot;type&quot;,&quot;employer&quot;,&quot;years&quot;,&quot;months&quot;,&quot;net income (after tax)&quot;,&quot;net income&quot;,&quot;frequency&quot;,&quot;contact name&quot;,&quot;contact phone&quot;,&quot;abn&quot;,&quot;title&quot;,&quot;industry&quot;,&quot;occupation&quot;,&quot;probation&quot;,&quot;phone number&quot;,&quot;address&quot;,&quot;search address&quot;,&quot;landlord or agency name&quot;,&quot;contact&quot;,&quot;make applicant&quot;,&quot;request documents&quot;,&quot;document requests&quot;,&quot;employment address&quot;,&quot;unit number&quot;,&quot;street number&quot;,&quot;street name&quot;,&quot;street type&quot;,&quot;suburb&quot;,&quot;state&quot;,&quot;postcode&quot;,&quot;country&quot;,&quot;australia&quot;,&quot;not required&quot;,&quot;other incomes&quot;,&quot;description&quot;,&quot;description(model)&quot;,&quot;asset value&quot;,&quot;liability&quot;,&quot;income&quot;,&quot;trade in&quot;,&quot;finance provider&quot;,&quot;outstanding&quot;,&quot;limit&quot;,&quot;repayments&quot;,&quot;ownership&quot;,&quot;rent&quot;,&quot;$&quot;,&quot;+&quot;,&quot;+61&quot;,&quot;previous address&quot;,&quot;landlord details&quot;,&quot;current employment&quot;,&quot;employment details&quot;,&quot;search business&quot;,&quot;year&quot;]);
+  const norm=s=&gt;String(s||&quot;&quot;).replace(/\s*\*\s*$/,&quot;&quot;).trim();
+  const isLabel=s=&gt;LABELS.has(norm(s).toLowerCase());
+  const lines=s=&gt;String(s||&quot;&quot;).split(&quot;\n&quot;).map(x=&gt;x.trim());
+  // value on the line after a label; skips a lone + and blank lines, stops at the next label
+  const after=(L,label)=&gt;{
+    const want=label.toLowerCase();
+    for(let i=0;i&lt;L.length;i++){
+      if(norm(L[i]).toLowerCase()!==want)continue;
+      for(let j=i+1;j&lt;Math.min(L.length,i+4);j++){
+        const v=L[j];
+        if(!v)continue;
+        if(v===&quot;+&quot;)continue;
+        if(v===&quot;+61&quot;&amp;&amp;/^\d{8,10}$/.test(L[j+1]||&quot;&quot;))return &quot;0&quot;+L[j+1].replace(/^0/,&quot;&quot;);
+        if(isLabel(v))return &quot;&quot;;
+        return v;
+      }
+      return &quot;&quot;;
+    }
+    return &quot;&quot;;
+  };
+  // value on the line before a label (Zink puts some values first, like &quot;Married&quot; then &quot;Marital Status&quot;)
+  const before=(L,label)=&gt;{
+    const want=label.toLowerCase();
+    for(let i=1;i&lt;L.length;i++){
+      if(norm(L[i]).toLowerCase()!==want)continue;
+      const v=L[i-1];
+      return v&amp;&amp;!isLabel(v)?v:&quot;&quot;;
+    }
+    return &quot;&quot;;
+  };
+  // a slice of the page from a start marker to the first end marker after it
+  const cut=(startRe,endRe,from)=&gt;{
+    const s=t.slice(from||0);const m=s.match(startRe);if(!m)return &quot;&quot;;
+    const rest=s.slice(m.index);const e=endRe?rest.slice(m[0].length).search(endRe):-1;
+    return e&gt;-1?rest.slice(0,m[0].length+e):rest.slice(0,2500);
+  };
+  const num=s=&gt;{const v=parseFloat(String(s==null?&quot;&quot;:s).replace(/[$,\s]/g,&quot;&quot;));return isNaN(v)?null:v};
+  const money=n=&gt;&quot;$&quot;+Math.round(n).toLocaleString(&quot;en-AU&quot;);
+  const phone=s=&gt;{s=String(s||&quot;&quot;).replace(/[()]/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).trim();return (s.replace(/\D/g,&quot;&quot;).length&gt;=8)?s.replace(/ /g,&quot;\u00a0&quot;):&quot;&quot;};
+  const auPh=s=&gt;{const d=String(s||&quot;&quot;).replace(/\D/g,&quot;&quot;).replace(/^61(?=\d{9}$)/,&quot;0&quot;);if(d.length===10&amp;&amp;d[0]===&quot;0&quot;)return /^0[45]/.test(d)?d.slice(0,4)+&quot; &quot;+d.slice(4,7)+&quot; &quot;+d.slice(7):d.slice(0,2)+&quot; &quot;+d.slice(2,6)+&quot; &quot;+d.slice(6);return phone(s)};
+  const howLong=(y,m)=&gt;{y=y||0;m=m||0;if(!y&amp;&amp;!m)return &quot;&quot;;const a=[];if(y)a.push(y+(y===1?&quot; year&quot;:&quot; years&quot;));if(m)a.push(m+(m===1?&quot; month&quot;:&quot; months&quot;));return a.join(&quot; &quot;)};
+  const perWord={weekly:&quot;a week&quot;,fortnightly:&quot;a fortnight&quot;,monthly:&quot;a month&quot;,quarterly:&quot;a quarter&quot;,yearly:&quot;a year&quot;,annually:&quot;a year&quot;};
+  const ask=s=&gt;({ask:s});
+  const tx=s=&gt;({t:s});
+  const rows=[];
+
+  // 1 · relationship status
+  let rel=cd.maritalStatus||&quot;&quot;;
+  if(!rel){const m=t.match(/\n\s*(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)\s*\n\s*Marital Status/i)||t.match(/Marital Status\s*\*?\s*:?\s*\n?\s*(Single|Married|De[ -]?Facto|Defacto|Separated|Divorced|Widowed)\b/i);if(m)rel=m[1];}
+  if(/^de.?facto$/i.test(rel))rel=&quot;De facto&quot;;
+  if(rel)rel=rel.charAt(0).toUpperCase()+rel.slice(1).toLowerCase();
+  const partnered=/married|de facto/i.test(rel);
+  rows.push({k:&quot;Relationship&quot;,v:[rel?tx(rel):ask(ASK)]});
+
+  // 2 and 3 · where they live, who the landlord is, how long they've been there
+  const addr=cut(/\n\s*Current Address\s*\n\s*Search Address\s*\n/i,/\n\s*(?:Credit Report|Previous Address|Landlord Details|Current Employment)\s*\n/i);
+  const AL=lines(addr);
+  let own=before(AL,&quot;Ownership&quot;);
+  if(!own&amp;&amp;cd.livingType)own=cd.livingType;
+  let kind=null;
+  if(/board|parent|family/i.test(own))kind=/parent/i.test(own)?&quot;parents&quot;:&quot;boarding&quot;;
+  else if(/rent/i.test(own))kind=&quot;renting&quot;;
+  else if(/mortgag/i.test(own))kind=&quot;mortgage&quot;;
+  else if(/own/i.test(own))kind=&quot;own&quot;;
+  else if(own)kind=&quot;other&quot;;
+  if(cd.livingOverride&amp;&amp;/boarding/i.test(cd.livingType||&quot;&quot;))kind=&quot;boarding&quot;;
+  const cost=addr.match(/Ownership\s*\*?\s*\n\s*(?:[A-Za-z ]{0,20}\n\s*)?\$\s*\n\s*([\d,.]+)\s*\n(?:\s*\$[\d,.]+\/m\s*\n)?\s*(Weekly|Fortnightly|Monthly|Quarterly|Yearly|Annually)\b/i);
+  let costTxt=cost&amp;&amp;num(cost[1])&gt;0?money(num(cost[1]))+&quot; &quot;+perWord[cost[2].toLowerCase()]:&quot;&quot;;
+  if(!costTxt&amp;&amp;!addr&amp;&amp;cd.rentAmount&gt;0)costTxt=money(cd.rentAmount)+&quot; &quot;+(perWord[String(cd.rentFrequency||&quot;weekly&quot;).toLowerCase()]||&quot;a week&quot;);
+  else if(!costTxt&amp;&amp;!addr&amp;&amp;cd.mortgageRepay&gt;0)costTxt=money(cd.mortgageRepay)+&quot; repayments&quot;;
+  const yrs=num((addr.match(/\n\s*Years\s*\*?\s*\n\s*(\d+)/i)||[])[1]),mos=num((addr.match(/\n\s*Months\s*\*?\s*\n\s*(\d+)/i)||[])[1]);
+  const there=howLong(yrs,mos)||(!addr?howLong(cd.yearsAtAddress,cd.monthsAtAddress):&quot;&quot;);
+
+  const land=cut(/\n\s*Landlord Details\s*\n/i,/\n\s*(?:Current Employment|Employment Details)\s*\n/i)||cut(/\n\s*Landlord or Agency Name\s*\n/i,/\n\s*(?:Address|Current Employment)\s*\n/i);
+  const LL=lines(land);
+  const lName=after(LL,&quot;Landlord or Agency Name&quot;)||cd.landlordName||&quot;&quot;;
+  const lPhone=phone(after(LL,&quot;Phone Number&quot;))||(!land&amp;&amp;cd.landlordPhone?auPh(cd.landlordPhone):&quot;&quot;);
+  if(kind===&quot;mortgage&quot;)rows.push({k:&quot;Landlord&quot;,v:[tx(&quot;Not needed, they have a mortgage&quot;)]});
+  else if(kind===&quot;own&quot;)rows.push({k:&quot;Landlord&quot;,v:[tx(&quot;Not needed, they own their home&quot;)]});
+  else{
+    const k=(kind===&quot;boarding&quot;||kind===&quot;parents&quot;)?&quot;Boarding with&quot;:&quot;Landlord&quot;;
+    rows.push({k,v:lName?(lPhone?[tx(lName),tx(lPhone)]:[tx(lName),ask(&quot;Ask for their number&quot;)]):[ask(ASK)]});
+  }
+  const livTxt={renting:&quot;Renting&quot;,boarding:&quot;Boarding&quot;,parents:&quot;Living with parents&quot;,mortgage:&quot;Mortgage&quot;,own:&quot;Owns their home&quot;}[kind]||own;
+  if(!livTxt)rows.push({k:&quot;Living&quot;,v:[ask(ASK)]});
+  else rows.push({k:&quot;Living&quot;,v:[tx(livTxt+(costTxt?&quot;, &quot;+costTxt:&quot;&quot;)),there?tx(there+&quot; there&quot;):ask(&quot;Ask how long they've been there&quot;)]});
+
+  // 4 · job, how long, HR number
+  const emp=cut(/\n\s*Employment Details\s*\n/i,/\n\s*(?:Previous Employment|Employment Address|Other Incomes|Spouses Details[^\n]*|Request Documents)\s*\n/i);
+  const EL=lines(emp);
+  let eType=before(EL,&quot;Type&quot;)||cd.employmentType||&quot;&quot;;
+  if(/^search business$/i.test(eType))eType=&quot;&quot;;
+  const title=after(EL,&quot;Title&quot;)||(!emp&amp;&amp;cd.jobTitle)||&quot;&quot;;
+  const employer=after(EL,&quot;Employer&quot;)||cd.employer||&quot;&quot;;
+  const eY=emp?num((emp.match(/\n\s*Years\s*\*?\s*\n\s*(\d+)/i)||[])[1]):cd.empYears;
+  const eM=emp?num((emp.match(/\n\s*Months\s*\*?\s*\n\s*(\d+)/i)||[])[1]):cd.empMonths;
+  const eLong=howLong(eY,eM);
+  const cName=after(EL,&quot;Contact Name&quot;)||(!emp&amp;&amp;cd.hrName)||&quot;&quot;;
+  const cPhone=phone(after(EL,&quot;Contact Phone&quot;))||(!emp&amp;&amp;cd.hrPhone?auPh(cd.hrPhone):&quot;&quot;);
+  const selfEmp=/self/i.test(eType);
+  if(!eType&amp;&amp;!employer&amp;&amp;!title&amp;&amp;!eLong&amp;&amp;!cPhone)rows.push({k:&quot;Job&quot;,v:[ask(ASK)]});
+  else{
+    const v=[];
+    v.push(eType?tx(eType):ask(&quot;Ask for the job type&quot;));
+    if(title&amp;&amp;employer)v.push(tx(title+&quot; at &quot;+employer));
+    else if(employer)v.push(tx(employer));
+    else v.push(ask(&quot;Ask for the employer&quot;));
+    v.push(eLong?tx(eLong+&quot; there&quot;):ask(&quot;Ask how long they've been there&quot;));
+    if(cPhone)v.push(tx((cName&amp;&amp;!/^hr$/i.test(cName)?cName:&quot;HR&quot;)+&quot; &quot;+cPhone));
+    else if(!selfEmp)v.push(ask(&quot;Ask for the HR number&quot;));
+    rows.push({k:&quot;Job&quot;,v});
+  }
+
+  // 5 · partner details, only when they have one
+  if(!rel)rows.push({k:&quot;Partner&quot;,v:[ask(ASK)]});
+  else if(!partnered)rows.push({k:&quot;Partner&quot;,v:[tx(&quot;Not needed, &quot;+rel.toLowerCase())]});
+  else{
+    const sp=cut(/\n\s*Spouses Name\s*\n/i,/\n\s*(?:Request Documents|Document Requests|Living Expenses|Assets &amp; Liabilities)\s*\n/i)||cut(/\n\s*Spouses Details &amp; Employment\s*\n/i,/\n\s*(?:Request Documents|Document Requests|Living Expenses|Assets &amp; Liabilities)\s*\n/i);
+    const SL=lines(sp);
+    const first=after(SL,&quot;First Name&quot;),last=after(SL,&quot;Last Name&quot;);
+    const zs=!sp&amp;&amp;cd.spouseInfo?cd.spouseInfo:null;
+    const name=[first,last].filter(Boolean).join(&quot; &quot;)||(zs&amp;&amp;zs.name)||&quot;&quot;;
+    const mob=phone(after(SL,&quot;Mobile Contact Number&quot;))||(zs&amp;&amp;zs.mobile?auPh(zs.mobile):&quot;&quot;);
+    const spEmp=sp.slice(Math.max(0,sp.search(/\n\s*Spouses Employment\s*\n/i)));
+    const net=num((spEmp.match(/Net Income[^\n]*\n\s*\$\s*\n\s*([\d,.]+)/i)||[])[1]);
+    const mon=num((spEmp.match(/\$([\d,.]+)\/m\b/)||[])[1]);
+    const fq=((spEmp.match(/\n\s*(Weekly|Fortnightly|Monthly|Quarterly|Yearly|Annually)\s*\n\s*Frequency/i)||[])[1]||&quot;&quot;).toLowerCase();
+    let wk=null;
+    if(net&gt;0&amp;&amp;fq)wk={weekly:net,fortnightly:net/2,monthly:net*12/52,quarterly:net*4/52,yearly:net/52,annually:net/52}[fq];
+    if(!(wk&gt;0)&amp;&amp;mon&gt;0)wk=mon*12/52;
+    if(!(wk&gt;0)&amp;&amp;zs&amp;&amp;zs.net&gt;0)wk={weekly:zs.net,fortnightly:zs.net/2,monthly:zs.net*12/52,quarterly:zs.net*4/52,yearly:zs.net/52,annually:zs.net/52}[String(zs.freq||&quot;weekly&quot;).toLowerCase()]||zs.net;
+    const miss=[];if(!(first&amp;&amp;last)&amp;&amp;!(zs&amp;&amp;zs.name&amp;&amp;/\s/.test(zs.name)))miss.push(&quot;full name&quot;);if(!mob)miss.push(&quot;mobile&quot;);if(!(wk&gt;0))miss.push(&quot;weekly income&quot;);
+    const v=[];
+    if(name)v.push(tx(name));
+    if(mob)v.push(tx(mob));
+    if(wk&gt;0)v.push(tx(money(wk)+&quot; a week&quot;));
+    if(miss.length)v.push(ask(miss.length===3?&quot;Ask for full name, mobile and weekly income&quot;:&quot;Ask for &quot;+(miss.length===2?miss.join(&quot; and &quot;):miss[0])));
+    rows.push({k:&quot;Partner&quot;,v});
+  }
+
+  // 6 · expenses
+  let exp=num((t.match(/\n\s*Total:\s*\$\s*([\d,.]+)/)||[])[1]);
+  if(!(exp&gt;0))exp=num((t.match(/\n\s*Living:\s*\$\s*([\d,.]+)\s*\/\s*m/)||[])[1]);
+  if(!(exp&gt;0)&amp;&amp;cd.livingDeclaredMonthly&gt;0)exp=cd.livingDeclaredMonthly;
+  const low=/Declared living expenses are below expected benchmark|\n\s*Low Expenses\s*\n/i.test(t);
+  rows.push({k:&quot;Expenses&quot;,v:exp&gt;0?(low?[tx(money(exp)+&quot; a month&quot;),ask(&quot;Zink says it's low, go through them&quot;)]:[tx(money(exp)+&quot; a month&quot;)]):[ask(ASK)]});
+
+  // 7 · assets and debts
+  const ai=t.lastIndexOf(&quot;\nAssets &amp; Liabilities\n&quot;);
+  const alt=ai&gt;-1?t.slice(ai):&quot;&quot;;
+  const alEnd=alt.search(/\n\s*Capacity Analysis\s*\n/);
+  const ALT=alEnd&gt;-1?alt.slice(0,alEnd+1):alt;
+  const assets=[],debts=[];
+  const itemRe=/\n([A-Za-z][A-Za-z &amp;\/\-]{1,60})\s*\n\s*Type\s*\*?\s*\n([\s\S]*?)(?=\n[A-Za-z][A-Za-z &amp;\/\-]{1,60}\s*\n\s*Type\s*\*?\s*\n|$)/g;
+  let im;
+  while((im=itemRe.exec(ALT))){
+    const nm=im[1].trim(),b=im[2]||&quot;&quot;;
+    if(/^(income|trade in|liability)$/i.test(nm))continue;
+    const av=num((b.match(/Asset Value\s*\*?\s*\n?\s*\$\s*\n?\s*([\d,.]+)/i)||[])[1]);
+    if(av&gt;0)assets.push(nm+&quot; &quot;+money(av));
+    const o=num((b.match(/Outstanding\s*\*?\s*\n?\s*\$\s*\n?\s*([\d,.]+)/i)||[])[1]);
+    const lim=num((b.match(/Limit\s*\*?\s*\n?\s*\$\s*\n?\s*([\d,.]+)/i)||[])[1]);
+    let rep=num((b.match(/Repayments?\s*\n\s*\$\s*\n\s*[\d,.]+\s*\n\s*\$([\d,.]+)\/m/i)||[])[1]);
+    if(rep==null){const r2=b.match(/Repayments?\s*\n\s*\$\s*\n\s*([\d,.]+)\s*\n(?:[^\n]*\n)?\s*(Weekly|Fortnightly|Monthly|Quarterly|Yearly)\b/i);if(r2){const x=num(r2[1]),f=r2[2].toLowerCase();rep={weekly:x*52/12,fortnightly:x*26/12,monthly:x,quarterly:x/3,yearly:x/12}[f];}}
+    if(o&gt;0||lim&gt;0||rep&gt;0){
+      let prov=after(lines(b),&quot;Finance Provider&quot;);
+      if(/^\$|^\d/.test(prov))prov=&quot;&quot;;
+      const bits=[nm+(prov?&quot; with &quot;+prov:&quot;&quot;)];
+      if(o&gt;0)bits.push(money(o)+&quot; owing&quot;);
+      if(lim&gt;0)bits.push(money(lim)+&quot; limit&quot;);
+      if(rep&gt;0)bits.push(money(rep)+&quot; a month&quot;);
+      debts.push(bits.join(&quot;, &quot;));
+    }
+  }
+  if(!debts.length&amp;&amp;Array.isArray(cd.liabilities))cd.liabilities.forEach(l=&gt;{const bits=[l.type+(l.provider?&quot; with &quot;+l.provider:&quot;&quot;)];if(l.outstanding&gt;0)bits.push(money(l.outstanding)+&quot; owing&quot;);if(l.limit&gt;0)bits.push(money(l.limit)+&quot; limit&quot;);if(l.repayMonthly&gt;0)bits.push(money(l.repayMonthly)+&quot; a month&quot;);debts.push(bits.join(&quot;, &quot;))});
+  if(!assets.length&amp;&amp;Array.isArray(cd.assets))cd.assets.forEach(a=&gt;{if(a&amp;&amp;a.value&gt;0)assets.push((a.type||&quot;Asset&quot;)+(a.desc?&quot; &quot;+a.desc:&quot;&quot;)+&quot; &quot;+money(a.value))});
+  rows.push({k:&quot;Assets&quot;,v:assets.length?assets.map(tx):[ask(ASK)]});
+  rows.push({k:&quot;Debts&quot;,v:debts.length?debts.map(tx):[ask(ASK)]});
+  return rows;
+}
+
+function FileCheck({raw,cd}){
+  const rows=fileCheck(raw,cd);
+  return &lt;div style={{marginTop:14,paddingTop:14,borderTop:&quot;1px solid #242a4a&quot;,display:&quot;grid&quot;,gap:10,whiteSpace:&quot;normal&quot;}}&gt;
+    {rows.map(r=&gt;&lt;div key={r.k}&gt;
+      &lt;div style={{fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:&quot;uppercase&quot;,color:&quot;#6e7681&quot;,marginBottom:2}}&gt;{r.k}&lt;/div&gt;
+      &lt;div style={{fontSize:14,lineHeight:1.5,color:&quot;#c9d1d9&quot;}}&gt;{r.v.map((p,i)=&gt;&lt;span key={i}&gt;{i?&lt;span style={{color:&quot;#4a5280&quot;}}&gt; · &lt;/span&gt;:null}&lt;span style={p.ask?{color:&quot;#f0a500&quot;,fontWeight:600}:null}&gt;{p.ask||p.t}&lt;/span&gt;&lt;/span&gt;)}&lt;/div&gt;
+    &lt;/div&gt;)}
+  &lt;/div&gt;;
+}
+
 /* ══════════════════════════════════════════════════════════════════════
    STAGES
    ══════════════════════════════════════════════════════════════════════ */
@@ -11767,16 +11965,17 @@ followUp:&quot;That's not a guess · it's based on your actual numbers. When I s
 {id:&quot;close&quot;,phase:&quot;CLOSE&quot;,icon:&quot;✅&quot;,title:&quot;Close&quot;,noResponse:true,
 variants:{refinance:{
 title:&quot;Next Steps&quot;,
-script:&quot;Cool. I'll just have a quick look over your documents to make sure I've got everything I need. Give me one moment.\n\nFor what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two. We look after everything for you from start to finish.&quot;,
+script:&quot;I just had a few questions about your file that I want to clear up.&quot;,
 cue:&quot;Wait for the yes. First micro-commitment.&quot;,
-script2:&quot;Beautiful. So here's what happens next.\n\nGive me about 15 minutes. I'll ring a lender or two, get some quotes and make sure your documents are all in order.\n\nIn the meantime, go about your day. I'll text and email you my credentials so you know I'm a real person.\n\nThen I'll call you back and take you through the best option. Once you're happy with it, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,
+script2:&quot;Beautiful. So here's what happens next.\n\nOnce we hang up, give me about 15 minutes and I'll call you back.\n\nIn that time I'll ring a lender or two, get some quotes and make sure your documents are all in order. I'll also text and email you my credentials so you know I'm a real person.\n\nWhen I call you back, I'll take you through the best option. Once you're happy with it, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,
 cue2:&quot;Calm. Specific.&quot;,
-docs:&quot;&quot;,comms:&quot;&quot;,cred:&quot;&quot;,creditWarn:&quot;&quot;,
+comms:&quot;&quot;,creditWarn:&quot;&quot;,
+cred:&quot;For what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two.\n\nWe look after everything for you from start to finish.&quot;,
 confirm:&quot;Done. Keep your phone handy, I'll call you back in about 15 minutes.\n\nAnything you want to ask before I let you go?&quot;
 }},
-script:&quot;I just had a few questions about your file that I want to clear up.\n\n• Relationship status\n• Landlord, or who they board with\n• Where they live and how long they've been there\n• Job type, time in the job and an HR number\n• Partner's full name, mobile and weekly income, if they have one\n• Expenses\n• Assets and liabilities&quot;,
+script:&quot;I just had a few questions about your file that I want to clear up.&quot;,
 cue:&quot;Calm. Specific.&quot;,
-script2:&quot;Beautiful. So here's what happens next.\n\nGive me about 15 minutes. I'll speak to a lender or two and make sure your documents are all in order.\n\nIn the meantime, go about your day. I'll text and email you my credentials so you know I'm a real person.\n\nThen I'll call you back and go through your terms. Once you're happy with them, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,
+script2:&quot;Beautiful. So here's what happens next.\n\nOnce we hang up, give me about 15 minutes and I'll call you back.\n\nIn that time I'll speak to a lender or two and make sure your documents are all in order. I'll also text and email you my credentials so you know I'm a real person.\n\nWhen I call you back, we'll go through your terms. Once you're happy with them, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,
 docs:&quot;I'll just have a quick look over your documents to make sure you've uploaded everything I need. Give me one moment.&quot;,
 comms:&quot;What's the best way to keep you updated as we go? A call, a text or an email?&quot;,
 cred:&quot;For what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two.\n\nWe look after everything for you from start to finish, even finding the car.&quot;,
@@ -11789,7 +11988,7 @@ const HUB=(()=&gt;{try{return JSON.parse(localStorage.getItem('hub_settings_v1')
 const HUB_NAME=((HUB.name||'').trim());
 const HUB_OV=HUB.ov||{};
 /* A saved line that matches an older default is not a real edit, so it never hides the newer wording. */
-const HUB_OLD={&quot;affordability.script&quot;:[&quot;wtry7j&quot;],&quot;barrier.cue&quot;:[&quot;586b42&quot;],&quot;barrier.script&quot;:[&quot;ew9iyt&quot;],&quot;barrier.script2&quot;:[&quot;tu43et&quot;],&quot;close.comms&quot;:[&quot;182tfwm&quot;,&quot;jy7mgf&quot;],&quot;close.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.cred&quot;:[&quot;1587xcw&quot;,&quot;1xi8if2&quot;],&quot;close.creditWarn&quot;:[&quot;1eaeo2i&quot;,&quot;agdfgw&quot;],&quot;close.cue&quot;:[&quot;18l298b&quot;],&quot;close.docs&quot;:[&quot;9uh5v0&quot;,&quot;zdmwz5&quot;],&quot;close.script&quot;:[&quot;a8hza1&quot;,&quot;yg12pg&quot;],&quot;close.script2&quot;:[&quot;102xvla&quot;,&quot;10qyqii&quot;],&quot;close.variants.refinance.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.variants.refinance.script&quot;:[&quot;fqecj9&quot;],&quot;close.variants.refinance.script2&quot;:[&quot;10qyqii&quot;],&quot;frame.script&quot;:[&quot;apwc5e&quot;],&quot;handover.followUp&quot;:[&quot;1afw5cb&quot;],&quot;outcome.script&quot;:[&quot;11uvdp7&quot;],&quot;outcome.script2&quot;:[&quot;1bmsdk&quot;],&quot;priority.script&quot;:[&quot;1tdqsbv&quot;],&quot;recon.script&quot;:[&quot;5jaeil&quot;],&quot;recon.script2&quot;:[&quot;1eg1mnl&quot;],&quot;refiRepay.script&quot;:[&quot;10k312&quot;],&quot;situation.script&quot;:[&quot;83zxeb&quot;],&quot;situation.variants.refinance.script&quot;:[&quot;1q6y17k&quot;]};
+const HUB_OLD={&quot;affordability.script&quot;:[&quot;wtry7j&quot;],&quot;barrier.cue&quot;:[&quot;586b42&quot;],&quot;barrier.script&quot;:[&quot;ew9iyt&quot;],&quot;barrier.script2&quot;:[&quot;tu43et&quot;],&quot;close.comms&quot;:[&quot;182tfwm&quot;,&quot;jy7mgf&quot;],&quot;close.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.cred&quot;:[&quot;1587xcw&quot;,&quot;1xi8if2&quot;],&quot;close.creditWarn&quot;:[&quot;1eaeo2i&quot;,&quot;agdfgw&quot;],&quot;close.cue&quot;:[&quot;18l298b&quot;],&quot;close.docs&quot;:[&quot;9uh5v0&quot;,&quot;zdmwz5&quot;],&quot;close.script&quot;:[&quot;1nuktmn&quot;,&quot;a8hza1&quot;,&quot;yg12pg&quot;],&quot;close.script2&quot;:[&quot;102xvla&quot;,&quot;10qyqii&quot;,&quot;v11kds&quot;],&quot;close.variants.refinance.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.variants.refinance.script&quot;:[&quot;1cgyi2h&quot;,&quot;fqecj9&quot;],&quot;close.variants.refinance.script2&quot;:[&quot;10qyqii&quot;,&quot;15mozeb&quot;],&quot;frame.script&quot;:[&quot;apwc5e&quot;],&quot;handover.followUp&quot;:[&quot;1afw5cb&quot;],&quot;outcome.script&quot;:[&quot;11uvdp7&quot;],&quot;outcome.script2&quot;:[&quot;1bmsdk&quot;],&quot;priority.script&quot;:[&quot;1tdqsbv&quot;],&quot;recon.script&quot;:[&quot;5jaeil&quot;],&quot;recon.script2&quot;:[&quot;1eg1mnl&quot;],&quot;refiRepay.script&quot;:[&quot;10k312&quot;],&quot;situation.script&quot;:[&quot;83zxeb&quot;],&quot;situation.variants.refinance.script&quot;:[&quot;1q6y17k&quot;]};
 function hubH(t){t=String(t);let x=5381;for(let i=0;i&lt;t.length;i++)x=((x&lt;&lt;5)+x+t.charCodeAt(i))|0;return (x&gt;&gt;&gt;0).toString(36);}
 function hubOv(k){const v=HUB_OV[k];if(v==null||String(v).trim()==='')return null;const o=HUB_OLD[k];return (o&amp;&amp;o.indexOf(hubH(v))&gt;-1)?null:v;}
 function hubText(t){return (typeof t==='string'&amp;&amp;HUB_NAME)?t.replace(/\bJordon\b/g,HUB_NAME).replace(/\bJordy\b/g,HUB_NAME):t;}
@@ -12286,7 +12485,7 @@ const getGaps=useCallback(()=&gt;{
     if(!cd.employer&amp;&amp;!res.employment)gaps.push({cat:&quot;Employment&quot;,q:&quot;Who's your employer?&quot;,icon:&quot;🏢&quot;});
     if(!cd.empYears&amp;&amp;!res.empLength)gaps.push({cat:&quot;Employment&quot;,q:&quot;How long have you been in that role?&quot;,icon:&quot;📅&quot;});
     if(!res.income&amp;&amp;!cd.netIncome)gaps.push({cat:&quot;Income&quot;,q:&quot;What are you taking home after tax?&quot;,icon:&quot;💰&quot;});
-    const rawHasEmpContact=cd.employer&amp;&amp;zinkRaw&amp;&amp;/Contact Phone[\s\S]*?\+?\s*\d{4,}/.test(zinkRaw);
+    const rawHasEmpContact=cd.employer&amp;&amp;(!!cd.hrPhone||(zinkRaw&amp;&amp;/Contact Phone[\s\S]*?\+?\s*\d{4,}/.test(zinkRaw)));
     if(cd.employer&amp;&amp;!rawHasEmpContact)gaps.push({cat:&quot;Employment&quot;,q:`Do you have a direct number for someone at ${cd.employer}? Lenders sometimes call to verify.`,icon:&quot;📞&quot;});
     if(!res.otherIncome)gaps.push({cat:&quot;Income&quot;,q:&quot;Any other income · partner, Centrelink, rental, overtime?&quot;,icon:&quot;➕&quot;});
     // Docs for consumer
@@ -12600,7 +12799,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 
 ):stage.id===&quot;close&quot;?(
 &lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:14}}&gt;
-{c.script&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.script))}&lt;/div&gt;}
+{c.script&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.script))}&lt;FileCheck raw={zinkRaw} cd={clientData}/&gt;&lt;/div&gt;}
 {c.cue&amp;&amp;&lt;div className=&quot;cb&quot;&gt;⏸ Slow down, breathe.&lt;/div&gt;}
 {c.docs&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.docs))}&lt;/div&gt;}
 {c.cred&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.cred))}&lt;/div&gt;}
@@ -12651,7 +12850,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 &lt;span style={{color:&quot;#4a5280&quot;,marginLeft:8,cursor:&quot;pointer&quot;,fontSize:10}} onClick={()=&gt;setRes(prev=&gt;{const n={...prev};delete n[stage.key];return n})}&gt;✕ clear&lt;/span&gt;&lt;/div&gt;
 )}
 
-{stage.id===&quot;employment&quot;&amp;&amp;clientData.employer&amp;&amp;zinkRaw&amp;&amp;!/Contact Phone[\s\S]*?\+?\s*\d{4,}/.test(zinkRaw)&amp;&amp;(
+{stage.id===&quot;employment&quot;&amp;&amp;clientData.employer&amp;&amp;zinkRaw&amp;&amp;!clientData.hrPhone&amp;&amp;!/Contact Phone[\s\S]*?\+?\s*\d{4,}/.test(zinkRaw)&amp;&amp;(
 &lt;div style={{padding:&quot;12px 16px&quot;,background:&quot;#2d1515&quot;,border:&quot;1px solid #fb7185&quot;,borderLeft:&quot;3px solid #fb7185&quot;,borderRadius:8,fontSize:13,color:&quot;#fb7185&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;,display:&quot;flex&quot;,gap:10,alignItems:&quot;flex-start&quot;}}&gt;&lt;span style={{fontSize:16}}&gt;⚠️&lt;/span&gt;&lt;div&gt;&lt;b&gt;Missing employer phone.&lt;/b&gt; Ask {clientData.employer} for a direct number · lenders verify employment by calling.&lt;/div&gt;&lt;/div&gt;
 )}
 
@@ -24238,7 +24437,7 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
 &lt;div class=&quot;saved&quot; id=&quot;savedToast&quot;&gt;Saved ✓&lt;/div&gt;
 
 &lt;script&gt;
-const DEFAULTS=[{&quot;id&quot;:&quot;handover&quot;,&quot;title&quot;:&quot;Notes-Aware Opener&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Hey {clientName}, it's Jordon from Ausloans. How's your {dayPart} treating you?&quot;,&quot;followUp&quot;:&quot;Good to put a voice to the name.\n\nSo {setter} sent me through everything, and I've had a good look already.\n\nI'm a senior broker here at Ausloans and I've been doing this for over 7 years, so you're in good hands.&quot;}},{&quot;id&quot;:&quot;frame&quot;,&quot;title&quot;:&quot;Soft Frame&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I'll just ask you a few things {setter} wouldn't have gotten into, then I'll talk you through where I reckon we land.\n\nBasically, by the end of this five minute call with me, we'll know exactly where you stand and I can get some terms together for you.\n\nEasy?&quot;}},{&quot;id&quot;:&quot;recon&quot;,&quot;title&quot;:&quot;Confirm the Situation&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I can see here in the description you're looking at {vehicleDesc}.\n\nHave you already found this at a dealership or online, or is it something you're still looking for at this point in time?&quot;,&quot;script2&quot;:&quot;And honestly, don't stress if you haven't locked a car in yet. That's not the part that matters right now.\n\nThe way I run every file, and I've done a lot of these, is finance first.\n\nThink of it like a coin. Heads is your finance side, tails is the car. We get heads sorted and pre-approved first, then flipping to tails is the easy bit. You go shopping knowing your exact budget, and the car just slots into an approval that's already done.\n\nDoing it the other way round is where people come unstuck. They fall in love with a car, then find out what they can actually borrow.&quot;}},{&quot;id&quot;:&quot;personalSecuredDetail&quot;,&quot;title&quot;:&quot;Secured PL Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What's the loan for, and what are you offering up as security?&quot;}},{&quot;id&quot;:&quot;marineDetail&quot;,&quot;title&quot;:&quot;Marine Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Tell me about the boat · what are you looking at, new or used, dealer or private?&quot;}},{&quot;id&quot;:&quot;leisureDetail&quot;,&quot;title&quot;:&quot;Leisure Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Caravan, camper, motorhome? New or used?&quot;}},{&quot;id&quot;:&quot;commReason&quot;,&quot;title&quot;:&quot;What's it for?&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What are you looking to finance through the business?&quot;}},{&quot;id&quot;:&quot;commUse&quot;,&quot;title&quot;:&quot;Use of Funds&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Walk me through what the money's actually for · and how it's going to help the business.&quot;}},{&quot;id&quot;:&quot;situation&quot;,&quot;title&quot;:&quot;Why Now&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff, just curious. How come you're looking to get a car now and not before?\n\nHas something happened with your current vehicle, or is this more of an upgrade?&quot;,&quot;followUp&quot;:&quot;Yeah, and what's that been like day to day for you?&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff, just curious. How come you're looking to refinance now and not three months ago?&quot;}}},{&quot;id&quot;:&quot;outcome&quot;,&quot;title&quot;:&quot;Desired Outcome&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;So say we get you approved and it all settles. You've got the car, it's done.\n\nWhat does that actually sort out for you?&quot;,&quot;script2&quot;:&quot;IF THEY STALL OR SAY 'DUNNO'\n\nFor some people it's just getting to work without the stress. For others it's finally having something they're proud of.\n\nWhat's it for you?&quot;,&quot;followUp&quot;:&quot;Yeah, makes sense. Appreciate you sharing that · it actually helps me put you with the right lender, not just any lender.&quot;}},{&quot;id&quot;:&quot;refiRate&quot;,&quot;title&quot;:&quot;Current Rate&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Righto. So what rate are you paying on it at the moment · do you know off the top of your head?&quot;,&quot;followUp&quot;:&quot;Good · that gives me a number to work against.&quot;}},{&quot;id&quot;:&quot;barrier&quot;,&quot;title&quot;:&quot;What's been in the way&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Have you had a go at sorting finance for this already, or am I the first one you've spoken to about it?&quot;}},{&quot;id&quot;:&quot;refiRepay&quot;,&quot;title&quot;:&quot;Current Repayments&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And what are the repayments on it right now, per month?\n\nReason I ask, there's no point me doing any of this unless I'm putting you in a better spot than you're already in.\n\nSo I need to know exactly what you're paying before I go anywhere near a lender.&quot;,&quot;followUp&quot;:&quot;Good. So that's the number I've got to beat then.&quot;}},{&quot;id&quot;:&quot;priority&quot;,&quot;title&quot;:&quot;Priority&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Quick one before I run the numbers.\n\nOut of these three: the lowest weekly repayment, the lowest interest rate, or the fastest approval. Which one matters most to you? Just pick one.\n\nIf you're wondering why I ask, you can get low repayments with a higher rate, and you can get a lower rate with higher repayments. They pull against each other.\n\nSo I want one clear goal from you, because I'm working for you here, not the lender.&quot;}},{&quot;id&quot;:&quot;affordability&quot;,&quot;title&quot;:&quot;Affordability Check&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Before I give you a number, what are you comfortable paying each week on a new loan?\n\nNot what you want, what you actually feel is realistic for your budget.\n\nI only ask because it sets expectations early. If I know your comfortable ceiling, then if you end up loving a slightly dearer car, I already know you can service it.\n\nIf we need to fit a warranty in, I know there's room. Saves any surprises later.&quot;,&quot;followUp&quot;:&quot;Good to know. Let me run the numbers against that and see what makes sense.&quot;}},{&quot;id&quot;:&quot;quote&quot;,&quot;title&quot;:&quot;Quote&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Based on your numbers and what matters most to you, I'm looking at around {realNumber} a week.&quot;,&quot;followUp&quot;:&quot;That's not a guess · it's based on your actual numbers. When I submit, I'm confident the lender comes back on or very near that.&quot;}},{&quot;id&quot;:&quot;close&quot;,&quot;title&quot;:&quot;Close&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I just had a few questions about your file that I want to clear up.\n\n• Relationship status\n• Landlord, or who they board with\n• Where they live and how long they've been there\n• Job type, time in the job and an HR number\n• Partner's full name, mobile and weekly income, if they have one\n• Expenses\n• Assets and liabilities&quot;,&quot;docs&quot;:&quot;I'll just have a quick look over your documents to make sure you've uploaded everything I need. Give me one moment.&quot;,&quot;cred&quot;:&quot;For what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two.\n\nWe look after everything for you from start to finish, even finding the car.&quot;,&quot;script2&quot;:&quot;Beautiful. So here's what happens next.\n\nGive me about 15 minutes. I'll speak to a lender or two and make sure your documents are all in order.\n\nIn the meantime, go about your day. I'll text and email you my credentials so you know I'm a real person.\n\nThen I'll call you back and go through your terms. Once you're happy with them, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,&quot;comms&quot;:&quot;What's the best way to keep you updated as we go? A call, a text or an email?&quot;,&quot;creditWarn&quot;:&quot;One thing before I go. Your credit file is looking okay right now, and we don't want any new enquiries going on it while I'm working on this. So no rate shopping, and no going to dealerships or banks.\n\nI've had so many people go and enquire somewhere else, and then I can't get them those good rates anymore. The lenders I'm talking to are going off your file as it is right now.\n\nJust sit tight and let me do my thing. You're in good hands.&quot;,&quot;confirm&quot;:&quot;Done. Keep your phone handy, I'll call you back in about 15 minutes.\n\nAnything you want to ask before I let you go?&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;Cool. I'll just have a quick look over your documents to make sure I've got everything I need. Give me one moment.\n\nFor what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two. We look after everything for you from start to finish.&quot;,&quot;script2&quot;:&quot;Beautiful. So here's what happens next.\n\nGive me about 15 minutes. I'll ring a lender or two, get some quotes and make sure your documents are all in order.\n\nIn the meantime, go about your day. I'll text and email you my credentials so you know I'm a real person.\n\nThen I'll call you back and take you through the best option. Once you're happy with it, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,&quot;confirm&quot;:&quot;Done. Keep your phone handy, I'll call you back in about 15 minutes.\n\nAnything you want to ask before I let you go?&quot;}}}];
+const DEFAULTS=[{&quot;id&quot;:&quot;handover&quot;,&quot;title&quot;:&quot;Notes-Aware Opener&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Hey {clientName}, it's Jordon from Ausloans. How's your {dayPart} treating you?&quot;,&quot;followUp&quot;:&quot;Good to put a voice to the name.\n\nSo {setter} sent me through everything, and I've had a good look already.\n\nI'm a senior broker here at Ausloans and I've been doing this for over 7 years, so you're in good hands.&quot;}},{&quot;id&quot;:&quot;frame&quot;,&quot;title&quot;:&quot;Soft Frame&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I'll just ask you a few things {setter} wouldn't have gotten into, then I'll talk you through where I reckon we land.\n\nBasically, by the end of this five minute call with me, we'll know exactly where you stand and I can get some terms together for you.\n\nEasy?&quot;}},{&quot;id&quot;:&quot;recon&quot;,&quot;title&quot;:&quot;Confirm the Situation&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I can see here in the description you're looking at {vehicleDesc}.\n\nHave you already found this at a dealership or online, or is it something you're still looking for at this point in time?&quot;,&quot;script2&quot;:&quot;And honestly, don't stress if you haven't locked a car in yet. That's not the part that matters right now.\n\nThe way I run every file, and I've done a lot of these, is finance first.\n\nThink of it like a coin. Heads is your finance side, tails is the car. We get heads sorted and pre-approved first, then flipping to tails is the easy bit. You go shopping knowing your exact budget, and the car just slots into an approval that's already done.\n\nDoing it the other way round is where people come unstuck. They fall in love with a car, then find out what they can actually borrow.&quot;}},{&quot;id&quot;:&quot;personalSecuredDetail&quot;,&quot;title&quot;:&quot;Secured PL Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What's the loan for, and what are you offering up as security?&quot;}},{&quot;id&quot;:&quot;marineDetail&quot;,&quot;title&quot;:&quot;Marine Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Tell me about the boat · what are you looking at, new or used, dealer or private?&quot;}},{&quot;id&quot;:&quot;leisureDetail&quot;,&quot;title&quot;:&quot;Leisure Details&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Caravan, camper, motorhome? New or used?&quot;}},{&quot;id&quot;:&quot;commReason&quot;,&quot;title&quot;:&quot;What's it for?&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;What are you looking to finance through the business?&quot;}},{&quot;id&quot;:&quot;commUse&quot;,&quot;title&quot;:&quot;Use of Funds&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Walk me through what the money's actually for · and how it's going to help the business.&quot;}},{&quot;id&quot;:&quot;situation&quot;,&quot;title&quot;:&quot;Why Now&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff, just curious. How come you're looking to get a car now and not before?\n\nHas something happened with your current vehicle, or is this more of an upgrade?&quot;,&quot;followUp&quot;:&quot;Yeah, and what's that been like day to day for you?&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;You know, before I get into the finance stuff, just curious. How come you're looking to refinance now and not three months ago?&quot;}}},{&quot;id&quot;:&quot;outcome&quot;,&quot;title&quot;:&quot;Desired Outcome&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;So say we get you approved and it all settles. You've got the car, it's done.\n\nWhat does that actually sort out for you?&quot;,&quot;script2&quot;:&quot;IF THEY STALL OR SAY 'DUNNO'\n\nFor some people it's just getting to work without the stress. For others it's finally having something they're proud of.\n\nWhat's it for you?&quot;,&quot;followUp&quot;:&quot;Yeah, makes sense. Appreciate you sharing that · it actually helps me put you with the right lender, not just any lender.&quot;}},{&quot;id&quot;:&quot;refiRate&quot;,&quot;title&quot;:&quot;Current Rate&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Righto. So what rate are you paying on it at the moment · do you know off the top of your head?&quot;,&quot;followUp&quot;:&quot;Good · that gives me a number to work against.&quot;}},{&quot;id&quot;:&quot;barrier&quot;,&quot;title&quot;:&quot;What's been in the way&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Have you had a go at sorting finance for this already, or am I the first one you've spoken to about it?&quot;}},{&quot;id&quot;:&quot;refiRepay&quot;,&quot;title&quot;:&quot;Current Repayments&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;And what are the repayments on it right now, per month?\n\nReason I ask, there's no point me doing any of this unless I'm putting you in a better spot than you're already in.\n\nSo I need to know exactly what you're paying before I go anywhere near a lender.&quot;,&quot;followUp&quot;:&quot;Good. So that's the number I've got to beat then.&quot;}},{&quot;id&quot;:&quot;priority&quot;,&quot;title&quot;:&quot;Priority&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Quick one before I run the numbers.\n\nOut of these three: the lowest weekly repayment, the lowest interest rate, or the fastest approval. Which one matters most to you? Just pick one.\n\nIf you're wondering why I ask, you can get low repayments with a higher rate, and you can get a lower rate with higher repayments. They pull against each other.\n\nSo I want one clear goal from you, because I'm working for you here, not the lender.&quot;}},{&quot;id&quot;:&quot;affordability&quot;,&quot;title&quot;:&quot;Affordability Check&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Before I give you a number, what are you comfortable paying each week on a new loan?\n\nNot what you want, what you actually feel is realistic for your budget.\n\nI only ask because it sets expectations early. If I know your comfortable ceiling, then if you end up loving a slightly dearer car, I already know you can service it.\n\nIf we need to fit a warranty in, I know there's room. Saves any surprises later.&quot;,&quot;followUp&quot;:&quot;Good to know. Let me run the numbers against that and see what makes sense.&quot;}},{&quot;id&quot;:&quot;quote&quot;,&quot;title&quot;:&quot;Quote&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;Based on your numbers and what matters most to you, I'm looking at around {realNumber} a week.&quot;,&quot;followUp&quot;:&quot;That's not a guess · it's based on your actual numbers. When I submit, I'm confident the lender comes back on or very near that.&quot;}},{&quot;id&quot;:&quot;close&quot;,&quot;title&quot;:&quot;Close&quot;,&quot;fields&quot;:{&quot;script&quot;:&quot;I just had a few questions about your file that I want to clear up.&quot;,&quot;docs&quot;:&quot;I'll just have a quick look over your documents to make sure you've uploaded everything I need. Give me one moment.&quot;,&quot;cred&quot;:&quot;For what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two.\n\nWe look after everything for you from start to finish, even finding the car.&quot;,&quot;script2&quot;:&quot;Beautiful. So here's what happens next.\n\nOnce we hang up, give me about 15 minutes and I'll call you back.\n\nIn that time I'll speak to a lender or two and make sure your documents are all in order. I'll also text and email you my credentials so you know I'm a real person.\n\nWhen I call you back, we'll go through your terms. Once you're happy with them, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,&quot;comms&quot;:&quot;What's the best way to keep you updated as we go? A call, a text or an email?&quot;,&quot;creditWarn&quot;:&quot;One thing before I go. Your credit file is looking okay right now, and we don't want any new enquiries going on it while I'm working on this. So no rate shopping, and no going to dealerships or banks.\n\nI've had so many people go and enquire somewhere else, and then I can't get them those good rates anymore. The lenders I'm talking to are going off your file as it is right now.\n\nJust sit tight and let me do my thing. You're in good hands.&quot;,&quot;confirm&quot;:&quot;Done. Keep your phone handy, I'll call you back in about 15 minutes.\n\nAnything you want to ask before I let you go?&quot;},&quot;variants&quot;:{&quot;refinance&quot;:{&quot;script&quot;:&quot;I just had a few questions about your file that I want to clear up.&quot;,&quot;cred&quot;:&quot;For what it's worth, I've been doing finance for over 7 years and Ausloans has been at it for more than 17 years, so we know a thing or two.\n\nWe look after everything for you from start to finish.&quot;,&quot;script2&quot;:&quot;Beautiful. So here's what happens next.\n\nOnce we hang up, give me about 15 minutes and I'll call you back.\n\nIn that time I'll ring a lender or two, get some quotes and make sure your documents are all in order. I'll also text and email you my credentials so you know I'm a real person.\n\nWhen I call you back, I'll take you through the best option. Once you're happy with it, I'll send it in, and the lender usually comes back with an answer within 4 to 8 business hours. If it's a more complicated file it can take a bit longer, and I'll tell you straight up if that's the case.&quot;,&quot;confirm&quot;:&quot;Done. Keep your phone handy, I'll call you back in about 15 minutes.\n\nAnything you want to ask before I let you go?&quot;}}}];
 const FIELD_LABELS={script:&quot;Main script&quot;,script2:&quot;Second beat&quot;,followUp:&quot;Follow-up line&quot;,confirm:&quot;Confirm / wrap line&quot;,cred:&quot;Credentials line&quot;,docs:&quot;Documents line&quot;,comms:&quot;Comms preference line&quot;,creditWarn:&quot;Credit-shopping warning&quot;};
 function S(){try{return JSON.parse(localStorage.getItem('hub_settings_v1'))||{};}catch(e){return {};}}
 function ovKeyBase(st,variant){return variant?st.id+'.variants.'+variant+'.':st.id+'.';}
@@ -24272,7 +24471,7 @@ function buildEditor(){
 }
 function esc(x){return String(x).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;');}
 /* A saved line that matches an older default is not a real edit, so it is dropped and the new wording shows. */
-const SET_OLD={&quot;affordability.script&quot;:[&quot;wtry7j&quot;],&quot;barrier.cue&quot;:[&quot;586b42&quot;],&quot;barrier.script&quot;:[&quot;ew9iyt&quot;],&quot;barrier.script2&quot;:[&quot;tu43et&quot;],&quot;close.comms&quot;:[&quot;182tfwm&quot;,&quot;jy7mgf&quot;],&quot;close.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.cred&quot;:[&quot;1587xcw&quot;,&quot;1xi8if2&quot;],&quot;close.creditWarn&quot;:[&quot;1eaeo2i&quot;,&quot;agdfgw&quot;],&quot;close.cue&quot;:[&quot;18l298b&quot;],&quot;close.docs&quot;:[&quot;9uh5v0&quot;,&quot;zdmwz5&quot;],&quot;close.script&quot;:[&quot;a8hza1&quot;,&quot;yg12pg&quot;],&quot;close.script2&quot;:[&quot;102xvla&quot;,&quot;10qyqii&quot;],&quot;close.variants.refinance.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.variants.refinance.script&quot;:[&quot;fqecj9&quot;],&quot;close.variants.refinance.script2&quot;:[&quot;10qyqii&quot;],&quot;frame.script&quot;:[&quot;apwc5e&quot;],&quot;handover.followUp&quot;:[&quot;1afw5cb&quot;],&quot;outcome.script&quot;:[&quot;11uvdp7&quot;],&quot;outcome.script2&quot;:[&quot;1bmsdk&quot;],&quot;priority.script&quot;:[&quot;1tdqsbv&quot;],&quot;recon.script&quot;:[&quot;5jaeil&quot;],&quot;recon.script2&quot;:[&quot;1eg1mnl&quot;],&quot;refiRepay.script&quot;:[&quot;10k312&quot;],&quot;situation.script&quot;:[&quot;83zxeb&quot;],&quot;situation.variants.refinance.script&quot;:[&quot;1q6y17k&quot;]};
+const SET_OLD={&quot;affordability.script&quot;:[&quot;wtry7j&quot;],&quot;barrier.cue&quot;:[&quot;586b42&quot;],&quot;barrier.script&quot;:[&quot;ew9iyt&quot;],&quot;barrier.script2&quot;:[&quot;tu43et&quot;],&quot;close.comms&quot;:[&quot;182tfwm&quot;,&quot;jy7mgf&quot;],&quot;close.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.cred&quot;:[&quot;1587xcw&quot;,&quot;1xi8if2&quot;],&quot;close.creditWarn&quot;:[&quot;1eaeo2i&quot;,&quot;agdfgw&quot;],&quot;close.cue&quot;:[&quot;18l298b&quot;],&quot;close.docs&quot;:[&quot;9uh5v0&quot;,&quot;zdmwz5&quot;],&quot;close.script&quot;:[&quot;1nuktmn&quot;,&quot;a8hza1&quot;,&quot;yg12pg&quot;],&quot;close.script2&quot;:[&quot;102xvla&quot;,&quot;10qyqii&quot;,&quot;v11kds&quot;],&quot;close.variants.refinance.confirm&quot;:[&quot;gmb7qp&quot;],&quot;close.variants.refinance.script&quot;:[&quot;1cgyi2h&quot;,&quot;fqecj9&quot;],&quot;close.variants.refinance.script2&quot;:[&quot;10qyqii&quot;,&quot;15mozeb&quot;],&quot;frame.script&quot;:[&quot;apwc5e&quot;],&quot;handover.followUp&quot;:[&quot;1afw5cb&quot;],&quot;outcome.script&quot;:[&quot;11uvdp7&quot;],&quot;outcome.script2&quot;:[&quot;1bmsdk&quot;],&quot;priority.script&quot;:[&quot;1tdqsbv&quot;],&quot;recon.script&quot;:[&quot;5jaeil&quot;],&quot;recon.script2&quot;:[&quot;1eg1mnl&quot;],&quot;refiRepay.script&quot;:[&quot;10k312&quot;],&quot;situation.script&quot;:[&quot;83zxeb&quot;],&quot;situation.variants.refinance.script&quot;:[&quot;1q6y17k&quot;]};
 function setOld(k,t){var o=SET_OLD[k];if(!o)return false;t=String(t);var x=5381;for(var i=0;i&lt;t.length;i++)x=((x&lt;&lt;5)+x+t.charCodeAt(i))|0;return o.indexOf((x&gt;&gt;&gt;0).toString(36))&gt;-1}
 function defaultFor(k){
   for(const st of DEFAULTS){

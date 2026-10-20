@@ -11572,7 +11572,8 @@ function buildNaturalNote(cd,res,path){
     if(tips.length)parts.push(`Next time, ${tips.join(&quot;, &quot;)}.`);
   }
 
-  return parts.join(&quot; &quot;);
+  const zkNotes=String(res.closeNotes||&quot;&quot;).trim();
+  return parts.join(&quot; &quot;)+(zkNotes?&quot;\n\nNotes: &quot;+zkNotes:&quot;&quot;);
 }
 function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
 function deI(s){
@@ -11785,7 +11786,8 @@ function fileCheck(raw,cd){
   if(!(exp&gt;0))exp=num((t.match(/\n\s*Living:\s*\$\s*([\d,.]+)\s*\/\s*m/)||[])[1]);
   if(!(exp&gt;0)&amp;&amp;cd.livingDeclaredMonthly&gt;0)exp=cd.livingDeclaredMonthly;
   const low=/Declared living expenses are below expected benchmark|\n\s*Low Expenses\s*\n/i.test(t);
-  rows.push({k:&quot;Expenses&quot;,v:exp&gt;0?(low?[tx(money(exp)+&quot; a month&quot;),ask(&quot;Zink says it's low, go through them&quot;)]:[tx(money(exp)+&quot; a month&quot;)]):[ask(ASK)]});
+  const expItems=Array.isArray(cd.expenseItems)?cd.expenseItems.filter(i=&gt;i&amp;&amp;i.label&amp;&amp;(i.amount&gt;0||i.monthly&gt;0)).map(i=&gt;tx(i.label+&quot; &quot;+(i.amount&gt;0&amp;&amp;i.freq?money(i.amount)+&quot; &quot;+(perWord[String(i.freq).toLowerCase()]||&quot;a month&quot;):money(i.monthly)+&quot; a month&quot;))):[];
+  rows.push({k:&quot;Expenses&quot;,v:exp&gt;0?(low?[tx(money(exp)+&quot; a month&quot;),...expItems,ask(&quot;Zink says it's low, go through them&quot;)]:[tx(money(exp)+&quot; a month&quot;),...expItems]):[ask(ASK)]});
 
   // 7 · assets and debts
   const ai=t.lastIndexOf(&quot;\nAssets &amp; Liabilities\n&quot;);
@@ -12557,7 +12559,7 @@ const css=`
 .ci{width:100%;background:#0d1117;border:1px dashed #242a4a;border-radius:8px;padding:10px 14px;color:#eef0ff;font-size:13px;font-family:'Poppins',sans-serif;outline:none;transition:border-color .15s}
 .ci:focus{border-color:${ac};border-style:solid}.ci::placeholder{color:#242a4a}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#238636;color:#fff;padding:10px 24px;border-radius:8px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;z-index:9999;animation:toast 2.2s ease forwards;pointer-events:none}
-.zp{background:#0d1117;border:1px solid #181c36;border-radius:8px;padding:12px 14px;font-family:'Poppins',sans-serif;font-size:12px;color:#8b949e;line-height:1.6;margin-top:10px}
+.zp{background:#0d1117;border:1px solid #181c36;border-radius:8px;padding:12px 14px;font-family:'Poppins',sans-serif;font-size:12px;color:#8b949e;line-height:1.6;margin-top:10px;white-space:pre-line}
 .qt{display:flex;justify-content:space-between;padding:10px 14px;background:#161b22;border-radius:6px;border:1px solid #181c36;font-family:'Poppins',sans-serif;cursor:pointer;transition:all .15s}
 .qt:hover{border-color:${ac};background:#1c2333}
 .qt.qsel{border-color:${ac};background:${ac}15}
@@ -12799,7 +12801,7 @@ return&lt;div key={s.id} className={`dot ${i===cur?&quot;a&quot;:&quot;&quot;} $
 
 ):stage.id===&quot;close&quot;?(
 &lt;div style={{display:&quot;flex&quot;,flexDirection:&quot;column&quot;,gap:14}}&gt;
-{c.script&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.script))}&lt;FileCheck raw={zinkRaw} cd={clientData}/&gt;&lt;/div&gt;}
+{c.script&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.script))}&lt;FileCheck raw={zinkRaw} cd={clientData}/&gt;&lt;div style={{marginTop:14,whiteSpace:&quot;normal&quot;}}&gt;&lt;div style={{fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:&quot;uppercase&quot;,color:&quot;#6e7681&quot;,marginBottom:6}}&gt;Notes for Zink&lt;/div&gt;&lt;textarea value={res.closeNotes||&quot;&quot;} onChange={e=&gt;{const v=e.target.value;setRes(p=&gt;({...p,closeNotes:v}))}} rows={3} style={{width:&quot;100%&quot;,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:&quot;10px 12px&quot;,color:&quot;#eef0ff&quot;,fontSize:14,lineHeight:1.5,fontFamily:&quot;inherit&quot;,outline:&quot;none&quot;,resize:&quot;vertical&quot;}}/&gt;&lt;/div&gt;&lt;/div&gt;}
 {c.cue&amp;&amp;&lt;div className=&quot;cb&quot;&gt;⏸ Slow down, breathe.&lt;/div&gt;}
 {c.docs&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.docs))}&lt;/div&gt;}
 {c.cred&amp;&amp;&lt;div className=&quot;sb&quot;&gt;{sayLines(fillScript(c.cred))}&lt;/div&gt;}

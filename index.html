@@ -14742,7 +14742,7 @@ function assessInServiceability(){
   const mi=(document.getElementById('matchInput')?document.getElementById('matchInput').value:'')||'';
   const payload=(raw.trim()||mi.trim());
   if(!payload){toast('Paste the client into Extract &amp; Sanitise first');return;}
-  try{localStorage.setItem('hub_handoff_v1',JSON.stringify({at:Date.now(),raw:payload,src:'lender',d:null}));}catch(e){}
+  try{var at=Date.now();localStorage.setItem('hub_handoff_v1',JSON.stringify({at:at,raw:payload,src:'lender',d:null}));localStorage.setItem('hub_handoff_done_lm',String(at));}catch(e){}
   try{parent.postMessage({type:'bhf-open-tool',tool:'serviceability'},'*');}catch(e){}
   toast('Sent to Serviceability');
 }
@@ -15645,6 +15645,7 @@ renderResults=function(r){
     if(localStorage.getItem('hub_handoff_done_lm')===String(h.at))return;
     localStorage.setItem('hub_handoff_done_lm',String(h.at));
     try{CRoom.addText(h.raw,'Zink handoff');toast('Zink handoff loaded');}catch(e){}
+    setTimeout(function(){try{var t=document.querySelector('.tab[data-pane=&quot;results&quot;]'),a=document.getElementById('autoResults');if(window.lmAuto)window.lmAuto();if(t&amp;&amp;a&amp;&amp;a.innerHTML.trim())switchPane('results',t)}catch(e){}},700);
   }
   hubLmHandoff();
   window.addEventListener('storage',function(e){if(e&amp;&amp;e.key==='hub_handoff_v1')hubLmHandoff();});

@@ -15995,7 +15995,7 @@ var LM2=(function(){
     D.ageNow=D.build?Math.max(0,YEAR-D.build):null;
     D.ageEnd=D.ageNow!=null?D.ageNow+Math.ceil(D.years):null;
     D.isNew=c.isNew===true||(D.ageNow===0&amp;&amp;c.isNew!==false);
-    D.sale=A.sale||c.sale||null;D.svc=!!A.svc;
+    D.sale=A.sale||c.sale||null;D.svc=!!A.svc;D.svc=!!A.svc;
     D.base=D.price!=null?Math.max(0,D.price-D.deposit-(D.tradeApplied?D.tradeIn:0)):null;
     D.lvrBase=D.price;
     return D;
@@ -16017,7 +16017,7 @@ var LM2=(function(){
     r.capAt=function(n,why){if(n!=null&amp;&amp;(r.cap==null||n&lt;r.cap)){r.cap=n;r.capWhy=why||''}return r};
     r.termMax=function(m,why){if(m!=null&amp;&amp;(r.maxTerm==null||m&lt;r.maxTerm)){r.maxTerm=m;r.termWhy=why||''}return r};
     r.fee=function(name,amt,financed){if(amt&gt;0)r.fees.push({name:name,amt:amt,fin:financed!==false});return r};
-    r.noAddons=function(why){r.addonsOk=false;r.addonsWhy=why||'';return r};
+    r.lvrMax=function(n){if(n!=null&amp;&amp;(r.lvrCap==null||n&lt;r.lvrCap))r.lvrCap=n;return r};r.noAddons=function(why){r.addonsOk=false;r.addonsWhy=why||'';return r};
     r.loanNow=function(){var t=D.base||0;if(r.addonsOk)t+=D.addons||0;r.fees.forEach(function(f){if(f.fin)t+=f.amt});return t};
     r.flag=function(t){r.watch.push(t);return r};
     return r;
@@ -16138,7 +16138,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.termMax(g==='AAA'||g==='AA'?84:60,'below AA');
     r.fee('Liberty application fee',595);r.fee('Your fee',1950);
     var lvr=D.price?r.loanNow()/D.price*100:null;
-    if(lvr!=null&amp;&amp;lvr&gt;150)r.no('Over their 150% LTV');
+    r.lvrMax(150);if(lvr!=null&amp;&amp;lvr&gt;150)r.no('Over their 150% LTV');
     else if(lvr&gt;135)r.load(0.30,'LTV over 135%');else if(lvr&gt;120)r.load(0.15,'LTV over 120%');
     if(lvr&gt;120)r.note('LTV is against Glass\'s retail, the price is used here');
     if(c.sharedRent&amp;&amp;c.leaseWeekly)r.note('They want a rental ledger, it will show the full '+money(c.leaseWeekly)+' lease');
@@ -16275,7 +16275,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.probation)r.check('On probation they need the same profession and a skilled role');
     r.fee('Establishment fee',495);
     var nf=(D.base||0)+(D.addons||0);r.fee('Your fee',nf&gt;=40000?2500:nf&gt;=20000?1990:nf&gt;=10000?990:880);
-    if(D.price&amp;&amp;r.loanNow()/D.price*100&gt;lvr)r.no('Over their '+lvr+'% LVR');
+    r.lvrMax(lvr);if(D.price&amp;&amp;r.loanNow()/D.price*100&gt;lvr)r.no('Over their '+lvr+'% LVR');
     if(D.addons&gt;nf*0.25)r.check('Warranty and GAP over 25% of the amount financed');
     if(c.one==null)r.note('One Score is checked after submission, they need 400');
     if(c.sharedRent)r.note('They only split rent with a partner, up to half. Check how they take the share');
@@ -16300,7 +16300,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.termMax(a!=null&amp;&amp;a&gt;=8?60:84);
     if(a!=null&amp;&amp;a&gt;=8&amp;&amp;D.ageEnd&gt;15)r.no('Car is '+D.ageEnd+' years at the end, they stop at 15');
     r.fee('Your fee',1210);
-    if(D.price&amp;&amp;r.loanNow()/D.price&gt;1.3)r.check('Over 130% of the Autoedge retail value');
+    r.lvrMax(130);if(D.price&amp;&amp;r.loanNow()/D.price&gt;1.3)r.check('Over 130% of the Autoedge retail value');
     r.note('Needs an Australian licence');
   }});
 
@@ -16338,7 +16338,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.fee('Your application fee',1990);r.fee('Settlement fee',695);
     if(n&gt;=5)r.fee('Risk fee',1995);
     var lvr=D.price?r.loanNow()/D.price*100:null;var lmax=(r.loanNow()&lt;25000)?170:140;
-    if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over their '+lmax+'% LVR against Redbook, the price is used here');
+    r.lvrMax(lmax);if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over their '+lmax+'% LVR against Redbook, the price is used here');
     r.commission=n&lt;=4?'5.5% until 30 November 2026, plus your $1,990':'4% plus your fee';
     r.note('$15 a month account fee');
   }});
@@ -16387,7 +16387,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var loan=r.loanNow(),lvr=D.price?loan/D.price*100:null;
     if(lvr!=null&amp;&amp;lvr&gt;115&amp;&amp;(thin||s&lt;600)){r.capAt(30000,'over 115% LVR on a thin file')}
     else if(thin||s&lt;600)r.flag('Keep it at or under '+money(D.price*1.15)+' all in, past 115% LVR a thin file caps at $30,000');
-    if(lvr!=null&amp;&amp;lvr&gt;(thin||s&lt;600?150:(D.sale==='private'?150:180)))r.no('Over their LVR');
+    r.lvrMax(thin||s&lt;600?150:(D.sale==='private'?150:180));if(lvr!=null&amp;&amp;lvr&gt;(thin||s&lt;600?150:(D.sale==='private'?150:180)))r.no('Over their LVR');
     var cap=(tier==='Tier 1'&amp;&amp;c.renter)||(owner&amp;&amp;tier!=='Tier 3')?0.25:0.2;
     var pay=L.pmt(r.base+(D.term&gt;60?0.5:0),D.term,loan);
     if(!D.svc&amp;&amp;pay&amp;&amp;c.netMonthly&amp;&amp;pay&gt;c.netMonthly*cap)r.no('Repayment over '+(cap*100)+'% of net monthly pay');
@@ -16423,7 +16423,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.min=5000;r.termMax(84);
     if(D.ageEnd!=null&amp;&amp;D.ageEnd&gt;15)r.no('Car is '+D.ageEnd+' years at the end, they stop at 15');
     r.fee('Establishment fee',D.sale==='private'?600:499);r.fee('Your fee',1500);
-    var lvr=D.price?r.loanNow()/D.price*100:null;if(lvr!=null&amp;&amp;lvr&gt;(tier==='C'?120:180))r.no('Over their '+(tier==='C'?120:180)+'% LVR');
+    var lvr=D.price?r.loanNow()/D.price*100:null;r.lvrMax(tier==='C'?120:180);if(lvr!=null&amp;&amp;lvr&gt;(tier==='C'?120:180))r.no('Over their '+(tier==='C'?120:180)+'% LVR');
     r.note('$8.90 a month account fee');
   }});
 
@@ -16485,7 +16485,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var loan0=(D.base||0)+(D.addons||0);r.fee('Establishment fee',loan0&gt;=60000?780:loan0&gt;=30000?670:560);
     if(D.sale==='private')r.fee('Private sale fee',50);
     var lv=D.price?r.loanNow()/D.price*100:null,lmax=(D.ageEnd!=null&amp;&amp;D.ageEnd&gt;=11)?130:(s!=null&amp;&amp;s&gt;640&amp;&amp;r.loanNow()&lt;=80000?180:150);
-    if(lv!=null&amp;&amp;lv&gt;lmax)r.check('Over their '+lmax+'% LVR against Glass\'s, the price is used here');
+    r.lvrMax(lmax);if(lv!=null&amp;&amp;lv&gt;lmax)r.check('Over their '+lmax+'% LVR against Glass\'s, the price is used here');
     if(c.grossAnnual!=null&amp;&amp;c.grossAnnual&lt;25000)r.no('Under $25k gross a year');
     if(c.jobMonths!=null&amp;&amp;(c.jobMonths+(c.prevJobMonths||0))&lt;6&amp;&amp;c.emp!=='self')r.no('Under 6 months combined in the job and the one before');
     r.note('Broker fee goes on top, set by your aggregator. Hybrid or EV takes 0.50% off');
@@ -16523,7 +16523,7 @@ if(typeof module!=='undefined')module.exports=LM2;
       if(c.emp==='self')r.no('Type 3 can\'t be self employed');
       if(c.jobMonths!=null&amp;&amp;c.jobMonths&lt;3)r.no('Type 3 needs 3 months in the job')}
     else r.capAt(type===1?150000:80000);
-    var lvr=D.price?amt/D.price*100:null;if(lvr!=null&amp;&amp;lvr&gt;(type===3?120:150))r.no('Over their '+(type===3?120:150)+'% LVR');
+    var lvr=D.price?amt/D.price*100:null;r.lvrMax(type===3?120:150);if(lvr!=null&amp;&amp;lvr&gt;(type===3?120:150))r.no('Over their '+(type===3?120:150)+'% LVR');
     if(c.cameFrom&amp;&amp;c.monthsInAus!=null&amp;&amp;c.monthsInAus&lt;24)r.note('New arrivals get first lend limits, already applied');
     r.note('No dial down and no monthly fees');
     r.commission=money(amt&gt;=70000?2700:amt&gt;=60000?2300:amt&gt;=50000?1900:amt&gt;=40000?1500:amt&gt;=30000?1200:amt&gt;=20000?1000:amt&gt;=15000?800:500)+' plus GST, plus your fee';
@@ -16550,7 +16550,7 @@ if(typeof module!=='undefined')module.exports=LM2;
       if(D.sale==='private')r.load(0.5,'for a private sale');
     }
     r.fee('Establishment fee',D.sale==='private'?590:490);r.fee('Your fee',1650);r.fee('PPSR',6);
-    var lv=D.price?r.loanNow()/D.price*100:null;if(lv!=null&amp;&amp;lv&gt;120&amp;&amp;!(dep&gt;0))r.check('Over 120% LVR with no deposit');
+    var lv=D.price?r.loanNow()/D.price*100:null;if(!(dep&gt;0))r.lvrMax(120);if(lv!=null&amp;&amp;lv&gt;120&amp;&amp;!(dep&gt;0))r.check('Over 120% LVR with no deposit');
     if(c.residency==='visa')r.check('Visa holders need $100k income and the term ends a month before the visa');
     r.note('Rates are their maximum, up to 2% can come off. $8 a month account fee');
   }});
@@ -16586,7 +16586,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.fileMonths!=null&amp;&amp;c.fileMonths&lt;12)r.capAt(20000,'with a file under 12 months');
     if(c.age!=null&amp;&amp;c.age&lt;22)r.capAt(20000,'under 22');else if(c.age!=null&amp;&amp;c.age&lt;=25)r.capAt(50000,'22 to 25');
     r.capAt(D.sale==='private'?75000:150000);r.min=10000;
-    if(lvr&gt;(D.sale==='private'?120:130))r.no('Over their '+(D.sale==='private'?120:130)+'% LVR');
+    r.lvrMax(D.sale==='private'?120:130);if(lvr&gt;(D.sale==='private'?120:130))r.no('Over their '+(D.sale==='private'?120:130)+'% LVR');
     if(D.ageEnd!=null&amp;&amp;D.ageEnd&gt;(D.sale==='private'?15:20))r.no('Car is too old at the end of the term');
     if(c.jobMonths!=null&amp;&amp;((c.emp==='ft'&amp;&amp;c.jobMonths&lt;=3)||(c.emp==='pt'&amp;&amp;c.jobMonths&lt;=6)||((c.emp==='casual'||c.emp==='self')&amp;&amp;c.jobMonths&lt;=12)))r.no('Not long enough in the job');
     if(c.netAnnual!=null&amp;&amp;c.netAnnual&lt;30000)r.no('Under $30k net a year');
@@ -16620,7 +16620,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.termMax(pla&gt;=30000?72:pla&gt;12000?60:48,pla&gt;=30000?'':'for this size');
     r.fee('Application fee',995);r.fee('Risk fee',Math.min(995,Math.round(pla*G[g][2])));r.fee('Your fee',Math.min(1320,Math.round(pla*0.1)));
     var amt=r.loanNow(),lvr=D.price?amt/D.price*100:null,lmax=amt&gt;30000?140:amt&gt;10000?150:180;
-    if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over '+lmax+'% of Glass\'s, the price is used here');
+    r.lvrMax(lmax);if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over '+lmax+'% of Glass\'s, the price is used here');
     var pay=L.pmt(G[g][0],D.term,amt);if(!D.svc&amp;&amp;pay&amp;&amp;c.netMonthly&amp;&amp;pay&gt;c.netMonthly*0.35)r.no('Repayments over 35% of income');
     if(c.netWeekly!=null&amp;&amp;c.netWeekly&lt;480)r.no('Under $480 a week net');
     if(c.cameFrom)r.flag('They want 2 years of job and address history, check the '+c.cameFrom+' history counts');
@@ -16640,7 +16640,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.capAt(50000);r.min=10000;r.termMax(60,'on Mid Prime, Sub Prime is 48');
     if(D.ageNow!=null&amp;&amp;D.ageNow&gt;15)r.no('Build over 15 years at the start');
     if(D.addons&gt;r.loanNow()*0.2)r.check('Warranty over 20% of the amount financed');
-    var lv=D.price?r.loanNow()/D.price*100:null;if(lv!=null&amp;&amp;lv&gt;=130)r.check('Over 130% of the Glass\'s retail, the price is used here');
+    var lv=D.price?r.loanNow()/D.price*100:null;r.lvrMax(130);if(lv!=null&amp;&amp;lv&gt;=130)r.check('Over 130% of the Glass\'s retail, the price is used here');
     r.note('Their TMD runs 19.99% to 29.99%. $4.95 a month account fee');
   }});
 
@@ -18499,6 +18499,7 @@ input,select,textarea{font:inherit;color:inherit}
 .nm{flex:1;min-width:0;display:flex;flex-direction:column}
 .nm b{font-weight:600;font-size:16px}
 .nm i,.fg i{font-style:normal;font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm i{white-space:normal;line-height:1.3}
 .fg{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;max-width:52%}
 .fg b{font-weight:600;font-size:16px;white-space:nowrap}
 .yes .fg b{color:var(--ok)}.check .fg b{color:var(--chk)}.short .fg b{color:var(--no)}
@@ -18925,7 +18926,7 @@ var LM2=(function(){
     D.ageNow=D.build?Math.max(0,YEAR-D.build):null;
     D.ageEnd=D.ageNow!=null?D.ageNow+Math.ceil(D.years):null;
     D.isNew=c.isNew===true||(D.ageNow===0&amp;&amp;c.isNew!==false);
-    D.sale=A.sale||c.sale||null;D.svc=!!A.svc;
+    D.sale=A.sale||c.sale||null;D.svc=!!A.svc;D.svc=!!A.svc;
     D.base=D.price!=null?Math.max(0,D.price-D.deposit-(D.tradeApplied?D.tradeIn:0)):null;
     D.lvrBase=D.price;
     return D;
@@ -18947,7 +18948,7 @@ var LM2=(function(){
     r.capAt=function(n,why){if(n!=null&amp;&amp;(r.cap==null||n&lt;r.cap)){r.cap=n;r.capWhy=why||''}return r};
     r.termMax=function(m,why){if(m!=null&amp;&amp;(r.maxTerm==null||m&lt;r.maxTerm)){r.maxTerm=m;r.termWhy=why||''}return r};
     r.fee=function(name,amt,financed){if(amt&gt;0)r.fees.push({name:name,amt:amt,fin:financed!==false});return r};
-    r.noAddons=function(why){r.addonsOk=false;r.addonsWhy=why||'';return r};
+    r.lvrMax=function(n){if(n!=null&amp;&amp;(r.lvrCap==null||n&lt;r.lvrCap))r.lvrCap=n;return r};r.noAddons=function(why){r.addonsOk=false;r.addonsWhy=why||'';return r};
     r.loanNow=function(){var t=D.base||0;if(r.addonsOk)t+=D.addons||0;r.fees.forEach(function(f){if(f.fin)t+=f.amt});return t};
     r.flag=function(t){r.watch.push(t);return r};
     return r;
@@ -19068,7 +19069,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.termMax(g==='AAA'||g==='AA'?84:60,'below AA');
     r.fee('Liberty application fee',595);r.fee('Your fee',1950);
     var lvr=D.price?r.loanNow()/D.price*100:null;
-    if(lvr!=null&amp;&amp;lvr&gt;150)r.no('Over their 150% LTV');
+    r.lvrMax(150);if(lvr!=null&amp;&amp;lvr&gt;150)r.no('Over their 150% LTV');
     else if(lvr&gt;135)r.load(0.30,'LTV over 135%');else if(lvr&gt;120)r.load(0.15,'LTV over 120%');
     if(lvr&gt;120)r.note('LTV is against Glass\'s retail, the price is used here');
     if(c.sharedRent&amp;&amp;c.leaseWeekly)r.note('They want a rental ledger, it will show the full '+money(c.leaseWeekly)+' lease');
@@ -19205,7 +19206,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.probation)r.check('On probation they need the same profession and a skilled role');
     r.fee('Establishment fee',495);
     var nf=(D.base||0)+(D.addons||0);r.fee('Your fee',nf&gt;=40000?2500:nf&gt;=20000?1990:nf&gt;=10000?990:880);
-    if(D.price&amp;&amp;r.loanNow()/D.price*100&gt;lvr)r.no('Over their '+lvr+'% LVR');
+    r.lvrMax(lvr);if(D.price&amp;&amp;r.loanNow()/D.price*100&gt;lvr)r.no('Over their '+lvr+'% LVR');
     if(D.addons&gt;nf*0.25)r.check('Warranty and GAP over 25% of the amount financed');
     if(c.one==null)r.note('One Score is checked after submission, they need 400');
     if(c.sharedRent)r.note('They only split rent with a partner, up to half. Check how they take the share');
@@ -19230,7 +19231,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.termMax(a!=null&amp;&amp;a&gt;=8?60:84);
     if(a!=null&amp;&amp;a&gt;=8&amp;&amp;D.ageEnd&gt;15)r.no('Car is '+D.ageEnd+' years at the end, they stop at 15');
     r.fee('Your fee',1210);
-    if(D.price&amp;&amp;r.loanNow()/D.price&gt;1.3)r.check('Over 130% of the Autoedge retail value');
+    r.lvrMax(130);if(D.price&amp;&amp;r.loanNow()/D.price&gt;1.3)r.check('Over 130% of the Autoedge retail value');
     r.note('Needs an Australian licence');
   }});
 
@@ -19268,7 +19269,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.fee('Your application fee',1990);r.fee('Settlement fee',695);
     if(n&gt;=5)r.fee('Risk fee',1995);
     var lvr=D.price?r.loanNow()/D.price*100:null;var lmax=(r.loanNow()&lt;25000)?170:140;
-    if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over their '+lmax+'% LVR against Redbook, the price is used here');
+    r.lvrMax(lmax);if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over their '+lmax+'% LVR against Redbook, the price is used here');
     r.commission=n&lt;=4?'5.5% until 30 November 2026, plus your $1,990':'4% plus your fee';
     r.note('$15 a month account fee');
   }});
@@ -19317,7 +19318,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var loan=r.loanNow(),lvr=D.price?loan/D.price*100:null;
     if(lvr!=null&amp;&amp;lvr&gt;115&amp;&amp;(thin||s&lt;600)){r.capAt(30000,'over 115% LVR on a thin file')}
     else if(thin||s&lt;600)r.flag('Keep it at or under '+money(D.price*1.15)+' all in, past 115% LVR a thin file caps at $30,000');
-    if(lvr!=null&amp;&amp;lvr&gt;(thin||s&lt;600?150:(D.sale==='private'?150:180)))r.no('Over their LVR');
+    r.lvrMax(thin||s&lt;600?150:(D.sale==='private'?150:180));if(lvr!=null&amp;&amp;lvr&gt;(thin||s&lt;600?150:(D.sale==='private'?150:180)))r.no('Over their LVR');
     var cap=(tier==='Tier 1'&amp;&amp;c.renter)||(owner&amp;&amp;tier!=='Tier 3')?0.25:0.2;
     var pay=L.pmt(r.base+(D.term&gt;60?0.5:0),D.term,loan);
     if(!D.svc&amp;&amp;pay&amp;&amp;c.netMonthly&amp;&amp;pay&gt;c.netMonthly*cap)r.no('Repayment over '+(cap*100)+'% of net monthly pay');
@@ -19353,7 +19354,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.min=5000;r.termMax(84);
     if(D.ageEnd!=null&amp;&amp;D.ageEnd&gt;15)r.no('Car is '+D.ageEnd+' years at the end, they stop at 15');
     r.fee('Establishment fee',D.sale==='private'?600:499);r.fee('Your fee',1500);
-    var lvr=D.price?r.loanNow()/D.price*100:null;if(lvr!=null&amp;&amp;lvr&gt;(tier==='C'?120:180))r.no('Over their '+(tier==='C'?120:180)+'% LVR');
+    var lvr=D.price?r.loanNow()/D.price*100:null;r.lvrMax(tier==='C'?120:180);if(lvr!=null&amp;&amp;lvr&gt;(tier==='C'?120:180))r.no('Over their '+(tier==='C'?120:180)+'% LVR');
     r.note('$8.90 a month account fee');
   }});
 
@@ -19415,7 +19416,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var loan0=(D.base||0)+(D.addons||0);r.fee('Establishment fee',loan0&gt;=60000?780:loan0&gt;=30000?670:560);
     if(D.sale==='private')r.fee('Private sale fee',50);
     var lv=D.price?r.loanNow()/D.price*100:null,lmax=(D.ageEnd!=null&amp;&amp;D.ageEnd&gt;=11)?130:(s!=null&amp;&amp;s&gt;640&amp;&amp;r.loanNow()&lt;=80000?180:150);
-    if(lv!=null&amp;&amp;lv&gt;lmax)r.check('Over their '+lmax+'% LVR against Glass\'s, the price is used here');
+    r.lvrMax(lmax);if(lv!=null&amp;&amp;lv&gt;lmax)r.check('Over their '+lmax+'% LVR against Glass\'s, the price is used here');
     if(c.grossAnnual!=null&amp;&amp;c.grossAnnual&lt;25000)r.no('Under $25k gross a year');
     if(c.jobMonths!=null&amp;&amp;(c.jobMonths+(c.prevJobMonths||0))&lt;6&amp;&amp;c.emp!=='self')r.no('Under 6 months combined in the job and the one before');
     r.note('Broker fee goes on top, set by your aggregator. Hybrid or EV takes 0.50% off');
@@ -19453,7 +19454,7 @@ if(typeof module!=='undefined')module.exports=LM2;
       if(c.emp==='self')r.no('Type 3 can\'t be self employed');
       if(c.jobMonths!=null&amp;&amp;c.jobMonths&lt;3)r.no('Type 3 needs 3 months in the job')}
     else r.capAt(type===1?150000:80000);
-    var lvr=D.price?amt/D.price*100:null;if(lvr!=null&amp;&amp;lvr&gt;(type===3?120:150))r.no('Over their '+(type===3?120:150)+'% LVR');
+    var lvr=D.price?amt/D.price*100:null;r.lvrMax(type===3?120:150);if(lvr!=null&amp;&amp;lvr&gt;(type===3?120:150))r.no('Over their '+(type===3?120:150)+'% LVR');
     if(c.cameFrom&amp;&amp;c.monthsInAus!=null&amp;&amp;c.monthsInAus&lt;24)r.note('New arrivals get first lend limits, already applied');
     r.note('No dial down and no monthly fees');
     r.commission=money(amt&gt;=70000?2700:amt&gt;=60000?2300:amt&gt;=50000?1900:amt&gt;=40000?1500:amt&gt;=30000?1200:amt&gt;=20000?1000:amt&gt;=15000?800:500)+' plus GST, plus your fee';
@@ -19480,7 +19481,7 @@ if(typeof module!=='undefined')module.exports=LM2;
       if(D.sale==='private')r.load(0.5,'for a private sale');
     }
     r.fee('Establishment fee',D.sale==='private'?590:490);r.fee('Your fee',1650);r.fee('PPSR',6);
-    var lv=D.price?r.loanNow()/D.price*100:null;if(lv!=null&amp;&amp;lv&gt;120&amp;&amp;!(dep&gt;0))r.check('Over 120% LVR with no deposit');
+    var lv=D.price?r.loanNow()/D.price*100:null;if(!(dep&gt;0))r.lvrMax(120);if(lv!=null&amp;&amp;lv&gt;120&amp;&amp;!(dep&gt;0))r.check('Over 120% LVR with no deposit');
     if(c.residency==='visa')r.check('Visa holders need $100k income and the term ends a month before the visa');
     r.note('Rates are their maximum, up to 2% can come off. $8 a month account fee');
   }});
@@ -19516,7 +19517,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.fileMonths!=null&amp;&amp;c.fileMonths&lt;12)r.capAt(20000,'with a file under 12 months');
     if(c.age!=null&amp;&amp;c.age&lt;22)r.capAt(20000,'under 22');else if(c.age!=null&amp;&amp;c.age&lt;=25)r.capAt(50000,'22 to 25');
     r.capAt(D.sale==='private'?75000:150000);r.min=10000;
-    if(lvr&gt;(D.sale==='private'?120:130))r.no('Over their '+(D.sale==='private'?120:130)+'% LVR');
+    r.lvrMax(D.sale==='private'?120:130);if(lvr&gt;(D.sale==='private'?120:130))r.no('Over their '+(D.sale==='private'?120:130)+'% LVR');
     if(D.ageEnd!=null&amp;&amp;D.ageEnd&gt;(D.sale==='private'?15:20))r.no('Car is too old at the end of the term');
     if(c.jobMonths!=null&amp;&amp;((c.emp==='ft'&amp;&amp;c.jobMonths&lt;=3)||(c.emp==='pt'&amp;&amp;c.jobMonths&lt;=6)||((c.emp==='casual'||c.emp==='self')&amp;&amp;c.jobMonths&lt;=12)))r.no('Not long enough in the job');
     if(c.netAnnual!=null&amp;&amp;c.netAnnual&lt;30000)r.no('Under $30k net a year');
@@ -19550,7 +19551,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.termMax(pla&gt;=30000?72:pla&gt;12000?60:48,pla&gt;=30000?'':'for this size');
     r.fee('Application fee',995);r.fee('Risk fee',Math.min(995,Math.round(pla*G[g][2])));r.fee('Your fee',Math.min(1320,Math.round(pla*0.1)));
     var amt=r.loanNow(),lvr=D.price?amt/D.price*100:null,lmax=amt&gt;30000?140:amt&gt;10000?150:180;
-    if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over '+lmax+'% of Glass\'s, the price is used here');
+    r.lvrMax(lmax);if(lvr!=null&amp;&amp;lvr&gt;lmax)r.check('Over '+lmax+'% of Glass\'s, the price is used here');
     var pay=L.pmt(G[g][0],D.term,amt);if(!D.svc&amp;&amp;pay&amp;&amp;c.netMonthly&amp;&amp;pay&gt;c.netMonthly*0.35)r.no('Repayments over 35% of income');
     if(c.netWeekly!=null&amp;&amp;c.netWeekly&lt;480)r.no('Under $480 a week net');
     if(c.cameFrom)r.flag('They want 2 years of job and address history, check the '+c.cameFrom+' history counts');
@@ -19570,7 +19571,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.capAt(50000);r.min=10000;r.termMax(60,'on Mid Prime, Sub Prime is 48');
     if(D.ageNow!=null&amp;&amp;D.ageNow&gt;15)r.no('Build over 15 years at the start');
     if(D.addons&gt;r.loanNow()*0.2)r.check('Warranty over 20% of the amount financed');
-    var lv=D.price?r.loanNow()/D.price*100:null;if(lv!=null&amp;&amp;lv&gt;=130)r.check('Over 130% of the Glass\'s retail, the price is used here');
+    var lv=D.price?r.loanNow()/D.price*100:null;r.lvrMax(130);if(lv!=null&amp;&amp;lv&gt;=130)r.check('Over 130% of the Glass\'s retail, the price is used here');
     r.note('Their TMD runs 19.99% to 29.99%. $4.95 a month account fee');
   }});
 
@@ -19679,23 +19680,23 @@ var SV=(function(){
   var CF=48/52;
   var P={
     'Liberty':{inc:{ot:0.8,bonus:0.8,casual:CF},living:'hem',mates:'ledger',split:{rent:'check',living:'check',E:false,F:true},partnerGross:15000,fee:function(r){return (r.loan||0)&lt;10000?15:10},tests:['surplus']},
-    'Finance One':{living:'f1',other:{jobseeker:0},mates:'check',split:{rent:'check',living:'check',E:false,F:true},fee:function(r){return r.tier==='Plus'?12:18},svcTerm:function(r){return r.tier==='Plus'?60:null},tests:['surplus5'],dishMax:3},
-    'Rapid Loans':{living:'hem',mates:'check',split:{rent:'check',living:'check',E:false,F:true},tests:['surplus'],gambleMax:0.3,gambleMaxCL:0.15,dishMax:4,maxDebts:6},
-    'Affordable Car Loans':{inc:{acl:true},living:'hem',mates:'decl',split:{rent:'yes',living:'yes',E:false,F:true},tests:['debt50','acl20','surplus'],saccMax:1},
+    'Finance One':{lvr:160,living:'f1',other:{jobseeker:0},mates:'check',split:{rent:'check',living:'check',E:false,F:true},fee:function(r){return r.tier==='Plus'?12:18},svcTerm:function(r){return r.tier==='Plus'?60:null},tests:['surplus5'],dishMax:3},
+    'Rapid Loans':{lvr:150,living:'hem',mates:'check',split:{rent:'check',living:'check',E:false,F:true},tests:['surplus'],gambleMax:0.3,gambleMaxCL:0.15,dishMax:4,maxDebts:6},
+    'Affordable Car Loans':{lvr:140,inc:{acl:true},living:'hem',mates:'decl',split:{rent:'yes',living:'yes',E:false,F:true},tests:['debt50','acl20','surplus'],saccMax:1},
     'NOW Finance':{inc:{ot:1,bonus:0.8},other:{rental:0.9,jobseeker:0,parenting:0},cl50:true,living:'hem',mates:'check',split:{rent:'yes',living:'yes',E:false,F:true,working:true},tests:['surplus','dti80']},
     'Firstmac':{inc:{ot:0.8,bonus:0.8,casual:CF},card:0.03227,living:'hem',mates:'share',floor:{rent:[500,650],board:[500,650]},split:{rent:'no',living:'no',E:true,F:true},tests:['ndi']},
     'Azora':{inc:{ot:1,bonus:1,casual:CF},living:'hem',mates:'half',split:{rent:'yes',living:'yes',E:false,F:true},fee:15,tests:['surplus'],payday:true,bnplLiving:true,gambleMax:0.15,saccMax:2,defaults3:true},
     'Plenti':{inc:{ot:1,bonus:0.6},other:{rental:0.8,parenting:0,jobseeker:0,child_support:0},living:'hem',mates:'check',floor:{board:[600,600]},parents:true,split:{rent:'yes',living:'check',E:false,F:false},splitShare:'income',fee:9.9,tests:['ptiPlenti','surplus100'],gambleMax:0.2,dishMax:3},
     'Pepper Money':{inc:{ot:0.8,bonus:0.8,casual:CF},living:'hem',mates:'check',split:{rent:'check',living:'check',E:false,F:true},fee:8.9,tests:['ptiPepper','surplus']},
-    'Gamma Duo':{living:'hem',mates:'half',floorWk:{board:[100,200]},floorBy:'joint',split:{rent:'yes',living:'yes',E:false,F:true,cover:true},fee:20,svcTerm:60,tests:['dsr35','surplus1'],saccMax:3,bnplDebt:true},
+    'Gamma Duo':{lvr:150,living:'hem',mates:'half',floorWk:{board:[100,200]},floorBy:'joint',split:{rent:'yes',living:'yes',E:false,F:true,cover:true},fee:20,svcTerm:60,tests:['dsr35','surplus1'],saccMax:3,bnplDebt:true},
     'Wisr':{inc:{ot:1,bonus:0.8},other:{rental:0.9},living:'hem',mates:'check',split:{rent:'yes',living:'yes',E:false,F:true},fee:10,tests:['wisr']},
     'RACV Finance':{inc:{casual:CF},other:{rental:0.95,jobseeker:0},clWork30:true,living:'hem',mates:'share',floor:{board:[450,450],share:[450,450]},split:{rent:'yes',living:'no',E:false,F:true},bnplHalf:true,mortRate:6.35,tests:['racv']},
     'Branded Financial':{other:{rental:0.8},card:0.04,living:'hem',mates:'check',floor:{board:[400,400]},split:{rent:'yes',living:'yes',E:false,F:true},fee:8,mortRate:RBA+3,tests:['branded']},
     'Autopay':{other:{rental:0.8},living:'hem',mates:'check',floor:{all:[520,520]},split:{rent:'check',living:'check',E:false,F:true},fee:12.5,tests:['debt60','surplus'],gambleMax:0.3,saccOrAdv:1,dishMax:7,clHalfKo:true},
     'Money3':{capTier:{Platinum:75000,Gold:65000,Silver:55000,Bronze:40000},inc:{ot:0.8,bonus:0.8},living:'m3',mates:'check',floorWk:{rent:[100,150],board:[50,75]},floorBy:'joint',split:{rent:'no',living:'no',E:false,F:true},fee:function(r,F){return (num(F.car&amp;&amp;F.car.term)||60)&gt;=36?28:0},tests:['dsr35','surplus'],payAdvMax:1,saccMax:2,gambleMax:0.2,gambleMaxCL:0.15,bnplDebt:true},
     'CarStart':{living:'hem',mates:'check',split:{rent:'check',living:'check',E:false,F:true},fee:4.95,tests:['surplus'],js25:true,always:'Their scorecard decides, ask CarStart'},
-    'C1':{inc:{ot:0.8,bonus:0.8},other:{rental:0.8,jobseeker:0},living:'hem',mates:'lessors',split:{rent:'lessors',living:'yes',E:false,F:true},fee:28,banking:true,tests:['surplus'],c1load:true,gambleMax:0.4,bnplDebt:true},
-    'Australian Premier Finance':{capCar:25000,minCar:6000,living:'apf',other:{jobseeker:0},mates:'leasedoc',floorWk:{rent:[85,170],board:[85,170]},split:{rent:'leasedoc',living:'apf',E:false,F:true},fee:14*26/12,tests:['dsr35','surplus'],gambleMax:0.2,dishMax:0}
+    'C1':{lvr:140,inc:{ot:0.8,bonus:0.8},other:{rental:0.8,jobseeker:0},living:'hem',mates:'lessors',split:{rent:'lessors',living:'yes',E:false,F:true},fee:28,banking:true,tests:['surplus'],c1load:true,gambleMax:0.4,bnplDebt:true},
+    'Australian Premier Finance':{lvr:160,capCar:25000,minCar:6000,living:'apf',other:{jobseeker:0},mates:'leasedoc',floorWk:{rent:[85,170],board:[85,170]},split:{rent:'leasedoc',living:'apf',E:false,F:true},fee:14*26/12,tests:['dsr35','surplus'],gambleMax:0.2,dishMax:0}
   };
   var CENTRELINK={ftb:1,parenting:1,jobseeker:1,pension:1};
 
@@ -19905,6 +19906,7 @@ var SV=(function(){
     var rt=rateOf(row,proxy,F);out.rate=rt.rate;out.rateHow=rt.how;
     if(way.joint&amp;&amp;row.name==='Money3'&amp;&amp;rt.how!=='yours'){var M3N={13.95:16.95,16.95:19.95,19.95:24.95};if(M3N[rt.rate]){out.rate=M3N[rt.rate];out.checks.push('Joint drops them a grade, run at '+out.rate+'%')}}
     out.maxTerm=row.maxTerm;
+    out.lvr=row.lvr!=null?row.lvr:null;out.lvrCap=row.lvrCap!=null?row.lvrCap:(p.lvr||null);
     var term=num(F.car&amp;&amp;F.car.term)||60,stc=typeof p.svcTerm==='function'?p.svcTerm(row):p.svcTerm,svcTerm=stc?Math.min(term,stc):term;
     out.term=term;out.svcTerm=svcTerm;
     var bal=0,bp=num(F.car&amp;&amp;F.car.balloon)||0,price=num(F.car&amp;&amp;F.car.price)||0;if(bp&gt;0&amp;&amp;price&gt;0)bal=price*bp/100;
@@ -20685,6 +20687,7 @@ function lenderHtml(o){
   var sub=[];
   if(o.tier)sub.push(String(o.tier).replace(/ · /g,', '));
   if(o.rate!=null)sub.push(o.rate.toFixed(2)+'%');
+  if(o.lvr!=null&amp;&amp;!o.maxMode)sub.push('LVR '+o.lvr+'%'+(o.lvrCap?' of '+o.lvrCap+'%':''));
   var fg;
   if(o.status==='out')fg='&lt;b&gt;'+esc(o.why)+'&lt;/b&gt;';
   else fg='&lt;b&gt;'+esc(o.figure.text)+'&lt;/b&gt;&lt;i&gt;'+(o.maxMode?(o.left&gt;0?esc(money(o.left))+' a month free':''):(o.max&gt;0?'Up to '+esc(k$(o.max)):''))+'&lt;/i&gt;';
@@ -20722,6 +20725,7 @@ function detailHtml(o){
   var seen={};notes=notes.filter(function(n){if(seen[n[1]])return false;seen[n[1]]=1;return true});
   if(notes.length)h+='&lt;ul class=&quot;notes&quot;&gt;'+notes.map(function(n){return '&lt;li class=&quot;'+n[0]+'&quot;&gt;'+esc(n[1])+'&lt;/li&gt;'}).join('')+'&lt;/ul&gt;';
   var meta=[];
+  if(o.lvr!=null&amp;&amp;!o.maxMode)meta.push('&lt;span&gt;LVR '+o.lvr+'%'+(o.lvrCap?' of their '+o.lvrCap+'%':'')+', against the price, they use Glass\'s or Redbook&lt;/span&gt;');
   if(o.max&gt;0)meta.push('&lt;span&gt;Most that services '+esc(money(o.max))+'&lt;/span&gt;');
   if(o.stmts!=null)meta.push('&lt;span&gt;'+(o.stmts?'Statements, '+esc(o.stmtsWhy||'needed'):'No statements, '+esc(o.stmtsWhy||'payslips'))+'&lt;/span&gt;');
   if(o.status!=='out')meta.push('&lt;label&gt;Rate &lt;input inputmode=&quot;decimal&quot; data-rate=&quot;'+esc(o.name)+'&quot; value=&quot;'+(F.rates[o.name]!=null?esc(F.rates[o.name]):'')+'&quot; placeholder=&quot;'+(o.rate!=null?o.rate.toFixed(2):'')+'&quot; aria-label=&quot;Rate for '+esc(o.short)+'&quot;&gt;&lt;span&gt;%&lt;/span&gt;&lt;/label&gt;');

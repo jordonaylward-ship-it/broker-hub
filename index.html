@@ -11860,14 +11860,19 @@ return{fileToText:fileToText,classify:classify,parseLicence:parseLicence,parsePa
 &lt;/script&gt;
 &lt;script&gt;
 /* ZBot: a won lead lands in this call script by itself. ZBot locks it with the pair code and drops
-   it on ntfy.sh, this unlocks it with the same code. Nothing readable passes through ntfy. */
+   it on ntfy.sh, this unlocks it with the same code. Nothing readable passes through ntfy.
+   Oct 2026: only the newest lead is ever offered, older ones are history the moment a newer one exists.
+   A failed fetch is tried again instead of being dropped. Big leads arrive in parts and are put back
+   together here, so nothing expires early. Load last lead asks the relay for anything newer first. */
 window.ZB=(function(){
   var PAIR='zbot_pair_v1',SEEN='zbot_seen_v1',HOST='https://ntfy.sh/';
-  var te=new TextEncoder(),es=null,cb=null,keyP=null,topic=null,timer=null,took={};
+  var te=new TextEncoder(),es=null,cb=null,keyP=null,topic=null,timer=null,took={},tries={},parts={};
   function hex(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
   function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var bin=atob(s),a=new Uint8Array(bin.length);for(var i=0;i&lt;bin.length;i++)a[i]=bin.charCodeAt(i);return a}
   function code(){try{return(localStorage.getItem(PAIR)||'').replace(/\s+/g,'')}catch(e){return''}}
   function seenList(){try{return JSON.parse(localStorage.getItem(SEEN)||'[]')}catch(e){return[]}}
+  function markSeen(k){var l=seenList();if(l.indexOf(k)&lt;0){l.push(k);try{localStorage.setItem(SEEN,JSON.stringify(l.slice(-80)))}catch(e){}}}
+  function isSeen(k){return !!took[k]||seenList().indexOf(k)&gt;-1}
   async function derive(c){
     var t=await crypto.subtle.digest('SHA-256',te.encode('zbot-topic|'+c));
     var k=await crypto.subtle.digest('SHA-256',te.encode('zbot-key|'+c));
@@ -11879,25 +11884,44 @@ window.ZB=(function(){
     var txt=await new Response(new Blob([pt]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
     return JSON.parse(txt);
   }
-  async function handle(msg){
-    if(!msg||msg.event!=='message'||!cb||!keyP)return;
-    if(took[msg.id]||seenList().indexOf(msg.id)&gt;-1)return;
-    took[msg.id]=1;
-    try{
-      var body=msg.message;
-      if(msg.attachment&amp;&amp;msg.attachment.url){var r=await fetch(msg.attachment.url);body=await r.text();}
-      var L=await unlock(body,(await keyP).key);
-      if(L&amp;&amp;L.v===1)cb(L,msg.id);
-    }catch(e){}
+  /* a big lead comes as zb1p.&lt;id&gt;.&lt;part&gt;.&lt;parts&gt;.&lt;piece&gt;; every part of one lead shares the id */
+  function partOf(body){var m=String(body||'').match(/^zb1p\.([A-Za-z0-9_-]+)\.(\d+)\.(\d+)\.([A-Za-z0-9_.-]+)$/);return m?{pid:m[1],i:+m[2],n:+m[3],piece:m[4]}:null}
+  function keyOf(msg){var p=partOf(msg&amp;&amp;msg.message);return p?p.pid:(msg&amp;&amp;msg.id)}
+  function assemble(msg){
+    var p=partOf(msg.message);if(!p)return msg.message;
+    var P=parts[p.pid]||(parts[p.pid]={n:p.n,got:{},count:0});
+    if(!P.got[p.i]){P.got[p.i]=p.piece;P.count++}
+    if(P.count&lt;P.n)return null;
+    var out='';for(var i=0;i&lt;P.n;i++)out+=P.got[i]||'';return out;
   }
-  async function poll(){
-    if(!topic)return;
+  /* true once the lead is handed to the page. direct means the user asked for it, so it loads straight away */
+  async function handle(msg,direct){
+    if(!msg||msg.event!=='message'||!cb||!keyP)return false;
+    var k=keyOf(msg);if(!k||isSeen(k))return false;
     try{
-      var r=await fetch(HOST+topic+'/json?poll=1&amp;since=3h');
-      var all=(await r.text()).split('\n').filter(Boolean).map(function(l){try{return JSON.parse(l)}catch(e){return null}}).filter(Boolean);
-      var fresh=all.filter(function(m){return m.event==='message'&amp;&amp;seenList().indexOf(m.id)&lt;0});
-      if(fresh.length)await handle(fresh[fresh.length-1]);
+      var body;
+      if(msg.attachment&amp;&amp;msg.attachment.url){var r=await fetch(msg.attachment.url);if(!r.ok)throw new Error('gone');body=await r.text();}
+      else{body=assemble(msg);if(body==null)return false;}
+      var L=await unlock(body,(await keyP).key);
+      if(L&amp;&amp;L.v===1){took[k]=1;cb(L,k,!!direct);return true}
     }catch(e){}
+    tries[k]=(tries[k]||0)+1;if(tries[k]&gt;=4)took[k]=1;
+    return false;
+  }
+  async function poll(direct){
+    if(!topic)return false;
+    try{
+      var r=await fetch(HOST+topic+'/json?poll=1&amp;since=12h');
+      var all=(await r.text()).split('\n').filter(Boolean).map(function(l){try{return JSON.parse(l)}catch(e){return null}}).filter(function(m){return m&amp;&amp;m.event==='message'});
+      if(!all.length)return false;
+      all.forEach(function(m){if(partOf(m.message))assemble(m)});
+      var newest=keyOf(all[all.length-1]);
+      /* anything older than the newest lead is history, never offered as new */
+      all.forEach(function(m){var k=keyOf(m);if(k&amp;&amp;k!==newest&amp;&amp;!isSeen(k))markSeen(k)});
+      var last=all.filter(function(m){return keyOf(m)===newest});
+      return await handle(last[last.length-1],direct);
+    }catch(e){}
+    return false;
   }
   function stop(){if(es){es.close();es=null}if(timer){clearInterval(timer);timer=null}}
   async function start(onLead){
@@ -11906,7 +11930,7 @@ window.ZB=(function(){
     keyP=derive(c);topic=(await keyP).topic;
     await poll();
     try{es=new EventSource(HOST+topic+'/sse');es.onmessage=function(e){try{handle(JSON.parse(e.data))}catch(_){}}}catch(e){}
-    timer=setInterval(poll,60000);
+    timer=setInterval(function(){poll()},60000);
   }
   document.addEventListener('visibilitychange',function(){if(!document.hidden)poll()});
   window.addEventListener('focus',function(){poll()});
@@ -11915,7 +11939,8 @@ window.ZB=(function(){
     ok:function(){return!!(window.crypto&amp;&amp;crypto.subtle&amp;&amp;window.DecompressionStream&amp;&amp;window.EventSource)},
     pair:function(c){try{localStorage.setItem(PAIR,String(c||'').trim())}catch(e){}start()},
     unpair:function(){try{localStorage.removeItem(PAIR)}catch(e){}stop();topic=null;keyP=null},
-    seen:function(id){var l=seenList();if(l.indexOf(id)&lt;0){l.push(id);try{localStorage.setItem(SEEN,JSON.stringify(l.slice(-50)))}catch(e){}}},
+    seen:function(id){markSeen(id)},
+    check:function(direct){return poll(direct)},
     start:start,stop:stop
   };
 })();
@@ -13521,7 +13546,7 @@ const [zbPairOpen,setZbPairOpen]=useState(false);
 const [zbCodeIn,setZbCodeIn]=useState(&quot;&quot;);
 const [zbPending,setZbPending]=useState(null);
 const [zbFrom,setZbFrom]=useState(null);
-const [zbLast,setZbLast]=useState(null);
+const [zbLast,setZbLast]=useState(()=&gt;{try{return JSON.parse(localStorage.getItem(&quot;zbot_last_v1&quot;)||&quot;null&quot;)}catch(e){return null}});
 const zbRef=useRef({raw:null,d:null,busy:false});
 const [fee,setFee]=useState(()=&gt;{try{return localStorage.getItem(&quot;closer_fee&quot;)||&quot;$1,500&quot;}catch(e){return&quot;$1,500&quot;}});
 const saveFee=(v)=&gt;{setFee(v);try{localStorage.setItem(&quot;closer_fee&quot;,v)}catch(e){}};
@@ -13685,11 +13710,11 @@ const zbApply=(L,id)=&gt;{
   if(L.path)setPath(L.path);
   setRes(prev=&gt;({...prev,...(L.callType?{callType:L.callType}:{}),...(L.productType?{productType:L.productType}:{})}));
   setZbFrom({lead:L.leadId,price:L.price,test:L.kind===&quot;test&quot;});
-  setShowZinkPaste(true);setZbPending(null);setZbLast({L,id});
+  setShowZinkPaste(true);setZbPending(null);setZbLast({L,id});try{localStorage.setItem(&quot;zbot_last_v1&quot;,JSON.stringify({L,id}))}catch(e){}
   if(window.ZB)ZB.seen(id);
   toast(L.kind===&quot;test&quot;?&quot;ZBot test lead loaded&quot;:&quot;New lead from ZBot ✓&quot;);
 };
-useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id)=&gt;{if(zbRef.current.busy)setZbPending({L,id});else zbApply(L,id);});return()=&gt;ZB.stop();},[]);
+useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id,direct)=&gt;{if(zbRef.current.busy&amp;&amp;!direct)setZbPending({L,id});else zbApply(L,id);});return()=&gt;ZB.stop();},[]);
 useEffect(()=&gt;{const full=String(clientData.clientName||[clientData.firstName,clientData.lastName].filter(Boolean).join(&quot; &quot;)||&quot;&quot;).trim();const first=String(clientData.firstName||full.split(/\s+/)[0]||&quot;&quot;).trim();if(!first)return;try{const c=JSON.parse(localStorage.getItem(&quot;hub_client_v1&quot;)||&quot;null&quot;);if(c&amp;&amp;c.full===full&amp;&amp;c.first===first)return;localStorage.setItem(&quot;hub_client_v1&quot;,JSON.stringify({first:first,full:full,at:Date.now(),src:&quot;local&quot;}))}catch(e){}},[clientData.clientName,clientData.firstName,clientData.lastName]);
 
 const done=Object.keys(res).filter(k=&gt;![&quot;loanAmount&quot;,&quot;weeklyRepayment&quot;,&quot;comfortableAt&quot;].includes(k)).length;
@@ -13758,7 +13783,7 @@ return(
 &lt;button className=&quot;btn bp&quot; disabled={!zbCodeIn.trim()} onClick={()=&gt;{ZB.pair(zbCodeIn);setZbOn(true);setZbPairOpen(false);toast(&quot;ZBot paired ✓&quot;)}} style={{flex:1,padding:10,fontSize:12}}&gt;Save&lt;/button&gt;
 {zbOn&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{ZB.unpair();setZbOn(false);setZbPairOpen(false);toast(&quot;ZBot unpaired&quot;)}} style={{padding:10,fontSize:12}}&gt;Unpair&lt;/button&gt;}
 &lt;/div&gt;
-{zbLast&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbPairOpen(false);zbApply(zbLast.L,zbLast.id)}} style={{width:&quot;100%&quot;,marginTop:8,padding:10,fontSize:12}}&gt;Load last lead{zbLast.L.d&amp;&amp;zbLast.L.d.clientName?` · ${zbLast.L.d.clientName}`:&quot;&quot;}&lt;/button&gt;}
+{(zbOn||zbLast)&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbPairOpen(false);(async()=&gt;{const got=window.ZB?await ZB.check(true):false;if(got)return;if(zbPending){zbApply(zbPending.L,zbPending.id);return}if(zbLast)zbApply(zbLast.L,zbLast.id);else toast(&quot;No lead from ZBot in the last 12 hours&quot;)})()}} style={{width:&quot;100%&quot;,marginTop:8,padding:10,fontSize:12}}&gt;Load latest lead from ZBot&lt;/button&gt;}
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;)}

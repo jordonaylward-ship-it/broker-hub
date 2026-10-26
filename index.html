@@ -6617,6 +6617,7 @@ function nativeSkip(res){
   if((m=s.match(/^Employment=(.+)$/)))return m[1];
   if((m=s.match(/^Visa=(.+)$/)))return m[1];
   if((m=s.match(/^Veda=-?\d+ \(need &gt;=(\d+)\)/)))return 'Credit score under '+m[1];
+  if((m=s.match(/^Loan=\$?[\d.]+ \(need &gt;=\$?(\d+)/)))return 'Loan under $'+(+m[1]).toLocaleString('en-AU');
   if(/^Veda missing/.test(s))return 'No credit score';
   if((m=s.match(/^LoanType=(.+)$/)))return m[1];
   return s.slice(0,40);

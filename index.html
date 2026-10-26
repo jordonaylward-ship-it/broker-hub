@@ -2611,7 +2611,7 @@ function rAllTime(){
     {id:'budget',w:12,label:'Lead budget',html:budgetBlock()},
     {id:'insight',w:12,label:'Read on the numbers',html:insightQuoteBlock(s,QUOTES_ALLTIME,filtered)}
   ];
-  document.getElementById(&quot;sec-alltime&quot;).innerHTML=(typeof coachHtml==='function'?coachHtml():'')+leadTypeFilter(layoutResetBtn('alltime'))+blocksHtml('alltime',blocks);
+  document.getElementById(&quot;sec-alltime&quot;).innerHTML=leadTypeFilter(layoutResetBtn('alltime'))+blocksHtml('alltime',blocks);
 }
 
 function rMonthly(){

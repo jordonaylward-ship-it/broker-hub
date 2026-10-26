@@ -594,7 +594,7 @@ html[data-theme=&quot;light&quot;] *::-webkit-scrollbar-thumb { background: #ddd
 &lt;style id=&quot;coach&quot;&gt;
 .coach{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:22px 24px;margin-bottom:18px}
 .co-head{font-size:26px;font-weight:700;letter-spacing:-.3px;line-height:1.15}
-.co-sub{font-size:14px;color:var(--dim);margin-top:8px;line-height:1.5;max-width:760px}
+.co-sub{font-size:14px;color:var(--dim);margin-top:8px;line-height:1.5;max-width:760px}.co-sub+.co-sub{margin-top:3px}
 .co-late{margin-top:10px;font-size:13.5px;color:var(--amber);font-weight:600}
 .co-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-top:18px}
 .co-tile{background:rgba(148,163,255,.06);border-radius:12px;padding:12px 14px;min-width:0}
@@ -3516,28 +3516,29 @@ function coachPlan(leads){
   let rest=null;
   const earned=goodMonths&gt;=3||recordNow;
   if(inBreak)rest={kind:'break',txt:late?late+' late approval'+(late&gt;1?'s':'')+' in the pipe, worth a call if you are in.':''};
-  else if(xmasSoon)rest={kind:'xmas',txt:'Christmas: buy through to '+coachDayTxt(windDown)+', after that it lands in January. '+(earned?'Take '+coachDayTxt(breakStart)+' to '+coachDayTxt(breakEnd)+' off, you have earned it, back '+coachDayTxt(backDay)+'.':'Work the pipe to the 23rd, then take it to '+coachDayTxt(backDay)+'.')};
+  else if(xmasSoon)rest={kind:'xmas',txt:'Buy through to '+coachDayTxt(windDown)+', after that it lands in January. '+(earned?'Take '+coachDayTxt(breakStart)+' to '+coachDayTxt(breakEnd)+' off, you have earned it.':'Work the pipe to the 23rd, then take the break.')+' Back '+coachDayTxt(backDay)+'.'};
   else if(late)rest=null;
   else if(flatRecent&gt;=3&amp;&amp;(done||state==='pace')&amp;&amp;quiet){markOff(quiet,'three flat days in two weeks');rest={kind:'day',head:'Take '+when(quiet)+', three flat days in two weeks',txt:'Three flat days in two weeks. Take '+when(quiet)+', the pipe carries it.'}}
-  else if(recordNow&amp;&amp;bridge&amp;&amp;daysLeft&gt;=3){markOff(bridge,'record month');rest={kind:'day',txt:'Record month. Take '+when(bridge)+' with the '+holDays[0].hol+' long weekend, the pipe carries it.'}}
+  else if(recordNow&amp;&amp;bridge&amp;&amp;daysLeft&gt;=3){markOff(bridge,'record month');rest={kind:'day',txt:'Record month. Take '+when(bridge)+' with the '+holDays[0].hol+' long weekend.'}}
   else if(recordNow&amp;&amp;anyQuiet&amp;&amp;daysLeft&gt;=3){markOff(anyQuiet,'record month');rest={kind:'day',txt:'Record month. Take '+when(anyQuiet)+', you have earned it.'}}
-  else if(done&amp;&amp;bridge&amp;&amp;daysLeft&gt;=5){markOff(bridge,'long weekend');rest={kind:'day',head:'Take '+when(bridge)+' too, long weekend',txt:holDays[0].hol+' long weekend. '+monthName+' is covered, the pipe carries it.'}}
+  else if(done&amp;&amp;bridge&amp;&amp;daysLeft&gt;=5){markOff(bridge,'long weekend');rest={kind:'day',head:'Take '+when(bridge)+' too, long weekend',txt:holDays[0].hol+' long weekend. '+monthName+' is covered.'}}
   else if(streak&amp;&amp;!lastBreak&amp;&amp;run!=='hot'&amp;&amp;(done||state==='pace')){const next=(()=&gt;{for(let i=7;i&lt;=56;i++){const d=new Date(today.getTime()+i*864e5);const h=coachHoliday(d);if(h&amp;&amp;d.getDay()&gt;0&amp;&amp;d.getDay()&lt;6)return {d,h}}return null})();
-    rest={kind:'week',head:'Book a week off, three months over the floor',txt:'Three months over the floor and no break in that time. '+(next?'Book the week of '+next.h+', '+coachDayTxt(next.d)+'. ':'Book a week off. ')+'Buy for the two weeks before it and let it settle while you are away.'}}
+    rest={kind:'week',head:'Book a week off, three months over the floor',txt:(next?'Book the week of '+next.h+', '+coachDayTxt(next.d)+'. ':'Book a week off. ')+'Buy for two weeks before and let it settle while you are away.'}}
   else if(done&amp;&amp;quiet&amp;&amp;daysLeft&gt;=5&amp;&amp;run!=='hot'){markOff(quiet,'the month is covered');rest={kind:'day',head:'Take '+when(quiet)+', '+monthName+' is covered',txt:monthName+' is covered with '+daysLeft+' days left, the pipe carries it.'}}
-  else if(done&amp;&amp;run==='hot'&amp;&amp;daysLeft&gt;=5&amp;&amp;anyQuiet&amp;&amp;mood!=='flat')rest={kind:'day',txt:monthName+' is covered. If you want a day, '+when(anyQuiet)+' is the one, the leads can wait.'};
+  else if(done&amp;&amp;run==='hot'&amp;&amp;daysLeft&gt;=5&amp;&amp;anyQuiet&amp;&amp;mood!=='flat')rest={kind:'day',txt:monthName+' is covered. If you want a day, '+when(anyQuiet)+' is the one.'};
   if(quiet&amp;&amp;!quiet.off&amp;&amp;!days.some(x=&gt;x.off)&amp;&amp;!chase&amp;&amp;run!=='hot'&amp;&amp;state!=='behind'&amp;&amp;state!=='push'&amp;&amp;!inBreak)markOff(quiet,done?'the month is covered':'');
   // the weekend, when it is cheaper and there is a reason to be on
   let weekendLine='',weekendWhy='';
   const wkOnDays=days.filter(x=&gt;x.wk&amp;&amp;(x.take||x.buy));
   const wkNames=wkOnDays.map(x=&gt;x.i===0?'today':x.i===1?'tomorrow':COACH_DAYS[x.dow]).join(' and ');
-  const wkFact='weekend leads come about $'+WK.saving+' cheaper'+(dayStat[0].n+dayStat[6].n&gt;=8?' and settle '+(dayStat[0].s+dayStat[6].s)+' of '+(dayStat[0].n+dayStat[6].n):'');
+  const wkFact='weekend leads are about $'+WK.saving+' cheaper'+(dayStat[0].n+dayStat[6].n&gt;=8?' and settle '+(dayStat[0].s+dayStat[6].s)+' of '+(dayStat[0].n+dayStat[6].n):'');
   if(WK.cheap&amp;&amp;wkOnDays.length){
-    if(flatWeek&gt;0){weekendWhy='flat';weekendLine='You had '+(flatWeek===1?'a flat day':flatWeek+' flat days')+' this week. '+wkFact.charAt(0).toUpperCase()+wkFact.slice(1)+', so be on '+wkNames+' and make it up cheap.'}
-    else if(shortWeek&gt;0){weekendWhy='short';weekendLine='You are '+shortWeek+' short of the pace this week. '+wkFact.charAt(0).toUpperCase()+wkFact.slice(1)+', so be on '+wkNames+' and make it up cheap.'}
-    else if(needVolume){weekendWhy='volume';weekendLine='The floor needs the volume and '+wkFact+', so be on '+wkNames+'.'}
-    else if(run==='hot'){weekendWhy='hot';weekendLine='It is running hot and '+wkFact+'. Worth being on '+wkNames+'.'}
-  }else if(WK.cheap&amp;&amp;WK.flow&gt;0&amp;&amp;!inBreak&amp;&amp;!wkOnDays.length&amp;&amp;days.some(x=&gt;x.wk))weekendLine='Weekend leads come about $'+WK.saving+' cheaper, about '+Math.max(1,Math.round(WK.flow))+' a day. There if you want them, the week has it covered.';
+    const F=wkFact.charAt(0).toUpperCase()+wkFact.slice(1);
+    if(flatWeek&gt;0){weekendWhy='flat';weekendLine=(flatWeek===1?'A flat day':flatWeek+' flat days')+' this week. '+F+'. Be on '+wkNames+' and make it up cheap.'}
+    else if(shortWeek&gt;0){weekendWhy='short';weekendLine=shortWeek+' short of the pace this week. '+F+'. Be on '+wkNames+' and make it up cheap.'}
+    else if(needVolume){weekendWhy='volume';weekendLine='The floor needs the volume. '+F+'. Be on '+wkNames+'.'}
+    else if(run==='hot'){weekendWhy='hot';weekendLine='Running hot. '+F+'. Worth being on '+wkNames+'.'}
+  }else if(WK.cheap&amp;&amp;WK.flow&gt;0&amp;&amp;!inBreak&amp;&amp;!wkOnDays.length&amp;&amp;days.some(x=&gt;x.wk))weekendLine='Weekend leads are about $'+WK.saving+' cheaper, about '+Math.max(1,Math.round(WK.flow))+' a day. There if you want them.';
   return {now,hour,lateCut,mood,flatRecent,flatWeek,shortWeek,todayKey,timingBack,poolBad,poolNow,poolPrevOne,prevMonthName,WK,weekendOn,weekendWhy,weekendLine,ym,daysLeft,settleLeft,lastSettle,monthName,nextName,gross,settledN:settledMo.length,expGross,expN,expRound,low,high,carryN,items,approvals,submitted,qualified,fresh,late,
     conv,convAll,pApprSet,pQual,avgComm,split,medLead,medDec,medSub,slowDec,slowSub,ghost,ghostDays,lostN,pNew,floor,floorDefault,record,recordNow,short,needSet,needLeads,state,chase,paceNeed,run,bad,good,decided:decided.length,
     spent,boughtWeek,budget,price,paceWeek,paceBase,recentPaid,days,nextMon,bot,rest,inBreak,xmasSoon,backDay,windDown,goodMonths,streak,lastBreak,partners};
@@ -3557,10 +3558,10 @@ function coachDay(P,d){
   const winTxt=win?coachHour(win[0])+' to '+coachHour(win[1]):'';
   const mood=d.i===0?P.mood:'normal';
   // a day that is not a working day
-  if(d.brk){add(0,24,'All day',d.hol?d.hol+'. Off.':'Christmas break. Off, the pipe can wait for '+coachDayTxt(P.backDay)+'.');return out}
-  if(d.hol){add(0,24,'All day',d.hol+'. Public holiday, nothing settles and the bot stays off.');return out}
+  if(d.brk){add(0,24,'All day',d.hol?d.hol+'. Off.':'Christmas break. Off till '+coachDayTxt(P.backDay)+'.');return out}
+  if(d.hol){add(0,24,'All day',d.hol+'. Nothing settles, the bot stays off.');return out}
   if(d.dow===0||d.dow===6){
-    if(d.take||d.buy){add(8,18,'All day','Bot on, '+(d.buy?'buy '+d.buy:'take the cheap ones')+'. About '+Math.max(1,Math.round(d.flow))+' come on a '+wd+(P.WK.cheap?', about $'+P.WK.saving+' under the weekday price':'')+'. Nothing settles today, so it is just the calls.');return out}
+    if(d.take||d.buy){add(8,18,'All day','Bot on, '+(d.buy?'buy '+d.buy:'take the cheap ones')+'. About '+Math.max(1,Math.round(d.flow))+' come on a '+wd+(P.WK.cheap?', about $'+P.WK.saving+' cheaper':'')+'. Nothing settles today, just the calls.');return out}
     add(0,24,'All day','Weekend. Nothing settles, the bot stays off.'+(P.WK.cheap&amp;&amp;P.WK.flow&gt;0?' About '+Math.max(1,Math.round(P.WK.flow))+' leads come, about $'+P.WK.saving+' cheaper, there if you want them.':''));return out}
   if(d.off){add(0,24,'All day','Take it off'+(d.why?', '+d.why:'')+'. Nothing is due, the bot stays off.');return out}
   // the pipe as it stands on that day
@@ -3570,43 +3571,43 @@ function coachDay(P,d){
   const otherA=P.approvals.filter(a=&gt;!lateA.includes(a)&amp;&amp;!dueA.includes(a));
   const dueTxt=list=&gt;list.map(a=&gt;dn(a.due)+' '+a.due.getDate()).filter((v,i,a)=&gt;a.indexOf(v)===i).join(' and ');
   const m=[];
-  if(lateA.length)m.push('Ring the lender'+(lateA.length&gt;1?'s':'')+' on '+names(lateA)+', '+(lateA.length===1?'approved '+ago(lateA[0].since+shift)+' and':'all')+' past the usual '+P.medDec+' days to settle. Find what is holding it.');
-  if(dueA.length)m.push(names(dueA)+(dueA.length===1?' settles':' settle')+(d.i===0?' today':' '+dn(d.d))+': invoice, insurance and delivery date locked in before lunch.'+(otherA.length?' '+names(otherA)+(otherA.length===1?' is':' are')+' due '+dueTxt(otherA)+'.':''));
-  else if(otherA.length&amp;&amp;!lateA.length)m.push(names(otherA)+(otherA.length===1?' is approved, due ':' are approved, due ')+dueTxt(otherA)+'. Get the invoice and insurance moving now so '+(otherA.length===1?'it lands':'they land')+' on time.');
+  if(lateA.length)m.push('Ring the lender'+(lateA.length&gt;1?'s':'')+' on '+names(lateA)+'. '+(lateA.length===1?'Approved '+ago(lateA[0].since+shift)+', usually '+P.medDec+' days to settle.':'All past the usual '+P.medDec+' days to settle.')+' Find what is holding it.');
+  if(dueA.length)m.push(names(dueA)+(dueA.length===1?' settles':' settle')+(d.i===0?' today':' '+dn(d.d))+'. Invoice, insurance and delivery date in before lunch.'+(otherA.length?' '+names(otherA)+(otherA.length===1?' is':' are')+' due '+dueTxt(otherA)+'.':''));
+  else if(otherA.length&amp;&amp;!lateA.length)m.push(names(otherA)+(otherA.length===1?' is approved, due ':' are approved, due ')+dueTxt(otherA)+'. Invoice and insurance in now.');
   const newL=P.fresh.filter(x=&gt;!x.stale),staleL=P.fresh.filter(x=&gt;x.stale).concat(P.qualified.filter(x=&gt;x.stale));
-  if(newL.length&amp;&amp;mood!=='flat')m.push('Call '+names(newL)+' twice today, not qualified yet.'+(P.ghost&amp;&amp;P.lostN?' Ghosting is your biggest loss, '+P.ghost+' of '+P.lostN+'.':''));
+  if(newL.length&amp;&amp;mood!=='flat')m.push('Call '+names(newL)+' twice today.'+(P.ghost&amp;&amp;P.lostN&amp;&amp;P.ghost/P.lostN&gt;=0.2?' Ghosting is your biggest loss.':''));
   d.partners.forEach(p=&gt;{if(mood==='flat'&amp;&amp;!p.over)return;m.push((p.what==='catch up'?'Catch up with ':'Quarterly review with ')+p.name+(p.over?', '+p.over+' days overdue':', due today')+'.')});
   if(m.length)add(8,12,'Morning',m.join(' '));
   const a=[];
-  P.submitted.forEach(x=&gt;{const s=x.since+shift;if(s&gt;=P.medSub)a.push(x.name+' submitted '+ago(s)+', decisions usually take '+P.medSub+' days: chase the lender after lunch.');else if(mood!=='flat')a.push(x.name+' submitted '+ago(s)+', decision usually in '+P.medSub+' days, give it till '+(P.medSub-s===1?'tomorrow':P.medSub-s+' days')+'.')});
+  P.submitted.forEach(x=&gt;{const s=x.since+shift;if(s&gt;=P.medSub)a.push(x.name+' submitted '+ago(s)+'. Chase the lender after lunch.');else if(mood!=='flat')a.push(x.name+' submitted '+ago(s)+'. Give it till '+(P.medSub-s===1?'tomorrow':P.medSub-s+' days')+'.')});
   const q=P.qualified.filter(x=&gt;!x.stale);
-  if(q.length&amp;&amp;mood!=='flat')a.push(q.length===1?q[0].name+' qualified '+ago(q[0].since+shift)+': docs in and submit today, leads go cold after '+P.ghostDays+' days.':names(q)+' are qualified: docs in and submit today, leads go cold after '+P.ghostDays+' days.');
-  if(staleL.length&amp;&amp;mood!=='flat')a.push(names(staleL)+(staleL.length===1?' has':' have')+' had no movement for over '+P.ghostDays+' days: one last call, then mark it lost and let the numbers breathe.');
-  if(mood==='hot'&amp;&amp;P.timingBack)a.push('Spare energy: ring the '+pl(P.timingBack,'lead')+' marked Timing or Not Ready from the last six weeks, a few come back.');
+  if(q.length&amp;&amp;mood!=='flat')a.push((q.length===1?q[0].name+' qualified '+ago(q[0].since+shift):names(q)+' are qualified')+'. Docs in and submit today.');
+  if(staleL.length&amp;&amp;mood!=='flat')a.push(names(staleL)+(staleL.length===1?' has':' have')+' gone quiet. One last call, then mark it lost.');
+  if(mood==='hot'&amp;&amp;P.timingBack)a.push('Spare energy: ring the '+pl(P.timingBack,'lead')+' marked Timing or Not Ready, a few come back.');
   if(a.length)add(12,16,'Afternoon',a.join(' '));
   // the lead window
   const flowTxt=d.flow&gt;0?'About '+Math.max(1,Math.round(d.flow))+' come on a '+wd+'.':'';
-  const weakTxt=d.weak?' '+wd+' leads settle '+d.stat.s+' of '+d.stat.n+', be picky.':'';
+  const weakTxt=d.weak?' They settle '+d.stat.s+' of '+d.stat.n+', be picky.':'';
   const nextBuy=P.days.find(x=&gt;x.i&gt;0&amp;&amp;(x.buy||x.take));
   let w='';
-  if(mood==='flat')w='Bot off, flat day. The must-dos above, then knock off. The leads keep'+(nextBuy?' till '+COACH_DAYS[nextBuy.dow]+(nextBuy.wk&amp;&amp;P.WK.cheap?', where they come cheaper anyway':''):'')+'.';
-  else if(mood==='hot'&amp;&amp;P.run==='cold')w='Fired up, but the last '+P.decided+' buys went nowhere. Put it into the pipe and the call backs, not new leads.';
-  else if(mood==='hot'&amp;&amp;d.take)w='Fired up: bot on all day, take everything that fits. '+flowTxt+weakTxt;
-  else if(d.wind)w='No buying, winding down for Christmas. Anything bought now sits over the break.';
-  else if(P.run==='cold'&amp;&amp;!d.buy&amp;&amp;!d.take)w='Bot off. Let the ones you have settle, fresh leads '+(P.nextMon&gt;=0?'from Monday':'next week')+'.';
+  if(mood==='flat')w='Bot off, flat day. Must-dos, then knock off. The leads keep'+(nextBuy?' till '+COACH_DAYS[nextBuy.dow]+(nextBuy.wk&amp;&amp;P.WK.cheap?', cheaper there anyway':''):'')+'.';
+  else if(mood==='hot'&amp;&amp;P.run==='cold')w='Fired up, but the last '+P.decided+' buys went nowhere. Put it into the pipe, not new leads.';
+  else if(mood==='hot'&amp;&amp;d.take)w='Fired up. Bot on all day, take everything that fits. '+flowTxt+weakTxt;
+  else if(d.wind)w='No buying, winding down for Christmas.';
+  else if(P.run==='cold'&amp;&amp;!d.buy&amp;&amp;!d.take)w='Bot off. Let the pipe settle, fresh leads '+(P.nextMon&gt;=0?'Monday':'next week')+'.';
   else if(d.take)w='Bot on, take the leads. '+flowTxt+weakTxt;
-  else if(d.buy&amp;&amp;P.poolBad)w='Bot on for the clean ones only, buy '+d.buy+'. This month\'s leads are failing on money, not on you, so let the borderline ones go.';
+  else if(d.buy&amp;&amp;P.poolBad)w='Bot on for clean ones only, buy '+d.buy+'. Let the borderline ones go.';
   else if(d.buy)w='Bot on, buy '+d.buy+'. '+flowTxt+weakTxt;
-  else if(d.i===0&amp;&amp;P.hour&gt;=P.lateCut)w='Too late to buy today, leads bought after '+coachHour(P.lateCut)+' sit overnight and go cold.';
-  else if(P.state==='off')w='Bot off today. The floor is gone for '+P.monthName+', the next buys are for '+P.nextName+'.'+(d.weak?weakTxt:'');
+  else if(d.i===0&amp;&amp;P.hour&gt;=P.lateCut)w='Too late to buy today. Leads bought after '+coachHour(P.lateCut)+' sit overnight and go cold.';
+  else if(P.state==='off')w='Bot off today. The next buys are for '+P.nextName+'.'+(d.weak?weakTxt:'');
   else w='Bot off today, the pipe carries it.'+(d.weak?weakTxt:'');
   const ws=win?win[0]:14,we=win?win[1]:16;
   add(ws,we,win?winTxt:'Leads',w);
   if(q.length&amp;&amp;we&gt;=16&amp;&amp;we&lt;=18&amp;&amp;mood!=='flat')add(we,20,'After '+coachHour(we),'Submit whatever has docs in, then done.');
   out.blocks.sort((x,y)=&gt;x.s-y.s);
   if(!out.blocks.some(b=&gt;b.t==='Morning'||b.t==='Afternoon')){
-    if(mood==='flat')out.blocks.unshift({s:8,e:12,t:'Morning',what:'Nothing is due. Flat day and a clear pipe, knock off early.'});
-    else if(!d.buy&amp;&amp;!d.take)out.blocks.unshift({s:8,e:12,t:'Morning',what:'Nothing due. Good day for partner calls, follow ups and admin.'});
+    if(mood==='flat')out.blocks.unshift({s:8,e:12,t:'Morning',what:'Nothing due. Knock off early.'});
+    else if(!d.buy&amp;&amp;!d.take)out.blocks.unshift({s:8,e:12,t:'Morning',what:'Nothing due. Good day for partner calls and admin.'});
   }
   return out;
 }
@@ -3667,39 +3668,37 @@ function coachHtml(){
   else head='The floor isn\'t on from here, buy for '+P.nextName;
   // the projection, with the reasoning on show
   const byTxt='by the '+endDay;
-  let sub=P.monthName+': '+P.settledN+' settled, about '+P.expRound+' '+byTxt+(P.low&lt;P.high?', between '+P.low+' and '+P.high:'')+'. ';
+  // short lines, one idea each
+  const lines=[];
+  lines.push(P.settledN+' settled, about '+P.expRound+' '+byTxt+'.');
   if(P.approvals.length){
-    const likely=P.approvals.filter(a=&gt;a.p&gt;=0.6).length,maybe=P.approvals.filter(a=&gt;a.p&gt;=0.3&amp;&amp;a.p&lt;0.6).length,no=P.approvals.length-likely-maybe;
-    const decs=P.approvals.map(a=&gt;a.dec.getDate()).filter((v,i,a)=&gt;a.indexOf(v)===i).sort((a,b)=&gt;a-b).map(coachOrd);
-    const decTxt=decs.length&gt;2?'the '+decs[0]+' to the '+decs[decs.length-1]:'the '+decs.join(' and the ');
-    const n=P.approvals.length;
-    if(n&lt;=3)sub+=coachList(P.approvals.map(a=&gt;a.name))+(n===1?' was approved on ':' were approved on ')+decTxt+', '+(n===1?'that usually settles':'those usually settle')+' in '+P.medDec+' days, so ';
-    else sub+=n+' approvals from '+decTxt+' usually settle in '+P.medDec+' days, so ';
-    if(likely===P.approvals.length)sub+=(P.approvals.length===1?'it should land ':'all '+likely+' should land ')+byTxt+'.';
-    else if(likely||maybe)sub+=(likely?likely+' should land '+byTxt:'')+(likely&amp;&amp;maybe?' and ':'')+(maybe?maybe+(maybe===1?' is':' are')+' a maybe':'')+(no?', '+no+(no===1?' lands':' land')+' in '+P.nextName:'')+'.';
-    else sub+=(P.approvals.length===1?'it lands':'they land')+' in '+P.nextName+'.';
-    sub+=' ';
-  }else sub+='Nothing approved yet. ';
-  const up=[];if(P.submitted.length)up.push(P.submitted.length+' submitted');if(P.qualified.length)up.push(P.qualified.length+' qualified');if(P.fresh.length)up.push(pl(P.fresh.length,'new lead'));
-  const upN=P.submitted.length+P.qualified.length+P.fresh.length;
-  if(up.length)sub+=up.join(', ').replace(/, ([^,]*)$/,' and $1')+(upN===1?' is':' are')+' the upside. ';
-  sub+='Floor '+P.floor+(P.record?', record '+P.record.n+' in '+recMonth:'')+'.';
+    const likely=P.approvals.filter(a=&gt;a.p&gt;=0.6),maybe=P.approvals.filter(a=&gt;a.p&gt;=0.3&amp;&amp;a.p&lt;0.6),no=P.approvals.filter(a=&gt;a.p&lt;0.3);
+    const nm=g=&gt;P.approvals.length&lt;=3?coachList(g.map(a=&gt;a.name)):String(g.length);
+    const parts=[];
+    if(likely.length)parts.push(nm(likely)+' should settle '+byTxt+'.');
+    if(maybe.length)parts.push(nm(maybe)+(maybe.length===1&amp;&amp;P.approvals.length&lt;=3?' is':' are')+' a maybe.');
+    if(no.length)parts.push(nm(no)+(no.length===1&amp;&amp;P.approvals.length&lt;=3?' lands':' land')+' in '+P.nextName+'.');
+    lines.push(parts.join(' '));
+  }else lines.push('Nothing approved yet.');
+  const up=[];if(P.submitted.length)up.push(P.submitted.length+' submitted');if(P.qualified.length)up.push(P.qualified.length+' qualified');if(P.fresh.length)up.push(P.fresh.length+' new');
+  if(up.length)lines.push(up.join(', ').replace(/, ([^,]*)$/,' and $1')+' still in play.');
   if(P.inBreak){}
-  else if(P.state==='pace')sub+=' Keep buying at '+P.paceBase+' a week and the floor is on.';
-  else if(P.state==='behind')sub+=' The usual '+P.paceBase+' a week falls short, '+P.paceWeek+' a week gets there.';
-  else if(P.state==='push')sub+=' The floor is a stretch from here, '+P.paceWeek+' a week gives it the best shot.';
-  else if(P.state==='chase')sub+=' About '+pl(P.needLeads,'lead')+' bought now should land the missing '+(P.needSet===1?'one':P.needSet)+'.';
-  else if(P.state==='cold')sub+=' The floor would take about '+pl(P.needLeads,'lead')+' now, not after a run like that. Buy for '+P.nextName+'.';
-  else if(P.state==='off')sub+=' Making the floor would take more leads than can land in time, so leave it.';
+  else if(P.state==='pace')lines.push(P.paceBase+' a week keeps the floor on.');
+  else if(P.state==='behind')lines.push('The floor needs '+P.paceWeek+' a week, not '+P.paceBase+'.');
+  else if(P.state==='push')lines.push('The floor is a stretch. '+P.paceWeek+' a week gives it a shot.');
+  else if(P.state==='chase')lines.push(pl(P.needLeads,'lead')+' now should land the missing '+(P.needSet===1?'one':P.needSet)+'.');
+  else if(P.state==='cold')lines.push('The floor is out of reach after that run. Buy for '+P.nextName+'.');
+  else if(P.state==='off')lines.push('The floor is out of reach. Buy for '+P.nextName+'.');
+  const sub=lines.map(l=&gt;'&lt;div class=&quot;co-sub&quot;&gt;'+esc(l)+'&lt;/div&gt;').join('');
   let runTxt='';
-  if(P.run==='cold')runTxt=P.bad+' of the last '+P.decided+' buys went nowhere. Let the ones you have settle, fresh leads next week.';
-  else if(P.run==='hot')runTxt=P.good+' of the last '+P.decided+' buys are through to a lender. Take what comes this week.';
-  const late=P.late?'&lt;div class=&quot;co-late&quot;&gt;'+pl(P.late,'approval')+(P.late&gt;1?' have':' has')+' gone past the usual '+P.medDec+' days to settle. Ring the lender.&lt;/div&gt;':'';
+  if(P.run==='cold')runTxt=P.bad+' of the last '+P.decided+' buys went nowhere. Rest the bot, fresh leads Monday.';
+  else if(P.run==='hot')runTxt=P.good+' of the last '+P.decided+' buys are with a lender. Take what comes.';
+  const late=P.late?'&lt;div class=&quot;co-late&quot;&gt;'+pl(P.late,'approval')+(P.late&gt;1?' are':' is')+' past the usual '+P.medDec+' days to settle. Ring the lender.&lt;/div&gt;':'';
   const runLine=runTxt?'&lt;div class=&quot;co-run '+P.run+'&quot;&gt;'+esc(runTxt)+'&lt;/div&gt;':'';
-  const restLine=P.rest&amp;&amp;P.rest.txt?'&lt;div class=&quot;co-rest&quot;&gt;'+esc(P.rest.txt)+'&lt;/div&gt;':'';
-  const poolLine=P.poolBad?'&lt;div class=&quot;co-run cold&quot;&gt;'+esc(P.monthName+'\'s leads are failing on money, not on you: '+P.poolNow.money+' of the '+P.poolNow.lost+' lost could not qualify or service'+(P.poolPrevOne.lost?', against '+P.poolPrevOne.money+' of '+P.poolPrevOne.lost+' in '+P.prevMonthName:'')+'. Buy light, let the borderline ones go, and work the approvals, they are the month.')+'&lt;/div&gt;':'';
+  const restLine=P.rest&amp;&amp;P.rest.txt&amp;&amp;!(P.rest.head&amp;&amp;head===P.rest.head)?'&lt;div class=&quot;co-rest&quot;&gt;'+esc(P.rest.txt)+'&lt;/div&gt;':'';
+  const poolLine=P.poolBad?'&lt;div class=&quot;co-run cold&quot;&gt;'+esc(P.monthName+'\'s leads are dying on money, not on you. '+P.poolNow.money+' of the '+P.poolNow.lost+' lost could not get a loan'+(P.poolPrevOne.lost?', '+P.prevMonthName+' was '+P.poolPrevOne.money+' of '+P.poolPrevOne.lost:'')+'. Buy light and work the approvals.')+'&lt;/div&gt;':'';
   const wkLine=P.weekendLine?'&lt;div class=&quot;co-next&quot;&gt;'+esc(P.weekendLine)+'&lt;/div&gt;':'';
-  const nextLine=(P.daysLeft&lt;=7&amp;&amp;!P.inBreak&amp;&amp;P.carryN&gt;=0.5)?'&lt;div class=&quot;co-next&quot;&gt;'+esc(P.nextName+' starts with '+pl(P.approvals.length,'approval')+' and '+pl(P.items.length-P.approvals.length,'open lead')+' carrying over, worth about '+Math.round(P.carryN)+(Math.round(P.carryN)===1?' settlement':' settlements')+' before you buy anything.')+'&lt;/div&gt;':'';
+  const nextLine=(P.daysLeft&lt;=7&amp;&amp;!P.inBreak&amp;&amp;P.carryN&gt;=0.5)?'&lt;div class=&quot;co-next&quot;&gt;'+esc(P.nextName+' starts with '+pl(P.approvals.length,'approval')+' and '+pl(P.items.length-P.approvals.length,'lead')+' carrying over, about '+Math.round(P.carryN)+(Math.round(P.carryN)===1?' settlement':' settlements')+' before you buy.')+'&lt;/div&gt;':'';
   // tiles
   const t1='&lt;div class=&quot;co-tile&quot;&gt;&lt;div class=&quot;co-tl&quot;&gt;This month&lt;/div&gt;&lt;div class=&quot;co-tv&quot;&gt;'+P.settledN+' settled&lt;/div&gt;&lt;div class=&quot;co-ts&quot;&gt;'+money(P.gross)+', about '+P.expRound+' and '+k(P.expGross)+' expected&lt;/div&gt;&lt;/div&gt;';
   let fs=P.state==='on'?'on track':P.state==='pace'?'on pace at '+P.paceBase+' a week':P.state==='behind'?P.paceWeek+' a week gets there':P.state==='push'?'a stretch, '+P.paceWeek+' a week':P.state==='chase'?pl(P.needSet,'more settlement')+' needed':pl(P.needSet,'more settlement')+' short, buy for '+P.nextName;
@@ -3752,7 +3751,7 @@ function coachHtml(){
     if(d.weak&amp;&amp;!d.off&amp;&amp;!d.hol&amp;&amp;!d.brk&amp;&amp;d.dow&gt;0&amp;&amp;d.dow&lt;6)n.push(COACH_DAYS[d.dow]+' leads settle '+d.stat.s+' of '+d.stat.n);
     return '&lt;div class=&quot;co-day'+(cls?' '+cls:'')+'&quot;&gt;&lt;span class=&quot;co-dn&quot;&gt;'+dayName(d)+'&lt;small&gt;'+dateTxt(d)+'&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;co-dw&quot;&gt;'+what+'&lt;/span&gt;&lt;span class=&quot;co-ds&quot;&gt;'+n.join(', ')+'&lt;/span&gt;&lt;/div&gt;'});
   const foot='From the sheet'+(P.bot.n?' and '+P.bot.n+' bot fights'+(P.bot.last?' to '+P.bot.last.getDate()+' '+COACH_MONTHS[P.bot.last.getMonth()].slice(0,3):''):', open the Lead Bot tab once for the best days')+'. '+Math.round(P.conv*100)+'% of paid leads settle, '+P.medLead+' days from lead to settlement, '+P.medSub+' to a decision, '+P.medDec+' from approval to settled. A paid lead is worth about '+money(P.conv*P.avgComm*P.split)+' to you.';
-  return '&lt;div class=&quot;coach&quot;&gt;&lt;div class=&quot;co-head&quot;&gt;'+esc(head)+'&lt;/div&gt;&lt;div class=&quot;co-sub&quot;&gt;'+esc(sub)+'&lt;/div&gt;'+late+runLine+poolLine+restLine+nextLine+wkLine+'&lt;div class=&quot;co-tiles&quot;&gt;'+t1+t2+t3+t4+'&lt;/div&gt;'+dayHtml+'&lt;div class=&quot;co-week&quot;&gt;&lt;div class=&quot;co-tt&quot;&gt;The week&lt;/div&gt;'+rows.join('')+'&lt;/div&gt;&lt;div class=&quot;co-foot&quot;&gt;'+esc(foot)+'&lt;/div&gt;&lt;/div&gt;';
+  return '&lt;div class=&quot;coach&quot;&gt;&lt;div class=&quot;co-head&quot;&gt;'+esc(head)+'&lt;/div&gt;'+sub+late+runLine+poolLine+restLine+nextLine+wkLine+'&lt;div class=&quot;co-tiles&quot;&gt;'+t1+t2+t3+t4+'&lt;/div&gt;'+dayHtml+'&lt;div class=&quot;co-week&quot;&gt;&lt;div class=&quot;co-tt&quot;&gt;The week&lt;/div&gt;'+rows.join('')+'&lt;/div&gt;&lt;div class=&quot;co-foot&quot;&gt;'+esc(foot)+'&lt;/div&gt;&lt;/div&gt;';
 }
 /* the cached feed may have painted before this script parsed, so paint again with the coach on */
 try{if(typeof D!=='undefined'&amp;&amp;D&amp;&amp;D.leads&amp;&amp;D.leads.length&amp;&amp;typeof render==='function')render()}catch(e){}

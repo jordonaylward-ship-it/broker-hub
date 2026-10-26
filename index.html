@@ -3361,6 +3361,14 @@ function coachPlan(leads){
   // why deals die, and how long he gives a quiet lead
   const lostBy={};let lostN=0;leads.forEach(l=&gt;{if(!isLost(l))return;lostN++;const k=l.lostReason||'';if(k)lostBy[k]=(lostBy[k]||0)+1});
   const timingBack=leads.filter(l=&gt;isLost(l)&amp;&amp;l.lostReason==='Timing / Not Ready'&amp;&amp;parseDate(l.date)&amp;&amp;coachDays(today,parseDate(l.date))&lt;=45).length;
+  // this month's pool: when the leads die on money and policy, that is the pool, not the calls
+  const moneyRe=/Serviceability|Not Qualified|Declined/;
+  const poolOf=months=&gt;{const c=leads.filter(l=&gt;months.includes(l.month)&amp;&amp;l.cost&gt;0);const lost=c.filter(isLost);return {bought:c.length,lost:lost.length,money:lost.filter(l=&gt;moneyRe.test(l.lostReason||'')).length,settled:c.filter(isSet).length}};
+  const poolNow=poolOf([ym]),poolPrev=poolOf(recent);
+  const prevShare=poolPrev.lost?poolPrev.money/poolPrev.lost:0.3;
+  const poolBad=poolNow.bought&gt;=8&amp;&amp;poolNow.lost&gt;=5&amp;&amp;poolNow.money/poolNow.lost&gt;=0.5&amp;&amp;poolNow.money/poolNow.lost&gt;=prevShare*1.4;
+  const prevMonthName=COACH_MONTHS[new Date(now.getFullYear(),now.getMonth()-1,1).getMonth()];
+  const poolPrevOne=poolOf([recent[0]]);
   const ghost=lostBy['No Response / Ghosted']||0;
   const ghostDays=(()=&gt;{const a=[];leads.forEach(l=&gt;{if(!isLost(l)||l.lostReason!=='No Response / Ghosted')return;const d0=parseDate(l.date),dl=parseDate(l.lostDate);if(d0&amp;&amp;dl)a.push(Math.max(0,coachDays(dl,d0)))});return Math.max(3,qt(a,0.5)||5)})();
   // ── past months: the record and the usual month the floor starts from ──
@@ -3456,6 +3464,7 @@ function coachPlan(leads){
   const chase=state==='chase';
   let paceWeek=(state==='behind'||state==='push')?paceNeed:paceBase;
   if(run==='hot')paceWeek=Math.max(paceWeek,paceBase+2);
+  if(poolBad&amp;&amp;run!=='hot'&amp;&amp;!chase)paceWeek=Math.min(paceWeek,Math.max(1,paceBase-2));
   if(run==='cold')paceWeek=0;
   // ── the week ahead ──
   const partners=coachPartners();
@@ -3529,7 +3538,7 @@ function coachPlan(leads){
     else if(needVolume){weekendWhy='volume';weekendLine='The floor needs the volume and '+wkFact+', so be on '+wkNames+'.'}
     else if(run==='hot'){weekendWhy='hot';weekendLine='It is running hot and '+wkFact+'. Worth being on '+wkNames+'.'}
   }else if(WK.cheap&amp;&amp;WK.flow&gt;0&amp;&amp;!inBreak&amp;&amp;!wkOnDays.length&amp;&amp;days.some(x=&gt;x.wk))weekendLine='Weekend leads come about $'+WK.saving+' cheaper, about '+Math.max(1,Math.round(WK.flow))+' a day. There if you want them, the week has it covered.';
-  return {now,hour,lateCut,mood,flatRecent,flatWeek,shortWeek,todayKey,timingBack,WK,weekendOn,weekendWhy,weekendLine,ym,daysLeft,settleLeft,lastSettle,monthName,nextName,gross,settledN:settledMo.length,expGross,expN,expRound,low,high,carryN,items,approvals,submitted,qualified,fresh,late,
+  return {now,hour,lateCut,mood,flatRecent,flatWeek,shortWeek,todayKey,timingBack,poolBad,poolNow,poolPrevOne,prevMonthName,WK,weekendOn,weekendWhy,weekendLine,ym,daysLeft,settleLeft,lastSettle,monthName,nextName,gross,settledN:settledMo.length,expGross,expN,expRound,low,high,carryN,items,approvals,submitted,qualified,fresh,late,
     conv,convAll,pApprSet,pQual,avgComm,split,medLead,medDec,medSub,slowDec,slowSub,ghost,ghostDays,lostN,pNew,floor,floorDefault,record,recordNow,short,needSet,needLeads,state,chase,paceNeed,run,bad,good,decided:decided.length,
     spent,boughtWeek,budget,price,paceWeek,paceBase,recentPaid,days,nextMon,bot,rest,inBreak,xmasSoon,backDay,windDown,goodMonths,streak,lastBreak,partners};
 }
@@ -3586,6 +3595,7 @@ function coachDay(P,d){
   else if(d.wind)w='No buying, winding down for Christmas. Anything bought now sits over the break.';
   else if(P.run==='cold'&amp;&amp;!d.buy&amp;&amp;!d.take)w='Bot off. Let the ones you have settle, fresh leads '+(P.nextMon&gt;=0?'from Monday':'next week')+'.';
   else if(d.take)w='Bot on, take the leads. '+flowTxt+weakTxt;
+  else if(d.buy&amp;&amp;P.poolBad)w='Bot on for the clean ones only, buy '+d.buy+'. This month\'s leads are failing on money, not on you, so let the borderline ones go.';
   else if(d.buy)w='Bot on, buy '+d.buy+'. '+flowTxt+weakTxt;
   else if(d.i===0&amp;&amp;P.hour&gt;=P.lateCut)w='Too late to buy today, leads bought after '+coachHour(P.lateCut)+' sit overnight and go cold.';
   else if(P.state==='off')w='Bot off today. The floor is gone for '+P.monthName+', the next buys are for '+P.nextName+'.'+(d.weak?weakTxt:'');
@@ -3687,6 +3697,7 @@ function coachHtml(){
   const late=P.late?'&lt;div class=&quot;co-late&quot;&gt;'+pl(P.late,'approval')+(P.late&gt;1?' have':' has')+' gone past the usual '+P.medDec+' days to settle. Ring the lender.&lt;/div&gt;':'';
   const runLine=runTxt?'&lt;div class=&quot;co-run '+P.run+'&quot;&gt;'+esc(runTxt)+'&lt;/div&gt;':'';
   const restLine=P.rest&amp;&amp;P.rest.txt?'&lt;div class=&quot;co-rest&quot;&gt;'+esc(P.rest.txt)+'&lt;/div&gt;':'';
+  const poolLine=P.poolBad?'&lt;div class=&quot;co-run cold&quot;&gt;'+esc(P.monthName+'\'s leads are failing on money, not on you: '+P.poolNow.money+' of the '+P.poolNow.lost+' lost could not qualify or service'+(P.poolPrevOne.lost?', against '+P.poolPrevOne.money+' of '+P.poolPrevOne.lost+' in '+P.prevMonthName:'')+'. Buy light, let the borderline ones go, and work the approvals, they are the month.')+'&lt;/div&gt;':'';
   const wkLine=P.weekendLine?'&lt;div class=&quot;co-next&quot;&gt;'+esc(P.weekendLine)+'&lt;/div&gt;':'';
   const nextLine=(P.daysLeft&lt;=7&amp;&amp;!P.inBreak&amp;&amp;P.carryN&gt;=0.5)?'&lt;div class=&quot;co-next&quot;&gt;'+esc(P.nextName+' starts with '+pl(P.approvals.length,'approval')+' and '+pl(P.items.length-P.approvals.length,'open lead')+' carrying over, worth about '+Math.round(P.carryN)+(Math.round(P.carryN)===1?' settlement':' settlements')+' before you buy anything.')+'&lt;/div&gt;':'';
   // tiles
@@ -3741,7 +3752,7 @@ function coachHtml(){
     if(d.weak&amp;&amp;!d.off&amp;&amp;!d.hol&amp;&amp;!d.brk&amp;&amp;d.dow&gt;0&amp;&amp;d.dow&lt;6)n.push(COACH_DAYS[d.dow]+' leads settle '+d.stat.s+' of '+d.stat.n);
     return '&lt;div class=&quot;co-day'+(cls?' '+cls:'')+'&quot;&gt;&lt;span class=&quot;co-dn&quot;&gt;'+dayName(d)+'&lt;small&gt;'+dateTxt(d)+'&lt;/small&gt;&lt;/span&gt;&lt;span class=&quot;co-dw&quot;&gt;'+what+'&lt;/span&gt;&lt;span class=&quot;co-ds&quot;&gt;'+n.join(', ')+'&lt;/span&gt;&lt;/div&gt;'});
   const foot='From the sheet'+(P.bot.n?' and '+P.bot.n+' bot fights'+(P.bot.last?' to '+P.bot.last.getDate()+' '+COACH_MONTHS[P.bot.last.getMonth()].slice(0,3):''):', open the Lead Bot tab once for the best days')+'. '+Math.round(P.conv*100)+'% of paid leads settle, '+P.medLead+' days from lead to settlement, '+P.medSub+' to a decision, '+P.medDec+' from approval to settled. A paid lead is worth about '+money(P.conv*P.avgComm*P.split)+' to you.';
-  return '&lt;div class=&quot;coach&quot;&gt;&lt;div class=&quot;co-head&quot;&gt;'+esc(head)+'&lt;/div&gt;&lt;div class=&quot;co-sub&quot;&gt;'+esc(sub)+'&lt;/div&gt;'+late+runLine+restLine+nextLine+wkLine+'&lt;div class=&quot;co-tiles&quot;&gt;'+t1+t2+t3+t4+'&lt;/div&gt;'+dayHtml+'&lt;div class=&quot;co-week&quot;&gt;&lt;div class=&quot;co-tt&quot;&gt;The week&lt;/div&gt;'+rows.join('')+'&lt;/div&gt;&lt;div class=&quot;co-foot&quot;&gt;'+esc(foot)+'&lt;/div&gt;&lt;/div&gt;';
+  return '&lt;div class=&quot;coach&quot;&gt;&lt;div class=&quot;co-head&quot;&gt;'+esc(head)+'&lt;/div&gt;&lt;div class=&quot;co-sub&quot;&gt;'+esc(sub)+'&lt;/div&gt;'+late+runLine+poolLine+restLine+nextLine+wkLine+'&lt;div class=&quot;co-tiles&quot;&gt;'+t1+t2+t3+t4+'&lt;/div&gt;'+dayHtml+'&lt;div class=&quot;co-week&quot;&gt;&lt;div class=&quot;co-tt&quot;&gt;The week&lt;/div&gt;'+rows.join('')+'&lt;/div&gt;&lt;div class=&quot;co-foot&quot;&gt;'+esc(foot)+'&lt;/div&gt;&lt;/div&gt;';
 }
 /* the cached feed may have painted before this script parsed, so paint again with the coach on */
 try{if(typeof D!=='undefined'&amp;&amp;D&amp;&amp;D.leads&amp;&amp;D.leads.length&amp;&amp;typeof render==='function')render()}catch(e){}

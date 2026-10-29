@@ -11875,7 +11875,7 @@ return{fileToText:fileToText,classify:classify,parseLicence:parseLicence,parsePa
    A failed fetch is tried again instead of being dropped. Big leads arrive in parts and are put back
    together here, so nothing expires early. Load last lead asks the relay for anything newer first. */
 window.ZB=(function(){
-  var PAIR='zbot_pair_v1',SEEN='zbot_seen_v1',HOST='https://ntfy.sh/';
+  var PAIR='zbot_pair_v1',SEEN='zbot_seen_v1',SEENL='zbot_seenlead_v1',HOST='https://ntfy.sh/';
   var te=new TextEncoder(),es=null,cb=null,keyP=null,topic=null,timer=null,took={},tries={},parts={},why='';
   function hex(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
   function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var bin=atob(s),a=new Uint8Array(bin.length);for(var i=0;i&lt;bin.length;i++)a[i]=bin.charCodeAt(i);return a}
@@ -11883,6 +11883,9 @@ window.ZB=(function(){
   function seenList(){try{return JSON.parse(localStorage.getItem(SEEN)||'[]')}catch(e){return[]}}
   function markSeen(k){var l=seenList();if(l.indexOf(k)&lt;0){l.push(k);try{localStorage.setItem(SEEN,JSON.stringify(l.slice(-80)))}catch(e){}}}
   function isSeen(k){return !!took[k]||seenList().indexOf(k)&gt;-1}
+  function seenLeads(){try{return JSON.parse(localStorage.getItem(SEENL)||'[]')}catch(e){return[]}}
+  function markLead(id){id=String(id||'');if(!id)return;var l=seenLeads();if(l.indexOf(id)&lt;0){l.push(id);try{localStorage.setItem(SEENL,JSON.stringify(l.slice(-80)))}catch(e){}}}
+  function leadSeen(id){id=String(id||'');return !!id&amp;&amp;seenLeads().indexOf(id)&gt;-1}
   async function derive(c){
     var t=await crypto.subtle.digest('SHA-256',te.encode('zbot-topic|'+c));
     var k=await crypto.subtle.digest('SHA-256',te.encode('zbot-key|'+c));
@@ -11917,7 +11920,7 @@ window.ZB=(function(){
       if(msg.attachment&amp;&amp;msg.attachment.url){var r=await fetch(msg.attachment.url);if(!r.ok)throw new Error('expired');body=await r.text();}
       else{body=assemble(msg);if(body==null){why='parts';return false}}
       var L=await unlock(body,(await keyP).key);
-      if(L&amp;&amp;L.v===1){took[k]=1;why='ok';cb(L,k,!!direct);return true}
+      if(L&amp;&amp;L.v===1){if(!direct&amp;&amp;leadSeen(L.leadId)){took[k]=1;why='seen';return false}took[k]=1;why='ok';cb(L,k,!!direct);return true}
       why='locked';
     }catch(e){why=(e&amp;&amp;e.message==='expired')?'expired':'locked'}
     tries[k]=(tries[k]||0)+1;if(tries[k]&gt;=4)took[k]=1;
@@ -11939,29 +11942,31 @@ window.ZB=(function(){
     }catch(e){why='offline'}
     return false;
   }
-  /* a short read of the relay for the pair box: who is on it, when, and whether it can be opened here */
+  /* the leads on the relay from the last 12 hours, newest first, each with its state and the lead itself when it opens */
   async function list(){
-    if(!topic)return 'Not paired on this device.';
+    if(!topic)return [];
+    var out=[];
     try{
       var r=await fetch(HOST+topic+'/json?poll=1&amp;since=12h');
-      var all=(await r.text()).split('\n').filter(Boolean).map(function(l){try{return JSON.parse(l)}catch(e){return null}}).filter(leadish).sort(function(a,b){return (a.time||0)-(b.time||0)});
-      if(!all.length)return 'Nothing on the relay in the last 12 hours.';
+      var raw=(await r.text()).split('\n').filter(Boolean).map(function(l){try{return JSON.parse(l)}catch(e){return null}}).filter(function(m){return m&amp;&amp;m.event==='message'});
+      var odd=raw.filter(function(m){return !leadish(m)});
+      var all=raw.filter(leadish).sort(function(a,b){return (a.time||0)-(b.time||0)});
+      if(odd.length){var o=odd[odd.length-1];out.push({key:o.id,time:(o.time||0)*1000,state:'odd',name:'',leadId:'',L:null,count:odd.length})}
       all.forEach(function(m){if(partOf(m.message))assemble(m)});
       var keys=[];all.forEach(function(m){var k=keyOf(m);if(k&amp;&amp;keys.indexOf(k)&lt;0)keys.push(k)});
-      var out=[];
-      for(var i=keys.length-1;i&gt;=0&amp;&amp;out.length&lt;4;i--){
+      for(var i=keys.length-1;i&gt;=0&amp;&amp;out.length&lt;5;i--){
         var k=keys[i],ms=all.filter(function(m){return keyOf(m)===k}),m=ms[ms.length-1];
-        var t=new Date((m.time||0)*1000).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
-        var st='',name='',body=null;
+        var row={key:k,time:(m.time||0)*1000,state:'',name:'',leadId:'',L:null};
         try{
+          var body=null;
           if(m.attachment&amp;&amp;m.attachment.url){var rr=await fetch(m.attachment.url);if(!rr.ok)throw new Error('expired');body=await rr.text()}
-          else{var p=partOf(m.message);if(p){var P=parts[p.pid];if(!P||P.count&lt;P.n)st='still arriving, '+(P?P.count:0)+' of '+p.n+' parts';else body=assemble(m)}else body=m.message}
-          if(body){var L=await unlock(body,(await keyP).key);name=(L&amp;&amp;L.d&amp;&amp;L.d.clientName)||(L&amp;&amp;L.leadId?'lead '+L.leadId:'');st=isSeen(k)?'seen here':'ready'}
-        }catch(e){st=(e&amp;&amp;e.message==='expired')?'expired on the relay':'will not unlock'}
-        out.push((name||'a lead')+' at '+t+', '+st);
+          else{var p=partOf(m.message);if(p){var P=parts[p.pid];if(!P||P.count&lt;P.n)row.state='parts';else body=assemble(m)}else body=m.message}
+          if(body){var L=await unlock(body,(await keyP).key);if(L&amp;&amp;L.v===1){row.L=L;row.name=(L.d&amp;&amp;L.d.clientName)||'';row.leadId=L.leadId||'';row.state=(isSeen(k)||leadSeen(L.leadId))?'seen':'ready'}else row.state='locked'}
+        }catch(e){row.state=(e&amp;&amp;e.message==='expired')?'expired':'locked'}
+        out.push(row);
       }
-      return (keys.length&gt;out.length?keys.length+' on the relay. ':'')+out.join(' · ');
-    }catch(e){return 'Cannot reach the relay.'}
+    }catch(e){}
+    return out;
   }
   function stop(){if(es){es.close();es=null}if(timer){clearInterval(timer);timer=null}}
   async function start(onLead){
@@ -11980,6 +11985,8 @@ window.ZB=(function(){
     pair:function(c){try{localStorage.setItem(PAIR,String(c||'').trim())}catch(e){}start()},
     unpair:function(){try{localStorage.removeItem(PAIR)}catch(e){}stop();topic=null;keyP=null},
     seen:function(id){markSeen(id)},
+    seenLead:function(id){markLead(id)},
+    codeHint:function(){var c=code();return c?c.slice(0,6)+'…':''},
     check:function(direct){return poll(direct)},
     why:function(){return why},
     list:function(){return list()},
@@ -13588,7 +13595,7 @@ const [zbPairOpen,setZbPairOpen]=useState(false);
 const [zbCodeIn,setZbCodeIn]=useState(&quot;&quot;);
 const [zbPending,setZbPending]=useState(null);
 const [zbFrom,setZbFrom]=useState(null);
-const [zbLast,setZbLast]=useState(()=&gt;{try{return JSON.parse(localStorage.getItem(&quot;zbot_last_v1&quot;)||&quot;null&quot;)}catch(e){return null}}); const [zbRelay,setZbRelay]=useState(&quot;&quot;);
+const [zbLast,setZbLast]=useState(()=&gt;{try{return JSON.parse(localStorage.getItem(&quot;zbot_last_v1&quot;)||&quot;null&quot;)}catch(e){return null}}); const [zbRecent,setZbRecent]=useState([]);
 const zbRef=useRef({raw:null,d:null,busy:false});
 const [fee,setFee]=useState(()=&gt;{try{return localStorage.getItem(&quot;closer_fee&quot;)||&quot;$1,500&quot;}catch(e){return&quot;$1,500&quot;}});
 const saveFee=(v)=&gt;{setFee(v);try{localStorage.setItem(&quot;closer_fee&quot;,v)}catch(e){}};
@@ -13753,10 +13760,16 @@ const zbApply=(L,id)=&gt;{
   setRes(prev=&gt;({...prev,...(L.callType?{callType:L.callType}:{}),...(L.productType?{productType:L.productType}:{})}));
   setZbFrom({lead:L.leadId,price:L.price,test:L.kind===&quot;test&quot;});
   setShowZinkPaste(true);setZbPending(null);setZbLast({L,id});try{localStorage.setItem(&quot;zbot_last_v1&quot;,JSON.stringify({L,id}))}catch(e){}
-  if(window.ZB)ZB.seen(id);
+  try{const rc=JSON.parse(localStorage.getItem(&quot;zbot_recent_v1&quot;)||&quot;[]&quot;).filter(x=&gt;x&amp;&amp;x.L&amp;&amp;!(x.id===id||(L.leadId&amp;&amp;x.L.leadId===L.leadId)));rc.unshift({L,id,t:Date.now()});localStorage.setItem(&quot;zbot_recent_v1&quot;,JSON.stringify(rc.slice(0,5)))}catch(e){}
+  if(window.ZB){ZB.seen(id);if(ZB.seenLead)ZB.seenLead(L.leadId)}
   toast(L.kind===&quot;test&quot;?&quot;ZBot test lead loaded&quot;:&quot;New lead from ZBot ✓&quot;);
 };
-useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id,direct)=&gt;{if(zbRef.current.busy&amp;&amp;!direct)setZbPending({L,id});else zbApply(L,id);});return()=&gt;ZB.stop();},[]); useEffect(()=&gt;{if(!zbPairOpen||!window.ZB||!ZB.list||!ZB.paired()){setZbRelay(&quot;&quot;);return}let on=true;ZB.list().then(r=&gt;{if(on)setZbRelay(r)});return()=&gt;{on=false}},[zbPairOpen]);
+useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id,direct)=&gt;{if(zbRef.current.busy&amp;&amp;!direct)setZbPending({L,id});else zbApply(L,id);});return()=&gt;ZB.stop();},[]); const zbRows=(relay)=&gt;{let dev=[];try{dev=JSON.parse(localStorage.getItem(&quot;zbot_recent_v1&quot;)||&quot;[]&quot;).filter(x=&gt;x&amp;&amp;x.L)}catch(e){}
+  const rows=[];const same=(a,b)=&gt;(a.leadId&amp;&amp;b.leadId&amp;&amp;String(a.leadId)===String(b.leadId))||(a.key&amp;&amp;b.key&amp;&amp;a.key===b.key);
+  (relay||[]).forEach(r=&gt;{rows.push({key:r.key,leadId:r.leadId,name:r.name,time:r.time,state:r.state,L:r.L,id:r.key})});
+  dev.forEach(x=&gt;{const row={key:x.id,leadId:x.L.leadId||'',name:(x.L.d&amp;&amp;x.L.d.clientName)||'',time:x.t||0,state:'seen',L:x.L,id:x.id};const hit=rows.find(r=&gt;same(r,row));if(hit){if(!hit.L){hit.L=row.L;hit.name=hit.name||row.name;hit.state='seen'}if(!hit.name)hit.name=row.name}else rows.push(row)});
+  rows.sort((a,b)=&gt;(b.time||0)-(a.time||0));return rows.slice(0,3)};
+useEffect(()=&gt;{if(!zbPairOpen){return}setZbRecent(zbRows([]));if(!window.ZB||!ZB.list||!ZB.paired())return;let on=true;ZB.list().then(r=&gt;{if(on)setZbRecent(zbRows(r))});return()=&gt;{on=false}},[zbPairOpen]);
 useEffect(()=&gt;{const full=String(clientData.clientName||[clientData.firstName,clientData.lastName].filter(Boolean).join(&quot; &quot;)||&quot;&quot;).trim();const first=String(clientData.firstName||full.split(/\s+/)[0]||&quot;&quot;).trim();if(!first)return;try{const c=JSON.parse(localStorage.getItem(&quot;hub_client_v1&quot;)||&quot;null&quot;);if(c&amp;&amp;c.full===full&amp;&amp;c.first===first)return;localStorage.setItem(&quot;hub_client_v1&quot;,JSON.stringify({first:first,full:full,at:Date.now(),src:&quot;local&quot;}))}catch(e){}},[clientData.clientName,clientData.firstName,clientData.lastName]);
 
 const done=Object.keys(res).filter(k=&gt;![&quot;loanAmount&quot;,&quot;weeklyRepayment&quot;,&quot;comfortableAt&quot;].includes(k)).length;
@@ -13809,7 +13822,7 @@ return(
 &lt;span style={{width:8,height:8,borderRadius:&quot;50%&quot;,background:&quot;#34d399&quot;,flex:&quot;0 0 auto&quot;}}/&gt;
 &lt;span style={{whiteSpace:&quot;nowrap&quot;,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;,minWidth:0}}&gt;New lead from ZBot{zbPending.L.d&amp;&amp;zbPending.L.d.clientName?` · ${zbPending.L.d.clientName}`:&quot;&quot;}&lt;/span&gt;
 &lt;button className=&quot;btn bp&quot; onClick={()=&gt;zbApply(zbPending.L,zbPending.id)} style={{fontSize:11,padding:&quot;5px 12px&quot;}}&gt;Load&lt;/button&gt;
-&lt;button className=&quot;btn&quot; onClick={()=&gt;{if(window.ZB)ZB.seen(zbPending.id);setZbPending(null)}} style={{fontSize:11,padding:&quot;5px 10px&quot;}}&gt;✕&lt;/button&gt;
+&lt;button className=&quot;btn&quot; onClick={()=&gt;{if(window.ZB){ZB.seen(zbPending.id);if(ZB.seenLead)ZB.seenLead(zbPending.L&amp;&amp;zbPending.L.leadId)}setZbPending(null)}} style={{fontSize:11,padding:&quot;5px 10px&quot;}}&gt;✕&lt;/button&gt;
 &lt;/div&gt;)}
 {zbPairOpen&amp;&amp;(
 &lt;div className=&quot;overlay&quot; onClick={()=&gt;setZbPairOpen(false)} style={{zIndex:400}}&gt;
@@ -13819,14 +13832,13 @@ return(
 &lt;button className=&quot;btn&quot; onClick={()=&gt;setZbPairOpen(false)} style={{padding:&quot;6px 12px&quot;,fontSize:12}}&gt;✕&lt;/button&gt;
 &lt;/div&gt;
 &lt;div style={{padding:20}}&gt;
-&lt;div style={{fontSize:12,color:zbOn?&quot;#34d399&quot;:&quot;#8b9dc3&quot;,marginBottom:10,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{!ZB.ok()?&quot;This browser can't open ZBot leads. Update it or use Chrome.&quot;:zbOn?&quot;Paired. Won leads load here by themselves.&quot;:&quot;Paste the pair code from ZBot.&quot;}&lt;/div&gt;
+&lt;div style={{fontSize:12,color:zbOn?&quot;#34d399&quot;:&quot;#8b9dc3&quot;,marginBottom:10,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{!ZB.ok()?&quot;This browser can't open ZBot leads. Update it or use Chrome.&quot;:zbOn?&quot;Paired as &quot;+(ZB.codeHint?ZB.codeHint():&quot;&quot;)+&quot; Won leads load here by themselves.&quot;:&quot;Paste the pair code from ZBot.&quot;}&lt;/div&gt;
 &lt;input value={zbCodeIn} onChange={e=&gt;setZbCodeIn(e.target.value)} placeholder=&quot;Pair code&quot; style={{width:&quot;100%&quot;,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:&quot;10px 12px&quot;,color:&quot;#eef0ff&quot;,fontSize:12,fontFamily:&quot;'SF Mono',monospace&quot;,outline:&quot;none&quot;}}/&gt;
 &lt;div style={{display:&quot;flex&quot;,gap:6,marginTop:12}}&gt;
 &lt;button className=&quot;btn bp&quot; disabled={!zbCodeIn.trim()} onClick={()=&gt;{ZB.pair(zbCodeIn);setZbOn(true);setZbPairOpen(false);toast(&quot;ZBot paired ✓&quot;)}} style={{flex:1,padding:10,fontSize:12}}&gt;Save&lt;/button&gt;
 {zbOn&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{ZB.unpair();setZbOn(false);setZbPairOpen(false);toast(&quot;ZBot unpaired&quot;)}} style={{padding:10,fontSize:12}}&gt;Unpair&lt;/button&gt;}
 &lt;/div&gt;
-{(zbOn||zbLast)&amp;&amp;&lt;button className=&quot;btn&quot; onClick={()=&gt;{setZbPairOpen(false);(async()=&gt;{const got=window.ZB?await ZB.check(true):false;if(got)return;const why=window.ZB&amp;&amp;ZB.why?ZB.why():&quot;&quot;;if(why===&quot;expired&quot;){toast(&quot;The newest ZBot lead has expired on the relay. Load it on the computer or send it again from ZBot&quot;);return}if(why===&quot;locked&quot;){toast(&quot;The newest ZBot lead will not unlock here. Check the pair code matches ZBot&quot;);return}if(why===&quot;parts&quot;){toast(&quot;The newest ZBot lead is still arriving, try again in a moment&quot;);return}if(why===&quot;offline&quot;){toast(&quot;Cannot reach the relay right now&quot;);return}if(zbPending){zbApply(zbPending.L,zbPending.id);return}if(zbLast){zbApply(zbLast.L,zbLast.id);toast(&quot;Nothing new on the relay in 12 hours. This is the last one loaded on this device&quot;)}else toast(&quot;No lead from ZBot in the last 12 hours&quot;)})()}} style={{width:&quot;100%&quot;,marginTop:8,padding:10,fontSize:12}}&gt;Load latest lead from ZBot&lt;/button&gt;}
-{zbRelay&amp;&amp;&lt;div style={{marginTop:10,fontSize:11,color:&quot;#8b91b8&quot;,lineHeight:1.5,fontFamily:&quot;'Poppins',sans-serif&quot;}}&gt;{zbRelay}&lt;/div&gt;}
+{zbRecent.length&gt;0&amp;&amp;&lt;div style={{marginTop:14,borderTop:&quot;1px solid #181c36&quot;}}&gt;{zbRecent.map((r,i)=&gt;{const when=(()=&gt;{if(!r.time)return&quot;&quot;;const dt=new Date(r.time),now=new Date();const t=dt.toLocaleTimeString(&quot;en-AU&quot;,{hour:&quot;numeric&quot;,minute:&quot;2-digit&quot;});return dt.toDateString()===now.toDateString()?t:dt.toLocaleDateString(&quot;en-AU&quot;,{weekday:&quot;short&quot;})+&quot; &quot;+t})();const st=r.state===&quot;ready&quot;?&quot;new&quot;:r.state===&quot;seen&quot;?&quot;loaded here&quot;:r.state===&quot;parts&quot;?&quot;still arriving&quot;:r.state===&quot;expired&quot;?&quot;expired on the relay&quot;:r.state===&quot;locked&quot;?&quot;will not unlock&quot;:r.state===&quot;odd&quot;?&quot;the hub cannot read this, update ZBot or the hub&quot;:&quot;&quot;;const can=!!r.L;return(&lt;div key={r.key||i} onClick={()=&gt;{setZbPairOpen(false);if(can)zbApply(r.L,r.id);else toast(r.state===&quot;parts&quot;?&quot;Still arriving, try again in a moment&quot;:r.state===&quot;expired&quot;?&quot;That one has expired on the relay. Load it on the computer or send it again from ZBot&quot;:&quot;That one will not unlock here. Check the pair code matches ZBot&quot;)}} style={{display:&quot;flex&quot;,alignItems:&quot;center&quot;,justifyContent:&quot;space-between&quot;,gap:10,padding:&quot;11px 2px&quot;,borderBottom:&quot;1px solid #181c36&quot;,cursor:can?&quot;pointer&quot;:&quot;default&quot;,opacity:can?1:.55}}&gt;&lt;div style={{minWidth:0}}&gt;&lt;div style={{fontSize:13,fontWeight:600,color:&quot;#eef0ff&quot;,fontFamily:&quot;'Poppins',sans-serif&quot;,whiteSpace:&quot;nowrap&quot;,overflow:&quot;hidden&quot;,textOverflow:&quot;ellipsis&quot;}}&gt;{r.name||(r.leadId?&quot;Lead &quot;+r.leadId:r.state===&quot;odd&quot;?(r.count&gt;1?r.count+&quot; messages&quot;:&quot;A message&quot;):&quot;A lead&quot;)}&lt;/div&gt;&lt;div style={{fontSize:11,color:r.state===&quot;ready&quot;?&quot;#34d399&quot;:&quot;#8b91b8&quot;,marginTop:2}}&gt;{[when,st].filter(Boolean).join(&quot; · &quot;)}&lt;/div&gt;&lt;/div&gt;&lt;div style={{fontSize:11,color:&quot;#8b91b8&quot;,flex:&quot;0 0 auto&quot;}}&gt;{can?&quot;Load&quot;:&quot;&quot;}&lt;/div&gt;&lt;/div&gt;)})}&lt;/div&gt;}
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;)}

@@ -1978,7 +1978,7 @@ function budgetBlock(){
   '&lt;/div&gt;';
 }
 /* ═══ TOP 10 BOARD · you against the Top 10 pods, per head · benchmarks from the Ausloans monthly report, update when the next one lands ═══ */
-const TOP10_BENCH={report:'October 2026',heads:3,pod:{settled:22,naf:923844,income:99378,perContract:4497,avgLoan:41993,conv:0.252,warr:0.14,mvi:0.29,ins:0.43},you:{settled:7,naf:246614,income:26528,perContract:3790,avgLoan:35231,billing:13840,conv:0.333,leads:21,warr:0.14,mvi:0.57,ins:0.71,compliance:6},year:{settled:36,naf:1052520,income:84518},reportYm:'2026-10'};
+const TOP10_BENCH={report:'October 2026',heads:3,pod:{settled:22,naf:923844,income:99378,perContract:4497,avgLoan:41993,conv:0.252,warr:0.14,mvi:0.29,ins:0.43},you:{settled:7,naf:246614,income:26528,perContract:3790,avgLoan:35231,billing:13840,conv:0.333,leads:21,warr:0.14,mvi:0.57,ins:0.71,compliance:6},reportYm:'2026-10'};
 function bestMonthOf(leads){
   const by={};leads.forEach(l=&gt;{const ok=(l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Settled&quot;)&amp;&amp;l.settlementMonth;if(!ok)return;by[l.settlementMonth]=by[l.settlementMonth]||{n:0,amt:0};by[l.settlementMonth].n++;by[l.settlementMonth].amt+=(l.settledAmt&gt;0?l.settledAmt:l.requestedAmt||0);});
   const keys=Object.keys(by);if(!keys.length)return null;
@@ -1998,8 +1998,9 @@ function top10Block(leads,targetMonth){
     lines.push('Suncorp on '+p0(b.you.mvi)+' of '+mo+' deals, the Top 10 do '+p0(b.pod.mvi)+'. Warranty '+p0(b.you.warr)+', '+(Math.abs(b.you.warr-b.pod.warr)&lt;0.01?'same as the Top 10.':'the Top 10 do '+p0(b.pod.warr)+'.'));
     lines.push(fmtFull(b.you.perContract)+' a deal in '+mo+', the Top 10 make '+fmtFull(b.pod.perContract)+'. Their loans average '+k(b.pod.avgLoan)+', yours '+k(b.you.avgLoan)+'. That is the whole gap.');
     lines.push('The only gap to a Top 10 pod is volume. '+Math.round(b.pod.settled)+' a month is '+b.heads+' of you, or '+b.heads+' times the leads.');
-    lines.push('Last 12 months: '+b.year.settled+' settled, '+fmtFull(b.year.income)+' income, '+fmtFull(b.year.naf)+' financed.');
-    if(b.you.compliance&gt;0)lines.push(b.you.compliance+' documents still outstanding on settled deals, the report says. Clear them before they hold up a payout.');
+    const y12=(function(){const n=new Date(),f=new Date(n.getFullYear(),n.getMonth()-11,1),fk=f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0');let c=0,a=0;leads.forEach(l=&gt;{if(!((l.finalStatus===&quot;Settled&quot;||l.currentStage===&quot;Settled&quot;)&amp;&amp;l.settlementMonth&amp;&amp;l.settlementMonth&gt;=fk))return;c++;a+=(l.settledAmt&gt;0?l.settledAmt:l.requestedAmt||0)});return {c:c,a:a}})();
+    if(y12.c&gt;0)lines.push('Last 12 months: '+y12.c+' settled, '+fmtFull(y12.a)+' financed.');
+    if(b.you.compliance&gt;0)lines.push('The report shows '+b.you.compliance+' compliance items still open. Worth a quick check.');
     if(moSd&amp;&amp;moSd.settledCount&gt;0&amp;&amp;targetMonth!==b.reportYm)lines.push('This month '+moSd.settledCount+' settled'+(moSd.settledCount&gt;=Math.round(per)?', that is Top 10 pace for one broker.':', '+(Math.round(per)-moSd.settledCount)+' more and you are at Top 10 pace for one broker.'));
     if(bm)lines.push('Best month so far is '+bm.label+', '+bm.n+' settled'+(bm.amt?' and '+fmtFull(bm.amt)+' financed':'')+'.');
     const day=Math.floor(Date.now()/86400000);
@@ -9276,7 +9277,7 @@ Object.assign(PM,{pull:pull,push:push,pushNow:pushNow,payload:payload,merge:merg
 ::-webkit-scrollbar-thumb{background:#252a38;border-radius:6px}
 ::-webkit-scrollbar-thumb:hover{background:#2e3445}
 input,select,textarea{color-scheme:dark}
-.qsubj{font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.12)}.qsubj span{font-weight:600;opacity:.6;margin-right:6px}
+.qsubj{font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.12)}.qsubj span{font-weight:600;opacity:.6;margin-right:6px}.qto{font-weight:600;margin-bottom:6px;word-break:break-all}.qto span{opacity:.6;margin-right:6px}.qto.solo{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.12)}
 .docpick{display:flex;flex-direction:column;gap:6px;margin-top:4px}.docopt{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer;color:inherit}.docopt input{width:16px;height:16px;accent-color:#6a7dff;margin:0}
 &lt;/style&gt;
 &lt;style id=&quot;nightglass&quot;&gt;
@@ -9356,6 +9357,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
       &lt;p class=&quot;warn&quot; id=&quot;qkWpmErr&quot; hidden&gt;That doesn't look like a number, so 40 wpm it is.&lt;/p&gt;
       &lt;div class=&quot;btnrow&quot;&gt;
         &lt;button class=&quot;btn primary&quot; id=&quot;btnQkCopy&quot;&gt;Copy message&lt;/button&gt;
+        &lt;button class=&quot;btn&quot; id=&quot;btnQkTo&quot; style=&quot;display:none&quot;&gt;Copy email&lt;/button&gt;
         &lt;button class=&quot;btn&quot; id=&quot;btnQkSubject&quot;&gt;Copy subject&lt;/button&gt;
         &lt;button class=&quot;btn&quot; id=&quot;btnQkDialpad&quot; title=&quot;Keeps the blank lines when Dialpad would eat them&quot;&gt;Copy for Dialpad&lt;/button&gt;
         &lt;button class=&quot;btn ghost&quot; id=&quot;btnQkEdit&quot;&gt;Edit in Library&lt;/button&gt;
@@ -9868,7 +9870,10 @@ function renderQuickPreview(){
     return v ? '&lt;b&gt;' + esc(v) + '&lt;/b&gt;' : '&lt;span class=&quot;tok&quot;&gt;{' + esc(tok) + '}&lt;/span&gt;';
   });
   const subj = chOf(t) === 'email' &amp;&amp; (t.subject || '').trim() ? '&lt;div class=&quot;qsubj&quot;&gt;&lt;span&gt;Subject&lt;/span&gt; ' + esc(filledSubject(t)).replace(/\{([a-zA-Z0-9_ ]{1,40})\}/g, (m,tok) =&gt; '&lt;span class=&quot;tok&quot;&gt;{' + esc(tok) + '}&lt;/span&gt;') + '&lt;/div&gt;' : '';
-  $('#qkPreview').innerHTML = subj + html;
+  const ce = chOf(t) === 'email' ? rdEmail() : '';
+  const to = ce ? '&lt;div class=&quot;qto' + (subj ? '' : ' solo') + '&quot;&gt;&lt;span&gt;To&lt;/span&gt; ' + esc(ce) + '&lt;/div&gt;' : '';
+  $('#qkPreview').innerHTML = to + subj + html;
+  const tb = $('#btnQkTo'); if(tb) tb.style.display = ce ? '' : 'none';
   const sb = $('#btnQkSubject'); if(sb) sb.style.display = chOf(t) === 'email' &amp;&amp; (t.subject || '').trim() ? '' : 'none';
   $('#qkHelper').textContent = toks.length
     ? (nFilled + ' of ' + toks.length + ' blanks filled. Anything left empty stays highlighted in the preview so it can\u2019t sneak into a sent message.')
@@ -9891,6 +9896,10 @@ $('#qkWpm').addEventListener('input', renderQuickPreview);
 $('#btnQkCopy').addEventListener('click', () =&gt; {
   const t = quickTemplate(); if(!t) return;
   copyText(filledBody(t), 'Copied. Paste it into the email or wherever the conversation is.');
+});
+$('#btnQkTo').addEventListener('click', () =&gt; {
+  const e = rdEmail(); if(!e) return;
+  copyText(e, 'Email copied.', true);
 });
 $('#btnQkSubject').addEventListener('click', () =&gt; {
   const t = quickTemplate(); if(!t) return;
@@ -10520,6 +10529,7 @@ document.getElementById('brandFoot').textContent = BRAND.name + ' v' + BRAND.ver
 document.title = BRAND.name + '. ' + BRAND.tagline;
 /* the client loaded in the Call Script fills every name blank, emails, texts and CRM notes, on every paired device */
 function rdClient(){try{var c=JSON.parse(localStorage.getItem('hub_client_v1')||'null');return c&amp;&amp;c.first?c:null}catch(e){return null}}
+function rdEmail(){var c=rdClient(),e=String(c&amp;&amp;c.email||'').trim();return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)?e:''}
 function rdCap(s){s=String(s||'').trim();return (s===s.toUpperCase()||s===s.toLowerCase())?s.toLowerCase().replace(/(^|[\s'-])([a-z])/g,function(m,a,b){return a+b.toUpperCase()}):s}
 function rdNameFor(tok,c){if(/^first ?name$/i.test(tok))return rdCap(c.first);if(/^(client|full|customer) ?name$/i.test(tok))return rdCap(c.full||c.first);return null}
 function rdApplyClient(){
@@ -10532,7 +10542,7 @@ function rdApplyClient(){
   rdSave();return true;
 }
 function rdWhoPaint(){var el=document.getElementById('qkClient');if(!el)return;var c=rdClient();el.textContent=c?rdCap(c.full||c.first):''}
-window.addEventListener('storage',function(e){if(e&amp;&amp;e.key==='hub_client_v1'&amp;&amp;rdApplyClient())renderAll()});
+window.addEventListener('storage',function(e){if(!e||e.key!=='hub_client_v1')return;if(rdApplyClient())renderAll();else{try{renderQuickPreview();rdWhoPaint()}catch(_){}}});
 rdApplyClient();
 renderAll();
 &lt;/script&gt;
@@ -13786,7 +13796,7 @@ useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id,direct)=&gt;{if(zbRef.curr
   dev.forEach(x=&gt;{const row={key:x.id,leadId:x.L.leadId||'',name:(x.L.d&amp;&amp;x.L.d.clientName)||'',time:x.t||0,state:'seen',L:x.L,id:x.id};const hit=rows.find(r=&gt;same(r,row));if(hit){if(!hit.L){hit.L=row.L;hit.name=hit.name||row.name;hit.state='seen'}if(!hit.name)hit.name=row.name}else rows.push(row)});
   rows.sort((a,b)=&gt;(b.time||0)-(a.time||0));return rows.slice(0,3)};
 useEffect(()=&gt;{if(!zbPairOpen){return}setZbRecent(zbRows([]));if(!window.ZB||!ZB.list||!ZB.paired())return;let on=true;ZB.list().then(r=&gt;{if(on)setZbRecent(zbRows(r))});return()=&gt;{on=false}},[zbPairOpen]);
-useEffect(()=&gt;{const full=String(clientData.clientName||[clientData.firstName,clientData.lastName].filter(Boolean).join(&quot; &quot;)||&quot;&quot;).trim();const first=String(clientData.firstName||full.split(/\s+/)[0]||&quot;&quot;).trim();if(!first)return;try{const c=JSON.parse(localStorage.getItem(&quot;hub_client_v1&quot;)||&quot;null&quot;);if(c&amp;&amp;c.full===full&amp;&amp;c.first===first)return;localStorage.setItem(&quot;hub_client_v1&quot;,JSON.stringify({first:first,full:full,at:Date.now(),src:&quot;local&quot;}))}catch(e){}},[clientData.clientName,clientData.firstName,clientData.lastName]);
+useEffect(()=&gt;{const full=String(clientData.clientName||[clientData.firstName,clientData.lastName].filter(Boolean).join(&quot; &quot;)||&quot;&quot;).trim();const first=String(clientData.firstName||full.split(/\s+/)[0]||&quot;&quot;).trim();if(!first)return;const em=String(clientData.email||&quot;&quot;).trim();const email=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)?em:&quot;&quot;;try{const c=JSON.parse(localStorage.getItem(&quot;hub_client_v1&quot;)||&quot;null&quot;);if(c&amp;&amp;c.full===full&amp;&amp;c.first===first&amp;&amp;(c.email||&quot;&quot;)===email)return;localStorage.setItem(&quot;hub_client_v1&quot;,JSON.stringify({first:first,full:full,email:email,at:Date.now(),src:&quot;local&quot;}))}catch(e){}},[clientData.clientName,clientData.firstName,clientData.lastName,clientData.email]);
 
 const done=Object.keys(res).filter(k=&gt;![&quot;loanAmount&quot;,&quot;weeklyRepayment&quot;,&quot;comfortableAt&quot;].includes(k)).length;
 const total=STAGES.filter(s=&gt;s.key&amp;&amp;!skip(s)).length;
@@ -22726,7 +22736,7 @@ window.hubLock = lock;
 <script>
 /* The client in the Call Script, the same on every device. Whichever device loads a client, the first name
    lands in ReplyDeck on all of them. Locked with the ZBot pair code, passed through ntfy.sh like ZBot leads,
-   and only the name goes. Without a pair code it still works on this device. */
+   and only the name and email go. Without a pair code it still works on this device. */
 (function(){
   var PAIR='zbot_pair_v1',CK='hub_client_v1',HOST='https://ntfy.sh/',te=new TextEncoder();
   var keyP=null,topic=null,es=null,timer=null,busy=false;
@@ -22753,14 +22763,14 @@ window.hubLock = lock;
   }
   async function publish(c){
     if(!topic||!c||!c.first)return;
-    try{await fetch(HOST+topic,{method:'POST',body:await lock({v:1,kind:'client',first:c.first,full:c.full||'',at:c.at})})}catch(e){}
+    try{await fetch(HOST+topic,{method:'POST',body:await lock({v:1,kind:'client',first:c.first,full:c.full||'',email:c.email||'',at:c.at})})}catch(e){}
   }
   async function take(m){
     if(!m||m.event!=='message')return;
     try{
       var L=await unlock(m.message);if(!L||L.kind!=='client'||!L.first)return;
       var c=cur();if(c&&+c.at>=+L.at)return;
-      localStorage.setItem(CK,JSON.stringify({first:L.first,full:L.full||'',at:L.at,src:'relay'}));
+      localStorage.setItem(CK,JSON.stringify({first:L.first,full:L.full||'',email:L.email||'',at:L.at,src:'relay'}));
     }catch(e){}
   }
   async function poll(){

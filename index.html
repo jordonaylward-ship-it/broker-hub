@@ -756,12 +756,12 @@ const ADVANCE_LEDGER={
   // Fixed monthly RCTI overhead estimate · used by the &quot;Net to Bank&quot; forecast.
   // Tuned against April 2026 RCTI actuals. Adjust as PI dispute resolves and patterns settle.
   fixedOverheads:{
-    equifax:60,            // Sept actual $16.93, Aug $109.66, Jul $13.98 · swings with how many files get scored
-    bankStatements:12,     // June $23.84, July $11.92, Aug $8.94, Sept $11.92
-    docusign:110,          // Jul $108.90, Aug $74.25, Sept $138.60 (28 envelopes) · climbs with volume
+    equifax:60,            // Oct actual $44.89, Sept $16.93, Aug $109.66, Jul $13.98 · swings with how many files get scored
+    bankStatements:12,     // June $23.84, July $11.92, Aug $8.94, Sept $11.92, Oct $17.88
+    docusign:110,          // Jul $108.90, Aug $74.25, Sept $138.60 (28 envelopes), Oct $138.60 (28) · climbs with volume
     piInsurance:0,         // Charged once in April, never since (May to Aug clean). The April $580 refund is still owed · keep chasing, but stop forecasting it as a cost.
     otherOverhead:50,      // contingency for ad-hoc adjustments
-    gstCredit:-800         // GST added on the RCTI: May $432, June $410, July $634, Aug $692, Sept $1,486 · it is 10% of the sub total, so it grows with the month
+    gstCredit:-800         // GST added on the RCTI: May $432, June $410, July $634, Aug $692, Sept $1,486, Oct $1,206 · it is 10% of the sub total, so it grows with the month
   },
   months:{
     &quot;2026-03&quot;:{
@@ -856,11 +856,24 @@ const ADVANCE_LEDGER={
       notes:&quot;Best month. 8 deals, $30,902 gross ex GST, all at the 80% floor, $12,350 to bank mid October. Two things to query: the MVI statement lines add to $549.86 incl GST but the summary pays on $506.18, a $43.68 gap, same shape as August's cancelled policy clawback, ask Arianne which one. And the insurance removal is $836 a policy against $530 in August, ask for the per policy split. Mason Brinsley is Money3 on the RCTI, Azora in the sheet, fix the sheet.&quot;
     },
     &quot;2026-10&quot;:{
-      received:0,                      // The sheet overlays this each week if the advance keeps running. Confirm the stop date with Ivan.
+      received:5000,                   // 5 Fridays: 02,09,16,23,30 Oct · CONFIRMED by the RCTI line &quot;Less Advances $5,000&quot;. The $1k/wk is still running.
+      repaid:5000,
+      rctiPaidOut:8270.57,             // Balance to Pay on the RCTI created 5 Nov · lands about 14 Nov.
+      rctiProcessed:true,
+      rctiCommEarned:20443.71,         // Total Income at the 80% floor: Marketing $17,440.70 + MVI $1,081.23 + Self-gen $1,852.67 + MVI $69.11. Gross before split $25,554.64 ex GST ($26,528.37 incl GST on the 7 deals, matches the October broker report).
+      rctiDeductions:8379.56, adjOther:180.01, mviDrips:1150.34,          // Live Auction $6,934 (18 leads) + Docusign $108.90 (22) + Bank Stmts $17.88 (6) + One Score $16.93 + Veda $27.96 (2) + Adjustments $1,273.89 (Remove Insurance Income $1,093.88 at 80%, comes back as MVI drips · Mason Brinsley insurance overclaim $80.36 · Dialpad $69.95 · Docusign x6 $29.70)
+      rctiGst:1206.42,
+      rctiAdvanceRecouped:5000,
+      rctiBalanceToPay:8270.57,
+      negativeCarryforward:0,
+      notes:&quot;7 deals, $24,117 gross ex GST, $8,271 to bank mid November. Five Fridays, so $5,000 of advance came out. MVI drips $1,150 at 80%, the best yet, 18 policies paying and the statement lines match the summary for once. Every deal is marked Compliance No on the statement, same as the 6 open items on the broker report, ask what is missing.&quot;
+    },
+    &quot;2026-11&quot;:{
+      received:0,                      // The sheet overlays this each week while the advance keeps running.
       repaid:0,
       rctiPaidOut:0,
       rctiProcessed:false,
-      notes:&quot;October in progress. The 80% floor applies to everything.&quot;
+      notes:&quot;November in progress. The 80% floor applies to everything.&quot;
     }
   }
 };
@@ -9304,6 +9317,19 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 &lt;/style&gt;
 &lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&amp;display=swap&quot;&gt;&lt;style id=&quot;fontface&quot;&gt;html,body,button,input,select,textarea,*{font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif!important}&lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;style id=&quot;hub-mobile-fix2&quot;&gt;@media(max-width:640px){.tabs{border-radius:16px!important;flex-wrap:nowrap!important;gap:4px!important}.tabs .tab{flex:1 1 0;min-width:0;padding:9px 4px!important;font-size:13px!important;white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis}}&lt;/style&gt;
+&lt;style id=&quot;qk-layout&quot;&gt;
+.qkwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.qkright .btnrow{margin-top:12px}
+.qkblanks{margin-top:18px}
+@media (min-width:1000px){
+  .wrap:has(#panelQuick:not([hidden])){max-width:1280px}
+  .qkwrap{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:start}
+  .qkright{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;overscroll-behavior:contain;padding-right:4px}
+  .qkright .preview{max-height:50vh}
+  .qkright .docpick{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+  .qkright .docpick input[type=text]{grid-column:1/-1}
+}
+&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;wrap app&quot;&gt;
@@ -9331,21 +9357,28 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
     &lt;div class=&quot;card&quot;&gt;
       &lt;h2&gt;Fill and send&lt;span class=&quot;rdWho&quot; id=&quot;qkClient&quot;&gt;&lt;/span&gt;&lt;/h2&gt;
       &lt;p class=&quot;sub&quot;&gt;Pick a template, fill the blanks, copy. Works on any computer, no hotkeys needed here.&lt;/p&gt;
-      &lt;label&gt;The deal, start to finish · pick the stage, then the channel&lt;/label&gt;
+      &lt;div class=&quot;qkwrap&quot;&gt;
+        &lt;div class=&quot;qkleft&quot;&gt;
+          &lt;label&gt;The deal, start to finish · pick the stage, then the channel&lt;/label&gt;
       &lt;div id=&quot;qkJourney&quot;&gt;&lt;/div&gt;
       &lt;select id=&quot;qkSelect&quot; aria-label=&quot;Choose a template&quot; style=&quot;display:none&quot;&gt;&lt;/select&gt;
-      &lt;div class=&quot;qgrid&quot; style=&quot;margin-top:14px&quot;&gt;
-        &lt;div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;qkright&quot; id=&quot;qkRight&quot;&gt;
+          &lt;label for=&quot;qkPreview&quot;&gt;Live preview&lt;/label&gt;
+          &lt;div class=&quot;preview&quot; id=&quot;qkPreview&quot; tabindex=&quot;0&quot; aria-live=&quot;off&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;btnrow&quot;&gt;
+        &lt;button class=&quot;btn primary&quot; id=&quot;btnQkCopy&quot;&gt;Copy message&lt;/button&gt;
+        &lt;button class=&quot;btn&quot; id=&quot;btnQkTo&quot; style=&quot;display:none&quot;&gt;Copy email&lt;/button&gt;
+        &lt;button class=&quot;btn&quot; id=&quot;btnQkSubject&quot;&gt;Copy subject&lt;/button&gt;
+        &lt;button class=&quot;btn&quot; id=&quot;btnQkDialpad&quot; title=&quot;Keeps the blank lines when Dialpad would eat them&quot;&gt;Copy for Dialpad&lt;/button&gt;
+        &lt;button class=&quot;btn ghost&quot; id=&quot;btnQkEdit&quot;&gt;Edit in Library&lt;/button&gt;
+      &lt;/div&gt;
+          &lt;div class=&quot;qkblanks&quot;&gt;
           &lt;label&gt;The blanks&lt;/label&gt;
           &lt;div class=&quot;qfields&quot; id=&quot;qkFields&quot;&gt;&lt;/div&gt;
           &lt;p class=&quot;hint&quot; id=&quot;qkHelper&quot;&gt;&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div&gt;
-          &lt;label for=&quot;qkPreview&quot;&gt;Live preview&lt;/label&gt;
-          &lt;div class=&quot;preview&quot; id=&quot;qkPreview&quot; tabindex=&quot;0&quot; aria-live=&quot;off&quot;&gt;&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;statrow&quot;&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;statrow&quot;&gt;
         &lt;span class=&quot;chip primary num&quot; id=&quot;qkBench&quot; title=&quot;Compared with typing it out at your speed&quot;&gt;&lt;/span&gt;
         &lt;span class=&quot;meta&quot; id=&quot;qkMeta&quot;&gt;&lt;/span&gt;
         &lt;span class=&quot;wpmbox&quot;&gt;
@@ -9354,15 +9387,10 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
           &lt;span&gt;wpm&lt;/span&gt;
         &lt;/span&gt;
       &lt;/div&gt;
-      &lt;p class=&quot;warn&quot; id=&quot;qkWpmErr&quot; hidden&gt;That doesn't look like a number, so 40 wpm it is.&lt;/p&gt;
-      &lt;div class=&quot;btnrow&quot;&gt;
-        &lt;button class=&quot;btn primary&quot; id=&quot;btnQkCopy&quot;&gt;Copy message&lt;/button&gt;
-        &lt;button class=&quot;btn&quot; id=&quot;btnQkTo&quot; style=&quot;display:none&quot;&gt;Copy email&lt;/button&gt;
-        &lt;button class=&quot;btn&quot; id=&quot;btnQkSubject&quot;&gt;Copy subject&lt;/button&gt;
-        &lt;button class=&quot;btn&quot; id=&quot;btnQkDialpad&quot; title=&quot;Keeps the blank lines when Dialpad would eat them&quot;&gt;Copy for Dialpad&lt;/button&gt;
-        &lt;button class=&quot;btn ghost&quot; id=&quot;btnQkEdit&quot;&gt;Edit in Library&lt;/button&gt;
+          &lt;p class=&quot;warn&quot; id=&quot;qkWpmErr&quot; hidden&gt;That doesn't look like a number, so 40 wpm it is.&lt;/p&gt;
+          &lt;p class=&quot;hint&quot;&gt;Copy message pastes with proper paragraphs in Outlook and Gmail. Copy for Dialpad keeps the gaps between paragraphs. Subject goes in on its own.&lt;/p&gt;
+        &lt;/div&gt;
       &lt;/div&gt;
-      &lt;p class=&quot;hint&quot;&gt;Copy message pastes with proper paragraphs in Outlook and Gmail. Copy for Dialpad keeps the gaps between paragraphs. Subject goes in on its own.&lt;/p&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
@@ -9793,14 +9821,14 @@ $('#qkJourney').addEventListener('click', e =&gt; {
   const pick=e.target.closest('[data-pick]');
   if(pick&amp;&amp;!pick.classList.contains('none')){
     quickId=pick.dataset.pick;
-    renderJourney(); renderQuickFields(); renderQuickPreview();
+    renderJourney(); renderQuickFields(); renderQuickPreview(); qkShow();
     return;
   }
   const row=e.target.closest('[data-grp]');
   if(row){
     const g=row.dataset.grp;
     const t=tplFor(g,'email')||tplFor(g,'sms')||tplFor(g,'crm');
-    if(t){ quickId=t.id; renderJourney(); renderQuickFields(); renderQuickPreview(); }
+    if(t){ quickId=t.id; renderJourney(); renderQuickFields(); renderQuickPreview(); qkShow(); }
   }
 });
 function renderQuickFields(){
@@ -9891,6 +9919,7 @@ function renderQuickPreview(){
   $('#qkMeta').textContent = body.length + ' characters, ' + w + ' words, ' + body.split('\n').length + ' lines';
 }
 function renderQuick(){ renderQuickFields(); renderJourney(); renderQuickSelect(); renderQuickPreview(); rdWhoPaint(); }
+function qkShow(){try{const r=document.getElementById('qkRight');if(!r)return;if(window.matchMedia&amp;&amp;matchMedia('(max-width:999px)').matches)r.scrollIntoView({behavior:'smooth',block:'start'});else r.scrollTop=0}catch(e){}}
 $('#qkSelect').addEventListener('change', e =&gt; { quickId = e.target.value; renderJourney(); renderQuickFields(); renderQuickPreview(); });
 $('#qkWpm').addEventListener('input', renderQuickPreview);
 $('#btnQkCopy').addEventListener('click', () =&gt; {
@@ -10529,7 +10558,11 @@ document.getElementById('brandFoot').textContent = BRAND.name + ' v' + BRAND.ver
 document.title = BRAND.name + '. ' + BRAND.tagline;
 /* the client loaded in the Call Script fills every name blank, emails, texts and CRM notes, on every paired device */
 function rdClient(){try{var c=JSON.parse(localStorage.getItem('hub_client_v1')||'null');return c&amp;&amp;c.first?c:null}catch(e){return null}}
-function rdEmail(){var c=rdClient(),e=String(c&amp;&amp;c.email||'').trim();return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)?e:''}
+function rdOkEmail(e){e=String(e||'').trim();return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)&amp;&amp;!/@ausloans\.com\.au$/i.test(e)?e:''}
+function rdRawEmail(t){var s=String(t||''),a=s.search(/(^|\n)[ \t]*APPLICANTS?( 1)?[ \t]*(\n|$)/),z,m,re;if(a&gt;-1){s=s.slice(a);z=s.slice(1).search(/\n[ \t]*(SPOUSE|PARTNER|EMPLOYMENTS?|EMPLOYER DETAILS|ADDRESSES|LANDLORD|REFERENCES?|GUARANTORS?|APPLICANTS 2)[ \t]*(\n|$)/);if(z&gt;-1)s=s.slice(0,z+1)}re=/(?:^|\n)[ \t]*E-?mail(?:[ \t]+address)?[ \t]*\*?[ \t]*:?[ \t]*(?:\n[ \t]*)?([A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})/gi;while((m=re.exec(s))){if(rdOkEmail(m[1]))return m[1]}return ''}
+function rdNorm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim()}
+/* the client's email: from the client record, else from the last ZBot leads on this device with the same name */
+function rdEmail(){var c=rdClient();if(!c)return '';var e=rdOkEmail(c.email);if(e)return e;var want=rdNorm(c.full||c.first);if(!want)return '';var pool=[];try{pool=JSON.parse(localStorage.getItem('zbot_recent_v1')||'[]')||[]}catch(_){}try{var last=JSON.parse(localStorage.getItem('zbot_last_v1')||'null');if(last)pool.push(last)}catch(_){}for(var i=0;i&lt;pool.length;i++){var L=pool[i]&amp;&amp;pool[i].L;if(!L)continue;var d=L.d||{};if(rdNorm(d.clientName||[d.firstName,d.lastName].filter(Boolean).join(' '))!==want)continue;var x=rdOkEmail(d.email)||rdRawEmail(L.raw);if(x)return x}return ''}
 function rdCap(s){s=String(s||'').trim();return (s===s.toUpperCase()||s===s.toLowerCase())?s.toLowerCase().replace(/(^|[\s'-])([a-z])/g,function(m,a,b){return a+b.toUpperCase()}):s}
 function rdNameFor(tok,c){if(/^first ?name$/i.test(tok))return rdCap(c.first);if(/^(client|full|customer) ?name$/i.test(tok))return rdCap(c.full||c.first);return null}
 function rdApplyClient(){
@@ -12343,6 +12376,9 @@ function bhfParseOtherIncomes(raw){
   res.kids=best.some(function(l){return l.source==='parenting_payment_single'||l.source==='ftb_only';});
   return res;
 }
+function okEmail(e){e=String(e||&quot;&quot;).trim();return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)&amp;&amp;!/@ausloans\.com\.au$/i.test(e)?e:&quot;&quot;}
+/* the client email in the lead text: inside the applicant block of a ZBot lead, never the spouse, landlord, employer or broker */
+function rawEmail(t){let s=String(t||&quot;&quot;);const a=s.search(/(^|\n)[ \t]*APPLICANTS?( 1)?[ \t]*(\n|$)/);if(a&gt;-1){s=s.slice(a);const z=s.slice(1).search(/\n[ \t]*(SPOUSE|PARTNER|EMPLOYMENTS?|EMPLOYER DETAILS|ADDRESSES|LANDLORD|REFERENCES?|GUARANTORS?|APPLICANTS 2)[ \t]*(\n|$)/);if(z&gt;-1)s=s.slice(0,z+1)}const re=/(?:^|\n)[ \t]*E-?mail(?:[ \t]+address)?[ \t]*\*?[ \t]*:?[ \t]*(?:\n[ \t]*)?([A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})/gi;let m;while((m=re.exec(s))){if(okEmail(m[1]))return m[1]}return &quot;&quot;}
 function parseZinkText(raw){
   const d={};
   const grab=(patterns)=&gt;{for(const p of patterns){const m=raw.match(p);if(m&amp;&amp;m[1]&amp;&amp;m[1].trim())return m[1].trim()}return null};
@@ -13778,7 +13814,7 @@ const resetAll=()=&gt;{setCur(0);setPath(null);setRes({});setSel([]);setCustom(&
 useEffect(()=&gt;{zbRef.current.busy=cur&gt;0||!!zinkRaw.trim()||Object.keys(clientData).length&gt;0||Object.keys(res).some(k=&gt;![&quot;callType&quot;,&quot;productType&quot;].includes(k));},[cur,res,zinkRaw,clientData]);
 const zbApply=(L,id)=&gt;{
   resetAll();
-  const d=L.d||{};
+  const d=Object.assign({},L.d||{});if(!okEmail(d.email)){const e=rawEmail(L.raw);if(e)d.email=e;else delete d.email}
   zbRef.current.raw=L.raw||d.clientName||&quot;ZBot lead&quot;;zbRef.current.d=d;
   setZinkRaw(zbRef.current.raw);
   setClientData(d);
@@ -13796,7 +13832,7 @@ useEffect(()=&gt;{if(!window.ZB)return;ZB.start((L,id,direct)=&gt;{if(zbRef.curr
   dev.forEach(x=&gt;{const row={key:x.id,leadId:x.L.leadId||'',name:(x.L.d&amp;&amp;x.L.d.clientName)||'',time:x.t||0,state:'seen',L:x.L,id:x.id};const hit=rows.find(r=&gt;same(r,row));if(hit){if(!hit.L){hit.L=row.L;hit.name=hit.name||row.name;hit.state='seen'}if(!hit.name)hit.name=row.name}else rows.push(row)});
   rows.sort((a,b)=&gt;(b.time||0)-(a.time||0));return rows.slice(0,3)};
 useEffect(()=&gt;{if(!zbPairOpen){return}setZbRecent(zbRows([]));if(!window.ZB||!ZB.list||!ZB.paired())return;let on=true;ZB.list().then(r=&gt;{if(on)setZbRecent(zbRows(r))});return()=&gt;{on=false}},[zbPairOpen]);
-useEffect(()=&gt;{const full=String(clientData.clientName||[clientData.firstName,clientData.lastName].filter(Boolean).join(&quot; &quot;)||&quot;&quot;).trim();const first=String(clientData.firstName||full.split(/\s+/)[0]||&quot;&quot;).trim();if(!first)return;const em=String(clientData.email||&quot;&quot;).trim();const email=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)?em:&quot;&quot;;try{const c=JSON.parse(localStorage.getItem(&quot;hub_client_v1&quot;)||&quot;null&quot;);if(c&amp;&amp;c.full===full&amp;&amp;c.first===first&amp;&amp;(c.email||&quot;&quot;)===email)return;localStorage.setItem(&quot;hub_client_v1&quot;,JSON.stringify({first:first,full:full,email:email,at:Date.now(),src:&quot;local&quot;}))}catch(e){}},[clientData.clientName,clientData.firstName,clientData.lastName,clientData.email]);
+useEffect(()=&gt;{const full=String(clientData.clientName||[clientData.firstName,clientData.lastName].filter(Boolean).join(&quot; &quot;)||&quot;&quot;).trim();const first=String(clientData.firstName||full.split(/\s+/)[0]||&quot;&quot;).trim();if(!first)return;const email=okEmail(clientData.email);try{const c=JSON.parse(localStorage.getItem(&quot;hub_client_v1&quot;)||&quot;null&quot;);if(c&amp;&amp;c.full===full&amp;&amp;c.first===first&amp;&amp;(c.email||&quot;&quot;)===email)return;localStorage.setItem(&quot;hub_client_v1&quot;,JSON.stringify({first:first,full:full,email:email,at:Date.now(),src:&quot;local&quot;}))}catch(e){}},[clientData.clientName,clientData.firstName,clientData.lastName,clientData.email]);
 
 const done=Object.keys(res).filter(k=&gt;![&quot;loanAmount&quot;,&quot;weeklyRepayment&quot;,&quot;comfortableAt&quot;].includes(k)).length;
 const total=STAGES.filter(s=&gt;s.key&amp;&amp;!skip(s)).length;
@@ -13884,6 +13920,7 @@ return(
 &lt;textarea value={zinkRaw} onChange={e=&gt;setZinkRaw(e.target.value)} placeholder=&quot;Ctrl+A → Ctrl+C from the Zink page → paste here&quot; style={{width:&quot;100%&quot;,height:140,background:&quot;#0d1117&quot;,border:&quot;1px solid #242a4a&quot;,borderRadius:8,padding:14,color:&quot;#eef0ff&quot;,fontSize:12,fontFamily:&quot;'Poppins',sans-serif&quot;,outline:&quot;none&quot;,resize:&quot;vertical&quot;}} /&gt;
 {zinkRaw.trim()&amp;&amp;&lt;button className=&quot;btn bp&quot; onClick={()=&gt;{
   const d=(zbRef.current.raw&amp;&amp;zinkRaw===zbRef.current.raw&amp;&amp;zbRef.current.d)?{...zbRef.current.d}:parseZinkText(zinkRaw);
+  if(!okEmail(d.email)){const e=rawEmail(zinkRaw);if(e)d.email=e;else delete d.email}
   setClientData(d);
   const consumerProducts=[&quot;unsecured_pl&quot;,&quot;secured_pl&quot;,&quot;vehicle&quot;,&quot;refinance&quot;,&quot;consolidation&quot;];
   const commercialProducts=[&quot;cashflow&quot;,&quot;equipment&quot;];
@@ -22770,7 +22807,8 @@ window.hubLock = lock;
     try{
       var L=await unlock(m.message);if(!L||L.kind!=='client'||!L.first)return;
       var c=cur();if(c&&+c.at>=+L.at)return;
-      localStorage.setItem(CK,JSON.stringify({first:L.first,full:L.full||'',email:L.email||'',at:L.at,src:'relay'}));
+      var same=c&&String(c.full||c.first||'').toLowerCase().trim()===String(L.full||L.first||'').toLowerCase().trim();
+      localStorage.setItem(CK,JSON.stringify({first:L.first,full:L.full||'',email:L.email||(same?c.email||'':''),at:L.at,src:'relay'}));
     }catch(e){}
   }
   async function poll(){

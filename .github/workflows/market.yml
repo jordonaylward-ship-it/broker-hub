@@ -1,0 +1,206 @@
+name: Market
+
+on:
+  schedule:
+    - cron: '20 19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build market.json
+        run: |
+          cat > /tmp/build.mjs <<'EOF'
+          // Broker Hub market file. Runs on GitHub Actions once a day and writes market.json.
+          // Numbers come straight from the source pages. If a source cannot be read today the last good value stays, with its date.
+          import fs from 'node:fs';
+
+          const OUT = process.argv[2] || 'market.json';
+          const UA = 'Mozilla/5.0 (compatible; BrokerHubMarket/1.0)';
+          const today = new Date();
+          const iso = d => new Date(d).toISOString().slice(0, 10);
+          const log = (...a) => console.log(...a);
+
+          let prev = {};
+          try { prev = JSON.parse(fs.readFileSync(OUT, 'utf8')); } catch (e) { prev = {}; }
+          const out = { v: 1, updated: today.toISOString(), numbers: Object.assign({}, prev.numbers || {}), items: [], errors: [] };
+
+          async function get(url, ms = 25000) {
+            const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
+            try {
+              const r = await fetch(url, { headers: { 'user-agent': UA, 'accept': 'text/html,application/xhtml+xml,application/xml,text/xml,text/csv,*/*' }, signal: c.signal, redirect: 'follow' });
+              if (!r.ok) throw new Error('HTTP ' + r.status);
+              return await r.text();
+            } finally { clearTimeout(t); }
+          }
+          const strip = s => s.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ');
+          const unesc = s => s.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#8217;|&rsquo;/g, "'").replace(/&#8216;|&lsquo;/g, "'").replace(/&#8220;|&#8221;|&ldquo;|&rdquo;/g, '"').replace(/&#8211;|&ndash;/g, ', ').replace(/&#8212;|&mdash;/g, ', ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/\s+/g, ' ').trim();
+          const text = html => unesc(strip(html));
+          const num = s => parseFloat(String(s).replace(/,/g, ''));
+          const MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+          function parseDay(s) {
+            // "4 Nov 2026", "28/10/2026", "Thu, 05 Nov 2026 00:02:15 +0000", "2026-11-08T18:22:25Z"
+            s = String(s || '').trim();
+            let m = s.match(/(\d{1,2})\s+([A-Za-z]{3})[a-z]*\s+(\d{4})/);
+            if (m) return `${m[3]}-${String(MON[m[2].toLowerCase()]).padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+            m = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+            m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+            if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+            return '';
+          }
+          function fail(what, e) { out.errors.push(what + ': ' + (e && e.message || e)); log('  skip', what, e && e.message || e); }
+
+          // 1. RBA cash rate decisions
+          async function rba() {
+            const h = await get('https://www.rba.gov.au/statistics/cash-rate/');
+            const rows = [...h.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)].map(r => [...r[1].matchAll(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/g)].map(c => text(c[1])));
+            // the table lists the day a change takes effect, the Board announces it the day before
+            const dayBefore = d => iso(new Date(d + 'T12:00:00Z').getTime() - 86400000);
+            const moves = rows.filter(r => r.length >= 3 && /\d{4}/.test(r[0]) && /^[+-]?\d/.test(r[1]) && /^\d/.test(r[2]))
+              .map(r => ({ effective: parseDay(r[0]), change: num(r[1]), rate: num(r[2]) })).filter(r => r.effective)
+              .map(r => Object.assign({ date: dayBefore(r.effective) }, r));
+            if (!moves.length) throw new Error('no rows');
+            moves.sort((a, b) => a.date < b.date ? 1 : -1);
+            const cur = moves[0];
+            const last = moves.find(m => m.change !== 0);
+            const yr = today.getFullYear();
+            const rises = moves.filter(m => m.date.startsWith(yr + '-') && m.change > 0).length;
+            const cuts = moves.filter(m => m.date.startsWith(yr + '-') && m.change < 0).length;
+            out.numbers.cashRate = { value: cur.rate, asOf: cur.date, lastMove: last ? { date: last.date, change: last.change } : null, risesThisYear: rises, cutsThisYear: cuts,
+              moves: moves.filter(m => m.change !== 0).slice(0, 12), src: 'RBA', url: 'https://www.rba.gov.au/statistics/cash-rate/' };
+            log('  cash rate', cur.rate, 'last move', last && last.date, last && last.change);
+          }
+
+          // 2. ABS CPI, latest release page
+          async function abs() {
+            const url = 'https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release';
+            const t = text(await get(url));
+            const head = t.match(/Consumer Price Index \(CPI\) rose ([0-9.]+)%/) || t.match(/CPI rose ([0-9.]+)%/);
+            const period = (t.match(/Reference period ([A-Z][a-z]+ 20\d\d)/) || [])[1] || '';
+            const trimmed = (t.match(/[Tt]rimmed mean inflation was ([0-9.]+)%/) || [])[1];
+            const released = parseDay((t.match(/Released (\d{1,2}\/\d{1,2}\/\d{4})/) || [])[1] || '');
+            const next = parseDay((t.match(/Next Release (\d{1,2}\/\d{1,2}\/\d{4})/) || [])[1] || '');
+            const fuel = (t.match(/Automotive fuel[^.]{0,80}?([+-]?[0-9.]+)%/) || [])[1];
+            if (!head) throw new Error('no headline');
+            out.numbers.cpi = { value: num(head[1]), trimmed: trimmed ? num(trimmed) : null, period, released, next, fuelAnnual: fuel ? num(fuel) : null, src: 'ABS', url };
+            log('  cpi', head[1], period, 'next', next);
+          }
+
+          // 3. FCAI new vehicle sales, latest monthly release
+          async function fcai() {
+            const feed = await get('https://www.fcai.com.au/feed/');
+            const items = rss(feed, 'FCAI');
+            const post = items.find(i => /vehicle market|sales|vfacts|new vehicle/i.test(i.t));
+            if (!post) throw new Error('no sales post');
+            const t = text(await get(post.u));
+            const m = t.match(/recorded ([0-9,]{5,8}) (?:new vehicle )?sales in ([A-Z][a-z]+ 20\d\d), (up|down) ([0-9.]+) per cent/)
+              || t.match(/([0-9,]{5,8}) (?:new )?vehicles? (?:were )?sold in ([A-Z][a-z]+ 20\d\d)[^.]{0,80}?(up|down) ([0-9.]+) per cent/);
+            if (!m) throw new Error('no total');
+            const bev = (t.match(/battery electric vehicles? (?:accounting for|accounted for|made up|took|at) ([0-9.]+) per cent/i) || t.match(/([0-9.]+) per cent (?:of sales|share)[^.]{0,40}battery electric/i) || [])[1];
+            out.numbers.newCars = { total: num(m[1]), month: m[2], yoy: (m[3] === 'down' ? -1 : 1) * num(m[4]), bevShare: bev ? num(bev) : null, asOf: post.d, src: 'FCAI', url: post.u, title: post.t };
+            log('  new cars', m[1], m[2], m[3], m[4], 'bev', bev);
+          }
+
+          // 4. Datium used car weekly snapshot
+          async function datium() {
+            const feed = await get('https://datiuminsights.com.au/feed/');
+            const items = rss(feed, 'Datium Insights');
+            const post = items.find(i => /weekly market update/i.test(i.t));
+            if (!post) throw new Error('no weekly post');
+            const t = text(await get(post.u));
+            const pr = t.match(/Prices were (up|down)[^(]{0,60}\(([+-]?[0-9.]+)%\)/i);
+            const cl = t.match(/Clearance rates? (?:were|was) (up|down)[^(]{0,60}\(([+-]?[0-9.]+)%\)/i);
+            const vo = t.match(/Sales volume (?:was|were) (up|down)[^(]{0,60}\(([+-]?[0-9.]+)%\)/i);
+            if (!pr) throw new Error('no price line');
+            const hist = ((prev.numbers || {}).used || {}).history || [];
+            const entry = { week: post.d, pct: num(pr[2]) };
+            if (!hist.find(h => h.week === entry.week)) hist.unshift(entry);
+            out.numbers.used = { weekly: num(pr[2]), clearance: cl ? num(cl[2]) : null, volume: vo ? num(vo[2]) : null, asOf: post.d, history: hist.slice(0, 26), src: 'Datium Insights', url: post.u };
+            log('  used', pr[2], 'clearance', cl && cl[2], 'volume', vo && vo[2]);
+          }
+
+          // RSS and Atom readers
+          function rss(xml, src) {
+            const items = [];
+            for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+              const b = m[1];
+              const t = text((b.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/) || [])[1] || '');
+              const u = ((b.match(/<link>([\s\S]*?)<\/link>/) || [])[1] || '').trim();
+              const d = parseDay((b.match(/<pubDate>([\s\S]*?)<\/pubDate>/) || [])[1] || '');
+              if (t && u) items.push({ t, u, d, s: src });
+            }
+            for (const m of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
+              const b = m[1];
+              const t = text((b.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/) || [])[1] || '');
+              const u = ((b.match(/<link[^>]*href="([^"]+)"/) || [])[1] || '').trim();
+              const d = parseDay((b.match(/<(?:updated|published)>([\s\S]*?)<\/(?:updated|published)>/) || [])[1] || '');
+              if (t && u) items.push({ t, u, d, s: src });
+            }
+            return items;
+          }
+          const FEEDS = [
+            { url: 'https://www.rba.gov.au/rss/rss-cb-media-releases.xml', src: 'RBA', keep: /cash rate|monetary policy|interest|inflation|financial stability|lending/i, drop: /designation|appoint|banknote|payments system board/i },
+            { url: 'https://www.fcai.com.au/feed/', src: 'FCAI', keep: /vehicle|sales|market|electric|ev|ute|suv|car/i, drop: /motorcycle|off-road|marine|submission/i },
+            { url: 'https://datiuminsights.com.au/feed/', src: 'Datium Insights', keep: /used|market update|vfacts|price|car/i, drop: /careers|webinar/i },
+            { url: 'https://www.savings.com.au/feed', src: 'Savings.com.au', keep: /\b(car|vehicle|auto|rba|cash rate|rate (?:rise|cut|hike|decision)|inflation|cpi|asic|lender|personal loan|credit)\b/i, drop: /term deposit|savings (?:rate|account)|property|suburb|investor|home loan|mortgage|refinanc|superannuation|share market|asx|crypto/i },
+            { url: 'https://www.brokernews.com.au/rss', src: 'Australian Broker', keep: /\b(car|vehicle|auto|asset finance|rba|cash rate|rate (?:rise|cut|hike|decision)|inflation|asic|afca|lender|credit|aggregator|broker)\b/i, drop: /home loan|mortgage|property|housing|first home|refinanc|commercial property|smsf/i },
+            { url: 'https://www.carexpert.com.au/feed', src: 'CarExpert', keep: /\b(finance|loan|lend|interest|price cut|price rise|prices? (?:up|down|rise|fall|cut|slashed)|discount|sales|vfacts|tax|fbt|lct|novated|insur|asic|used car|cheapest|recall)\b/i, drop: /price and specs|review|revealed|spied|teased|spy|first look|first drive|walkaround|render|patent|concept/i },
+          ];
+          async function news() {
+            const got = [];
+            for (const f of FEEDS) {
+              try {
+                const xml = await get(f.url);
+                const items = rss(xml, f.src).filter(i => f.keep.test(i.t) && !(f.drop && f.drop.test(i.t)));
+                got.push(...items.slice(0, 6));
+                log('  feed', f.src, items.length, 'kept');
+              } catch (e) { fail('feed ' + f.src, e); }
+            }
+            return got;
+          }
+
+          (async () => {
+            log('market build', today.toISOString());
+            for (const [name, fn] of [['rba', rba], ['abs', abs], ['fcai', fcai], ['datium', datium]]) {
+              try { await fn(); } catch (e) { fail(name, e); }
+            }
+            const fresh = await news();
+            const seen = new Set();
+            const cutoff = iso(today.getTime() - 14 * 86400000);
+            const merged = [];
+            for (const it of [...fresh, ...(prev.items || [])]) {
+              const key = it.u.replace(/[?#].*$/, '').replace(/\/+$/, '');
+              if (seen.has(key)) continue;
+              seen.add(key);
+              if (!it.d) it.d = iso(today);
+              if (it.d < cutoff) continue;
+              merged.push({ t: it.t.slice(0, 160), u: it.u.replace(/^http:\/\//, 'https://'), d: it.d, s: it.s });
+            }
+            merged.sort((a, b) => a.d < b.d ? 1 : a.d > b.d ? -1 : 0);
+            out.items = merged.slice(0, 40);
+            fs.writeFileSync(OUT, JSON.stringify(out, null, 1) + '\n');
+            log('wrote', OUT, out.items.length, 'items,', out.errors.length, 'sources skipped');
+          })().catch(e => { console.error(e); process.exit(1); });
+          EOF
+          node /tmp/build.mjs market.json
+
+      - name: Save it
+        run: |
+          git config user.name "market-bot"
+          git config user.email "market-bot@users.noreply.github.com"
+          git add market.json
+          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
+          git commit -m "Market update $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do git push && exit 0; git pull --rebase; sleep 5; done
+          exit 1

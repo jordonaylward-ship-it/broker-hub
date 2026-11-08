@@ -668,6 +668,34 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
 .filter-btn:focus-visible{outline:2px solid #9db1ff!important;outline-offset:2px!important}
 &lt;/style&gt;&lt;style id=&quot;hub-mobile-fix&quot;&gt;@media(pointer:coarse) and (max-width:640px){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}&lt;/style&gt;
 &lt;style id=&quot;hub-mobile-fix2&quot;&gt;@media(max-width:640px){.tabs{flex-wrap:wrap;overflow-x:visible;gap:6px}.tabs .tab{flex:1 1 auto;text-align:center;padding:9px 12px;white-space:nowrap}}&lt;/style&gt;
+&lt;style id=&quot;market&quot;&gt;
+.mk-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.mk-tile{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;min-width:0}
+.mk-tile .kv{font-size:22px;white-space:normal}
+.mk-tile .kv.pos{color:var(--green)}.mk-tile .kv.neg{color:var(--red)}
+.mk-tile .ks,.mk-tile .kl{white-space:normal}
+.mk-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px 18px;min-width:0}
+.mk-say{margin-top:14px;border-left:3px solid var(--teal)}
+.mk-h{font-size:11px;color:var(--mut);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.mk-line{font-size:14px;color:var(--txt);line-height:1.55;padding:6px 0;border-bottom:1px solid var(--bdr)}
+.mk-line:last-child{border-bottom:none;padding-bottom:0}
+.mk-line b{color:var(--dim);font-weight:600}
+.mk-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.mk-note{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;min-width:0}
+.mk-nt{font-size:14.5px;font-weight:600;color:var(--txt);line-height:1.4;margin-bottom:6px}
+.mk-tag{display:inline-block;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--teal);background:rgba(139,92,246,.14);border-radius:999px;padding:2px 8px;margin-right:8px;vertical-align:2px}
+.mk-nb{font-size:13px;color:var(--dim);line-height:1.55}
+.mk-meta{font-size:11px;color:var(--mut);margin-top:8px}
+.mk-meta a{color:var(--mut);text-decoration:underline}
+.mk-items{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
+.mk-item{display:flex;justify-content:space-between;gap:14px;padding:11px 16px;border-bottom:1px solid var(--bdr);color:var(--txt);text-decoration:none;font-size:13.5px;line-height:1.4}
+.mk-item:last-child{border-bottom:none}
+.mk-item:hover{background:var(--card2)}
+.mk-im{color:var(--mut);font-size:11px;white-space:nowrap;flex:none;align-self:center}
+.mk-more{margin-top:10px;padding:8px 16px;background:transparent;color:var(--dim);border:1px solid var(--bdr);border-radius:999px;font-family:'Poppins',sans-serif;font-size:12px;cursor:pointer}
+.mk-foot{font-size:11px;color:var(--mut);margin-top:18px;line-height:1.5}
+@media(max-width:640px){.mk-row{grid-template-columns:repeat(2,minmax(0,1fr))}.mk-tile .kv{font-size:20px}.mk-item{flex-direction:column;gap:3px}}
+&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;div class=&quot;app&quot;&gt;
@@ -694,6 +722,7 @@ html{background:#000000 !important;color:#eef0ff;min-height:100%}body{background
   
   &lt;div class=&quot;sec&quot; id=&quot;sec-ausloans&quot;&gt;&lt;/div&gt;
   &lt;div class=&quot;sec&quot; id=&quot;sec-losses&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot; id=&quot;sec-market&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;div class=&quot;foot&quot;&gt;Broker HUB · Live from Google Sheets · Auto-refreshes every 60s · &lt;a href=&quot;#&quot; onclick=&quot;toggleSetup();return false&quot;&gt;Settings&lt;/a&gt;&lt;/div&gt;
 &lt;script&gt;
@@ -732,7 +761,7 @@ function skeletonHTML(){
     +'&lt;div class=&quot;mg mg5&quot;&gt;'+cards+'&lt;/div&gt;'
     +'&lt;div class=&quot;sk&quot; style=&quot;height:220px&quot;&gt;&lt;/div&gt;';
 }
-const TABS=[{k:&quot;alltime&quot;,l:&quot;All Time&quot;},{k:&quot;monthly&quot;,l:&quot;Monthly&quot;},{k:&quot;roi&quot;,l:&quot;ROI&quot;},{k:&quot;calc&quot;,l:&quot;Scale Calc&quot;},{k:&quot;ausloans&quot;,l:&quot;Ausloans Balance&quot;},{k:&quot;losses&quot;,l:&quot;Loss Reasons&quot;}];
+const TABS=[{k:&quot;alltime&quot;,l:&quot;All Time&quot;},{k:&quot;monthly&quot;,l:&quot;Monthly&quot;},{k:&quot;roi&quot;,l:&quot;ROI&quot;},{k:&quot;calc&quot;,l:&quot;Scale Calc&quot;},{k:&quot;ausloans&quot;,l:&quot;Ausloans Balance&quot;},{k:&quot;losses&quot;,l:&quot;Loss Reasons&quot;},{k:&quot;market&quot;,l:&quot;Market&quot;}];
 
 // Ausloans RCTI ledger · add a new entry each month after the RCTI arrives
 // &quot;net&quot; = income - costs - gstAdj for that month (the change to your running balance)
@@ -1471,7 +1500,7 @@ function toggleSetup(){const b=document.getElementById(&quot;setupBox&quot;);b.s
 function startRefresh(){if(refreshTimer)clearInterval(refreshTimer);refreshTimer=setInterval(function(){refreshData();},60000);}
 function renderTabs(){document.getElementById(&quot;tabs&quot;).innerHTML=TABS.map(t=&gt;'&lt;button class=&quot;tab'+(t.k===activeTab?&quot; on&quot;:&quot;&quot;)+'&quot; onclick=&quot;switchTab(\''+t.k+'\')&quot;&gt;'+t.l+'&lt;/button&gt;').join(&quot;&quot;);}
 function switchTab(k){activeTab=k;renderTabs();document.querySelectorAll(&quot;.sec&quot;).forEach(s=&gt;s.classList.remove(&quot;on&quot;));document.getElementById(&quot;sec-&quot;+k).classList.add(&quot;on&quot;);render();}
-function render(){if(activeTab==='calc'){rCalc();return;}if(!D)return;({alltime:rAllTime,monthly:rMonthly,roi:rROI,ausloans:rAusloans,losses:rLosses})[activeTab]?.();}
+function render(){if(activeTab==='calc'){rCalc();return;}if(activeTab==='market'){if(typeof rMarket==='function')rMarket();return;}if(!D)return;({alltime:rAllTime,monthly:rMonthly,roi:rROI,ausloans:rAusloans,losses:rLosses})[activeTab]?.();}
 
 
 function computeVelocity(leads){
@@ -3781,7 +3810,143 @@ function coachHtml(){
 /* the cached feed may have painted before this script parsed, so paint again with the coach on */
 try{if(typeof D!=='undefined'&amp;&amp;D&amp;&amp;D.leads&amp;&amp;D.leads.length&amp;&amp;typeof render==='function')render()}catch(e){}
 &lt;/script&gt;
-&lt;script&gt;(function(){var as=null,vy=0,raf=null,moved=false,t0=0;function sc(){return document.scrollingElement||document.documentElement;}function step(){if(!as)return;sc().scrollTop+=vy;raf=requestAnimationFrame(step);}function end(){if(!as)return;as=null;vy=0;moved=false;if(raf)cancelAnimationFrame(raf);raf=null;document.documentElement.style.cursor='';}document.addEventListener('mousedown',function(e){if(as&amp;&amp;e.button!==1){end();return;}if(e.button!==1)return;if(e.target.closest('a,input,textarea,select'))return;var s=sc();if(s.scrollHeight&lt;=s.clientHeight+4)return;e.preventDefault();as={y:e.clientY};vy=0;moved=false;t0=Date.now();document.documentElement.style.cursor='ns-resize';raf=requestAnimationFrame(step);},true);document.addEventListener('mousemove',function(e){if(!as)return;var d=e.clientY-as.y;if(Math.abs(d)&gt;8)moved=true;vy=Math.abs(d)&lt;8?0:d*0.14;},true);document.addEventListener('mouseup',function(e){if(!as||e.button!==1)return;if(!moved&amp;&amp;Date.now()-t0&lt;400)return;end();},true);document.addEventListener('wheel',end,{passive:true});document.addEventListener('keydown',end);window.addEventListener('blur',end);})();&lt;/script&gt;&lt;/body&gt;
+&lt;script&gt;(function(){var as=null,vy=0,raf=null,moved=false,t0=0;function sc(){return document.scrollingElement||document.documentElement;}function step(){if(!as)return;sc().scrollTop+=vy;raf=requestAnimationFrame(step);}function end(){if(!as)return;as=null;vy=0;moved=false;if(raf)cancelAnimationFrame(raf);raf=null;document.documentElement.style.cursor='';}document.addEventListener('mousedown',function(e){if(as&amp;&amp;e.button!==1){end();return;}if(e.button!==1)return;if(e.target.closest('a,input,textarea,select'))return;var s=sc();if(s.scrollHeight&lt;=s.clientHeight+4)return;e.preventDefault();as={y:e.clientY};vy=0;moved=false;t0=Date.now();document.documentElement.style.cursor='ns-resize';raf=requestAnimationFrame(step);},true);document.addEventListener('mousemove',function(e){if(!as)return;var d=e.clientY-as.y;if(Math.abs(d)&gt;8)moved=true;vy=Math.abs(d)&lt;8?0:d*0.14;},true);document.addEventListener('mouseup',function(e){if(!as||e.button!==1)return;if(!moved&amp;&amp;Date.now()-t0&lt;400)return;end();},true);document.addEventListener('wheel',end,{passive:true});document.addEventListener('keydown',end);window.addEventListener('blur',end);})();&lt;/script&gt;&lt;script id=&quot;market-js&quot;&gt;
+const MARKET_SEED={&quot;v&quot;:1,&quot;updated&quot;:&quot;2026-11-08T22:34:38.876Z&quot;,&quot;numbers&quot;:{&quot;cashRate&quot;:{&quot;value&quot;:4.85,&quot;asOf&quot;:&quot;2026-11-03&quot;,&quot;lastMove&quot;:{&quot;date&quot;:&quot;2026-11-03&quot;,&quot;change&quot;:0.25},&quot;risesThisYear&quot;:5,&quot;cutsThisYear&quot;:0,&quot;moves&quot;:[{&quot;date&quot;:&quot;2026-11-03&quot;,&quot;effective&quot;:&quot;2026-11-04&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:4.85},{&quot;date&quot;:&quot;2026-09-29&quot;,&quot;effective&quot;:&quot;2026-09-30&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:4.6},{&quot;date&quot;:&quot;2026-05-05&quot;,&quot;effective&quot;:&quot;2026-05-06&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:4.35},{&quot;date&quot;:&quot;2026-03-17&quot;,&quot;effective&quot;:&quot;2026-03-18&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:4.1},{&quot;date&quot;:&quot;2026-02-03&quot;,&quot;effective&quot;:&quot;2026-02-04&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:3.85},{&quot;date&quot;:&quot;2025-08-12&quot;,&quot;effective&quot;:&quot;2025-08-13&quot;,&quot;change&quot;:-0.25,&quot;rate&quot;:3.6},{&quot;date&quot;:&quot;2025-05-20&quot;,&quot;effective&quot;:&quot;2025-05-21&quot;,&quot;change&quot;:-0.25,&quot;rate&quot;:3.85},{&quot;date&quot;:&quot;2025-02-18&quot;,&quot;effective&quot;:&quot;2025-02-19&quot;,&quot;change&quot;:-0.25,&quot;rate&quot;:4.1},{&quot;date&quot;:&quot;2023-11-07&quot;,&quot;effective&quot;:&quot;2023-11-08&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:4.35},{&quot;date&quot;:&quot;2023-06-06&quot;,&quot;effective&quot;:&quot;2023-06-07&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:4.1},{&quot;date&quot;:&quot;2023-05-02&quot;,&quot;effective&quot;:&quot;2023-05-03&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:3.85},{&quot;date&quot;:&quot;2023-03-07&quot;,&quot;effective&quot;:&quot;2023-03-08&quot;,&quot;change&quot;:0.25,&quot;rate&quot;:3.6}],&quot;src&quot;:&quot;RBA&quot;,&quot;url&quot;:&quot;https://www.rba.gov.au/statistics/cash-rate/&quot;},&quot;cpi&quot;:{&quot;value&quot;:4.3,&quot;trimmed&quot;:3.6,&quot;period&quot;:&quot;September 2026&quot;,&quot;released&quot;:&quot;2026-10-28&quot;,&quot;next&quot;:&quot;2026-11-25&quot;,&quot;fuelAnnual&quot;:23.6,&quot;src&quot;:&quot;ABS&quot;,&quot;url&quot;:&quot;https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release&quot;},&quot;newCars&quot;:{&quot;total&quot;:103325,&quot;month&quot;:&quot;October 2026&quot;,&quot;yoy&quot;:3.8,&quot;bevShare&quot;:23.1,&quot;asOf&quot;:&quot;2026-11-05&quot;,&quot;src&quot;:&quot;FCAI&quot;,&quot;url&quot;:&quot;https://www.fcai.com.au/competition-drives-strong-new-vehicle-market/&quot;,&quot;title&quot;:&quot;Competition drives strong new vehicle market&quot;},&quot;used&quot;:{&quot;weekly&quot;:0.7,&quot;clearance&quot;:-6,&quot;volume&quot;:-16.2,&quot;asOf&quot;:&quot;2026-11-08&quot;,&quot;history&quot;:[{&quot;week&quot;:&quot;2026-11-08&quot;,&quot;pct&quot;:0.7}],&quot;src&quot;:&quot;Datium Insights&quot;,&quot;url&quot;:&quot;https://datiuminsights.com.au/weekly-market-update-9th-november-2026/&quot;}},&quot;items&quot;:[{&quot;t&quot;:&quot;Weekly Market Update 9th November 2026&quot;,&quot;u&quot;:&quot;https://datiuminsights.com.au/weekly-market-update-9th-november-2026/&quot;,&quot;d&quot;:&quot;2026-11-08&quot;,&quot;s&quot;:&quot;Datium Insights&quot;},{&quot;t&quot;:&quot;GWM Haval H7: PHEV-heavy sales forecast following strong pre-launch interest&quot;,&quot;u&quot;:&quot;https://www.carexpert.com.au/car-news/gwm-haval-h7-phev-heavy-sales-forecast-following-strong-pre-launch-interest&quot;,&quot;d&quot;:&quot;2026-11-07&quot;,&quot;s&quot;:&quot;CarExpert&quot;},{&quot;t&quot;:&quot;RBA rate hike November 2026: Is your lender passing it on?&quot;,&quot;u&quot;:&quot;https://www.savings.com.au/news/rba-rate-hike-nov-26&quot;,&quot;d&quot;:&quot;2026-11-06&quot;,&quot;s&quot;:&quot;Savings.com.au&quot;},{&quot;t&quot;:&quot;Has the RBA abandoned the 'narrow path'?&quot;,&quot;u&quot;:&quot;https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path&quot;,&quot;d&quot;:&quot;2026-11-06&quot;,&quot;s&quot;:&quot;Savings.com.au&quot;},{&quot;t&quot;:&quot;Competition drives strong new vehicle market&quot;,&quot;u&quot;:&quot;https://www.fcai.com.au/competition-drives-strong-new-vehicle-market/&quot;,&quot;d&quot;:&quot;2026-11-05&quot;,&quot;s&quot;:&quot;FCAI&quot;},{&quot;t&quot;:&quot;RBA hikes again: Here's how the big four responded&quot;,&quot;u&quot;:&quot;https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded&quot;,&quot;d&quot;:&quot;2026-11-05&quot;,&quot;s&quot;:&quot;Savings.com.au&quot;},{&quot;t&quot;:&quot;Toyota Australia softens 2026 sales forecast despite bumper October&quot;,&quot;u&quot;:&quot;https://www.carexpert.com.au/car-news/toyota-australia-softens-2026-sales-forecast-despite-bumper-october&quot;,&quot;d&quot;:&quot;2026-11-05&quot;,&quot;s&quot;:&quot;CarExpert&quot;},{&quot;t&quot;:&quot;Broker bodies spell out what to do when loan documents look altered&quot;,&quot;u&quot;:&quot;https://www.brokernews.com.au/news/breaking-news/broker-bodies-spell-out-what-to-do-when-loan-documents-look-altered-290261.aspx&quot;,&quot;d&quot;:&quot;2026-11-04&quot;,&quot;s&quot;:&quot;Australian Broker&quot;},{&quot;t&quot;:&quot;MFAA introduces broker guidance for managing referral relationships&quot;,&quot;u&quot;:&quot;https://www.brokernews.com.au/news/breaking-news/mfaa-introduces-broker-guidance-for-managing-referral-relationships-290259.aspx&quot;,&quot;d&quot;:&quot;2026-11-04&quot;,&quot;s&quot;:&quot;Australian Broker&quot;},{&quot;t&quot;:&quot;The market reacts to the RBA's fifth interest rate hike of 2026&quot;,&quot;u&quot;:&quot;https://www.brokernews.com.au/news/breaking-news/the-market-reacts-to-the-rbas-fifth-interest-rate-hike-of-2026-290253.aspx&quot;,&quot;d&quot;:&quot;2026-11-04&quot;,&quot;s&quot;:&quot;Australian Broker&quot;},{&quot;t&quot;:&quot;No more cash rate increases? Let's take stock&quot;,&quot;u&quot;:&quot;https://www.savings.com.au/news/no-more-cash-rate-increases-let-s-take-stock&quot;,&quot;d&quot;:&quot;2026-11-03&quot;,&quot;s&quot;:&quot;Savings.com.au&quot;},{&quot;t&quot;:&quot;RBA November Cash Rate Decision: Live updates&quot;,&quot;u&quot;:&quot;https://www.savings.com.au/news/rba-november-2026-cash-rate-live-updates&quot;,&quot;d&quot;:&quot;2026-11-03&quot;,&quot;s&quot;:&quot;Savings.com.au&quot;},{&quot;t&quot;:&quot;RBA delivers fifth rate hike of 2026, pushing cash rate to 4.85%&quot;,&quot;u&quot;:&quot;https://www.savings.com.au/news/rba-lifts-cash-rate-to-4-85&quot;,&quot;d&quot;:&quot;2026-11-03&quot;,&quot;s&quot;:&quot;Savings.com.au&quot;},{&quot;t&quot;:&quot;Macquarie, Teachers Mutual pass on fifth RBA hike in full&quot;,&quot;u&quot;:&quot;https://www.brokernews.com.au/news/breaking-news/macquarie-teachers-mutual-pass-on-fifth-rba-hike-in-full-290254.aspx&quot;,&quot;d&quot;:&quot;2026-11-03&quot;,&quot;s&quot;:&quot;Australian Broker&quot;},{&quot;t&quot;:&quot;Thinktank, Bizcap among 22 firms hit with $4.3m ASIC notices&quot;,&quot;u&quot;:&quot;https://www.brokernews.com.au/news/breaking-news/thinktank-bizcap-among-22-firms-hit-with-4-3m-asic-notices-290255.aspx&quot;,&quot;d&quot;:&quot;2026-11-03&quot;,&quot;s&quot;:&quot;Australian Broker&quot;},{&quot;t&quot;:&quot;FRONT Financial quits broking to become a non-bank lender&quot;,&quot;u&quot;:&quot;https://www.brokernews.com.au/news/breaking-news/front-financial-quits-broking-to-become-a-nonbank-lender-290249.aspx&quot;,&quot;d&quot;:&quot;2026-11-03&quot;,&quot;s&quot;:&quot;Australian Broker&quot;},{&quot;t&quot;:&quot;Weekly Market Update 2nd November 2026&quot;,&quot;u&quot;:&quot;https://datiuminsights.com.au/weekly-market-update-2nd-november-2026/&quot;,&quot;d&quot;:&quot;2026-11-01&quot;,&quot;s&quot;:&quot;Datium Insights&quot;},{&quot;t&quot;:&quot;Weekly Market Update 26th October 2026&quot;,&quot;u&quot;:&quot;https://datiuminsights.com.au/weekly-market-update-26th-october-2026/&quot;,&quot;d&quot;:&quot;2026-10-25&quot;,&quot;s&quot;:&quot;Datium Insights&quot;}]};
+const MARKET_NOTES=[{&quot;d&quot;:&quot;2026-11-03&quot;,&quot;until&quot;:&quot;2026-12-08&quot;,&quot;tag&quot;:&quot;Rates&quot;,&quot;t&quot;:&quot;Cash rate up to 4.85%&quot;,&quot;body&quot;:&quot;The Reserve Bank lifted the cash rate 0.25 to 4.85% on 3 November. Six of the nine board members voted for it, three wanted to hold. It is the fifth rise this year and the highest rate since 2008. The bank expects inflation to stay high through most of 2027 and did not rule out more rises.&quot;,&quot;s&quot;:&quot;RBA&quot;,&quot;u&quot;:&quot;https://www.rba.gov.au/media-releases/2026/mr-26-30.html&quot;},{&quot;d&quot;:&quot;2026-11-05&quot;,&quot;until&quot;:&quot;2026-12-05&quot;,&quot;tag&quot;:&quot;Rates&quot;,&quot;t&quot;:&quot;Lenders pass the rise on from 13 November&quot;,&quot;body&quot;:&quot;The big four and most other lenders lift variable home loan rates from 13 November. Car loans are fixed at settlement, so new quotes move and settled loans do not.&quot;,&quot;s&quot;:&quot;Compare the Market&quot;,&quot;u&quot;:&quot;https://www.comparethemarket.com.au/news/rba-interest-rate-rise-november-2026-the-banks-passing-on-the-0-25-increase/&quot;},{&quot;d&quot;:&quot;2026-10-28&quot;,&quot;until&quot;:&quot;2026-11-25&quot;,&quot;tag&quot;:&quot;Inflation&quot;,&quot;t&quot;:&quot;Inflation 4.3%, fuel the big mover&quot;,&quot;body&quot;:&quot;Prices rose 4.3% in the year to September, up from 4.0% in August. Fuel rose 9.4% in September alone after 14.8% in August. Housing and transport were the biggest contributors. The next number is out on 25 November.&quot;,&quot;s&quot;:&quot;ABS&quot;,&quot;u&quot;:&quot;https://www.abs.gov.au/media-centre/media-releases/cpi-rose-43-year-september-2026&quot;},{&quot;d&quot;:&quot;2026-11-05&quot;,&quot;until&quot;:&quot;2026-12-05&quot;,&quot;tag&quot;:&quot;New cars&quot;,&quot;t&quot;:&quot;Strong October, one in four new cars electric&quot;,&quot;body&quot;:&quot;103,325 new cars sold in October, up 3.8% on last year. Battery electric cars took 23.1% of sales, three times their share a year ago. Petrol car sales fell 36% and diesel 15%. HiLux, Ranger and RAV4 were the top sellers and BYD was the second brand behind Toyota.&quot;,&quot;s&quot;:&quot;FCAI&quot;,&quot;u&quot;:&quot;https://www.fcai.com.au/competition-drives-strong-new-vehicle-market/&quot;},{&quot;d&quot;:&quot;2026-11-09&quot;,&quot;until&quot;:&quot;2026-11-23&quot;,&quot;tag&quot;:&quot;Used cars&quot;,&quot;t&quot;:&quot;Used prices up 0.7% last week&quot;,&quot;body&quot;:&quot;Used car prices rose 0.7% in the week. Repossessed cars jumped 8.3%. Among the most traded models, Triton fell 4.7% and Sorento 2.9%. The number of cars sold was down 16%.&quot;,&quot;s&quot;:&quot;Datium Insights&quot;,&quot;u&quot;:&quot;https://datiuminsights.com.au/weekly-market-update-9th-november-2026/&quot;},{&quot;d&quot;:&quot;2026-10-09&quot;,&quot;until&quot;:&quot;2027-01-09&quot;,&quot;tag&quot;:&quot;Loans&quot;,&quot;t&quot;:&quot;What car loans cost right now&quot;,&quot;body&quot;:&quot;Borrowers with good credit are paying about 7% to 10%, with 7.8% the average across 20 lenders. Bad credit sits at 20% to 25%. These were measured before the September and November rate rises, so quotes have moved up since.&quot;,&quot;s&quot;:&quot;Savvy&quot;,&quot;u&quot;:&quot;https://savvy.com.au/car-loans/average-car-loan-interest-rate-in-australia/&quot;},{&quot;d&quot;:&quot;2026-05-12&quot;,&quot;until&quot;:&quot;2027-04-01&quot;,&quot;tag&quot;:&quot;EVs&quot;,&quot;t&quot;:&quot;EV tax break shrinks from April 2027&quot;,&quot;body&quot;:&quot;The FBT exemption on electric cars stays in full until 31 March 2027. From 1 April 2027 the full exemption only covers EVs up to $75,000, and EVs up to the luxury car tax limit get a 25% discount instead. From April 2029 only the discount is left. Existing arrangements are not affected. Plug in hybrids lost the exemption in April 2025.&quot;,&quot;s&quot;:&quot;BDO on the 2026 Budget&quot;,&quot;u&quot;:&quot;https://www.bdo.com.au/en-au/insights/budget/2026/farewell-to-the-full-fbt-exemption-on-evs&quot;},{&quot;d&quot;:&quot;2026-08-27&quot;,&quot;until&quot;:&quot;2027-06-30&quot;,&quot;tag&quot;:&quot;Business&quot;,&quot;t&quot;:&quot;$20,000 instant asset write off is permanent&quot;,&quot;body&quot;:&quot;From 1 July 2026 a small business with turnover under $10 million can deduct each asset under $20,000 in the year it starts using it. It used to be extended a year at a time. It is law now.&quot;,&quot;s&quot;:&quot;ATO&quot;,&quot;u&quot;:&quot;https://www.ato.gov.au/about-ato/new-legislation/in-detail/businesses/20000-dollars-instant-asset-write-off&quot;},{&quot;d&quot;:&quot;2026-06-24&quot;,&quot;until&quot;:&quot;2027-03-01&quot;,&quot;tag&quot;:&quot;Rules&quot;,&quot;t&quot;:&quot;ASIC went through 350,000 car loans&quot;,&quot;body&quot;:&quot;ASIC looked at car loans from eight lenders. It found fees that were high on small loans, patchy help for people in hardship, and lenders with weak checks on the brokers and dealers selling their loans. Lenders were told they are responsible for how their loans are sold, whoever sells them.&quot;,&quot;s&quot;:&quot;ASIC&quot;,&quot;u&quot;:&quot;https://asic.gov.au/about-asic/news-centre/find-a-media-release/2026-releases/26-132mr-asic-lifts-bonnet-on-car-finance-costs-and-distribution-concerns/&quot;}];
+/* Market tab. Facts from market.json in the repo, built every morning by GitHub Actions from RBA, ABS, FCAI, Datium and a few news feeds.
+   A copy of today's file is built in so the tab works before the first run and offline. Nothing here is typed by hand except the notes below,
+   each of which carries its source and date. */
+const MARKET_URL='https://raw.githubusercontent.com/jordonaylward-ship-it/broker-hub/main/market.json';
+const MARKET_CACHE='hub_market_v1';
+const MARKET_RBA_2026=['2026-02-03','2026-03-17','2026-05-05','2026-06-16','2026-08-11','2026-09-29','2026-11-03','2026-12-08'];
+let MARKET_LIVE=null,marketTimer=null,marketLastFetch=0,marketShowAll=false;
+function mkAttr(s){return String(s==null?'':s).replace(/&amp;/g,'&amp;amp;').replace(/&quot;/g,'&amp;quot;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;')}
+function mkDay(iso){if(!iso)return '';const m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);if(!m)return String(iso);const M=[&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Aug&quot;,&quot;Sep&quot;,&quot;Oct&quot;,&quot;Nov&quot;,&quot;Dec&quot;];return parseInt(m[3],10)+' '+M[parseInt(m[2],10)-1]}
+function mkDayYear(iso){const m=String(iso||'').match(/^(\d{4})/);return m?mkDay(iso)+' '+m[1]:mkDay(iso)}
+function mkNum(n){return n==null||isNaN(n)?'':Math.round(n).toLocaleString('en-AU')}
+function mkPct(n,plus){if(n==null||isNaN(n))return '';const v=Math.abs(n)&lt;10?Math.round(n*10)/10:Math.round(n);return (plus&amp;&amp;v&gt;0?'+':'')+String(v).replace(/\.0$/,'')+'%'}
+function mkToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function marketData(){const m=MARKET_LIVE||MARKET_SEED;return m&amp;&amp;m.numbers?m:MARKET_SEED}
+function marketCacheRead(){try{const c=JSON.parse(localStorage.getItem(MARKET_CACHE)||'null');if(c&amp;&amp;c.v===1&amp;&amp;c.numbers)return c}catch(e){}return null}
+function marketFetch(force){
+  const now=Date.now();if(!force&amp;&amp;now-marketLastFetch&lt;30*60*1000)return;marketLastFetch=now;
+  fetch(MARKET_URL+'?t='+Math.floor(now/600000),{cache:'no-store'}).then(r=&gt;r.ok?r.json():null).then(j=&gt;{
+    if(!j||j.v!==1||!j.numbers)return;
+    const cur=MARKET_LIVE||marketCacheRead();
+    if(cur&amp;&amp;cur.updated&amp;&amp;j.updated&amp;&amp;j.updated&lt;cur.updated)return;
+    MARKET_LIVE=j;try{localStorage.setItem(MARKET_CACHE,JSON.stringify(j))}catch(e){}
+    if(activeTab==='market')rMarket(true);
+  }).catch(()=&gt;{});
+}
+/* the tab */
+function rMarket(fromFetch){
+  const el=document.getElementById('sec-market');if(!el)return;
+  if(!MARKET_LIVE){const c=marketCacheRead();if(c&amp;&amp;(!MARKET_SEED.updated||c.updated&gt;=MARKET_SEED.updated))MARKET_LIVE=c}
+  if(!fromFetch)marketFetch(false);
+  if(!marketTimer)marketTimer=setInterval(()=&gt;{if(activeTab==='market')marketFetch(false)},30*60*1000);
+  const M=marketData(),N=M.numbers||{};
+  const cr=N.cashRate,cpi=N.cpi,nc=N.newCars,us=N.used;
+  const today=mkToday();
+  const nextRba=MARKET_RBA_2026.find(d=&gt;d&gt;=today);
+  /* key numbers */
+  const tiles=[];
+  if(cr&amp;&amp;cr.value!=null)tiles.push({l:'Cash rate',v:cr.value.toFixed(2)+'%',s:cr.lastMove?(cr.lastMove.change&gt;0?'Up ':'Down ')+Math.abs(cr.lastMove.change).toFixed(2)+' from '+mkDay(cr.lastMove.date):'No change this year',c:cr.lastMove&amp;&amp;cr.lastMove.change&gt;0?'neg':''});
+  if(cpi&amp;&amp;cpi.value!=null)tiles.push({l:'Inflation',v:cpi.value.toFixed(1)+'%',s:'Year to '+String(cpi.period||'').split(' ')[0]});
+  if(nc&amp;&amp;nc.total)tiles.push({l:'New cars sold',v:mkNum(nc.total),s:String(nc.month||'').split(' ')[0]+', '+(nc.yoy&gt;=0?'up ':'down ')+mkPct(Math.abs(nc.yoy))+' on last year',c:nc.yoy&gt;=0?'pos':'neg'});
+  if(nc&amp;&amp;nc.bevShare!=null)tiles.push({l:'Electric',v:mkPct(nc.bevShare),s:'of '+String(nc.month||'').split(' ')[0]+&quot;'s new cars&quot;});
+  if(us&amp;&amp;us.weekly!=null)tiles.push({l:'Used prices',v:mkPct(us.weekly,true),s:'Last week, Datium',c:us.weekly&gt;=0?'pos':'neg'});
+  if(nextRba)tiles.push({l:'Next rate call',v:mkDay(nextRba),s:'Reserve Bank'});
+  else if(cpi&amp;&amp;cpi.next)tiles.push({l:'Next inflation number',v:mkDay(cpi.next),s:'ABS'});
+  /* plain words */
+  const plain=[];
+  if(cr&amp;&amp;cr.value!=null){
+    let t='The cash rate is '+cr.value.toFixed(2)+'%.';
+    if(cr.lastMove)t+=' It went '+(cr.lastMove.change&gt;0?'up':'down')+' '+Math.abs(cr.lastMove.change).toFixed(2)+' on '+mkDay(cr.lastMove.date)+'.';
+    if(cr.risesThisYear)t+=' '+cr.risesThisYear+(cr.risesThisYear===1?' rise':' rises')+' this year'+(cr.cutsThisYear?', '+cr.cutsThisYear+(cr.cutsThisYear===1?' cut.':' cuts.'):', no cuts.');
+    plain.push(t);
+    plain.push('Car loans are fixed rate. A rise changes new quotes, not loans already written.');
+  }
+  if(cpi&amp;&amp;cpi.value!=null){
+    let t='Prices are up '+cpi.value.toFixed(1)+'% on a year ago';
+    if(cpi.trimmed!=null)t+=', '+cpi.trimmed.toFixed(1)+'% once fuel and other jumpy items are taken out';
+    t+='.';
+    if(cpi.fuelAnnual!=null)t+=' Fuel is up '+mkPct(cpi.fuelAnnual)+' on a year ago.';
+    if(cpi.next)t+=' Next inflation number '+mkDay(cpi.next)+'.';
+    plain.push(t);
+  }
+  if(nc&amp;&amp;nc.total)plain.push(mkNum(nc.total)+' new cars sold in '+String(nc.month||'').split(' ')[0]+', '+(nc.yoy&gt;=0?'up ':'down ')+mkPct(Math.abs(nc.yoy))+' on a year ago.'+(nc.bevShare!=null?' '+mkPct(nc.bevShare)+' of them electric.':''));
+  if(us&amp;&amp;us.weekly!=null)plain.push('Used car prices '+(us.weekly&gt;=0?'rose ':'fell ')+mkPct(Math.abs(us.weekly))+' last week'+(us.volume!=null?', with '+mkPct(Math.abs(us.volume))+(us.volume&lt;0?' fewer':' more')+' cars sold':'')+'.');
+  /* you against the market */
+  const you=marketYou(N);
+  /* say it to clients */
+  const say=[];
+  if(cr&amp;&amp;cr.lastMove&amp;&amp;cr.lastMove.change&gt;0)say.push('Rates went up again on '+mkDay(cr.lastMove.date)+(cr.risesThisYear&gt;1?', the '+['','first','second','third','fourth','fifth','sixth','seventh','eighth'][cr.risesThisYear]+' time this year':'')+'. Car loans are fixed, so once yours settles, later rises do not touch it.');
+  if(cpi&amp;&amp;cpi.value!=null)say.push('Living costs are up '+cpi.value.toFixed(1)+'% on a year ago. Lenders test your budget against living cost benchmarks that move with that, so have payslips and statements ready.');
+  if(nc&amp;&amp;nc.bevShare!=null)say.push(mkShare(nc.bevShare)+' new cars sold last month was electric. The full tax break on an EV under a novated lease runs until March 2027, then only cars under $75,000 get it.');
+  if(us&amp;&amp;us.weekly!=null)say.push('Used car prices moved '+mkPct(Math.abs(us.weekly))+(us.weekly&gt;=0?' up':' down')+' last week. No big swings either way.');
+  say.push('Running a business? The $20,000 instant asset write off is permanent now, for turnover under $10 million.');
+  /* notes and news */
+  const notes=(MARKET_NOTES||[]).filter(n=&gt;!n.until||n.until&gt;=today).sort((a,b)=&gt;a.d&lt;b.d?1:-1);
+  const items=(M.items||[]).slice().sort((a,b)=&gt;a.d&lt;b.d?1:a.d&gt;b.d?-1:0);
+  const shown=marketShowAll?items:items.slice(0,8);
+  const upd=M.updated?new Date(M.updated):null;
+  const updTxt=upd?upd.toLocaleDateString('en-AU',{day:'numeric',month:'short'})+' '+upd.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}).toLowerCase().replace(' ',''):'';
+  const srcs=[];[cr,cpi,nc,us].forEach(x=&gt;{if(x&amp;&amp;x.src&amp;&amp;srcs.indexOf(x.src)&lt;0)srcs.push(x.src)});items.forEach(i=&gt;{if(i.s&amp;&amp;srcs.indexOf(i.s)&lt;0)srcs.push(i.s)});
+  el.innerHTML=
+    '&lt;div class=&quot;sh&quot;&gt;&lt;h2&gt;Car finance, Australia&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+esc(updTxt?'UPDATED '+updTxt.toUpperCase():'TODAY')+'&lt;/span&gt;&lt;/div&gt;'+
+    '&lt;div class=&quot;mk-row&quot;&gt;'+tiles.map(t=&gt;'&lt;div class=&quot;mk-tile&quot;&gt;&lt;div class=&quot;kl&quot;&gt;'+esc(t.l)+'&lt;/div&gt;&lt;div class=&quot;kv'+(t.c?' '+t.c:'')+'&quot;&gt;'+esc(t.v)+'&lt;/div&gt;&lt;div class=&quot;ks&quot;&gt;'+esc(t.s)+'&lt;/div&gt;&lt;/div&gt;').join('')+'&lt;/div&gt;'+
+    '&lt;div class=&quot;mg mg2&quot;&gt;'+
+      '&lt;div class=&quot;mk-card&quot;&gt;&lt;div class=&quot;mk-h&quot;&gt;In plain words&lt;/div&gt;'+plain.map(p=&gt;'&lt;div class=&quot;mk-line&quot;&gt;'+esc(p)+'&lt;/div&gt;').join('')+'&lt;/div&gt;'+
+      '&lt;div class=&quot;mk-card&quot;&gt;&lt;div class=&quot;mk-h&quot;&gt;Your numbers against the market&lt;/div&gt;'+(you.length?you.map(p=&gt;'&lt;div class=&quot;mk-line&quot;&gt;&lt;b&gt;'+esc(p.k)+'&lt;/b&gt; '+esc(p.t)+'&lt;/div&gt;').join(''):'&lt;div class=&quot;mk-line&quot;&gt;Your sheet is still loading.&lt;/div&gt;')+'&lt;/div&gt;'+
+    '&lt;/div&gt;'+
+    '&lt;div class=&quot;mk-card mk-say&quot;&gt;&lt;div class=&quot;mk-h&quot;&gt;Say it to clients&lt;/div&gt;'+say.map(p=&gt;'&lt;div class=&quot;mk-line&quot;&gt;'+esc(p)+'&lt;/div&gt;').join('')+'&lt;/div&gt;'+
+    (notes.length?'&lt;div class=&quot;sh&quot; style=&quot;margin-top:22px&quot;&gt;&lt;h2&gt;Worth knowing&lt;/h2&gt;&lt;/div&gt;&lt;div class=&quot;mk-notes&quot;&gt;'+notes.map(n=&gt;'&lt;div class=&quot;mk-note&quot;&gt;&lt;div class=&quot;mk-nt&quot;&gt;&lt;span class=&quot;mk-tag&quot;&gt;'+esc(n.tag)+'&lt;/span&gt;'+esc(n.t)+'&lt;/div&gt;&lt;div class=&quot;mk-nb&quot;&gt;'+esc(n.body)+'&lt;/div&gt;&lt;div class=&quot;mk-meta&quot;&gt;'+(n.u?'&lt;a href=&quot;'+mkAttr(n.u)+'&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;'+esc(n.s)+'&lt;/a&gt;':esc(n.s))+' · '+esc(mkDayYear(n.d))+'&lt;/div&gt;&lt;/div&gt;').join('')+'&lt;/div&gt;':'')+
+    (items.length?'&lt;div class=&quot;sh&quot; style=&quot;margin-top:22px&quot;&gt;&lt;h2&gt;Latest&lt;/h2&gt;&lt;span class=&quot;badge&quot;&gt;'+items.length+' IN 14 DAYS&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;mk-items&quot;&gt;'+shown.map(i=&gt;'&lt;a class=&quot;mk-item&quot; href=&quot;'+mkAttr(i.u)+'&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;&lt;span class=&quot;mk-it&quot;&gt;'+esc(i.t)+'&lt;/span&gt;&lt;span class=&quot;mk-im&quot;&gt;'+esc(i.s)+' · '+esc(mkDay(i.d))+'&lt;/span&gt;&lt;/a&gt;').join('')+'&lt;/div&gt;'+(items.length&gt;8?'&lt;button class=&quot;mk-more&quot; onclick=&quot;marketShowAll=!marketShowAll;rMarket(true)&quot;&gt;'+(marketShowAll?'Show less':'Show all '+items.length)+'&lt;/button&gt;':''):'')+
+    '&lt;div class=&quot;mk-foot&quot;&gt;'+esc(srcs.join(', '))+'&lt;/div&gt;';
+}
+function mkShare(p){if(p&gt;=45)return 'Almost one in two';if(p&gt;=30)return 'About one in three';if(p&gt;=22)return 'Nearly one in four';if(p&gt;=18)return 'About one in five';if(p&gt;=12)return 'About one in seven';return 'About one in '+Math.round(100/Math.max(p,1))}
+/* his sheet against the market, plain reads only */
+function marketYou(N){
+  const out=[];if(typeof D==='undefined'||!D||!D.leads||!D.leads.length)return out;
+  const L=D.leads,now=new Date(),d60=new Date(now.getTime()-60*86400000),d30=new Date(now.getTime()-30*86400000),d120=new Date(now.getTime()-120*86400000);
+  const lostOn=(re)=&gt;L.filter(l=&gt;(l.finalStatus==='Lost'||l.currentStage==='Lost')&amp;&amp;re.test(String(l.lostReason||''))&amp;&amp;(parseDate(l.lostDate)||parseDate(l.date)||new Date(0))&gt;=d60).length;
+  const lostAll=L.filter(l=&gt;(l.finalStatus==='Lost'||l.currentStage==='Lost')&amp;&amp;(parseDate(l.lostDate)||parseDate(l.date)||new Date(0))&gt;=d60).length;
+  const cr=N.cashRate,cpi=N.cpi,nc=N.newCars;
+  const rate=lostOn(/rate|pricing/i),money=lostOn(/serviceab|cash ?flow|not qualified|policy/i);
+  if(cr&amp;&amp;cr.value!=null){
+    let t='You: '+rate+' of your '+lostAll+' lost leads in the last 60 days walked on rate.';
+    t+=' Market: '+(cr.risesThisYear||0)+(cr.risesThisYear===1?' rise':' rises')+' this year'+(cr.lastMove?', the last on '+mkDay(cr.lastMove.date):'')+'.';
+    if(rate&gt;0&amp;&amp;cr.risesThisYear&gt;0)t+=' The quotes clients saw earlier in the year are gone.';
+    out.push({k:'Rates.',t:t});
+  }
+  if(cpi&amp;&amp;cpi.value!=null){
+    let t='You: '+money+' lost on money or policy in the last 60 days. Market: living costs up '+cpi.value.toFixed(1)+'% on a year ago'+(cpi.fuelAnnual!=null?', fuel up '+mkPct(cpi.fuelAnnual):'')+'. The benchmarks lenders test budgets against move with that.';
+    out.push({k:'Serviceability.',t:t});
+  }
+  if(nc&amp;&amp;nc.total){
+    const isSet=l=&gt;l.finalStatus==='Settled'||l.currentStage==='Settled';
+    const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    const prev=new Date(now.getFullYear(),now.getMonth()-1,1),pym=prev.getFullYear()+'-'+String(prev.getMonth()+1).padStart(2,'0');
+    const months={};L.forEach(l=&gt;{if(isSet(l)&amp;&amp;l.settlementMonth)months[l.settlementMonth]=(months[l.settlementMonth]||0)+1});
+    const keys=Object.keys(months).filter(k=&gt;k&lt;ym).sort().slice(-6);
+    const avg=keys.length?keys.reduce((s,k)=&gt;s+months[k],0)/keys.length:0;
+    const last=months[pym]||0,cur=months[ym]||0;
+    const M=[&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Aug&quot;,&quot;Sep&quot;,&quot;Oct&quot;,&quot;Nov&quot;,&quot;Dec&quot;];
+    let t='You: '+last+' settled in '+M[prev.getMonth()]+(avg?', your average is '+(Math.round(avg*10)/10).toString().replace(/\.0$/,''):'')+(cur?', '+cur+' so far this month':'')+'.';
+    t+=' Market: dealers sold '+mkPct(Math.abs(nc.yoy))+(nc.yoy&gt;=0?' more':' fewer')+' new cars in '+String(nc.month||'').split(' ')[0]+' than a year ago.'+(nc.yoy&gt;=0?' Demand is there.':'');
+    out.push({k:'Volume.',t:t});
+  }
+  const bought=L.filter(l=&gt;(l.cost||0)&gt;0&amp;&amp;parseDate(l.date));
+  const b30=bought.filter(l=&gt;parseDate(l.date)&gt;=d30),b120=bought.filter(l=&gt;{const d=parseDate(l.date);return d&gt;=d120&amp;&amp;d&lt;d30});
+  if(b30.length&gt;=3&amp;&amp;b120.length&gt;=3){
+    const a30=b30.reduce((s,l)=&gt;s+l.cost,0)/b30.length,a120=b120.reduce((s,l)=&gt;s+l.cost,0)/b120.length;
+    out.push({k:'Lead prices.',t:'You: '+fmtFull(a30)+' a lead on average in the last 30 days, '+fmtFull(a120)+' in the 90 days before. Yours only, there is no public number for this.'});
+  }
+  return out;
+}
+
+&lt;/script&gt;
+&lt;/body&gt;
 &lt;/html&gt;
 "></iframe>
     <template id="tpl-warranty"><iframe id="frame-warranty" srcdoc="&lt;!DOCTYPE html&gt;

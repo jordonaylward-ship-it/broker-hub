@@ -12230,7 +12230,7 @@ var LM2R=(function(){
   function num(v){if(v==null)return null;var s=String(v).replace(/[$,\s]/g,'');if(!/\d/.test(s))return null;var n=parseFloat(s);return isNaN(n)?null:n}
   function txt(t){return String(t||'').replace(/\r\n?/g,'\n').replace(/ /g,' ')}
   function lines(t){return txt(t).split('\n').map(function(l){return l.replace(/\s+$/,'')})}
-  function ageFrom(d){var m=String(d||'').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);if(!m)return null;var b=new Date(+m[3],+m[2]-1,+m[1]);var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
+  function ageFrom(d){var s=String(d||'').trim(),m=s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/),b=null;if(m)b=new Date(+m[3],+m[2]-1,+m[1]);else{var iso=s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);if(iso)b=new Date(+iso[1],+iso[2]-1,+iso[3])}if(!b||isNaN(b.getTime()))return null;var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
   function perMonth(amt,fq){if(amt==null)return null;fq=String(fq||'').toLowerCase();var m={weekly:52/12,fortnightly:26/12,monthly:1,quarterly:1/3,yearly:1/12,annually:1/12,annual:1/12}[fq.replace(/[^a-z]/g,'')];return m?amt*m:null}
   function perWeek(amt,fq){var m=perMonth(amt,fq);return m==null?null:m*12/52}
   function resid(s){s=String(s||'').toLowerCase();if(!s)return null;
@@ -12310,7 +12310,7 @@ var LM2R=(function(){
           if(c.extras==null&amp;&amp;kv['accessories cost']!=null)c.extras=num(kv['accessories cost']);
           if(!c.assetDesc&amp;&amp;kv.description)c.assetDesc=kv.description;
           if(c.build==null&amp;&amp;num(kv['make year'])&gt;1950)c.build=num(kv['make year']);
-          if(c.build==null&amp;&amp;num(kv['model year'])&gt;1950)c.build=num(kv['model year']);
+          if(c.build==null&amp;&amp;c.buildGuess==null&amp;&amp;num(kv['model year'])&gt;1950){var my=num(kv['model year']),dy=String(kv.description||'').match(/\b(19[5-9]\d|20[0-4]\d)\b/);if(dy)c.build=+dy[1];else{c.buildGuess=my;c.buildUnsure=true}}
           if(c.isNew==null&amp;&amp;kv['new']!=null)c.isNew=/^yes|^1|true/i.test(kv['new']);
           if(c.saleCode==null&amp;&amp;kv['private sale']!=null)c.saleCode=kv['private sale'];
           if(c.assetRequested==null&amp;&amp;num(kv['requested amount'])&gt;0)c.assetRequested=num(kv['requested amount']);
@@ -12396,6 +12396,7 @@ var LM2R=(function(){
     c.marital=before('marital status')||g(/Marital Status:\s*([A-Za-z ]+?)\s+Number of/);
     c.dependants=num(after('number of dependants (under 18)'));
     var dob=after('date of birth');if(dob){c.dob=dob;c.age=ageFrom(dob)}
+    var lt=before('license type');if(/^(open|full|provisional|probationary|p[12]?|learner|l|heavy|hc|hr|mc|mr|lr|c|r)\b/i.test(lt||''))c.licType=lt;var ls=before('state of issue');if(/^(QLD|NSW|VIC|SA|WA|TAS|NT|ACT)$/.test(ls||''))c.licState=ls;
     // current address block
     var a0=idx(/^Current Address$/);var a1=-1;for(var i=a0+1;a0&gt;-1&amp;&amp;i&lt;L.length;i++){if(/^Search Address$/.test(L[i])&amp;&amp;i===a0+1){continue}if(/^(Credit Report|Previous Address|Landlord Details)$/.test(L[i])){a1=i;break}}
     if(a0&gt;-1&amp;&amp;L[a0+1]!=='Search Address'){var a2=idx(/^Current Address$/,a0+1);if(a2&gt;-1){a0=a2;a1=idx(/^(Credit Report|Previous Address|Landlord Details)$/,a0+1)}}
@@ -16580,7 +16581,7 @@ var LM2R=(function(){
   function num(v){if(v==null)return null;var s=String(v).replace(/[$,\s]/g,'');if(!/\d/.test(s))return null;var n=parseFloat(s);return isNaN(n)?null:n}
   function txt(t){return String(t||'').replace(/\r\n?/g,'\n').replace(/ /g,' ')}
   function lines(t){return txt(t).split('\n').map(function(l){return l.replace(/\s+$/,'')})}
-  function ageFrom(d){var m=String(d||'').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);if(!m)return null;var b=new Date(+m[3],+m[2]-1,+m[1]);var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
+  function ageFrom(d){var s=String(d||'').trim(),m=s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/),b=null;if(m)b=new Date(+m[3],+m[2]-1,+m[1]);else{var iso=s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);if(iso)b=new Date(+iso[1],+iso[2]-1,+iso[3])}if(!b||isNaN(b.getTime()))return null;var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
   function perMonth(amt,fq){if(amt==null)return null;fq=String(fq||'').toLowerCase();var m={weekly:52/12,fortnightly:26/12,monthly:1,quarterly:1/3,yearly:1/12,annually:1/12,annual:1/12}[fq.replace(/[^a-z]/g,'')];return m?amt*m:null}
   function perWeek(amt,fq){var m=perMonth(amt,fq);return m==null?null:m*12/52}
   function resid(s){s=String(s||'').toLowerCase();if(!s)return null;
@@ -16660,7 +16661,7 @@ var LM2R=(function(){
           if(c.extras==null&amp;&amp;kv['accessories cost']!=null)c.extras=num(kv['accessories cost']);
           if(!c.assetDesc&amp;&amp;kv.description)c.assetDesc=kv.description;
           if(c.build==null&amp;&amp;num(kv['make year'])&gt;1950)c.build=num(kv['make year']);
-          if(c.build==null&amp;&amp;num(kv['model year'])&gt;1950)c.build=num(kv['model year']);
+          if(c.build==null&amp;&amp;c.buildGuess==null&amp;&amp;num(kv['model year'])&gt;1950){var my=num(kv['model year']),dy=String(kv.description||'').match(/\b(19[5-9]\d|20[0-4]\d)\b/);if(dy)c.build=+dy[1];else{c.buildGuess=my;c.buildUnsure=true}}
           if(c.isNew==null&amp;&amp;kv['new']!=null)c.isNew=/^yes|^1|true/i.test(kv['new']);
           if(c.saleCode==null&amp;&amp;kv['private sale']!=null)c.saleCode=kv['private sale'];
           if(c.assetRequested==null&amp;&amp;num(kv['requested amount'])&gt;0)c.assetRequested=num(kv['requested amount']);
@@ -16746,6 +16747,7 @@ var LM2R=(function(){
     c.marital=before('marital status')||g(/Marital Status:\s*([A-Za-z ]+?)\s+Number of/);
     c.dependants=num(after('number of dependants (under 18)'));
     var dob=after('date of birth');if(dob){c.dob=dob;c.age=ageFrom(dob)}
+    var lt=before('license type');if(/^(open|full|provisional|probationary|p[12]?|learner|l|heavy|hc|hr|mc|mr|lr|c|r)\b/i.test(lt||''))c.licType=lt;var ls=before('state of issue');if(/^(QLD|NSW|VIC|SA|WA|TAS|NT|ACT)$/.test(ls||''))c.licState=ls;
     // current address block
     var a0=idx(/^Current Address$/);var a1=-1;for(var i=a0+1;a0&gt;-1&amp;&amp;i&lt;L.length;i++){if(/^Search Address$/.test(L[i])&amp;&amp;i===a0+1){continue}if(/^(Credit Report|Previous Address|Landlord Details)$/.test(L[i])){a1=i;break}}
     if(a0&gt;-1&amp;&amp;L[a0+1]!=='Search Address'){var a2=idx(/^Current Address$/,a0+1);if(a2&gt;-1){a0=a2;a1=idx(/^(Credit Report|Previous Address|Landlord Details)$/,a0+1)}}
@@ -16860,7 +16862,7 @@ var LM2=(function(){
     D.addons=D.warranty&gt;0?D.warranty:0;
     D.term=A.term||c.termMonths||60;
     D.years=D.term/12;
-    D.build=A.build||c.build||null;
+    D.build=(A.build&gt;=1950&amp;&amp;A.build&lt;=YEAR+1)?A.build:(c.build||null);
     D.ageNow=D.build?Math.max(0,YEAR-D.build):null;
     D.ageEnd=D.ageNow!=null?D.ageNow+Math.ceil(D.years):null;
     D.isNew=c.isNew===true||(D.ageNow===0&amp;&amp;c.isNew!==false);
@@ -16938,6 +16940,7 @@ var LM2=(function(){
     var asks=Object.keys(Q).map(function(k){return Q[k]}).filter(function(q){return q.who.length});
     if(D.warranty==null)asks.unshift(Object.assign({},Q.warranty,{who:['Every lender']}));
     if(D.tradeIn&gt;0&amp;&amp;!A.trade&amp;&amp;!asks.some(function(q){return q.key==='trade'}))asks.push(Object.assign({},Q.trade,{who:['Every lender'],hint:money(D.tradeIn)+' trade in on file'}));
+    for(var bi=0;bi&lt;asks.length;bi++){if(asks[bi].key==='build'){var bq=asks.splice(bi,1)[0];if(c.buildGuess)bq.hint='The lead shows '+c.buildGuess+', that is the default, not a real year';asks.unshift(bq);break}}
     var ord={yes:0,maybe:1,no:2};
     rows.sort(function(a,b){return (ord[a.status]-ord[b.status])||((a.rate==null?99:a.rate)-(b.rate==null?99:b.rate))});
     // best fit: a confirmed yes on one real rate, and it has to fund the deal as asked
@@ -17002,6 +17005,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var top=g==='AAA'||g==='AA'||g==='A+'||!g;
     r.statements(!top?true:false,top?'2 payslips':'3 months');
     var u23=c.age!=null&amp;&amp;c.age&lt;23;
+    if(c.age!=null&amp;&amp;c.age&lt;25&amp;&amp;c.thin)r.check('No credit history on the file. Liberty wants some comparable credit on young applicants, ask them first');
     r.capAt(u23?({AAA:35000,AA:30000}[g]||25000):({AAA:100000,AA:75000}[g]||50000),'for '+(g||'A and below')+(u23?' under 23':''));
     r.min=5000;
     r.termMax(g==='AAA'||g==='AA'?84:60,'below AA');
@@ -17094,7 +17098,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(s&lt;400)return r.no('Negative under 400 is out');
     var band=s&gt;=600?600:s&gt;=500?500:400;
     if(band&gt;=500&amp;&amp;c.fileMonths!=null&amp;&amp;c.fileMonths&lt;12)band=400;
-    var ld=D.ageNow==null?0:D.ageNow&gt;=8?1:D.ageNow&gt;=3?0.5:0;
+    if(D.ageNow==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Older cars carry a loading');var ld=D.ageNow==null?0:D.ageNow&gt;=8?1:D.ageNow&gt;=3?0.5:0;
     var visa=c.residency==='visa'||c.residency==='bridging'||c.residency==='nz';
     r.place('Negative '+s,10.95);r.rateFrom=true;
     if(ld)r.load(ld,'for a '+(D.ageNow&gt;=8?'8 year plus':'3 to 7 year old')+' car');
@@ -17127,7 +17131,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var ta=tierOf(a),tb=tierOf(b),t=ta||tb;
     if(ta&amp;&amp;tb&amp;&amp;ta!==tb)r.maybe('The Comprehensive and Negative scores land in different tiers. Ask NOW which one they use');
     if(t==='under')return r.no('Score under 500 is out');
-    var col=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;2?1:D.ageNow&lt;=4?2:3;
+    if(D.ageNow==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Rates go by the age of the car');var col=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;2?1:D.ageNow&lt;=4?2:3;
     var G={Premium:[9.59],'Tier 1':[9.69,9.69,10.29,11.29],'Tier 2':[10.49,10.49,10.99,12.49],'Tier 3':[12.79,12.79,13.79,15.39],'Tier 4':[15.75,15.75,15.75,15.75]};
     if(t==='Premium')col=0;
     r.place(t,G[t][col]);
@@ -17376,7 +17380,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.fee('RACV application fee',550);
     var pre=D.base||0;r.fee('Your fee',pre&gt;20000?1210:pre&gt;10000?990:550);
     var amt=r.loanNow();
-    var newish=D.isNew||(D.build!=null&amp;&amp;D.build&gt;=new Date().getFullYear()-3);
+    if(D.build==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Cars under 3 years old get a lower rate');var newish=D.isNew||(D.build!=null&amp;&amp;D.build&gt;=new Date().getFullYear()-3);
     var col=(c.owner?0:2)+(newish?0:1);
     var G=s&gt;=832?(amt&gt;=35000?[6.59,7.89,7.79,8.89]:amt&gt;=25000?[7.29,7.89,7.79,8.89]:[7.79,8.39,8.29,9.39]):s&gt;=725?(amt&gt;=25000?[7.89,8.99,8.89,9.99]:[8.39,9.49,9.39,10.49]):s&gt;=621?[9.59,10.19,10.59,11.19]:s&gt;=509?[10.09,11.49,11.09,11.99]:(amt&gt;=35000?[16.59,16.69,16.59,16.69]:[17.59,17.69,17.59,17.69]);
     var band=s&gt;=832?'832 plus':s&gt;=725?'725 to 831':s&gt;=621?'621 to 724':s&gt;=509?'509 to 620':'400 to 508';
@@ -17404,7 +17408,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.netMonthly!=null&amp;&amp;c.netMonthly&lt;2318)return r.no('Net pay under $2,318 a month');
     if(D.ageNow!=null&amp;&amp;D.ageNow&gt;(D.term&gt;60?7:15))return r.no('Car is too old for this term');
     var e=c.experian;
-    var b=D.build,row=D.isNew?0:b==null?1:b&gt;=2021?1:b&gt;=2016?2:3;
+    var b=D.build;if(b==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Rates go by the build year');var row=D.isNew?0:b==null?1:b&gt;=2021?1:b&gt;=2016?2:3;
     var G={'Ultra Prime':[8.10,8.10,8.10,9.25],'Tier 1':[8.25,8.75,9.45,10.29],'Tier 2':[9.25,9.65,10.45,10.70],'Tier 3':[10.60,10.70,10.95,11.95],'Tier 4':[11.60,12.30,12.79,12.99]};
     var dep=(D.deposit||0)+(D.tradeApplied?D.tradeIn:0),dep20=D.price?dep/D.price&gt;=0.2:false;
     if(e==null){r.ask('experian','They tier off Experian only, Equifax doesn\'t count');
@@ -17431,7 +17435,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.defUnpaidCount&gt;0||c.defPaidCount&gt;0||c.judgements&gt;0||c.insolvency)return r.no('No paid or unpaid financial defaults, judgements or bankruptcy');
     if(c.thin&amp;&amp;c.shoppingCount&gt;=3)return r.no('No accounts with 3 or more enquiries in the last month is out');
     var s=c.one;
-    var row=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;=5?1:D.ageNow&lt;=9?2:3;
+    if(D.ageNow==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Rates go by the age of the car');var row=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;=5?1:D.ageNow&lt;=9?2:3;
     var own=c.owner;
     if(c.living==null)r.ask('living','Owners and non owners have their own tables');
     var loan0;
@@ -17481,6 +17485,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     else g='Bronze';
     var G={Platinum:[13.95,75000,0.02,'4%'],Gold:[16.95,65000,0.03,'4%'],Silver:[19.95,55000,0.04,'3%'],Bronze:[24.95,40000,0.045,'none']};
     r.place(g,G[g][0]);r.ok(g+': '+s+(c.renter?', renting '+m2y(rm):'')+', employed '+m2y(jm));
+    if(c.age!=null&amp;&amp;c.age&lt;21){r.capAt(20000,'under 21 on a secured loan');r.note('Under 21, V8s and high powered cars are out')}
     if(c.emp==='benefits'){r.load(3,'with benefits over half the income');r.capAt(12000)}
     r.statements(true,'they read the banking');
     var pla=D.base||0;
@@ -17514,6 +17519,8 @@ if(typeof module!=='undefined')module.exports=LM2;
   }});
 
   /* ── C1 ── */
+  var C1_REMOTE=[[800,999],[4470,4499],[4721,4736],[4821,4830],[4871,4871],[4873,4877],[4890,4895],[2648,2648],[2672,2672],[2675,2675],[2711,2711],[2715,2715],[2717,2717],[2825,2826],[2831,2836],[2839,2840],[2873,2873],[2875,2875],[2877,2880],[2898,2899],[3280,3287],[3300,3319],[3390,3424],[3490,3512],[3540,3549],[3579,3599],[3690,3709],[3875,3909],[5268,5291],[5333,5346],[5600,5799],[6255,6262],[6275,6275],[6284,6290],[6317,6389],[6395,6398],[6415,6452],[6475,6479],[6488,6490],[6515,6799],[7215,7216],[7253,7256],[7260,7265],[7270,7270],[7303,7331],[7466,7470]];
+  function c1Remote(pc){pc=+pc;if(!(pc&gt;0))return false;for(var i=0;i&lt;C1_REMOTE.length;i++)if(pc&gt;=C1_REMOTE[i][0]&amp;&amp;pc&lt;=C1_REMOTE[i][1])return true;return false}
   L.add({name:'C1',src:'Introducer Product Guide V5.1',run:function(c,D,r){
     if(c.age!=null&amp;&amp;(c.age&lt;18||c.age&gt;65))return r.no('Clients 18 to 65 only');
     if(c.insolvency)return r.no('Current bankrupts are out');
@@ -17524,9 +17531,14 @@ if(typeof module!=='undefined')module.exports=LM2;
     else if(res==='citizen'||res==='pr')tier='Standard';
     else if(res==='nz'||res==='visa')tier='Lite';
     else{r.ask('residency','Premium is citizens only, PR gets Standard');tier='Standard'}
+    var lic=String(c.licType||''),licDown=false;
+    if(/learner|^l\b/i.test(lic)){if(tier!=='Lite'){tier='Lite';licDown=true}r.check('Learner licence puts them on Lite, and they want the hours done and the test booked by settlement')}
+    else if(/provisional|probationary|^p[12]?\b/i.test(lic)&amp;&amp;tier==='Premium'){tier='Standard';licDown=true;r.note('Provisional licence, Premium needs an open licence so it runs as Standard')}
+    if(c.fileMonths!=null&amp;&amp;c.fileMonths&lt;24&amp;&amp;tier!=='Lite')r.check('Credit file under 2 years, '+tier+' wants 2 years');
+    if(c.postcode!=null&amp;&amp;c1Remote(c.postcode))r.check('C1 excludes remote areas and postcode '+c.postcode+' looks that far out, check with them');
     var T={Premium:[24.99,35000,60,36],Standard:[27.99,30000,48,36],Lite:[29.99,20000,36,24]}[tier];
     r.place(tier,T[0]);
-    if(tier!=='Premium'&amp;&amp;res!=null)r.ok((res==='pr'?'PR':RESW[res])+' gets '+tier+(res==='pr'?', Premium is citizens only':''));
+    if(tier!=='Premium'&amp;&amp;res!=null&amp;&amp;!licDown)r.ok((res==='pr'?'PR':RESW[res])+' gets '+tier+(res==='pr'?', Premium is citizens only':''));
     r.capAt(T[1],'on '+tier);r.termMax(T[2],'on '+tier);r.min=10000;
     if(D.term&lt;T[3])r.no(tier+' starts at '+T[3]+' months');
     r.statements(true,'90 days, income comes off the banking');
@@ -17546,6 +17558,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var vfa=D.base;
     if(c.residency!=='citizen'&amp;&amp;c.cameFrom&amp;&amp;c.monthsInAus!=null&amp;&amp;c.monthsInAus&lt;12)r.no('Non citizens need 12 months in Australia');
     if(c.addrMonths!=null&amp;&amp;c.addrMonths&lt;3)r.no('Needs 3 months at the current address');
+    if(c.licState&amp;&amp;c.state&amp;&amp;c.licState!==c.state)r.check('Licence is from '+c.licState+' and they live in '+c.state+'. APF wants a licence from the state they live in with the current address on it');
     var tier=c.defUnpaidCount&gt;0?'Bronze':'Platinum';
     r.place(tier,tier==='Bronze'?25.99:23.99);r.ok(tier+(tier==='Platinum'?', no unpaid finance defaults':', unpaid defaults on file'));
     r.statements(true,'90 days on every account, plus 2 payslips');
@@ -17614,7 +17627,7 @@ var LM2UI=(function(){
     var who=q.who&amp;&amp;q.who.length?'&lt;div class=&quot;w&quot;&gt;'+esc(q.who.join(' · '))+(q.hint?' · '+esc(q.hint):'')+'&lt;/div&gt;':(q.hint?'&lt;div class=&quot;w&quot;&gt;'+esc(q.hint)+'&lt;/div&gt;':'');
     var input='';
     if(q.type==='choice')input='&lt;div class=&quot;opts&quot;&gt;'+q.opts.map(function(o){return '&lt;button type=&quot;button&quot; data-a=&quot;'+q.key+'&quot; data-v=&quot;'+o[0]+'&quot; class=&quot;'+(cur===o[0]?'on':'')+'&quot;&gt;'+esc(o[1])+'&lt;/button&gt;'}).join('')+'&lt;/div&gt;';
-    else input='&lt;input data-a=&quot;'+q.key+'&quot; inputmode=&quot;numeric&quot; placeholder=&quot;'+(q.type==='money'?'$':'Score')+'&quot; value=&quot;'+(cur!=null?esc(cur):'')+'&quot;&gt;';
+    else input='&lt;input data-a=&quot;'+q.key+'&quot; inputmode=&quot;numeric&quot; placeholder=&quot;'+(q.type==='money'?'$':q.key==='build'?'Year':'Score')+'&quot; value=&quot;'+(cur!=null?esc(cur):'')+'&quot;&gt;';
     return '&lt;div class=&quot;lm2-qi&quot;&gt;&lt;div class=&quot;t&quot;&gt;'+esc(q.q)+'&lt;/div&gt;'+who+input+'&lt;/div&gt;';
   }
 
@@ -17647,7 +17660,7 @@ var LM2UI=(function(){
     var h='&lt;div class=&quot;lm2&quot;&gt;';
     // the deal
     var car=[D.build,c.assetName&amp;&amp;String(c.assetName).replace(/^\d{4}\s+/,'')].filter(Boolean).join(' ')||'Car';
-    var bits=[D.isNew?'new':'used',D.sale==='private'?'private sale':D.sale==='dealer'?'dealer':null,c.stillLooking?'still looking':null].filter(Boolean).join(' · ');
+    var bits=[D.isNew?'new':'used',D.sale==='private'?'private sale':D.sale==='dealer'?'dealer':null,(c.stillLooking&amp;&amp;!c.assetName)?'still looking':null].filter(Boolean).join(' · ');
     h+='&lt;div class=&quot;lm2-deal&quot;&gt;&lt;div class=&quot;lm2-k&quot;&gt;'+esc(c.firstName||'This client')+' · consumer car loan&lt;/div&gt;'
       +'&lt;div class=&quot;lm2-car&quot;&gt;'+esc(car)+(bits?' &lt;span&gt;'+esc(bits)+'&lt;/span&gt;':'')+'&lt;/div&gt;'
       +'&lt;div class=&quot;lm2-grid&quot;&gt;'
@@ -17657,6 +17670,7 @@ var LM2UI=(function(){
       +'&lt;div&gt;&lt;span&gt;Term&lt;/span&gt;&lt;select data-a=&quot;term&quot;&gt;'+[36,48,60,72,84].map(function(m){return '&lt;option value=&quot;'+m+'&quot;'+(m===D.term?' selected':'')+'&gt;'+m+' months&lt;/option&gt;'}).join('')+'&lt;/select&gt;&lt;/div&gt;'
       +'&lt;/div&gt;'
       +(D.tradeIn&gt;0?'&lt;div class=&quot;lm2-trade&quot;&gt;Trade in '+money(D.tradeIn)+' on file · '+(D.tradeApplied?'coming off the loan':'left out of the loan')+'&lt;/div&gt;':'')
+      +(D.build==null&amp;&amp;!D.isNew?'&lt;div class=&quot;lm2-trade&quot;&gt;'+(c.buildGuess?'No real car year on the lead, '+c.buildGuess+' is the default. ':'No car year on file. ')+'Put the year in below and the rates lock in&lt;/div&gt;':'')
       +'&lt;div class=&quot;lm2-chips&quot;&gt;'+chips(c,D)+'&lt;/div&gt;&lt;/div&gt;';
     // the questions
     if(res.asks.length){h+='&lt;div class=&quot;lm2-q&quot;&gt;&lt;div class=&quot;lm2-qh&quot;&gt;'+res.asks.length+' to answer&lt;/div&gt;'+res.asks.map(function(q){return askHtml(q,A)}).join('')+'&lt;/div&gt;'}
@@ -17666,6 +17680,7 @@ var LM2UI=(function(){
       +'&lt;div class=&quot;lm2-br&quot;&gt;'+esc(b.tier||'')+' · '+b.rate.toFixed(2)+'%'+(b.weekly?' · about '+money(b.weekly)+' a week':'')+'&lt;/div&gt;'
       +'&lt;div class=&quot;lm2-bw&quot;&gt;'+(b.stmts===false?'No bank statements':b.stmts===true?'Bank statements needed':'Statements not stated')+(b.loan!=null?' · '+money(b.loan)+' all in':'')+'&lt;/div&gt;'
       +(b.stale?'&lt;div class=&quot;lm2-bw old&quot;&gt;'+esc(b.stale)+', check the rate on their portal&lt;/div&gt;':'')
+      +(function(){var bq=res.asks.filter(function(q){return q.key==='build'})[0];if(!bq)return '';var w=bq.who||[];return '&lt;div class=&quot;lm2-bw old&quot;&gt;The car year is not in yet. '+(w.length===1?esc(w[0])+' is waiting on it and may beat this':w.length+' lenders are waiting on it and may beat this')+'&lt;/div&gt;'})()
       +(b.addonsOk===false&amp;&amp;D.warranty==null?'&lt;div class=&quot;lm2-bw old&quot;&gt;They won\'t fund a warranty. If one is going on, answer the warranty question above&lt;/div&gt;':'')
       +(res.cheaper?'&lt;div class=&quot;lm2-alt&quot;&gt;'+esc(res.cheaper.short)+' is cheaper at '+res.cheaper.rate.toFixed(2)+'%'+(res.cheaper.weekly?', about '+money(res.cheaper.weekly)+' a week,':'')+' if the warranty comes off the deal. They won\'t fund it'+(res.cheaper.stale?'. '+esc(res.cheaper.stale):'')+'&lt;/div&gt;':'')
       +'&lt;/div&gt;'}
@@ -19512,7 +19527,7 @@ var LM2R=(function(){
   function num(v){if(v==null)return null;var s=String(v).replace(/[$,\s]/g,'');if(!/\d/.test(s))return null;var n=parseFloat(s);return isNaN(n)?null:n}
   function txt(t){return String(t||'').replace(/\r\n?/g,'\n').replace(/ /g,' ')}
   function lines(t){return txt(t).split('\n').map(function(l){return l.replace(/\s+$/,'')})}
-  function ageFrom(d){var m=String(d||'').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);if(!m)return null;var b=new Date(+m[3],+m[2]-1,+m[1]);var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
+  function ageFrom(d){var s=String(d||'').trim(),m=s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/),b=null;if(m)b=new Date(+m[3],+m[2]-1,+m[1]);else{var iso=s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);if(iso)b=new Date(+iso[1],+iso[2]-1,+iso[3])}if(!b||isNaN(b.getTime()))return null;var a=NOW.getFullYear()-b.getFullYear();if(NOW.getMonth()&lt;b.getMonth()||(NOW.getMonth()===b.getMonth()&amp;&amp;NOW.getDate()&lt;b.getDate()))a--;return a&gt;15&amp;&amp;a&lt;110?a:null}
   function perMonth(amt,fq){if(amt==null)return null;fq=String(fq||'').toLowerCase();var m={weekly:52/12,fortnightly:26/12,monthly:1,quarterly:1/3,yearly:1/12,annually:1/12,annual:1/12}[fq.replace(/[^a-z]/g,'')];return m?amt*m:null}
   function perWeek(amt,fq){var m=perMonth(amt,fq);return m==null?null:m*12/52}
   function resid(s){s=String(s||'').toLowerCase();if(!s)return null;
@@ -19592,7 +19607,7 @@ var LM2R=(function(){
           if(c.extras==null&amp;&amp;kv['accessories cost']!=null)c.extras=num(kv['accessories cost']);
           if(!c.assetDesc&amp;&amp;kv.description)c.assetDesc=kv.description;
           if(c.build==null&amp;&amp;num(kv['make year'])&gt;1950)c.build=num(kv['make year']);
-          if(c.build==null&amp;&amp;num(kv['model year'])&gt;1950)c.build=num(kv['model year']);
+          if(c.build==null&amp;&amp;c.buildGuess==null&amp;&amp;num(kv['model year'])&gt;1950){var my=num(kv['model year']),dy=String(kv.description||'').match(/\b(19[5-9]\d|20[0-4]\d)\b/);if(dy)c.build=+dy[1];else{c.buildGuess=my;c.buildUnsure=true}}
           if(c.isNew==null&amp;&amp;kv['new']!=null)c.isNew=/^yes|^1|true/i.test(kv['new']);
           if(c.saleCode==null&amp;&amp;kv['private sale']!=null)c.saleCode=kv['private sale'];
           if(c.assetRequested==null&amp;&amp;num(kv['requested amount'])&gt;0)c.assetRequested=num(kv['requested amount']);
@@ -19678,6 +19693,7 @@ var LM2R=(function(){
     c.marital=before('marital status')||g(/Marital Status:\s*([A-Za-z ]+?)\s+Number of/);
     c.dependants=num(after('number of dependants (under 18)'));
     var dob=after('date of birth');if(dob){c.dob=dob;c.age=ageFrom(dob)}
+    var lt=before('license type');if(/^(open|full|provisional|probationary|p[12]?|learner|l|heavy|hc|hr|mc|mr|lr|c|r)\b/i.test(lt||''))c.licType=lt;var ls=before('state of issue');if(/^(QLD|NSW|VIC|SA|WA|TAS|NT|ACT)$/.test(ls||''))c.licState=ls;
     // current address block
     var a0=idx(/^Current Address$/);var a1=-1;for(var i=a0+1;a0&gt;-1&amp;&amp;i&lt;L.length;i++){if(/^Search Address$/.test(L[i])&amp;&amp;i===a0+1){continue}if(/^(Credit Report|Previous Address|Landlord Details)$/.test(L[i])){a1=i;break}}
     if(a0&gt;-1&amp;&amp;L[a0+1]!=='Search Address'){var a2=idx(/^Current Address$/,a0+1);if(a2&gt;-1){a0=a2;a1=idx(/^(Credit Report|Previous Address|Landlord Details)$/,a0+1)}}
@@ -19792,7 +19808,7 @@ var LM2=(function(){
     D.addons=D.warranty&gt;0?D.warranty:0;
     D.term=A.term||c.termMonths||60;
     D.years=D.term/12;
-    D.build=A.build||c.build||null;
+    D.build=(A.build&gt;=1950&amp;&amp;A.build&lt;=YEAR+1)?A.build:(c.build||null);
     D.ageNow=D.build?Math.max(0,YEAR-D.build):null;
     D.ageEnd=D.ageNow!=null?D.ageNow+Math.ceil(D.years):null;
     D.isNew=c.isNew===true||(D.ageNow===0&amp;&amp;c.isNew!==false);
@@ -19870,6 +19886,7 @@ var LM2=(function(){
     var asks=Object.keys(Q).map(function(k){return Q[k]}).filter(function(q){return q.who.length});
     if(D.warranty==null)asks.unshift(Object.assign({},Q.warranty,{who:['Every lender']}));
     if(D.tradeIn&gt;0&amp;&amp;!A.trade&amp;&amp;!asks.some(function(q){return q.key==='trade'}))asks.push(Object.assign({},Q.trade,{who:['Every lender'],hint:money(D.tradeIn)+' trade in on file'}));
+    for(var bi=0;bi&lt;asks.length;bi++){if(asks[bi].key==='build'){var bq=asks.splice(bi,1)[0];if(c.buildGuess)bq.hint='The lead shows '+c.buildGuess+', that is the default, not a real year';asks.unshift(bq);break}}
     var ord={yes:0,maybe:1,no:2};
     rows.sort(function(a,b){return (ord[a.status]-ord[b.status])||((a.rate==null?99:a.rate)-(b.rate==null?99:b.rate))});
     // best fit: a confirmed yes on one real rate, and it has to fund the deal as asked
@@ -19934,6 +19951,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var top=g==='AAA'||g==='AA'||g==='A+'||!g;
     r.statements(!top?true:false,top?'2 payslips':'3 months');
     var u23=c.age!=null&amp;&amp;c.age&lt;23;
+    if(c.age!=null&amp;&amp;c.age&lt;25&amp;&amp;c.thin)r.check('No credit history on the file. Liberty wants some comparable credit on young applicants, ask them first');
     r.capAt(u23?({AAA:35000,AA:30000}[g]||25000):({AAA:100000,AA:75000}[g]||50000),'for '+(g||'A and below')+(u23?' under 23':''));
     r.min=5000;
     r.termMax(g==='AAA'||g==='AA'?84:60,'below AA');
@@ -20026,7 +20044,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(s&lt;400)return r.no('Negative under 400 is out');
     var band=s&gt;=600?600:s&gt;=500?500:400;
     if(band&gt;=500&amp;&amp;c.fileMonths!=null&amp;&amp;c.fileMonths&lt;12)band=400;
-    var ld=D.ageNow==null?0:D.ageNow&gt;=8?1:D.ageNow&gt;=3?0.5:0;
+    if(D.ageNow==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Older cars carry a loading');var ld=D.ageNow==null?0:D.ageNow&gt;=8?1:D.ageNow&gt;=3?0.5:0;
     var visa=c.residency==='visa'||c.residency==='bridging'||c.residency==='nz';
     r.place('Negative '+s,10.95);r.rateFrom=true;
     if(ld)r.load(ld,'for a '+(D.ageNow&gt;=8?'8 year plus':'3 to 7 year old')+' car');
@@ -20059,7 +20077,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var ta=tierOf(a),tb=tierOf(b),t=ta||tb;
     if(ta&amp;&amp;tb&amp;&amp;ta!==tb)r.maybe('The Comprehensive and Negative scores land in different tiers. Ask NOW which one they use');
     if(t==='under')return r.no('Score under 500 is out');
-    var col=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;2?1:D.ageNow&lt;=4?2:3;
+    if(D.ageNow==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Rates go by the age of the car');var col=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;2?1:D.ageNow&lt;=4?2:3;
     var G={Premium:[9.59],'Tier 1':[9.69,9.69,10.29,11.29],'Tier 2':[10.49,10.49,10.99,12.49],'Tier 3':[12.79,12.79,13.79,15.39],'Tier 4':[15.75,15.75,15.75,15.75]};
     if(t==='Premium')col=0;
     r.place(t,G[t][col]);
@@ -20308,7 +20326,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     r.fee('RACV application fee',550);
     var pre=D.base||0;r.fee('Your fee',pre&gt;20000?1210:pre&gt;10000?990:550);
     var amt=r.loanNow();
-    var newish=D.isNew||(D.build!=null&amp;&amp;D.build&gt;=new Date().getFullYear()-3);
+    if(D.build==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Cars under 3 years old get a lower rate');var newish=D.isNew||(D.build!=null&amp;&amp;D.build&gt;=new Date().getFullYear()-3);
     var col=(c.owner?0:2)+(newish?0:1);
     var G=s&gt;=832?(amt&gt;=35000?[6.59,7.89,7.79,8.89]:amt&gt;=25000?[7.29,7.89,7.79,8.89]:[7.79,8.39,8.29,9.39]):s&gt;=725?(amt&gt;=25000?[7.89,8.99,8.89,9.99]:[8.39,9.49,9.39,10.49]):s&gt;=621?[9.59,10.19,10.59,11.19]:s&gt;=509?[10.09,11.49,11.09,11.99]:(amt&gt;=35000?[16.59,16.69,16.59,16.69]:[17.59,17.69,17.59,17.69]);
     var band=s&gt;=832?'832 plus':s&gt;=725?'725 to 831':s&gt;=621?'621 to 724':s&gt;=509?'509 to 620':'400 to 508';
@@ -20336,7 +20354,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.netMonthly!=null&amp;&amp;c.netMonthly&lt;2318)return r.no('Net pay under $2,318 a month');
     if(D.ageNow!=null&amp;&amp;D.ageNow&gt;(D.term&gt;60?7:15))return r.no('Car is too old for this term');
     var e=c.experian;
-    var b=D.build,row=D.isNew?0:b==null?1:b&gt;=2021?1:b&gt;=2016?2:3;
+    var b=D.build;if(b==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Rates go by the build year');var row=D.isNew?0:b==null?1:b&gt;=2021?1:b&gt;=2016?2:3;
     var G={'Ultra Prime':[8.10,8.10,8.10,9.25],'Tier 1':[8.25,8.75,9.45,10.29],'Tier 2':[9.25,9.65,10.45,10.70],'Tier 3':[10.60,10.70,10.95,11.95],'Tier 4':[11.60,12.30,12.79,12.99]};
     var dep=(D.deposit||0)+(D.tradeApplied?D.tradeIn:0),dep20=D.price?dep/D.price&gt;=0.2:false;
     if(e==null){r.ask('experian','They tier off Experian only, Equifax doesn\'t count');
@@ -20363,7 +20381,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     if(c.defUnpaidCount&gt;0||c.defPaidCount&gt;0||c.judgements&gt;0||c.insolvency)return r.no('No paid or unpaid financial defaults, judgements or bankruptcy');
     if(c.thin&amp;&amp;c.shoppingCount&gt;=3)return r.no('No accounts with 3 or more enquiries in the last month is out');
     var s=c.one;
-    var row=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;=5?1:D.ageNow&lt;=9?2:3;
+    if(D.ageNow==null&amp;&amp;!D.isNew&amp;&amp;!D.svc)r.ask('build','Rates go by the age of the car');var row=D.isNew?0:D.ageNow==null?1:D.ageNow&lt;=5?1:D.ageNow&lt;=9?2:3;
     var own=c.owner;
     if(c.living==null)r.ask('living','Owners and non owners have their own tables');
     var loan0;
@@ -20413,6 +20431,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     else g='Bronze';
     var G={Platinum:[13.95,75000,0.02,'4%'],Gold:[16.95,65000,0.03,'4%'],Silver:[19.95,55000,0.04,'3%'],Bronze:[24.95,40000,0.045,'none']};
     r.place(g,G[g][0]);r.ok(g+': '+s+(c.renter?', renting '+m2y(rm):'')+', employed '+m2y(jm));
+    if(c.age!=null&amp;&amp;c.age&lt;21){r.capAt(20000,'under 21 on a secured loan');r.note('Under 21, V8s and high powered cars are out')}
     if(c.emp==='benefits'){r.load(3,'with benefits over half the income');r.capAt(12000)}
     r.statements(true,'they read the banking');
     var pla=D.base||0;
@@ -20446,6 +20465,8 @@ if(typeof module!=='undefined')module.exports=LM2;
   }});
 
   /* ── C1 ── */
+  var C1_REMOTE=[[800,999],[4470,4499],[4721,4736],[4821,4830],[4871,4871],[4873,4877],[4890,4895],[2648,2648],[2672,2672],[2675,2675],[2711,2711],[2715,2715],[2717,2717],[2825,2826],[2831,2836],[2839,2840],[2873,2873],[2875,2875],[2877,2880],[2898,2899],[3280,3287],[3300,3319],[3390,3424],[3490,3512],[3540,3549],[3579,3599],[3690,3709],[3875,3909],[5268,5291],[5333,5346],[5600,5799],[6255,6262],[6275,6275],[6284,6290],[6317,6389],[6395,6398],[6415,6452],[6475,6479],[6488,6490],[6515,6799],[7215,7216],[7253,7256],[7260,7265],[7270,7270],[7303,7331],[7466,7470]];
+  function c1Remote(pc){pc=+pc;if(!(pc&gt;0))return false;for(var i=0;i&lt;C1_REMOTE.length;i++)if(pc&gt;=C1_REMOTE[i][0]&amp;&amp;pc&lt;=C1_REMOTE[i][1])return true;return false}
   L.add({name:'C1',src:'Introducer Product Guide V5.1',run:function(c,D,r){
     if(c.age!=null&amp;&amp;(c.age&lt;18||c.age&gt;65))return r.no('Clients 18 to 65 only');
     if(c.insolvency)return r.no('Current bankrupts are out');
@@ -20456,9 +20477,14 @@ if(typeof module!=='undefined')module.exports=LM2;
     else if(res==='citizen'||res==='pr')tier='Standard';
     else if(res==='nz'||res==='visa')tier='Lite';
     else{r.ask('residency','Premium is citizens only, PR gets Standard');tier='Standard'}
+    var lic=String(c.licType||''),licDown=false;
+    if(/learner|^l\b/i.test(lic)){if(tier!=='Lite'){tier='Lite';licDown=true}r.check('Learner licence puts them on Lite, and they want the hours done and the test booked by settlement')}
+    else if(/provisional|probationary|^p[12]?\b/i.test(lic)&amp;&amp;tier==='Premium'){tier='Standard';licDown=true;r.note('Provisional licence, Premium needs an open licence so it runs as Standard')}
+    if(c.fileMonths!=null&amp;&amp;c.fileMonths&lt;24&amp;&amp;tier!=='Lite')r.check('Credit file under 2 years, '+tier+' wants 2 years');
+    if(c.postcode!=null&amp;&amp;c1Remote(c.postcode))r.check('C1 excludes remote areas and postcode '+c.postcode+' looks that far out, check with them');
     var T={Premium:[24.99,35000,60,36],Standard:[27.99,30000,48,36],Lite:[29.99,20000,36,24]}[tier];
     r.place(tier,T[0]);
-    if(tier!=='Premium'&amp;&amp;res!=null)r.ok((res==='pr'?'PR':RESW[res])+' gets '+tier+(res==='pr'?', Premium is citizens only':''));
+    if(tier!=='Premium'&amp;&amp;res!=null&amp;&amp;!licDown)r.ok((res==='pr'?'PR':RESW[res])+' gets '+tier+(res==='pr'?', Premium is citizens only':''));
     r.capAt(T[1],'on '+tier);r.termMax(T[2],'on '+tier);r.min=10000;
     if(D.term&lt;T[3])r.no(tier+' starts at '+T[3]+' months');
     r.statements(true,'90 days, income comes off the banking');
@@ -20478,6 +20504,7 @@ if(typeof module!=='undefined')module.exports=LM2;
     var vfa=D.base;
     if(c.residency!=='citizen'&amp;&amp;c.cameFrom&amp;&amp;c.monthsInAus!=null&amp;&amp;c.monthsInAus&lt;12)r.no('Non citizens need 12 months in Australia');
     if(c.addrMonths!=null&amp;&amp;c.addrMonths&lt;3)r.no('Needs 3 months at the current address');
+    if(c.licState&amp;&amp;c.state&amp;&amp;c.licState!==c.state)r.check('Licence is from '+c.licState+' and they live in '+c.state+'. APF wants a licence from the state they live in with the current address on it');
     var tier=c.defUnpaidCount&gt;0?'Bronze':'Platinum';
     r.place(tier,tier==='Bronze'?25.99:23.99);r.ok(tier+(tier==='Platinum'?', no unpaid finance defaults':', unpaid defaults on file'));
     r.statements(true,'90 days on every account, plus 2 payslips');

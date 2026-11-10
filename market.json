@@ -1,0 +1,212 @@
+{
+ "v": 1,
+ "updated": "2026-11-10T02:16:40.928Z",
+ "numbers": {
+  "cashRate": {
+   "value": 4.85,
+   "asOf": "2026-11-03",
+   "lastMove": {
+    "date": "2026-11-03",
+    "change": 0.25
+   },
+   "risesThisYear": 5,
+   "cutsThisYear": 0,
+   "moves": [
+    {
+     "date": "2026-11-03",
+     "effective": "2026-11-04",
+     "change": 0.25,
+     "rate": 4.85
+    },
+    {
+     "date": "2026-09-29",
+     "effective": "2026-09-30",
+     "change": 0.25,
+     "rate": 4.6
+    },
+    {
+     "date": "2026-05-05",
+     "effective": "2026-05-06",
+     "change": 0.25,
+     "rate": 4.35
+    },
+    {
+     "date": "2026-03-17",
+     "effective": "2026-03-18",
+     "change": 0.25,
+     "rate": 4.1
+    },
+    {
+     "date": "2026-02-03",
+     "effective": "2026-02-04",
+     "change": 0.25,
+     "rate": 3.85
+    },
+    {
+     "date": "2025-08-12",
+     "effective": "2025-08-13",
+     "change": -0.25,
+     "rate": 3.6
+    },
+    {
+     "date": "2025-05-20",
+     "effective": "2025-05-21",
+     "change": -0.25,
+     "rate": 3.85
+    },
+    {
+     "date": "2025-02-18",
+     "effective": "2025-02-19",
+     "change": -0.25,
+     "rate": 4.1
+    },
+    {
+     "date": "2023-11-07",
+     "effective": "2023-11-08",
+     "change": 0.25,
+     "rate": 4.35
+    },
+    {
+     "date": "2023-06-06",
+     "effective": "2023-06-07",
+     "change": 0.25,
+     "rate": 4.1
+    },
+    {
+     "date": "2023-05-02",
+     "effective": "2023-05-03",
+     "change": 0.25,
+     "rate": 3.85
+    },
+    {
+     "date": "2023-03-07",
+     "effective": "2023-03-08",
+     "change": 0.25,
+     "rate": 3.6
+    }
+   ],
+   "src": "RBA",
+   "url": "https://www.rba.gov.au/statistics/cash-rate/"
+  },
+  "cpi": {
+   "value": 4.3,
+   "trimmed": 3.6,
+   "period": "September 2026",
+   "released": "2026-10-28",
+   "next": "2026-11-25",
+   "fuelAnnual": 23.6,
+   "src": "ABS",
+   "url": "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release"
+  },
+  "used": {
+   "weekly": 0.7,
+   "clearance": -6,
+   "volume": -16.2,
+   "asOf": "2026-11-08",
+   "history": [
+    {
+     "week": "2026-11-08",
+     "pct": 0.7
+    }
+   ],
+   "src": "Datium Insights",
+   "url": "https://datiuminsights.com.au/weekly-market-update-9th-november-2026/"
+  }
+ },
+ "items": [
+  {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-10",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "ASIC issues final warning to advice licensees over lead generators",
+   "u": "https://www.brokernews.com.au/news/breaking-news/asic-issues-final-warning-to-advice-licensees-over-lead-generators-290276.aspx",
+   "d": "2026-11-09",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Weekly Market Update 9th November 2026",
+   "u": "https://datiuminsights.com.au/weekly-market-update-9th-november-2026/",
+   "d": "2026-11-08",
+   "s": "Datium Insights"
+  },
+  {
+   "t": "GWM Haval H7: PHEV-heavy sales forecast following strong pre-launch interest",
+   "u": "https://www.carexpert.com.au/car-news/gwm-haval-h7-phev-heavy-sales-forecast-following-strong-pre-launch-interest",
+   "d": "2026-11-07",
+   "s": "CarExpert"
+  },
+  {
+   "t": "Has the RBA abandoned the 'narrow path'?",
+   "u": "https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path",
+   "d": "2026-11-06",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA hikes again: Here's how the big four responded",
+   "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
+   "d": "2026-11-05",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Broker bodies spell out what to do when loan documents look altered",
+   "u": "https://www.brokernews.com.au/news/breaking-news/broker-bodies-spell-out-what-to-do-when-loan-documents-look-altered-290261.aspx",
+   "d": "2026-11-04",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "MFAA introduces broker guidance for managing referral relationships",
+   "u": "https://www.brokernews.com.au/news/breaking-news/mfaa-introduces-broker-guidance-for-managing-referral-relationships-290259.aspx",
+   "d": "2026-11-04",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "The market reacts to the RBA's fifth interest rate hike of 2026",
+   "u": "https://www.brokernews.com.au/news/breaking-news/the-market-reacts-to-the-rbas-fifth-interest-rate-hike-of-2026-290253.aspx",
+   "d": "2026-11-04",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "No more cash rate increases? Let's take stock",
+   "u": "https://www.savings.com.au/news/no-more-cash-rate-increases-let-s-take-stock",
+   "d": "2026-11-03",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA November Cash Rate Decision: Live updates",
+   "u": "https://www.savings.com.au/news/rba-november-2026-cash-rate-live-updates",
+   "d": "2026-11-03",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA delivers fifth rate hike of 2026, pushing cash rate to 4.85%",
+   "u": "https://www.savings.com.au/news/rba-lifts-cash-rate-to-4-85",
+   "d": "2026-11-03",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Macquarie, Teachers Mutual pass on fifth RBA hike in full",
+   "u": "https://www.brokernews.com.au/news/breaking-news/macquarie-teachers-mutual-pass-on-fifth-rba-hike-in-full-290254.aspx",
+   "d": "2026-11-03",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Thinktank, Bizcap among 22 firms hit with $4.3m ASIC notices",
+   "u": "https://www.brokernews.com.au/news/breaking-news/thinktank-bizcap-among-22-firms-hit-with-4-3m-asic-notices-290255.aspx",
+   "d": "2026-11-03",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Weekly Market Update 2nd November 2026",
+   "u": "https://datiuminsights.com.au/weekly-market-update-2nd-november-2026/",
+   "d": "2026-11-01",
+   "s": "Datium Insights"
+  }
+ ],
+ "errors": [
+  "fcai: HTTP 403",
+  "feed FCAI: HTTP 403"
+ ]
+}

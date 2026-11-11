@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-10T02:16:40.928Z",
+ "updated": "2026-11-11T00:06:36.906Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -117,6 +117,24 @@
   {
    "t": "RBA rate hike November 2026: Is your lender passing it on?",
    "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-11",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Major banks lift profit to $31.2bn as credit pressure builds: KPMG",
+   "u": "https://www.brokernews.com.au/news/breaking-news/major-banks-lift-profit-to-31-2bn-as-credit-pressure-builds-kpmg-290283.aspx",
+   "d": "2026-11-10",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "FBAA pitches national broker conduct register to ASIC",
+   "u": "https://www.brokernews.com.au/news/breaking-news/fbaa-pitches-national-broker-conduct-register-to-asic-290286.aspx",
+   "d": "2026-11-10",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
    "d": "2026-11-10",
    "s": "Savings.com.au"
   },
@@ -145,6 +163,18 @@
    "s": "Savings.com.au"
   },
   {
+   "t": "Has the RBA abandoned the 'narrow path'?",
+   "u": "https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path",
+   "d": "2026-11-06",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA hikes again: Here's how the big four responded",
+   "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
+   "d": "2026-11-05",
+   "s": "Savings.com.au"
+  },
+  {
    "t": "RBA hikes again: Here's how the big four responded",
    "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
    "d": "2026-11-05",
@@ -167,6 +197,24 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/the-market-reacts-to-the-rbas-fifth-interest-rate-hike-of-2026-290253.aspx",
    "d": "2026-11-04",
    "s": "Australian Broker"
+  },
+  {
+   "t": "No more cash rate increases? Let's take stock",
+   "u": "https://www.savings.com.au/news/no-more-cash-rate-increases-let-s-take-stock",
+   "d": "2026-11-03",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA November Cash Rate Decision: Live updates",
+   "u": "https://www.savings.com.au/news/rba-november-2026-cash-rate-live-updates",
+   "d": "2026-11-03",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA delivers fifth rate hike of 2026, pushing cash rate to 4.85%",
+   "u": "https://www.savings.com.au/news/rba-lifts-cash-rate-to-4-85",
+   "d": "2026-11-03",
+   "s": "Savings.com.au"
   },
   {
    "t": "No more cash rate increases? Let's take stock",

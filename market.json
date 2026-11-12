@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-11T00:06:36.906Z",
+ "updated": "2026-11-12T01:35:00.987Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -117,6 +117,36 @@
   {
    "t": "RBA rate hike November 2026: Is your lender passing it on?",
    "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-12",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Two in three borrowers too nervous to haggle with their lender",
+   "u": "https://www.brokernews.com.au/news/breaking-news/two-in-three-borrowers-too-nervous-to-haggle-with-their-lender-290293.aspx",
+   "d": "2026-11-11",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Spotlight on Sydney-based broker Shannon Ingram",
+   "u": "https://www.brokernews.com.au/speciality/spotlight-series/spotlight-on-sydneybased-broker-shannon-ingram-290289.aspx",
+   "d": "2026-11-11",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Chery Omoda 5 recall to fix detaching rear axle expands to Australia",
+   "u": "https://www.carexpert.com.au/car-news/chery-omoda-5-recall-to-fix-detaching-rear-axle-expands-to-australia",
+   "d": "2026-11-11",
+   "s": "CarExpert"
+  },
+  {
+   "t": "BYD end-of-year deals include thousands off Shark 6, Sealion 7, plus novated lease discounts",
+   "u": "https://www.carexpert.com.au/car-news/byd-end-of-year-deals-include-thousands-off-shark-6-sealion-7-plus-novated-lease-discounts",
+   "d": "2026-11-11",
+   "s": "CarExpert"
+  },
+  {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
    "d": "2026-11-11",
    "s": "Savings.com.au"
   },
@@ -131,12 +161,6 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/fbaa-pitches-national-broker-conduct-register-to-asic-290286.aspx",
    "d": "2026-11-10",
    "s": "Australian Broker"
-  },
-  {
-   "t": "RBA rate hike November 2026: Is your lender passing it on?",
-   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
-   "d": "2026-11-10",
-   "s": "Savings.com.au"
   },
   {
    "t": "ASIC issues final warning to advice licensees over lead generators",

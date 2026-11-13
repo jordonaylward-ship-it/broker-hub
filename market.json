@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-12T01:35:00.987Z",
+ "updated": "2026-11-13T00:34:13.416Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -121,6 +121,18 @@
    "s": "Savings.com.au"
   },
   {
+   "t": "ASIC sues CBA over alleged hidden CommBiz fees",
+   "u": "https://www.brokernews.com.au/news/breaking-news/asic-sues-cba-over-alleged-hidden-commbiz-fees-290302.aspx",
+   "d": "2026-11-12",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-12",
+   "s": "Savings.com.au"
+  },
+  {
    "t": "Two in three borrowers too nervous to haggle with their lender",
    "u": "https://www.brokernews.com.au/news/breaking-news/two-in-three-borrowers-too-nervous-to-haggle-with-their-lender-290293.aspx",
    "d": "2026-11-11",
@@ -143,12 +155,6 @@
    "u": "https://www.carexpert.com.au/car-news/byd-end-of-year-deals-include-thousands-off-shark-6-sealion-7-plus-novated-lease-discounts",
    "d": "2026-11-11",
    "s": "CarExpert"
-  },
-  {
-   "t": "RBA rate hike November 2026: Is your lender passing it on?",
-   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
-   "d": "2026-11-11",
-   "s": "Savings.com.au"
   },
   {
    "t": "Major banks lift profit to $31.2bn as credit pressure builds: KPMG",

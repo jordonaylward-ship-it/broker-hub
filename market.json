@@ -1,0 +1,286 @@
+{
+ "v": 1,
+ "updated": "2026-11-19T01:17:39.015Z",
+ "numbers": {
+  "cashRate": {
+   "value": 4.85,
+   "asOf": "2026-11-03",
+   "lastMove": {
+    "date": "2026-11-03",
+    "change": 0.25
+   },
+   "risesThisYear": 5,
+   "cutsThisYear": 0,
+   "moves": [
+    {
+     "date": "2026-11-03",
+     "effective": "2026-11-04",
+     "change": 0.25,
+     "rate": 4.85
+    },
+    {
+     "date": "2026-09-29",
+     "effective": "2026-09-30",
+     "change": 0.25,
+     "rate": 4.6
+    },
+    {
+     "date": "2026-05-05",
+     "effective": "2026-05-06",
+     "change": 0.25,
+     "rate": 4.35
+    },
+    {
+     "date": "2026-03-17",
+     "effective": "2026-03-18",
+     "change": 0.25,
+     "rate": 4.1
+    },
+    {
+     "date": "2026-02-03",
+     "effective": "2026-02-04",
+     "change": 0.25,
+     "rate": 3.85
+    },
+    {
+     "date": "2025-08-12",
+     "effective": "2025-08-13",
+     "change": -0.25,
+     "rate": 3.6
+    },
+    {
+     "date": "2025-05-20",
+     "effective": "2025-05-21",
+     "change": -0.25,
+     "rate": 3.85
+    },
+    {
+     "date": "2025-02-18",
+     "effective": "2025-02-19",
+     "change": -0.25,
+     "rate": 4.1
+    },
+    {
+     "date": "2023-11-07",
+     "effective": "2023-11-08",
+     "change": 0.25,
+     "rate": 4.35
+    },
+    {
+     "date": "2023-06-06",
+     "effective": "2023-06-07",
+     "change": 0.25,
+     "rate": 4.1
+    },
+    {
+     "date": "2023-05-02",
+     "effective": "2023-05-03",
+     "change": 0.25,
+     "rate": 3.85
+    },
+    {
+     "date": "2023-03-07",
+     "effective": "2023-03-08",
+     "change": 0.25,
+     "rate": 3.6
+    }
+   ],
+   "src": "RBA",
+   "url": "https://www.rba.gov.au/statistics/cash-rate/"
+  },
+  "cpi": {
+   "value": 4.3,
+   "trimmed": 3.6,
+   "period": "September 2026",
+   "released": "2026-10-28",
+   "next": "2026-11-25",
+   "fuelAnnual": 23.6,
+   "src": "ABS",
+   "url": "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release"
+  },
+  "used": {
+   "weekly": -3,
+   "clearance": 2.2,
+   "volume": 1.5,
+   "asOf": "2026-11-17",
+   "history": [
+    {
+     "week": "2026-11-17",
+     "pct": -3
+    },
+    {
+     "week": "2026-11-08",
+     "pct": 0.7
+    }
+   ],
+   "src": "Datium Insights",
+   "url": "https://datiuminsights.com.au/weekly-market-update-16th-november-2026/"
+  },
+  "newCars": {
+   "total": 103325,
+   "month": "October 2026",
+   "yoy": 3.8,
+   "bevShare": 23.1,
+   "asOf": "2026-11-05",
+   "src": "FCAI",
+   "url": "https://www.fcai.com.au/competition-drives-strong-new-vehicle-market/",
+   "title": "Competition drives strong new vehicle market"
+  }
+ },
+ "items": [
+  {
+   "t": "Weekly Market Update 16th November 2026",
+   "u": "https://datiuminsights.com.au/weekly-market-update-16th-november-2026/",
+   "d": "2026-11-17",
+   "s": "Datium Insights"
+  },
+  {
+   "t": "Broker body executive Evan Thomas joins lending data standards board",
+   "u": "https://www.brokernews.com.au/news/breaking-news/broker-body-executive-evan-thomas-joins-lending-data-standards-board-290332.aspx",
+   "d": "2026-11-17",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Ford Mustang sales slump ‘not a concern’ for brand",
+   "u": "https://www.carexpert.com.au/car-news/ford-mustang-sales-slump-not-a-concern-for-brand",
+   "d": "2026-11-17",
+   "s": "CarExpert"
+  },
+  {
+   "t": "Lexus Australia secures additional SUV stock to combat sales drop",
+   "u": "https://www.carexpert.com.au/car-news/lexus-australia-secures-additional-suv-stock-to-combat-sales-drop",
+   "d": "2026-11-17",
+   "s": "CarExpert"
+  },
+  {
+   "t": "Westpac says RBA ready to clock off for 2026",
+   "u": "https://www.brokernews.com.au/news/breaking-news/westpac-says-rba-ready-to-clock-off-for-2026-290321.aspx",
+   "d": "2026-11-16",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "APRA and ASIC scrap two FAR reporting requirements",
+   "u": "https://www.brokernews.com.au/news/breaking-news/apra-and-asic-scrap-two-far-reporting-requirements-290317.aspx",
+   "d": "2026-11-16",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Westpac more confident RBA has finished hiking rates",
+   "u": "https://www.brokernews.com.au/news/breaking-news/westpac-more-confident-rba-has-finished-hiking-rates-290313.aspx",
+   "d": "2026-11-13",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-12",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "ASIC sues CBA over alleged hidden CommBiz fees",
+   "u": "https://www.brokernews.com.au/news/breaking-news/asic-sues-cba-over-alleged-hidden-commbiz-fees-290302.aspx",
+   "d": "2026-11-12",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-12",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Two in three borrowers too nervous to haggle with their lender",
+   "u": "https://www.brokernews.com.au/news/breaking-news/two-in-three-borrowers-too-nervous-to-haggle-with-their-lender-290293.aspx",
+   "d": "2026-11-11",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Spotlight on Sydney-based broker Shannon Ingram",
+   "u": "https://www.brokernews.com.au/speciality/spotlight-series/spotlight-on-sydneybased-broker-shannon-ingram-290289.aspx",
+   "d": "2026-11-11",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Chery Omoda 5 recall to fix detaching rear axle expands to Australia",
+   "u": "https://www.carexpert.com.au/car-news/chery-omoda-5-recall-to-fix-detaching-rear-axle-expands-to-australia",
+   "d": "2026-11-11",
+   "s": "CarExpert"
+  },
+  {
+   "t": "BYD end-of-year deals include thousands off Shark 6, Sealion 7, plus novated lease discounts",
+   "u": "https://www.carexpert.com.au/car-news/byd-end-of-year-deals-include-thousands-off-shark-6-sealion-7-plus-novated-lease-discounts",
+   "d": "2026-11-11",
+   "s": "CarExpert"
+  },
+  {
+   "t": "Major banks lift profit to $31.2bn as credit pressure builds: KPMG",
+   "u": "https://www.brokernews.com.au/news/breaking-news/major-banks-lift-profit-to-31-2bn-as-credit-pressure-builds-kpmg-290283.aspx",
+   "d": "2026-11-10",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "FBAA pitches national broker conduct register to ASIC",
+   "u": "https://www.brokernews.com.au/news/breaking-news/fbaa-pitches-national-broker-conduct-register-to-asic-290286.aspx",
+   "d": "2026-11-10",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "ASIC issues final warning to advice licensees over lead generators",
+   "u": "https://www.brokernews.com.au/news/breaking-news/asic-issues-final-warning-to-advice-licensees-over-lead-generators-290276.aspx",
+   "d": "2026-11-09",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Weekly Market Update 9th November 2026",
+   "u": "https://datiuminsights.com.au/weekly-market-update-9th-november-2026/",
+   "d": "2026-11-08",
+   "s": "Datium Insights"
+  },
+  {
+   "t": "VFACTS: New Car Sales Insights October 2026",
+   "u": "https://datiuminsights.com.au/vfacts-new-car-sales-insights-october-2026/",
+   "d": "2026-11-07",
+   "s": "Datium Insights"
+  },
+  {
+   "t": "GWM Haval H7: PHEV-heavy sales forecast following strong pre-launch interest",
+   "u": "https://www.carexpert.com.au/car-news/gwm-haval-h7-phev-heavy-sales-forecast-following-strong-pre-launch-interest",
+   "d": "2026-11-07",
+   "s": "CarExpert"
+  },
+  {
+   "t": "Has the RBA abandoned the 'narrow path'?",
+   "u": "https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path",
+   "d": "2026-11-06",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Has the RBA abandoned the 'narrow path'?",
+   "u": "https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path",
+   "d": "2026-11-06",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "RBA hikes again: Here's how the big four responded",
+   "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
+   "d": "2026-11-05",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Competition drives strong new vehicle market",
+   "u": "https://www.fcai.com.au/competition-drives-strong-new-vehicle-market/",
+   "d": "2026-11-05",
+   "s": "FCAI"
+  },
+  {
+   "t": "RBA hikes again: Here's how the big four responded",
+   "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
+   "d": "2026-11-05",
+   "s": "Savings.com.au"
+  }
+ ],
+ "errors": [
+  "fcai: HTTP 403",
+  "feed FCAI: HTTP 403"
+ ]
+}

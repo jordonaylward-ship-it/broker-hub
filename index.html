@@ -223,6 +223,11 @@ body{background:#000000;color:#eef0ff}
 <div class="bs-word">Dash<b>Broker</b></div>
 <div class="bs-sub">Loading</div>
 <script>
+/* Build 86, 20 Nov 2026. His Fable ran out. A device whose AI model is set to Fable moves to Opus 5.5,
+   the model he asked for. Lender Matcher, Insurance, Docs check and CRM Note polish read it from here. */
+try{var am=localStorage.getItem('anthropic_model');if(am&&/fable/i.test(am))localStorage.setItem('anthropic_model','claude-opus-5-5')}catch(e){}
+</script>
+<script>
 (function(){
   var t0=Date.now(),MIN=1300,MAX=6000,done=false;
   function hide(){
@@ -10291,7 +10296,7 @@ details.card[open] .sm-caret{transform:rotate(90deg)}
     &lt;div class=&quot;ai-now&quot;&gt;Every AI button in the hub uses &lt;b id=&quot;aiNow&quot;&gt;&amp;hellip;&lt;/b&gt;&lt;span id=&quot;aiKeyPill&quot;&gt;&lt;/span&gt;&lt;/div&gt;
     &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;API key&lt;/label&gt;&lt;input type=&quot;password&quot; id=&quot;sApiKey&quot; placeholder=&quot;sk-ant-...&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot;&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;hint&quot; id=&quot;sApiKeyRow&quot; style=&quot;margin:6px 0 12px&quot;&gt;&lt;a href=&quot;#&quot; id=&quot;sApiKeyRm&quot; onclick=&quot;rmKey();return false&quot; style=&quot;color:var(--mut)&quot;&gt;Remove the saved key&lt;/a&gt;&lt;/div&gt;
-    &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;Model&lt;/label&gt;&lt;select id=&quot;sModel&quot;&gt;&lt;option value=&quot;claude-opus-5&quot;&gt;Claude Opus 5 · default, what your assessments run on&lt;/option&gt;&lt;option value=&quot;claude-opus-5-5&quot;&gt;Claude Opus 5.5 · newest Opus&lt;/option&gt;&lt;option value=&quot;claude-sonnet-5-5&quot;&gt;Claude Sonnet 5.5 · faster and cheaper&lt;/option&gt;&lt;option value=&quot;claude-haiku-5-5&quot;&gt;Claude Haiku 5.5 · quickest, simple checks&lt;/option&gt;&lt;option value=&quot;claude-fable-5-1&quot;&gt;Claude Fable 5.1&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;div&gt;&lt;label&gt;Model&lt;/label&gt;&lt;select id=&quot;sModel&quot;&gt;&lt;option value=&quot;claude-opus-5&quot;&gt;Claude Opus 5 · default, what your assessments run on&lt;/option&gt;&lt;option value=&quot;claude-opus-5-5&quot;&gt;Claude Opus 5.5 · newest Opus&lt;/option&gt;&lt;option value=&quot;claude-sonnet-5-5&quot;&gt;Claude Sonnet 5.5 · faster and cheaper&lt;/option&gt;&lt;option value=&quot;claude-haiku-5-5&quot;&gt;Claude Haiku 5.5 · quickest, simple checks&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
     &lt;div class=&quot;hint&quot;&gt;Opus is the default and what your lender assessments have been running on. Sonnet is noticeably faster and cheaper if you are doing a lot of files in a day. The change applies the moment you save.&lt;/div&gt;
     &lt;div class=&quot;hint&quot; style=&quot;margin-top:10px&quot;&gt;The key is saved in this browser only, never in the sheet. On another phone or computer, paste it in once there too.&lt;/div&gt;
   &lt;/div&gt;

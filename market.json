@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-19T01:17:39.015Z",
+ "updated": "2026-11-21T00:49:39.952Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -129,6 +129,36 @@
  },
  "items": [
   {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-20",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Australian Broker Podcast: Wendy Brown dishes on Macquarie's growth and leading brokers",
+   "u": "https://www.brokernews.com.au/news/breaking-news/australian-broker-podcast-wendy-brown-dishes-on-macquaries-growth-and-leading-brokers-290349.aspx",
+   "d": "2026-11-20",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "OnDeck broker loans jump 155% as automation speeds approvals",
+   "u": "https://www.brokernews.com.au/news/breaking-news/ondeck-broker-loans-jump-155-as-automation-speeds-approvals-290352.aspx",
+   "d": "2026-11-20",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "LoanOptions.ai brings AutoGrab vehicle valuations to brokers",
+   "u": "https://www.brokernews.com.au/news/breaking-news/loanoptions-ai-brings-autograb-vehicle-valuations-to-brokers-290342.aspx",
+   "d": "2026-11-18",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Aggregator Purple Circle to pay dividends to broker shareholders",
+   "u": "https://www.brokernews.com.au/news/breaking-news/aggregator-purple-circle-to-pay-dividends-to-broker-shareholders-290341.aspx",
+   "d": "2026-11-18",
+   "s": "Australian Broker"
+  },
+  {
    "t": "Weekly Market Update 16th November 2026",
    "u": "https://datiuminsights.com.au/weekly-market-update-16th-november-2026/",
    "d": "2026-11-17",
@@ -181,12 +211,6 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/asic-sues-cba-over-alleged-hidden-commbiz-fees-290302.aspx",
    "d": "2026-11-12",
    "s": "Australian Broker"
-  },
-  {
-   "t": "RBA rate hike November 2026: Is your lender passing it on?",
-   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
-   "d": "2026-11-12",
-   "s": "Savings.com.au"
   },
   {
    "t": "Two in three borrowers too nervous to haggle with their lender",
@@ -247,36 +271,6 @@
    "u": "https://www.carexpert.com.au/car-news/gwm-haval-h7-phev-heavy-sales-forecast-following-strong-pre-launch-interest",
    "d": "2026-11-07",
    "s": "CarExpert"
-  },
-  {
-   "t": "Has the RBA abandoned the 'narrow path'?",
-   "u": "https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path",
-   "d": "2026-11-06",
-   "s": "Savings.com.au"
-  },
-  {
-   "t": "Has the RBA abandoned the 'narrow path'?",
-   "u": "https://www.savings.com.au/news/has-the-rba-abandoned-the-narrow-path",
-   "d": "2026-11-06",
-   "s": "Savings.com.au"
-  },
-  {
-   "t": "RBA hikes again: Here's how the big four responded",
-   "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
-   "d": "2026-11-05",
-   "s": "Savings.com.au"
-  },
-  {
-   "t": "Competition drives strong new vehicle market",
-   "u": "https://www.fcai.com.au/competition-drives-strong-new-vehicle-market/",
-   "d": "2026-11-05",
-   "s": "FCAI"
-  },
-  {
-   "t": "RBA hikes again: Here's how the big four responded",
-   "u": "https://www.savings.com.au/news/rba-hikes-again-here-s-how-the-big-four-responded",
-   "d": "2026-11-05",
-   "s": "Savings.com.au"
   }
  ],
  "errors": [

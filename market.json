@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-21T00:49:39.952Z",
+ "updated": "2026-11-21T23:48:54.520Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -147,6 +147,12 @@
    "s": "Australian Broker"
   },
   {
+   "t": "RBA rate hike November 2026: Is your lender passing it on?",
+   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
+   "d": "2026-11-20",
+   "s": "Savings.com.au"
+  },
+  {
    "t": "LoanOptions.ai brings AutoGrab vehicle valuations to brokers",
    "u": "https://www.brokernews.com.au/news/breaking-news/loanoptions-ai-brings-autograb-vehicle-valuations-to-brokers-290342.aspx",
    "d": "2026-11-18",
@@ -199,12 +205,6 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/westpac-more-confident-rba-has-finished-hiking-rates-290313.aspx",
    "d": "2026-11-13",
    "s": "Australian Broker"
-  },
-  {
-   "t": "RBA rate hike November 2026: Is your lender passing it on?",
-   "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
-   "d": "2026-11-12",
-   "s": "Savings.com.au"
   },
   {
    "t": "ASIC sues CBA over alleged hidden CommBiz fees",

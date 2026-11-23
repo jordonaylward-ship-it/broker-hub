@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-21T23:48:54.520Z",
+ "updated": "2026-11-23T00:19:48.777Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -99,11 +99,15 @@
    "url": "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release"
   },
   "used": {
-   "weekly": -3,
-   "clearance": 2.2,
-   "volume": 1.5,
-   "asOf": "2026-11-17",
+   "weekly": 1,
+   "clearance": 1.9,
+   "volume": 18.9,
+   "asOf": "2026-11-22",
    "history": [
+    {
+     "week": "2026-11-22",
+     "pct": 1
+    },
     {
      "week": "2026-11-17",
      "pct": -3
@@ -114,7 +118,7 @@
     }
    ],
    "src": "Datium Insights",
-   "url": "https://datiuminsights.com.au/weekly-market-update-16th-november-2026/"
+   "url": "https://datiuminsights.com.au/weekly-market-update-23rd-november-2026/"
   },
   "newCars": {
    "total": 103325,
@@ -128,6 +132,12 @@
   }
  },
  "items": [
+  {
+   "t": "Weekly Market Update 23rd November 2026",
+   "u": "https://datiuminsights.com.au/weekly-market-update-23rd-november-2026/",
+   "d": "2026-11-22",
+   "s": "Datium Insights"
+  },
   {
    "t": "RBA rate hike November 2026: Is your lender passing it on?",
    "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
@@ -253,24 +263,6 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/asic-issues-final-warning-to-advice-licensees-over-lead-generators-290276.aspx",
    "d": "2026-11-09",
    "s": "Australian Broker"
-  },
-  {
-   "t": "Weekly Market Update 9th November 2026",
-   "u": "https://datiuminsights.com.au/weekly-market-update-9th-november-2026/",
-   "d": "2026-11-08",
-   "s": "Datium Insights"
-  },
-  {
-   "t": "VFACTS: New Car Sales Insights October 2026",
-   "u": "https://datiuminsights.com.au/vfacts-new-car-sales-insights-october-2026/",
-   "d": "2026-11-07",
-   "s": "Datium Insights"
-  },
-  {
-   "t": "GWM Haval H7: PHEV-heavy sales forecast following strong pre-launch interest",
-   "u": "https://www.carexpert.com.au/car-news/gwm-haval-h7-phev-heavy-sales-forecast-following-strong-pre-launch-interest",
-   "d": "2026-11-07",
-   "s": "CarExpert"
   }
  ],
  "errors": [

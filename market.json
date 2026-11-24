@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-23T00:19:48.777Z",
+ "updated": "2026-11-24T04:18:21.922Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -133,6 +133,36 @@
  },
  "items": [
   {
+   "t": "Inflation tipped to peak in October",
+   "u": "https://www.savings.com.au/news/inflation-tipped-to-peak-in-october",
+   "d": "2026-11-24",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "ANZ expects next rate cut to come in June 2027",
+   "u": "https://www.brokernews.com.au/news/breaking-news/anz-expects-next-rate-cut-to-come-in-june-2027-290364.aspx",
+   "d": "2026-11-23",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Brokers get free training on spotting financial abuse in credit files",
+   "u": "https://www.brokernews.com.au/news/breaking-news/brokers-get-free-training-on-spotting-financial-abuse-in-credit-files-290362.aspx",
+   "d": "2026-11-23",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Spotlight: Katie Thomas on building a successful broker business",
+   "u": "https://www.brokernews.com.au/speciality/spotlight-series/spotlight-katie-thomas-on-building-a-successful-broker-business-290356.aspx",
+   "d": "2026-11-23",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "One of Australia's cheapest sedans gets the axe",
+   "u": "https://www.carexpert.com.au/car-news/one-of-australias-cheapest-sedans-gets-the-axe",
+   "d": "2026-11-23",
+   "s": "CarExpert"
+  },
+  {
    "t": "Weekly Market Update 23rd November 2026",
    "u": "https://datiuminsights.com.au/weekly-market-update-23rd-november-2026/",
    "d": "2026-11-22",
@@ -256,12 +286,6 @@
    "t": "FBAA pitches national broker conduct register to ASIC",
    "u": "https://www.brokernews.com.au/news/breaking-news/fbaa-pitches-national-broker-conduct-register-to-asic-290286.aspx",
    "d": "2026-11-10",
-   "s": "Australian Broker"
-  },
-  {
-   "t": "ASIC issues final warning to advice licensees over lead generators",
-   "u": "https://www.brokernews.com.au/news/breaking-news/asic-issues-final-warning-to-advice-licensees-over-lead-generators-290276.aspx",
-   "d": "2026-11-09",
    "s": "Australian Broker"
   }
  ],

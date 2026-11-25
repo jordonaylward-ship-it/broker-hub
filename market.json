@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-24T04:18:21.922Z",
+ "updated": "2026-11-25T03:03:49.196Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -89,12 +89,12 @@
    "url": "https://www.rba.gov.au/statistics/cash-rate/"
   },
   "cpi": {
-   "value": 4.3,
-   "trimmed": 3.6,
-   "period": "September 2026",
-   "released": "2026-10-28",
-   "next": "2026-11-25",
-   "fuelAnnual": 23.6,
+   "value": 4.9,
+   "trimmed": 3.8,
+   "period": "October 2026",
+   "released": "2026-11-25",
+   "next": "2027-01-06",
+   "fuelAnnual": 32.5,
    "src": "ABS",
    "url": "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release"
   },
@@ -132,6 +132,30 @@
   }
  },
  "items": [
+  {
+   "t": "Australia's inflation accelerates to 4.9% in October",
+   "u": "https://www.savings.com.au/news/australia-s-inflation-accelerates-to-4-9-in-october",
+   "d": "2026-11-25",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Inflation keeps rising in Australia",
+   "u": "https://www.brokernews.com.au/news/breaking-news/inflation-keeps-rising-in-australia-290373.aspx",
+   "d": "2026-11-25",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Going Guarantor on Your Kid's Car Loan Means the Debt Is Yours Too",
+   "u": "https://www.savings.com.au/car-loans/going-guarantor-on-your-kids-car-loan-means-the-debt-is-yours-too",
+   "d": "2026-11-24",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Inflation tipped to peak in October",
+   "u": "https://www.savings.com.au/news/inflation-tipped-to-peak-in-october",
+   "d": "2026-11-24",
+   "s": "Savings.com.au"
+  },
   {
    "t": "Inflation tipped to peak in October",
    "u": "https://www.savings.com.au/news/inflation-tipped-to-peak-in-october",
@@ -275,18 +299,6 @@
    "u": "https://www.carexpert.com.au/car-news/byd-end-of-year-deals-include-thousands-off-shark-6-sealion-7-plus-novated-lease-discounts",
    "d": "2026-11-11",
    "s": "CarExpert"
-  },
-  {
-   "t": "Major banks lift profit to $31.2bn as credit pressure builds: KPMG",
-   "u": "https://www.brokernews.com.au/news/breaking-news/major-banks-lift-profit-to-31-2bn-as-credit-pressure-builds-kpmg-290283.aspx",
-   "d": "2026-11-10",
-   "s": "Australian Broker"
-  },
-  {
-   "t": "FBAA pitches national broker conduct register to ASIC",
-   "u": "https://www.brokernews.com.au/news/breaking-news/fbaa-pitches-national-broker-conduct-register-to-asic-290286.aspx",
-   "d": "2026-11-10",
-   "s": "Australian Broker"
   }
  ],
  "errors": [

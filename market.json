@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-25T03:03:49.196Z",
+ "updated": "2026-11-26T02:14:38.798Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -133,16 +133,34 @@
  },
  "items": [
   {
+   "t": "Car expenses in Australia you should know about",
+   "u": "https://www.savings.com.au/car-loans/ongoing-car-costs",
+   "d": "2026-11-25",
+   "s": "Savings.com.au"
+  },
+  {
    "t": "Australia's inflation accelerates to 4.9% in October",
    "u": "https://www.savings.com.au/news/australia-s-inflation-accelerates-to-4-9-in-october",
    "d": "2026-11-25",
    "s": "Savings.com.au"
   },
   {
+   "t": "ASIC's Commissioner Alan Kirkland to headline MFAA event",
+   "u": "https://www.brokernews.com.au/news/breaking-news/asics-commissioner-alan-kirkland-to-headline-mfaa-event-290379.aspx",
+   "d": "2026-11-25",
+   "s": "Australian Broker"
+  },
+  {
    "t": "Inflation keeps rising in Australia",
    "u": "https://www.brokernews.com.au/news/breaking-news/inflation-keeps-rising-in-australia-290373.aspx",
    "d": "2026-11-25",
    "s": "Australian Broker"
+  },
+  {
+   "t": "Australia's inflation accelerates to 4.9% in October",
+   "u": "https://www.savings.com.au/news/australia-s-inflation-accelerates-to-4-9-in-october",
+   "d": "2026-11-25",
+   "s": "Savings.com.au"
   },
   {
    "t": "Going Guarantor on Your Kid's Car Loan Means the Debt Is Yours Too",
@@ -153,6 +171,12 @@
   {
    "t": "Inflation tipped to peak in October",
    "u": "https://www.savings.com.au/news/inflation-tipped-to-peak-in-october",
+   "d": "2026-11-24",
+   "s": "Savings.com.au"
+  },
+  {
+   "t": "Going Guarantor on Your Kid's Car Loan Means the Debt Is Yours Too",
+   "u": "https://www.savings.com.au/car-loans/going-guarantor-on-your-kids-car-loan-means-the-debt-is-yours-too",
    "d": "2026-11-24",
    "s": "Savings.com.au"
   },
@@ -205,16 +229,16 @@
    "s": "Australian Broker"
   },
   {
-   "t": "OnDeck broker loans jump 155% as automation speeds approvals",
-   "u": "https://www.brokernews.com.au/news/breaking-news/ondeck-broker-loans-jump-155-as-automation-speeds-approvals-290352.aspx",
-   "d": "2026-11-20",
-   "s": "Australian Broker"
-  },
-  {
    "t": "RBA rate hike November 2026: Is your lender passing it on?",
    "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
    "d": "2026-11-20",
    "s": "Savings.com.au"
+  },
+  {
+   "t": "OnDeck broker loans jump 155% as automation speeds approvals",
+   "u": "https://www.brokernews.com.au/news/breaking-news/ondeck-broker-loans-jump-155-as-automation-speeds-approvals-290352.aspx",
+   "d": "2026-11-20",
+   "s": "Australian Broker"
   },
   {
    "t": "LoanOptions.ai brings AutoGrab vehicle valuations to brokers",
@@ -275,30 +299,6 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/asic-sues-cba-over-alleged-hidden-commbiz-fees-290302.aspx",
    "d": "2026-11-12",
    "s": "Australian Broker"
-  },
-  {
-   "t": "Two in three borrowers too nervous to haggle with their lender",
-   "u": "https://www.brokernews.com.au/news/breaking-news/two-in-three-borrowers-too-nervous-to-haggle-with-their-lender-290293.aspx",
-   "d": "2026-11-11",
-   "s": "Australian Broker"
-  },
-  {
-   "t": "Spotlight on Sydney-based broker Shannon Ingram",
-   "u": "https://www.brokernews.com.au/speciality/spotlight-series/spotlight-on-sydneybased-broker-shannon-ingram-290289.aspx",
-   "d": "2026-11-11",
-   "s": "Australian Broker"
-  },
-  {
-   "t": "Chery Omoda 5 recall to fix detaching rear axle expands to Australia",
-   "u": "https://www.carexpert.com.au/car-news/chery-omoda-5-recall-to-fix-detaching-rear-axle-expands-to-australia",
-   "d": "2026-11-11",
-   "s": "CarExpert"
-  },
-  {
-   "t": "BYD end-of-year deals include thousands off Shark 6, Sealion 7, plus novated lease discounts",
-   "u": "https://www.carexpert.com.au/car-news/byd-end-of-year-deals-include-thousands-off-shark-6-sealion-7-plus-novated-lease-discounts",
-   "d": "2026-11-11",
-   "s": "CarExpert"
   }
  ],
  "errors": [

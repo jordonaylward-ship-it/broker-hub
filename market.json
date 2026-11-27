@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-26T02:14:38.798Z",
+ "updated": "2026-11-27T02:14:16.116Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -133,6 +133,12 @@
  },
  "items": [
   {
+   "t": "Young Australians shy away from credit applications: Experian",
+   "u": "https://www.brokernews.com.au/news/breaking-news/young-australians-shy-away-from-credit-applications-experian-290387.aspx",
+   "d": "2026-11-26",
+   "s": "Australian Broker"
+  },
+  {
    "t": "Car expenses in Australia you should know about",
    "u": "https://www.savings.com.au/car-loans/ongoing-car-costs",
    "d": "2026-11-25",
@@ -155,6 +161,12 @@
    "u": "https://www.brokernews.com.au/news/breaking-news/inflation-keeps-rising-in-australia-290373.aspx",
    "d": "2026-11-25",
    "s": "Australian Broker"
+  },
+  {
+   "t": "Car expenses in Australia you should know about",
+   "u": "https://www.savings.com.au/car-loans/ongoing-car-costs",
+   "d": "2026-11-25",
+   "s": "Savings.com.au"
   },
   {
    "t": "Australia's inflation accelerates to 4.9% in October",
@@ -223,16 +235,16 @@
    "s": "Savings.com.au"
   },
   {
-   "t": "Australian Broker Podcast: Wendy Brown dishes on Macquarie's growth and leading brokers",
-   "u": "https://www.brokernews.com.au/news/breaking-news/australian-broker-podcast-wendy-brown-dishes-on-macquaries-growth-and-leading-brokers-290349.aspx",
-   "d": "2026-11-20",
-   "s": "Australian Broker"
-  },
-  {
    "t": "RBA rate hike November 2026: Is your lender passing it on?",
    "u": "https://www.savings.com.au/news/rba-rate-hike-nov-26",
    "d": "2026-11-20",
    "s": "Savings.com.au"
+  },
+  {
+   "t": "Australian Broker Podcast: Wendy Brown dishes on Macquarie's growth and leading brokers",
+   "u": "https://www.brokernews.com.au/news/breaking-news/australian-broker-podcast-wendy-brown-dishes-on-macquaries-growth-and-leading-brokers-290349.aspx",
+   "d": "2026-11-20",
+   "s": "Australian Broker"
   },
   {
    "t": "OnDeck broker loans jump 155% as automation speeds approvals",
@@ -292,12 +304,6 @@
    "t": "Westpac more confident RBA has finished hiking rates",
    "u": "https://www.brokernews.com.au/news/breaking-news/westpac-more-confident-rba-has-finished-hiking-rates-290313.aspx",
    "d": "2026-11-13",
-   "s": "Australian Broker"
-  },
-  {
-   "t": "ASIC sues CBA over alleged hidden CommBiz fees",
-   "u": "https://www.brokernews.com.au/news/breaking-news/asic-sues-cba-over-alleged-hidden-commbiz-fees-290302.aspx",
-   "d": "2026-11-12",
    "s": "Australian Broker"
   }
  ],

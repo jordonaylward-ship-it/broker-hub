@@ -1,6 +1,6 @@
 {
  "v": 1,
- "updated": "2026-11-27T02:14:16.116Z",
+ "updated": "2026-11-28T02:01:38.014Z",
  "numbers": {
   "cashRate": {
    "value": 4.85,
@@ -132,6 +132,18 @@
   }
  },
  "items": [
+  {
+   "t": "Inflation tops business worries as price expectations climb: CommBank",
+   "u": "https://www.brokernews.com.au/news/breaking-news/inflation-tops-business-worries-as-price-expectations-climb-commbank-290395.aspx",
+   "d": "2026-11-27",
+   "s": "Australian Broker"
+  },
+  {
+   "t": "Consumer confidence stuck below 70 as inflation expectations ease",
+   "u": "https://www.brokernews.com.au/news/breaking-news/consumer-confidence-stuck-below-70-as-inflation-expectations-ease-290394.aspx",
+   "d": "2026-11-26",
+   "s": "Australian Broker"
+  },
   {
    "t": "Young Australians shy away from credit applications: Experian",
    "u": "https://www.brokernews.com.au/news/breaking-news/young-australians-shy-away-from-credit-applications-experian-290387.aspx",
@@ -298,12 +310,6 @@
    "t": "APRA and ASIC scrap two FAR reporting requirements",
    "u": "https://www.brokernews.com.au/news/breaking-news/apra-and-asic-scrap-two-far-reporting-requirements-290317.aspx",
    "d": "2026-11-16",
-   "s": "Australian Broker"
-  },
-  {
-   "t": "Westpac more confident RBA has finished hiking rates",
-   "u": "https://www.brokernews.com.au/news/breaking-news/westpac-more-confident-rba-has-finished-hiking-rates-290313.aspx",
-   "d": "2026-11-13",
    "s": "Australian Broker"
   }
  ],
